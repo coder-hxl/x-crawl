@@ -1,1 +1,1 @@
-export const TEST_CONTENT = 'Hello World'
+export { fetch, fetchFile } from './service'
