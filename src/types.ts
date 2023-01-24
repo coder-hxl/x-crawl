@@ -1,3 +1,15 @@
+export interface IAnyObject extends Object {
+  [key: string | number | symbol]: any
+}
+
+export type IMapTypeObject<T extends object, E extends string = ''> = {
+  [P in keyof T as Exclude<P, E>]: T[P]
+}
+
+export type IMapTypeEmptyObject<T extends object, E extends string = ''> = {
+  [P in keyof T as Exclude<P, E>]?: T[P]
+}
+
 export type IMethod =
   | 'get'
   | 'GET'
@@ -20,30 +32,37 @@ export type IMethod =
   | 'unlink'
   | 'UNLINK'
 
-export interface IRequestConfig<T = any> {
+export interface IRequestConfig {
   url: string
   method: IMethod
   headers?: {
     [key: string]: number | string | string[]
   }
-  params?: any
-  data?: T
+  params?: IAnyObject
+  data?: any
   timeout?: number
 }
 
-export interface IBaseConifg {
+export interface IFetchBaseConifg {
   requestConifg: IRequestConfig | IRequestConfig[]
-  intervalTime?: {
-    max: number
-    min?: number
+  intervalTime?:
+    | number
+    | {
+        max: number
+        min?: number
+      }
+}
+
+export type IFetchConfig = IFetchBaseConifg
+
+export interface IFetchFileConfig extends IFetchBaseConifg {
+  fileConfig: {
+    storeDir: string
   }
 }
 
-export type IFetchConfig = IBaseConifg
-
-export interface IFetchFileConfig extends IBaseConifg {
-  fileConfig: {
-    storeDir: string
-    suffix: string
-  }
+export interface IRequest {
+  contentType: string | undefined
+  contentLength: string | undefined
+  data: Buffer
 }

@@ -1,44 +1,60 @@
-import Url from 'node:url'
-import { IRequestConfig } from './types'
+import { RequestOptions } from 'https'
 
-export function parseParams(params: any): string {
-  let res = ''
+import Url, { URL } from 'node:url'
+import { IAnyObject, IMapTypeEmptyObject, IRequestConfig } from './types'
 
-  if (typeof params === 'object') {
+export function parseParams(urlSearch: string, params?: IAnyObject): string {
+  let res = urlSearch ? `${urlSearch}` : '?'
+
+  if (params) {
     for (const key in params) {
       const value = params[key]
-      res += `${key}=${value}`
+      res += `&${key}=${value}`
     }
   } else {
-    res = params
+    res = urlSearch
   }
 
   return res
 }
 
-export function handleConfig(rawConfig: IRequestConfig) {
-  const { hostname, port, pathname, search } = new Url.URL(rawConfig.url)
-  const params = search ? search : parseParams(rawConfig.params)
-  const headers =
-    rawConfig.method.toLowerCase() === 'post' && rawConfig.data
-      ? {
-          ...rawConfig.headers,
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(rawConfig.data)
-        }
-      : rawConfig.headers
+export function parseHeaders(
+  rawConfig: IRequestConfig,
+  config: RequestOptions & IMapTypeEmptyObject<URL>
+) {
+  let headers
 
-  const requestConfig = {
+  if (config.method === 'POST' && rawConfig.data) {
+    headers = {
+      ...rawConfig.headers,
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(rawConfig.data)
+    }
+  } else {
+    headers = rawConfig.headers
+  }
+
+  return headers
+}
+
+export function handleConfig(
+  rawConfig: IRequestConfig
+): RequestOptions & IMapTypeEmptyObject<URL> {
+  const { hostname, port, pathname, search } = new Url.URL(rawConfig.url)
+
+  const config: RequestOptions & IMapTypeEmptyObject<URL> = {
     hostname,
     port,
     path: pathname,
-    search: params,
-    method: rawConfig.method,
-    timeout: rawConfig.timeout,
-    headers
+    search: parseParams(search, rawConfig.params),
+
+    method: rawConfig.method.toLocaleUpperCase(),
+    headers: {}
   }
 
-  return requestConfig
+  config.headers = parseHeaders(rawConfig, config)
+
+  return config
 }
 
 export function sleep(timeout: number) {

@@ -3,31 +3,46 @@ import fs from 'node:fs'
 
 import { handleConfig, random, sleep } from './utils'
 
-import { IFetchConfig, IFetchFileConfig, IRequestConfig } from './types'
+import {
+  IFetchConfig,
+  IFetchFileConfig,
+  IRequest,
+  IRequestConfig
+} from './types'
 
 function request(config: IRequestConfig) {
-  return new Promise<Buffer>((resolve, reject) => {
+  return new Promise<IRequest>((resolve, reject) => {
     const data = (config.data = JSON.stringify(config.data ?? ''))
-    const requestConfig = handleConfig(config)
-    // console.log('requestConfig: ', requestConfig)
+    const handleConfigRes = handleConfig(config)
 
-    const req = https.request(requestConfig, (res) => {
-      const content: Buffer[] = []
+    const req = https.request(handleConfigRes, (res) => {
+      const container: Buffer[] = []
 
-      res.on('data', (chunk) => content.push(chunk))
+      res.on('data', (chunk) => container.push(chunk))
 
       res.on('end', () => {
-        resolve(Buffer.concat(content))
+        const data = Buffer.concat(container)
+        const resolveRes: IRequest = {
+          contentType: res.headers['content-type'],
+          contentLength: res.headers['content-length'],
+          data
+        }
+        resolve(resolveRes)
       })
     })
 
+    req.on('timeout', () => {
+      console.log(`Timeout Error`)
+      reject(new Error('Timeout'))
+    })
+
     req.on('error', (err) => {
-      console.log('err: ', err.message)
+      console.log('Error: ', err.message)
       reject(err)
     })
 
-    if (requestConfig.method.toLowerCase() === 'post') {
-      // console.log('requestConfig data: ', data)
+    // 其他处理
+    if (handleConfigRes.method === 'POST') {
       req.write(data)
     }
 
@@ -37,27 +52,27 @@ function request(config: IRequestConfig) {
 
 export async function fetch<T = any>(config: IFetchConfig): Promise<T> {
   const { requestConifg, intervalTime } = config
+
   let res
-
-  async function getValue(req: IRequestConfig) {
-    const bufferRes = await request(req)
-    return JSON.parse(bufferRes.toString())
-  }
-
   if (Array.isArray(requestConifg)) {
     res = []
 
     for (const item of requestConifg) {
-      const value = await getValue(item)
-      res.push(value)
+      const requestRes = await request(item)
+      res.push(JSON.parse(requestRes.data.toString()))
 
-      if (intervalTime) {
-        const timeout = random(intervalTime.max, intervalTime.min)
+      if (typeof intervalTime !== 'undefined') {
+        const timeout =
+          typeof intervalTime === 'number'
+            ? intervalTime
+            : random(intervalTime.max, intervalTime.min)
+
         await sleep(timeout)
       }
     }
   } else {
-    res = getValue(requestConifg)
+    const requestRes = await request(requestConifg)
+    res = JSON.parse(requestRes.data.toString())
   }
 
   return res
@@ -66,29 +81,52 @@ export async function fetch<T = any>(config: IFetchConfig): Promise<T> {
 export async function fetchFile(config: IFetchFileConfig) {
   const { requestConifg, intervalTime, fileConfig } = config
 
-  const isRqeArr = Array.isArray(requestConifg)
-  const requestConifgArr = isRqeArr ? requestConifg : [requestConifg]
+  const requestConifgArr = Array.isArray(requestConifg)
+    ? requestConifg
+    : [requestConifg]
 
-  const sum = requestConifgArr.length
+  const total = requestConifgArr.length
   let currentCount = 0
+  let successCount = 0
 
-  console.log(`开始下载, 总数: ${sum} `)
+  await Promise.resolve()
+
+  console.log(`Start downloading, total: ${total} `)
 
   for (const item of requestConifgArr) {
     currentCount++
 
-    const res = await request(item)
-    const filename = new Date().getTime() + fileConfig.suffix
-    const path = fileConfig.storeDir + '/' + filename
+    const requestRes = await request(item)
 
-    fs.createWriteStream(path, 'binary').write(res)
-    console.log(`当前: ${currentCount}`)
+    const { contentType, data } = requestRes
+    const filename = `${new Date().getTime()}.${contentType?.split('/').pop()}`
+    const path = `${fileConfig.storeDir}/${filename}`
 
-    if (intervalTime && isRqeArr && currentCount !== sum) {
-      const timeout = random(intervalTime.max, intervalTime.min)
+    fs.createWriteStream(path, 'binary').write(data, (err) => {
+      if (err) {
+        return console.log(
+          `File save error requested for the ${currentCount}: ${err.message}`
+        )
+      }
+
+      if (++successCount === total) {
+        console.log('All files downloaded successfully!')
+      }
+    })
+
+    if (typeof intervalTime !== 'undefined' && currentCount !== total) {
+      const timeout =
+        typeof intervalTime === 'number'
+          ? intervalTime
+          : random(intervalTime.max, intervalTime.min)
+
+      console.log(
+        `The ${currentCount} request is success, sleep for ${timeout}ms`
+      )
+
       await sleep(timeout)
+    } else {
+      console.log(`The ${currentCount} request is success`)
     }
   }
-
-  console.log('下载完成')
 }
