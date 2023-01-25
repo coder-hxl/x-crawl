@@ -1,4 +1,4 @@
-import { RequestOptions } from 'https'
+import { RequestOptions } from 'http'
 
 import Url, { URL } from 'node:url'
 import { IAnyObject, IMapTypeEmptyObject, IRequestConfig } from './types'

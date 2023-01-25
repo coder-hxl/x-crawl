@@ -1,3 +1,5 @@
+import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
+
 export interface IAnyObject extends Object {
   [key: string | number | symbol]: any
 }
@@ -8,6 +10,11 @@ export type IMapTypeObject<T extends object, E extends string = ''> = {
 
 export type IMapTypeEmptyObject<T extends object, E extends string = ''> = {
   [P in keyof T as Exclude<P, E>]?: T[P]
+}
+
+export interface IRequest {
+  headers: IncomingHttpHeaders
+  data: Buffer
 }
 
 export type IMethod =
@@ -35,9 +42,7 @@ export type IMethod =
 export interface IRequestConfig {
   url: string
   method: IMethod
-  headers?: {
-    [key: string]: number | string | string[]
-  }
+  headers?: OutgoingHttpHeaders
   params?: IAnyObject
   data?: any
   timeout?: number
@@ -53,16 +58,10 @@ export interface IFetchBaseConifg {
       }
 }
 
-export type IFetchConfig = IFetchBaseConifg
+export interface IFetchConfig extends IFetchBaseConifg {}
 
 export interface IFetchFileConfig extends IFetchBaseConifg {
   fileConfig: {
     storeDir: string
   }
-}
-
-export interface IRequest {
-  contentType: string | undefined
-  contentLength: string | undefined
-  data: Buffer
 }

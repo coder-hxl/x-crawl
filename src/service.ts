@@ -16,6 +16,8 @@ function request(config: IRequestConfig) {
     const handleConfigRes = handleConfig(config)
 
     const req = https.request(handleConfigRes, (res) => {
+      const { headers } = res
+
       const container: Buffer[] = []
 
       res.on('data', (chunk) => container.push(chunk))
@@ -23,10 +25,10 @@ function request(config: IRequestConfig) {
       res.on('end', () => {
         const data = Buffer.concat(container)
         const resolveRes: IRequest = {
-          contentType: res.headers['content-type'],
-          contentLength: res.headers['content-length'],
+          headers,
           data
         }
+
         resolve(resolveRes)
       })
     })
@@ -98,8 +100,10 @@ export async function fetchFile(config: IFetchFileConfig) {
 
     const requestRes = await request(item)
 
-    const { contentType, data } = requestRes
-    const filename = `${new Date().getTime()}.${contentType?.split('/').pop()}`
+    const { headers, data } = requestRes
+    const filename = `${new Date().getTime()}.${headers['content-type']
+      ?.split('/')
+      .pop()}`
     const path = `${fileConfig.storeDir}/${filename}`
 
     fs.createWriteStream(path, 'binary').write(data, (err) => {
