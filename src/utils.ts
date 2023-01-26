@@ -6,7 +6,7 @@ import {
   IFetchConfig,
   IMapTypeEmptyObject,
   IRequestConfig,
-  XCrawlConifg
+  IXCrawlBaseConifg
 } from './types'
 
 export function parseParams(urlSearch: string, params?: IAnyObject): string {
@@ -64,10 +64,10 @@ export function handleConfig(
   return config
 }
 
-export function loaderBaseConfig(
-  baseConfig: XCrawlConifg,
-  config: IFetchConfig
-) {
+export function mergeConfig<T extends IFetchConfig>(
+  baseConfig: IXCrawlBaseConifg,
+  config: T
+): T {
   const {
     baseUrl,
     timeout: baseTimeout,
@@ -75,8 +75,8 @@ export function loaderBaseConfig(
   } = baseConfig
   const { requestConifg, intervalTime } = config
 
-  const requestConifgArr = Array.isArray(requestConifg)
-    ? [...requestConifg]
+  const requestConifgArr = isArray(requestConifg)
+    ? requestConifg
     : [requestConifg]
 
   for (const requestItem of requestConifgArr) {
@@ -96,10 +96,6 @@ export function loaderBaseConfig(
   return config
 }
 
-export function isUndefined(value: any) {
-  return typeof value === 'undefined'
-}
-
 export function sleep(timeout: number) {
   return new Promise((resolve) => setTimeout(resolve, timeout))
 }
@@ -112,4 +108,16 @@ export function random(max: number, min = 0) {
   }
 
   return res
+}
+
+export function isUndefined(value: any): value is undefined {
+  return typeof value === 'undefined'
+}
+
+export function isNumber(value: any): value is number {
+  return typeof value === 'number'
+}
+
+export function isArray(value: any): value is any[] {
+  return Array.isArray(value)
 }

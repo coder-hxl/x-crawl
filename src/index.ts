@@ -1,18 +1,73 @@
-import { fetch } from './service'
+import fs from 'node:fs'
 
-import { IFetchConfig, XCrawlConifg } from './types'
-import { loaderBaseConfig } from './utils'
+import { batchRequest } from './request'
+import { isArray, mergeConfig } from './utils'
+
+import {
+  IFetchConfig,
+  IFetchFileConfig,
+  IRequest,
+  IXCrawlBaseConifg
+} from './types'
 
 export default class XCrawl {
-  baseConfig: XCrawlConifg
+  baseConfig: IXCrawlBaseConifg
 
-  constructor(XCrawlConfig: XCrawlConifg) {
-    this.baseConfig = XCrawlConfig
+  constructor(baseConfig: IXCrawlBaseConifg = {}) {
+    this.baseConfig = baseConfig
   }
 
   async fetch<T = any>(config: IFetchConfig): Promise<T> {
-    const loaderRes = loaderBaseConfig(this.baseConfig, config)
+    const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
 
-    return fetch(loaderRes)
+    const isRequestConifgArr = isArray(requestConifg)
+    const requestConifgArr = isRequestConifgArr
+      ? requestConifg
+      : [requestConifg]
+
+    const container = [] as T[]
+
+    await batchRequest(requestConifgArr, intervalTime, (requestRes) => {
+      container.push(JSON.parse(requestRes.data.toString()))
+    })
+
+    const res = isRequestConifgArr ? container : container[0]
+    return res as T
+  }
+
+  async fetchFile(config: IFetchFileConfig): Promise<void> {
+    const { requestConifg, intervalTime, fileConfig } = mergeConfig(
+      this.baseConfig,
+      config
+    )
+
+    let successCount = 0
+
+    function eachRequestResHandle(requestRes: IRequest, currentCount: number) {
+      const { headers, data } = requestRes
+
+      const filename = `${new Date().getTime()}.${headers['content-type']
+        ?.split('/')
+        .pop()}`
+      const path = `${fileConfig.storeDir}/${filename}`
+
+      fs.createWriteStream(path, 'binary').write(data, (err) => {
+        if (err) {
+          return console.log(
+            `File save error requested for the ${currentCount}: ${err.message}`
+          )
+        }
+
+        if (++successCount === requestConifgArr.length) {
+          console.log('All files downloaded successfully!')
+        }
+      })
+    }
+
+    const requestConifgArr = isArray(requestConifg)
+      ? requestConifg
+      : [requestConifg]
+
+    await batchRequest(requestConifgArr, intervalTime, eachRequestResHandle)
   }
 }

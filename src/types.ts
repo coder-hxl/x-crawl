@@ -1,5 +1,4 @@
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
-import { type } from 'node:os'
 
 export interface IAnyObject extends Object {
   [key: string | number | symbol]: any
@@ -56,7 +55,7 @@ export interface IFetchBaseConifg {
   intervalTime?: IIntervalTime
 }
 
-export interface XCrawlConifg {
+export interface IXCrawlBaseConifg {
   baseUrl?: string
   timeout?: number
   intervalTime?: IIntervalTime
