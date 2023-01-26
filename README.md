@@ -1,5 +1,5 @@
-# crawler
+# x-crawl
 
-Lightweight nodejs crawler library that can help you crawl data and files.
+XCrawl is a Nodejs crawl library, providing configurations to help you crawl data or files in batches.
 
-轻量级的 nodejs 爬虫库，可以帮助你抓取数据和文件。
+XCrawl 是 Nodejs 爬虫库，提供配置即可帮你批量抓取数据或文件。

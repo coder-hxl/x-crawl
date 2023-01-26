@@ -1,7 +1,13 @@
 import { RequestOptions } from 'http'
-
 import Url, { URL } from 'node:url'
-import { IAnyObject, IMapTypeEmptyObject, IRequestConfig } from './types'
+
+import {
+  IAnyObject,
+  IFetchConfig,
+  IMapTypeEmptyObject,
+  IRequestConfig,
+  XCrawlConifg
+} from './types'
 
 export function parseParams(urlSearch: string, params?: IAnyObject): string {
   let res = urlSearch ? `${urlSearch}` : '?'
@@ -49,12 +55,49 @@ export function handleConfig(
     search: parseParams(search, rawConfig.params),
 
     method: rawConfig.method.toLocaleUpperCase(),
-    headers: {}
+    headers: {},
+    timeout: rawConfig.timeout
   }
 
   config.headers = parseHeaders(rawConfig, config)
 
   return config
+}
+
+export function loaderBaseConfig(
+  baseConfig: XCrawlConifg,
+  config: IFetchConfig
+) {
+  const {
+    baseUrl,
+    timeout: baseTimeout,
+    intervalTime: baseIntervalTime
+  } = baseConfig
+  const { requestConifg, intervalTime } = config
+
+  const requestConifgArr = Array.isArray(requestConifg)
+    ? [...requestConifg]
+    : [requestConifg]
+
+  for (const requestItem of requestConifgArr) {
+    const { url, timeout } = requestItem
+
+    requestItem.url = baseUrl + url
+
+    if (isUndefined(timeout) && !isUndefined(baseTimeout)) {
+      requestItem.timeout = baseTimeout
+    }
+  }
+
+  if (isUndefined(intervalTime) && !isUndefined(baseIntervalTime)) {
+    config.intervalTime = baseIntervalTime
+  }
+
+  return config
+}
+
+export function isUndefined(value: any) {
+  return typeof value === 'undefined'
 }
 
 export function sleep(timeout: number) {

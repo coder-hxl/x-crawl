@@ -1,8 +1,8 @@
 {
-  "name": "crawler",
+  "name": "x-crawler",
   "version": "0.0.1",
   "author": "coderhxl",
-  "description": "爬虫库",
+  "description": "XCrawl is a Nodejs crawl library, providing configurations to help you crawl data or files in batches.",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "",

@@ -10,9 +10,11 @@ import {
   IRequestConfig
 } from './types'
 
-function request(config: IRequestConfig) {
+export function request(config: IRequestConfig) {
   return new Promise<IRequest>((resolve, reject) => {
-    const data = (config.data = JSON.stringify(config.data ?? ''))
+    const data = (config.data = config.data
+      ? JSON.stringify(config.data ?? '')
+      : config.data)
     const handleConfigRes = handleConfig(config)
 
     const req = https.request(handleConfigRes, (res) => {
@@ -54,30 +56,31 @@ function request(config: IRequestConfig) {
 
 export async function fetch<T = any>(config: IFetchConfig): Promise<T> {
   const { requestConifg, intervalTime } = config
+  const isRequestConifgArr = Array.isArray(requestConifg)
+  const requestConifgArr = isRequestConifgArr ? requestConifg : [requestConifg]
 
-  let res
-  if (Array.isArray(requestConifg)) {
-    res = []
+  const total = requestConifgArr.length
+  let currentCount = 0
 
-    for (const item of requestConifg) {
-      const requestRes = await request(item)
-      res.push(JSON.parse(requestRes.data.toString()))
+  const container = []
 
-      if (typeof intervalTime !== 'undefined') {
-        const timeout =
-          typeof intervalTime === 'number'
-            ? intervalTime
-            : random(intervalTime.max, intervalTime.min)
+  for (const item of requestConifgArr) {
+    currentCount++
 
-        await sleep(timeout)
-      }
+    const requestRes = await request(item)
+    container.push(JSON.parse(requestRes.data.toString()))
+
+    if (typeof intervalTime !== 'undefined' && currentCount !== total) {
+      const timeout =
+        typeof intervalTime === 'number'
+          ? intervalTime
+          : random(intervalTime.max, intervalTime.min)
+
+      await sleep(timeout)
     }
-  } else {
-    const requestRes = await request(requestConifg)
-    res = JSON.parse(requestRes.data.toString())
   }
 
-  return res
+  return isRequestConifgArr ? container : container[0]
 }
 
 export async function fetchFile(config: IFetchFileConfig) {
