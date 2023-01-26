@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "x-crawler",
+  "name": "x-crawl",
   "version": "0.0.1",
   "author": "coderhxl",
   "description": "XCrawl is a Nodejs crawl library, providing configurations to help you crawl data or files in batches.",

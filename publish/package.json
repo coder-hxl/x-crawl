@@ -1,15 +1,15 @@
 {
-  "name": "x-crawler",
+  "name": "x-crawl",
   "version": "0.0.1",
   "author": "coderhxl",
   "description": "XCrawl is a Nodejs crawl library, providing configurations to help you crawl data or files in batches.",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "",
-  "homepage": "https://github.com/coder-hxl/crawler/tree/main/publish",
+  "homepage": "https://github.com/coder-hxl/x-crawl/tree/main/publish",
   "repository": {
     "type": "git",
-    "url": "https://github.com/coder-hxl/crawler"
+    "url": "https://github.com/coder-hxl/x-crawl"
   },
   "scripts": {},
   "exports": {

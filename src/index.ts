@@ -46,9 +46,8 @@ export default class XCrawl {
     function eachRequestResHandle(requestRes: IRequest, currentCount: number) {
       const { headers, data } = requestRes
 
-      const filename = `${new Date().getTime()}.${headers['content-type']
-        ?.split('/')
-        .pop()}`
+      const fileType = headers['content-type']?.split('/').pop()
+      const filename = `${new Date().getTime()}.${fileType}`
       const path = `${fileConfig.storeDir}/${filename}`
 
       fs.createWriteStream(path, 'binary').write(data, (err) => {
