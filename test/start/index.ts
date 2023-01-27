@@ -8,7 +8,7 @@ import { IAreaRoom, IBRecommend } from './types'
 // 1. 爬取 房间数据
 // https://github.com/coder-hxl/airbnb-api
 
-const roomCrawl = new XCrawl({
+const roomXCrawl = new XCrawl({
   timeout: 10000,
   intervalTime: {
     max: 3000,
@@ -17,7 +17,7 @@ const roomCrawl = new XCrawl({
 })
 
 function areaRoomData() {
-  roomCrawl
+  roomXCrawl
     .fetch<IAreaRoom>({
       requestConifg: {
         url: 'http://localhost:9001/api/area/阳江市',
@@ -38,32 +38,33 @@ function areaRoomData() {
         method: 'GET'
       }))
 
-      roomCrawl.fetchFile({
+      roomXCrawl.fetchFile({
         requestConifg,
         fileConfig: { storeDir: path.resolve(__dirname, './upload') }
       })
     })
 }
-
 // areaRoomData()
 
 // ==================================================
 
-// 2. 爬取 b站首页推荐视频 的封面图
+// 2. 爬取 b站 数据
+
+// 2.1 JSON: b站首页推荐视频的封面图
 /*
   https://api.bilibili.com/x/web-interface/wbi/index/top/feed/rcmd?y_num=5&fresh_type=3&feed_version=V8&fresh_idx_1h=1&fetch_row=1&fresh_idx=1&brush=0&homepage_ver=1&ps=10&outside_trigger=&w_rid=921db33671365ec8b9f7cab1971a3834&wts=1674553870
 */
 
-const recommendXCrawl = new XCrawl({
+const bilibiliXCrawl = new XCrawl({
   timeout: 10000,
   intervalTime: {
-    max: 3000,
+    max: 1500,
     min: 1000
   }
 })
 
 function bilibiliRecommendData() {
-  recommendXCrawl
+  bilibiliXCrawl
     .fetch<IBRecommend>({
       requestConifg: {
         url: 'https://api.bilibili.com/x/web-interface/wbi/index/top/feed/rcmd',
@@ -91,11 +92,21 @@ function bilibiliRecommendData() {
         method: 'GET'
       }))
 
-      recommendXCrawl.fetchFile({
+      bilibiliXCrawl.fetchFile({
         requestConifg: pictureUrls,
         intervalTime: { max: 3000, min: 2000 },
         fileConfig: { storeDir: path.resolve(__dirname, './upload') }
       })
     })
 }
-bilibiliRecommendData()
+// bilibiliRecommendData()
+
+// 2.2 HTML: b站首页标题
+// 采用 jsdom 对 HTML String 解析
+
+function bilibiliHTMLData() {
+  bilibiliXCrawl.fetchHTML('https://www.bilibili.com/').then((dom) => {
+    console.log(dom.window.document.querySelector('title')?.textContent)
+  })
+}
+bilibiliHTMLData()

@@ -1,6 +1,7 @@
 import fs from 'node:fs'
+import { JSDOM } from 'jsdom'
 
-import { batchRequest } from './request'
+import { batchRequest, request } from './request'
 import { isArray, mergeConfig } from './utils'
 
 import {
@@ -11,7 +12,7 @@ import {
 } from './types'
 
 export default class XCrawl {
-  baseConfig: IXCrawlBaseConifg
+  private readonly baseConfig: IXCrawlBaseConifg
 
   constructor(baseConfig: IXCrawlBaseConifg = {}) {
     this.baseConfig = baseConfig
@@ -68,5 +69,18 @@ export default class XCrawl {
       : [requestConifg]
 
     await batchRequest(requestConifgArr, intervalTime, eachRequestResHandle)
+  }
+
+  async fetchHTML(url: string): Promise<JSDOM> {
+    const { requestConifg } = mergeConfig(this.baseConfig, {
+      requestConifg: { url }
+    })
+
+    const requestRes = await request(requestConifg)
+
+    const HTMLString = requestRes.data.toString()
+    const dom = new JSDOM(HTMLString)
+
+    return dom
   }
 }

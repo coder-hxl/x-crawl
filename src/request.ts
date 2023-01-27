@@ -1,6 +1,12 @@
-import https from 'node:http'
+import https from 'node:https'
 
-import { handleConfig, isNumber, isUndefined, random, sleep } from './utils'
+import {
+  handleRequestConfig,
+  isNumber,
+  isUndefined,
+  random,
+  sleep
+} from './utils'
 
 import { IIntervalTime, IRequest, IRequestConfig } from './types'
 
@@ -9,7 +15,7 @@ export function request(config: IRequestConfig) {
     const data = (config.data = config.data
       ? JSON.stringify(config.data ?? '')
       : config.data)
-    const requestConfig = handleConfig(config)
+    const requestConfig = handleRequestConfig(config)
 
     const req = https.request(requestConfig, (res) => {
       const { headers } = res

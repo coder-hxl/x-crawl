@@ -41,7 +41,7 @@ export type IMethod =
 
 export interface IRequestConfig {
   url: string
-  method: IMethod
+  method?: IMethod
   headers?: OutgoingHttpHeaders
   params?: IAnyObject
   data?: any
@@ -50,14 +50,14 @@ export interface IRequestConfig {
 
 export type IIntervalTime = number | { max: number; min?: number }
 
-export interface IFetchBaseConifg {
-  requestConifg: IRequestConfig | IRequestConfig[]
-  intervalTime?: IIntervalTime
-}
-
 export interface IXCrawlBaseConifg {
   baseUrl?: string
   timeout?: number
+  intervalTime?: IIntervalTime
+}
+
+export interface IFetchBaseConifg {
+  requestConifg: IRequestConfig | IRequestConfig[]
   intervalTime?: IIntervalTime
 }
 
