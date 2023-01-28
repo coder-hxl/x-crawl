@@ -51,7 +51,7 @@ class XCrawl {
 }
 ```
 
-- <div id="myXrawl">Example</div>
+- <div id="myXCrawl">Example</div>
 
 myXCrawl is the crawler instance of the following example.
 
@@ -69,7 +69,7 @@ const myXCrawl = new XCrawl({
 
 ### fetch
 
-fetch is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetch is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 - Type
 
