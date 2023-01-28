@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, request } from './request'
@@ -11,7 +12,6 @@ import {
   IRequest,
   IXCrawlBaseConifg
 } from './types'
-import path from 'node:path'
 
 export default class XCrawl {
   private readonly baseConfig: IXCrawlBaseConifg

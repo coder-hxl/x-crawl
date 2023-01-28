@@ -14,7 +14,7 @@ npm install x-crawl
 
 ## example
 
-Get the title of [https://docs.github.com/zh/get-started as an example:](https://docs.github.com/zh/get-started)
+Get the title of https://docs.github.com/zh/get-started as an example:
 
 ```js
 // Import module ES/CJS
@@ -287,7 +287,7 @@ class XCrawl {
 }
 ```
 
-- <div id="myXCrawl"  style="text-decoration: none">示例</div>
+- <div id="cn-myXCrawl"  style="text-decoration: none">示例</div>
 
 myXCrawl 为后面示例的爬虫实例。
 
@@ -305,7 +305,7 @@ const myXCrawl = new XCrawl({
 
 ### fetch
 
-fetch 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+fetch 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 - 类型
 
@@ -332,7 +332,7 @@ myXCrawl.fetch({
 
 ### fetchFile
 
-fetchFile 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+fetchFile 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 - 类型
 
@@ -361,7 +361,7 @@ myXCrawl.fetchFile({
 
 ### fetchHTML
 
-fetchHTML 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
+fetchHTML 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
 
 - 类型
 

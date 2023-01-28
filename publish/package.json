@@ -2,10 +2,17 @@
   "name": "x-crawl",
   "version": "0.0.1",
   "author": "coderhxl",
-  "description": "XCrawl is a Nodejs crawl library, providing configurations to help you crawl data or files in batches.",
+  "description": "XCrawl is a Nodejs multifunctional crawler library.",
   "license": "MIT",
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "crawl",
+    "crawler",
+    "spider"
+  ],
   "main": "dist/index.js",
-  "types": "",
+  "types": "dist/index.d.ts",
   "homepage": "https://github.com/coder-hxl/x-crawl/tree/main/publish",
   "repository": {
     "type": "git",
@@ -18,5 +25,7 @@
       "require": "./dist/index.js"
     }
   },
-  "keywords": []
+  "dependencies": {
+    "jsdom": "^21.1.0"
+  }
 }

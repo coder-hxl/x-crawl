@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'node:http'
+import { IncomingHttpHeaders } from 'node:http'
 
 export interface IAnyObject extends Object {
   [key: string | number | symbol]: any
@@ -42,7 +42,7 @@ export type IMethod =
 export interface IRequestConfig {
   url: string
   method?: IMethod
-  headers?: OutgoingHttpHeaders
+  headers?: IAnyObject
   params?: IAnyObject
   data?: any
   timeout?: number
