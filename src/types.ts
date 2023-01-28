@@ -68,3 +68,10 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
+
+export type IFetchFile = {
+  fileName: string
+  mimeType: string
+  size: number
+  filePath: string
+}[]

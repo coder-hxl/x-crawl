@@ -6,10 +6,12 @@ import { isArray, mergeConfig } from './utils'
 
 import {
   IFetchConfig,
+  IFetchFile,
   IFetchFileConfig,
   IRequest,
   IXCrawlBaseConifg
 } from './types'
+import path from 'node:path'
 
 export default class XCrawl {
   private readonly baseConfig: IXCrawlBaseConifg
@@ -36,39 +38,57 @@ export default class XCrawl {
     return res as T
   }
 
-  async fetchFile(config: IFetchFileConfig): Promise<void> {
-    const { requestConifg, intervalTime, fileConfig } = mergeConfig(
-      this.baseConfig,
-      config
-    )
+  fetchFile(config: IFetchFileConfig): Promise<IFetchFile> {
+    return new Promise((resolve) => {
+      const { requestConifg, intervalTime, fileConfig } = mergeConfig(
+        this.baseConfig,
+        config
+      )
 
-    let successCount = 0
+      let successCount = 0
+      const res: IFetchFile = []
 
-    function eachRequestResHandle(requestRes: IRequest, currentCount: number) {
-      const { headers, data } = requestRes
+      function eachRequestResHandle(
+        requestRes: IRequest,
+        currentCount: number
+      ) {
+        const { headers, data } = requestRes
 
-      const fileType = headers['content-type']?.split('/').pop()
-      const filename = `${new Date().getTime()}.${fileType}`
-      const path = `${fileConfig.storeDir}/${filename}`
+        const mimeType = headers['content-type'] ?? ''
+        const suffix = mimeType.split('/').pop()
+        const fileName = new Date().getTime().toString()
+        const filePath = path.resolve(
+          fileConfig.storeDir,
+          `${fileName}.${suffix}`
+        )
 
-      fs.createWriteStream(path, 'binary').write(data, (err) => {
-        if (err) {
-          return console.log(
-            `File save error requested for the ${currentCount}: ${err.message}`
-          )
-        }
+        fs.createWriteStream(filePath, 'binary').write(data, (err) => {
+          if (err) {
+            return console.log(
+              `File save error requested for the ${currentCount}: ${err.message}`
+            )
+          }
 
-        if (++successCount === requestConifgArr.length) {
-          console.log('All files downloaded successfully!')
-        }
-      })
-    }
+          res.push({
+            fileName,
+            mimeType,
+            size: data.length,
+            filePath
+          })
 
-    const requestConifgArr = isArray(requestConifg)
-      ? requestConifg
-      : [requestConifg]
+          if (++successCount === requestConifgArr.length) {
+            console.log('All files downloaded successfully!')
+            resolve(res)
+          }
+        })
+      }
 
-    await batchRequest(requestConifgArr, intervalTime, eachRequestResHandle)
+      const requestConifgArr = isArray(requestConifg)
+        ? requestConifg
+        : [requestConifg]
+
+      batchRequest(requestConifgArr, intervalTime, eachRequestResHandle)
+    })
   }
 
   async fetchHTML(url: string): Promise<JSDOM> {
