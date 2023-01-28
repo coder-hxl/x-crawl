@@ -64,19 +64,3 @@ async function githubDocs() {
 }
 
 // githubDocs()
-
-// https://docs.github.com/assets/cb-262/images/octicons/search-16.svg
-
-githubDocsXCrawl
-  .fetchFile({
-    requestConifg: {
-      url: 'https://docs.github.com/assets/cb-262/images/octicons/search-16.svg',
-      method: 'GET'
-    },
-    fileConfig: {
-      storeDir: path.resolve(__dirname, './upload')
-    }
-  })
-  .then((fileInfos) => {
-    console.log(fileInfos)
-  })
