@@ -85,14 +85,16 @@ export function mergeConfig<T extends IFetchConfig>(
   for (const requestItem of requestConifgArr) {
     const { url, timeout } = requestItem
 
-    requestItem.url = baseUrl + url
+    if (!isUndefined(baseUrl)) {
+      requestItem.url = baseUrl + url
+    }
 
-    if (isUndefined(timeout)) {
+    if (isUndefined(timeout) && !isUndefined(baseTimeout)) {
       requestItem.timeout = baseTimeout
     }
   }
 
-  if (isUndefined(intervalTime)) {
+  if (isUndefined(intervalTime) && !isUndefined(baseIntervalTime)) {
     config.intervalTime = baseIntervalTime
   }
 
