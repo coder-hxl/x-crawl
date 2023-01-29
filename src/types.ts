@@ -13,6 +13,7 @@ export type IMapTypeEmptyObject<T extends object, E extends string = ''> = {
 }
 
 export interface IRequest {
+  statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: Buffer
 }
@@ -68,6 +69,12 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
+
+export type IFetch<T> = {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: T
+}[]
 
 export type IFetchFile = {
   fileName: string

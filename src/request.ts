@@ -1,4 +1,4 @@
-import https from 'node:https'
+import http from 'node:http'
 
 import {
   handleRequestConfig,
@@ -12,13 +12,13 @@ import { IIntervalTime, IRequest, IRequestConfig } from './types'
 
 export function request(config: IRequestConfig) {
   return new Promise<IRequest>((resolve, reject) => {
-    const data = (config.data = config.data
-      ? JSON.stringify(config.data ?? '')
-      : config.data)
+    const isDataUndefine = isUndefined(config.data)
+    config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
+
     const requestConfig = handleRequestConfig(config)
 
-    const req = https.request(requestConfig, (res) => {
-      const { headers } = res
+    const req = http.request(requestConfig, (res) => {
+      const { statusCode, headers } = res
 
       const container: Buffer[] = []
 
@@ -27,6 +27,7 @@ export function request(config: IRequestConfig) {
       res.on('end', () => {
         const data = Buffer.concat(container)
         const resolveRes: IRequest = {
+          statusCode,
           headers,
           data
         }
@@ -36,18 +37,16 @@ export function request(config: IRequestConfig) {
     })
 
     req.on('timeout', () => {
-      console.log(`Timeout Error`)
-      reject(new Error('Timeout'))
+      reject(new Error(`Timeout ${config.timeout}ms`))
     })
 
     req.on('error', (err) => {
-      console.log('Error: ', err.message)
       reject(err)
     })
 
     // 其他处理
-    if (requestConfig.method === 'POST') {
-      req.write(data)
+    if (requestConfig.method === 'POST' && !isDataUndefine) {
+      req.write(config.data)
     }
 
     req.end()

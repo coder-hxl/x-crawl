@@ -1,11 +1,11 @@
-import { RequestOptions } from 'http'
+import { Agent } from 'http'
+import { Agent as httpsAgent } from 'https'
 import Url, { URL } from 'node:url'
-import { Agent } from 'https'
 
+import { RequestOptions } from 'http'
 import {
   IAnyObject,
   IFetchBaseConifg,
-  IFetchConfig,
   IMapTypeEmptyObject,
   IRequestConfig,
   IXCrawlBaseConifg
@@ -30,10 +30,11 @@ export function parseHeaders(
   rawConfig: IRequestConfig,
   config: RequestOptions & IMapTypeEmptyObject<URL>
 ) {
+  const rawHeaders = rawConfig.headers ?? {}
   const headers: IAnyObject = {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-    ...config
+    ...rawHeaders
   }
 
   if (config.method === 'POST' && rawConfig.data) {
@@ -47,11 +48,12 @@ export function parseHeaders(
 export function handleRequestConfig(
   rawConfig: IRequestConfig
 ): RequestOptions & IMapTypeEmptyObject<URL> {
-  const { hostname, port, pathname, search } = new Url.URL(rawConfig.url)
+  const { protocol, hostname, port, pathname, search } = new Url.URL(
+    rawConfig.url
+  )
 
   const config: RequestOptions & IMapTypeEmptyObject<URL> = {
-    agent: new Agent({}),
-
+    protocol,
     hostname,
     port,
     path: pathname,
@@ -64,10 +66,16 @@ export function handleRequestConfig(
 
   config.headers = parseHeaders(rawConfig, config)
 
+  if (protocol === 'http:') {
+    config.agent = new Agent()
+  } else {
+    config.agent = new httpsAgent()
+  }
+
   return config
 }
 
-export function mergeConfig<T extends IFetchConfig>(
+export function mergeConfig<T extends IFetchBaseConifg>(
   baseConfig: IXCrawlBaseConifg,
   config: T
 ): IFetchBaseConifg & T {
