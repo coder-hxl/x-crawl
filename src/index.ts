@@ -6,6 +6,7 @@ import { batchRequest, request } from './request'
 import { isArray, mergeConfig } from './utils'
 
 import {
+  IFetch,
   IFetchConfig,
   IFetchFile,
   IFetchFileConfig,
@@ -20,22 +21,21 @@ export default class XCrawl {
     this.baseConfig = baseConfig
   }
 
-  async fetch<T = any>(config: IFetchConfig): Promise<T> {
+  async fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>> {
     const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
 
-    const isRequestConifgArr = isArray(requestConifg)
-    const requestConifgArr = isRequestConifgArr
+    const requestConfigQueue = isArray(requestConifg)
       ? requestConifg
       : [requestConifg]
 
-    const container = [] as T[]
+    const container: IFetch<T> = []
 
-    await batchRequest(requestConifgArr, intervalTime, (requestRes) => {
-      container.push(JSON.parse(requestRes.data.toString()))
+    await batchRequest(requestConfigQueue, intervalTime, (requestRes) => {
+      const data: T = JSON.parse(requestRes.data.toString())
+      container.push({ ...requestRes, data })
     })
 
-    const res = isRequestConifgArr ? container : container[0]
-    return res as T
+    return container
   }
 
   fetchFile(config: IFetchFileConfig): Promise<IFetchFile> {
@@ -46,7 +46,7 @@ export default class XCrawl {
       )
 
       let successCount = 0
-      const res: IFetchFile = []
+      const container: IFetchFile = []
 
       function eachRequestResHandle(
         requestRes: IRequest,
@@ -69,25 +69,25 @@ export default class XCrawl {
             )
           }
 
-          res.push({
+          container.push({
             fileName,
             mimeType,
             size: data.length,
             filePath
           })
 
-          if (++successCount === requestConifgArr.length) {
+          if (++successCount === requestConfigQueue.length) {
             console.log('All files downloaded successfully!')
-            resolve(res)
+            resolve(container)
           }
         })
       }
 
-      const requestConifgArr = isArray(requestConifg)
+      const requestConfigQueue = isArray(requestConifg)
         ? requestConifg
         : [requestConifg]
 
-      batchRequest(requestConifgArr, intervalTime, eachRequestResHandle)
+      batchRequest(requestConfigQueue, intervalTime, eachRequestResHandle)
     })
   }
 
