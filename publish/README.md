@@ -2,7 +2,7 @@
 
 English | <a href="#cn" style="text-decoration: none">简体中文</a>
 
-Crawl is a Nodejs multifunctional crawler library. Provide configuration to batch fetch HTML, JSON, images, etc.
+XCrawl is a Nodejs multifunctional crawler library. Provide configuration to batch fetch HTML, JSON, images, etc.
 
 ## Install
 
@@ -45,7 +45,7 @@ Create a crawler instance via new XCrawl.
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<T>
+  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
   fetchHTML(url: string): Promise<JSDOM>
 }
@@ -108,9 +108,9 @@ function fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
 
 ```js
 const requestConifg = [
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' }
+  { url: '/xxxx' },
+  { url: '/xxxx' },
+  { url: '/xxxx' }
 ]
 
 myXCrawl.fetchFile({
@@ -188,6 +188,16 @@ interface IFetchBaseConifg {
 }
 ```
 
+- IFech
+
+```ts
+type IFetch<T> = {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders // node:http
+  data: T
+}[]
+```
+
 - IFetchFile
 
 ```ts
@@ -238,7 +248,7 @@ If you have any **questions** or **needs** , please submit **Issues in** https:/
 
 <a href="#en"  style="text-decoration: none">English</a> | 简体中文
 
-Crawl 是 Nodejs 多功能爬虫库。提供配置即可批量抓取 HTML 、JSON、图片等等。
+XCrawl 是 Nodejs 多功能爬虫库。提供配置即可批量抓取 HTML 、JSON、图片等等。
 
 ## 安装
 
@@ -281,7 +291,7 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<T>
+  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
   fetchHTML(url: string): Promise<JSDOM>
 }
@@ -344,9 +354,9 @@ function fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
 
 ```js
 const requestConifg = [
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' }
+  { url: '/xxxx' },
+  { url: '/xxxx' },
+  { url: '/xxxx' }
 ]
 
 myXCrawl.fetchFile({
@@ -422,6 +432,16 @@ interface IFetchBaseConifg {
   requestConifg: IRequestConfig | IRequestConfig[]
   intervalTime?: IIntervalTime
 }
+```
+
+- IFetch
+
+```ts
+type IFetch<T> = {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders // node:http
+  data: T
+}[]
 ```
 
 - IFetchFile

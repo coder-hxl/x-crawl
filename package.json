@@ -1,15 +1,17 @@
 {
   "private": true,
   "name": "x-crawl",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "CoderHxl",
   "description": "XCrawl is a Nodejs multifunctional crawler library.",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
     "build": "rollup --config rollup.config.mjs",
+    "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
     "start": "rollup --config script/start.mjs",
-    "test": "jest test/test.ts",
+    "test-dev": "jest test/modal/test.ts dev",
+    "test-pro": "jest test/modal/test.ts pro",
     "prettier": "prettier --write ."
   },
   "dependencies": {
