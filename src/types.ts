@@ -18,6 +18,10 @@ export interface IRequest {
   data: Buffer
 }
 
+export interface IRequestResItem extends IRequest {
+  id: number
+}
+
 export type IMethod =
   | 'get'
   | 'GET'
@@ -70,15 +74,16 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
-export type IFetchData<T> = {
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders
-  data: T
-}[]
-
-export type IFetchFile = {
+export interface IFileInfo {
   fileName: string
   mimeType: string
   size: number
   filePath: string
+}
+
+export type IFetchCommon<T> = {
+  id: number
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: T
 }[]

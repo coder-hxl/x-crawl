@@ -9,7 +9,8 @@ import {
   IRequest,
   IRequestConfig,
   IAnyObject,
-  IMapTypeEmptyObject
+  IMapTypeEmptyObject,
+  IRequestResItem
 } from './types'
 
 export function parseParams(urlSearch: string, params?: IAnyObject): string {
@@ -122,34 +123,46 @@ export function request(config: IRequestConfig) {
 export async function batchRequest(
   requestConifgs: IRequestConfig[],
   intervalTime: IIntervalTime | undefined,
-  eachRequestResHandle: (requestRes: IRequest, currentCount: number) => any
+  batchRequestResHandle: (
+    error: Error | null,
+    requestResItem: IRequestResItem
+  ) => void
 ) {
   const total = requestConifgs.length
-  let currentCount = 0
+  let id = 0
+
+  const isHaveIntervalTime = !isUndefined(intervalTime)
+  const isNumberIntervalTime = isNumber(intervalTime)
 
   console.log(`Begin execution, total: ${total} `)
 
   for (const requestConifg of requestConifgs) {
-    currentCount++
+    id++
 
-    const requestRes = await request(requestConifg)
+    let state = 'success'
+    let error: Error | null = null
 
-    eachRequestResHandle(requestRes, currentCount)
+    let requestRes: IRequest = {} as IRequest
+    try {
+      requestRes = await request(requestConifg)
+    } catch (err: any) {
+      error = err
+      state = `error: ${err.message}`
+    }
 
-    if (!isUndefined(intervalTime) && currentCount !== total) {
-      const timeout = isNumber(intervalTime)
+    batchRequestResHandle(error, { id, ...requestRes })
+
+    if (isHaveIntervalTime && id !== total) {
+      const timeout = isNumberIntervalTime
         ? intervalTime
         : random(intervalTime.max, intervalTime.min)
 
-      console.log(
-        `The ${currentCount} request is success, sleep for ${timeout}ms`
-      )
+      console.log(`The ${id} request is ${state}, sleep for ${timeout}ms`)
 
       await sleep(timeout)
     } else {
-      console.log(
-        `The ${currentCount} request is success, all requests completed!`
-      )
+      console.log(`The ${id} request is ${state}`)
+      console.log(`All requests completed!`)
     }
   }
 }

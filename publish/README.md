@@ -45,8 +45,8 @@ Create a crawler instance via new XCrawl.
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
-  fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
+  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
+  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
   fetchHTML(url: string): Promise<JSDOM>
 }
 ```
@@ -67,14 +67,14 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-### fetch
+### fetchData
 
-fetch is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetchData is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 - Type
 
 ```ts
-function fetch<T = any>(config: IFetchConfig): Promise<T>
+function fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
 ```
 
 - Example
@@ -86,7 +86,7 @@ const requestConifg = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetch({ 
+myXCrawl.fetchData({ 
   requestConifg, // Request configuration, can be IRequestConfig | IRequestConfig[]
   intervalTime: 800 // Interval between next requests, multiple requests are valid
 }).then(res => {
@@ -101,7 +101,7 @@ fetchFile is the method of the above <a href="#myXCrawl"  style="text-decoration
 - Type
 
 ```ts
-function fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
+function fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
 ```
 
 - Example
@@ -153,14 +153,14 @@ interface IAnyObject extends Object {
 
 - IMethod
 
-```ts
-export type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+```ts 
+type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
 - IRequestConfig
 
 ```ts
-export interface IRequestConfig {
+interface IRequestConfig {
   url: string
   method?: IMethod
   headers?: IAnyObject
@@ -188,25 +188,26 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFech
+- IFetchCommon
 
 ```ts
-type IFetch<T> = {
+type IFetchCommon<T> = {
+  id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http
+  headers: IncomingHttpHeaders // node:http type
   data: T
 }[]
 ```
 
-- IFetchFile
+- IFileInfo
 
 ```ts
- type IFetchFile = {
+IFileInfo {
   fileName: string
   mimeType: string
   size: number
   filePath: string
-}[]
+}
 ```
 
 - IXCrawlBaseConifg
@@ -219,10 +220,10 @@ interface IXCrawlBaseConifg {
 }
 ```
 
-- IFetchConfig
+- IFetchDataConfig
 
 ```ts
-interface IFetchConfig extends IFetchBaseConifg {
+interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
@@ -238,7 +239,7 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 
 ## More
 
-If you have any **questions** or **needs** , please submit **Issues in** https://github.com/coder-hxl/x-crawl .
+If you have any **questions** or **needs** , please submit **Issues in** https://github.com/coder-hxl/x-crawl/issues .
 
 
 ---
@@ -291,8 +292,8 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
-  fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
+  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
+  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
   fetchHTML(url: string): Promise<JSDOM>
 }
 ```
@@ -313,14 +314,14 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-### fetch
+### fetchData
 
 fetch 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 - 类型
 
 ```ts
-function fetch<T = any>(config: IFetchConfig): Promise<T>
+function fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
 ```
 
 - 示例
@@ -332,7 +333,7 @@ const requestConifg = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetch({ 
+myXCrawl.fetchData({ 
   requestConifg, // 请求配置, 可以是 IRequestConfig | IRequestConfig[]
   intervalTime: 800 // 下次请求的间隔时间, 多个请求才有效
 }).then(res => {
@@ -347,7 +348,7 @@ fetchFile 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCra
 - 类型
 
 ```ts
-function fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
+function fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
 ```
 
 - 示例
@@ -400,13 +401,13 @@ interface IAnyObject extends Object {
 - IMethod
 
 ```ts
-export type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
 - IRequestConfig
 
 ```ts 
-export interface IRequestConfig {
+interface IRequestConfig {
   url: string
   method?: IMethod
   headers?: IAnyObject
@@ -434,25 +435,26 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFetch
+- IFetchCommon
 
 ```ts
-type IFetch<T> = {
+type IFetchCommon<T> = {
+  id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http
+  headers: IncomingHttpHeaders // node:http type
   data: T
 }[]
 ```
 
-- IFetchFile
+- IFileInfo
 
 ```ts
- type IFetchFile = {
+interface IFileInfo {
   fileName: string
   mimeType: string
   size: number
   filePath: string
-}[]
+}
 ```
 
 - IXCrawlBaseConifg
@@ -465,10 +467,10 @@ interface IXCrawlBaseConifg {
 }
 ```
 
-- IFetchConfig
+- IFetchDataConfig
 
 ```ts
-interface IFetchConfig extends IFetchBaseConifg {
+interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
@@ -484,4 +486,4 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 
 ## 更多
 
-如有 **问题** 或 **需求** 请在 https://github.com/coder-hxl/x-crawl 中提 **Issues** 。
+如有 **问题** 或 **需求** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。

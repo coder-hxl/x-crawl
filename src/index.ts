@@ -7,12 +7,12 @@ import { isArray, isUndefined } from './utils'
 
 import {
   IXCrawlBaseConifg,
-  IFetchData,
   IFetchDataConfig,
-  IFetchFile,
   IFetchFileConfig,
   IFetchBaseConifg,
-  IRequest
+  IFileInfo,
+  IFetchCommon,
+  IRequestResItem
 } from './types'
 
 function mergeConfig<T extends IFetchBaseConifg>(
@@ -56,24 +56,36 @@ export default class XCrawl {
     this.baseConfig = baseConfig
   }
 
-  async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchData<T>> {
+  async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {
     const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
 
     const requestConfigQueue = isArray(requestConifg)
       ? requestConifg
       : [requestConifg]
 
-    const container: IFetchData<T> = []
+    const container: IFetchCommon<T> = []
 
-    await batchRequest(requestConfigQueue, intervalTime, (requestRes) => {
-      const data: T = JSON.parse(JSON.stringify(requestRes.data.toString()))
-      container.push({ ...requestRes, data })
-    })
+    await batchRequest(
+      requestConfigQueue,
+      intervalTime,
+      (error, requestResItem) => {
+        if (error) return
+
+        const contentType = requestResItem.headers['content-type'] ?? ''
+        const rawData = requestResItem.data
+
+        const data = contentType.includes('text')
+          ? rawData.toString()
+          : JSON.parse(rawData.toString())
+
+        container.push({ ...requestResItem, data })
+      }
+    )
 
     return container
   }
 
-  fetchFile(config: IFetchFileConfig): Promise<IFetchFile> {
+  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>> {
     return new Promise((resolve) => {
       const { requestConifg, intervalTime, fileConfig } = mergeConfig(
         this.baseConfig,
@@ -84,14 +96,22 @@ export default class XCrawl {
         ? requestConifg
         : [requestConifg]
 
-      let successCount = 0
-      const container: IFetchFile = []
+      const requestTotal = requestConfigQueue.length
+      const container: IFetchCommon<IFileInfo> = []
 
-      function eachRequestResHandle(
-        requestRes: IRequest,
-        currentCount: number
+      function batchRequestResHandle(
+        error: Error | null,
+        requestResItem: IRequestResItem
       ) {
-        const { headers, data } = requestRes
+        if (error) {
+          if (requestResItem.id === requestTotal) {
+            resolve(container)
+          }
+
+          return
+        }
+
+        const { id, statusCode, headers, data } = requestResItem
 
         const mimeType = headers['content-type'] ?? ''
         const suffix = mimeType.split('/').pop()
@@ -103,26 +123,25 @@ export default class XCrawl {
 
         fs.createWriteStream(filePath, 'binary').write(data, (err) => {
           if (err) {
-            return console.log(
-              `File save error requested for the ${currentCount}: ${err.message}`
-            )
+            return console.log(`File save error at id ${id}: ${err.message}`)
           }
 
-          container.push({
+          const fileInfo: IFileInfo = {
             fileName,
             mimeType,
             size: data.length,
             filePath
-          })
+          }
 
-          if (++successCount === requestConfigQueue.length) {
-            console.log('All files downloaded successfully!')
+          container.push({ id, statusCode, headers, data: fileInfo })
+
+          if (id === requestTotal) {
             resolve(container)
           }
         })
       }
 
-      batchRequest(requestConfigQueue, intervalTime, eachRequestResHandle)
+      batchRequest(requestConfigQueue, intervalTime, batchRequestResHandle)
     })
   }
 
@@ -131,10 +150,9 @@ export default class XCrawl {
       requestConifg: { url }
     })
 
-    const requestRes = await request(requestConifg)
+    const requestResItem = await request(requestConifg)
 
-    const HTMLString = requestRes.data.toString()
-    const dom = new JSDOM(HTMLString)
+    const dom = new JSDOM(requestResItem.data)
 
     return dom
   }
