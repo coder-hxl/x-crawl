@@ -3,16 +3,51 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, request } from './request'
-import { isArray, mergeConfig } from './utils'
+import { isArray, isUndefined } from './utils'
 
 import {
+  IXCrawlBaseConifg,
   IFetchData,
   IFetchDataConfig,
   IFetchFile,
   IFetchFileConfig,
-  IRequest,
-  IXCrawlBaseConifg
+  IFetchBaseConifg,
+  IRequest
 } from './types'
+
+function mergeConfig<T extends IFetchBaseConifg>(
+  baseConfig: IXCrawlBaseConifg,
+  config: T
+): IFetchBaseConifg & T {
+  const {
+    baseUrl,
+    timeout: baseTimeout,
+    intervalTime: baseIntervalTime
+  } = baseConfig
+  const { requestConifg, intervalTime } = config
+
+  const requestConifgArr = isArray(requestConifg)
+    ? requestConifg
+    : [requestConifg]
+
+  for (const requestItem of requestConifgArr) {
+    const { url, timeout } = requestItem
+
+    if (!isUndefined(baseUrl)) {
+      requestItem.url = baseUrl + url
+    }
+
+    if (isUndefined(timeout) && !isUndefined(baseTimeout)) {
+      requestItem.timeout = baseTimeout
+    }
+  }
+
+  if (isUndefined(intervalTime) && !isUndefined(baseIntervalTime)) {
+    config.intervalTime = baseIntervalTime
+  }
+
+  return config
+}
 
 export default class XCrawl {
   private readonly baseConfig: IXCrawlBaseConifg

@@ -1,14 +1,80 @@
-import http from 'node:http'
+import http, { Agent, RequestOptions } from 'node:http'
+import { Agent as httpsAgent } from 'https'
+import Url, { URL } from 'node:url'
+
+import { isNumber, isUndefined, random, sleep } from './utils'
 
 import {
-  handleRequestConfig,
-  isNumber,
-  isUndefined,
-  random,
-  sleep
-} from './utils'
+  IIntervalTime,
+  IRequest,
+  IRequestConfig,
+  IAnyObject,
+  IMapTypeEmptyObject
+} from './types'
 
-import { IIntervalTime, IRequest, IRequestConfig } from './types'
+export function parseParams(urlSearch: string, params?: IAnyObject): string {
+  let res = urlSearch ? `${urlSearch}` : '?'
+
+  if (params) {
+    for (const key in params) {
+      const value = params[key]
+      res += `&${key}=${value}`
+    }
+  } else {
+    res = urlSearch
+  }
+
+  return res
+}
+
+export function parseHeaders(
+  rawConfig: IRequestConfig,
+  config: RequestOptions & IMapTypeEmptyObject<URL>
+) {
+  const rawHeaders = rawConfig.headers ?? {}
+  const headers: IAnyObject = {
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+    ...rawHeaders
+  }
+
+  if (config.method === 'POST' && rawConfig.data) {
+    headers['Content-Type'] = 'application/json'
+    headers['Content-Length'] = Buffer.byteLength(rawConfig.data)
+  }
+
+  return headers
+}
+
+export function handleRequestConfig(
+  rawConfig: IRequestConfig
+): RequestOptions & IMapTypeEmptyObject<URL> {
+  const { protocol, hostname, port, pathname, search } = new Url.URL(
+    rawConfig.url
+  )
+
+  const config: RequestOptions & IMapTypeEmptyObject<URL> = {
+    protocol,
+    hostname,
+    port,
+    path: pathname,
+    search: parseParams(search, rawConfig.params),
+
+    method: rawConfig.method?.toLocaleUpperCase() ?? 'GET',
+    headers: {},
+    timeout: rawConfig.timeout
+  }
+
+  config.headers = parseHeaders(rawConfig, config)
+
+  if (protocol === 'http:') {
+    config.agent = new Agent()
+  } else {
+    config.agent = new httpsAgent()
+  }
+
+  return config
+}
 
 export function request(config: IRequestConfig) {
   return new Promise<IRequest>((resolve, reject) => {
