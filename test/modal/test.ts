@@ -21,7 +21,7 @@ function httpProtocol() {
     const httpXCrawl = new XCrawl()
 
     httpXCrawl
-      .fetch({
+      .fetchData({
         requestConifg: {
           url: 'http://localhost:9001/api/home/goodprice'
         }
@@ -32,7 +32,7 @@ function httpProtocol() {
 
 function httpsProtocol() {
   return new Promise((resolve) => {
-    const httpsXCrawl = new XCrawl()
+    const httpsXCrawl = new XCrawl({ timeout: 10000 })
 
     httpsXCrawl
       .fetchHTML('https://docs.github.com/zh')
@@ -49,12 +49,12 @@ test('https protocol', async () => {
 })
 
 // API
-function fetchAPI() {
+function fetchDataAPI() {
   return new Promise((resolve) => {
     const myXCrawl = new XCrawl()
 
     myXCrawl
-      .fetch({
+      .fetchData({
         requestConifg: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
@@ -80,7 +80,7 @@ function fetchFileAPI() {
     })
 
     myXCrawl
-      .fetch({
+      .fetchData({
         requestConifg: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
@@ -117,8 +117,8 @@ function fetchHTMLAPI() {
   })
 }
 
-test('fetch API', async () => {
-  await expect(fetchAPI()).resolves.toBe(true)
+test('fetchData API', async () => {
+  await expect(fetchDataAPI()).resolves.toBe(true)
 })
 
 test('fetchFile API', async () => {

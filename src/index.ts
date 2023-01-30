@@ -6,8 +6,8 @@ import { batchRequest, request } from './request'
 import { isArray, mergeConfig } from './utils'
 
 import {
-  IFetch,
-  IFetchConfig,
+  IFetchData,
+  IFetchDataConfig,
   IFetchFile,
   IFetchFileConfig,
   IRequest,
@@ -21,14 +21,14 @@ export default class XCrawl {
     this.baseConfig = baseConfig
   }
 
-  async fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>> {
+  async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchData<T>> {
     const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
 
     const requestConfigQueue = isArray(requestConifg)
       ? requestConifg
       : [requestConifg]
 
-    const container: IFetch<T> = []
+    const container: IFetchData<T> = []
 
     await batchRequest(requestConfigQueue, intervalTime, (requestRes) => {
       const data: T = JSON.parse(requestRes.data.toString())
@@ -44,6 +44,10 @@ export default class XCrawl {
         this.baseConfig,
         config
       )
+
+      const requestConfigQueue = isArray(requestConifg)
+        ? requestConifg
+        : [requestConifg]
 
       let successCount = 0
       const container: IFetchFile = []
@@ -82,10 +86,6 @@ export default class XCrawl {
           }
         })
       }
-
-      const requestConfigQueue = isArray(requestConifg)
-        ? requestConifg
-        : [requestConifg]
 
       batchRequest(requestConfigQueue, intervalTime, eachRequestResHandle)
     })

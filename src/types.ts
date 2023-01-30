@@ -62,7 +62,7 @@ export interface IFetchBaseConifg {
   intervalTime?: IIntervalTime
 }
 
-export interface IFetchConfig extends IFetchBaseConifg {}
+export interface IFetchDataConfig extends IFetchBaseConifg {}
 
 export interface IFetchFileConfig extends IFetchBaseConifg {
   fileConfig: {
@@ -70,7 +70,7 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
-export type IFetch<T> = {
+export type IFetchData<T> = {
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: T

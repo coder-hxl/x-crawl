@@ -45,7 +45,7 @@ Create a crawler instance via new XCrawl.
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
+  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchData<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
   fetchHTML(url: string): Promise<JSDOM>
 }
@@ -67,14 +67,14 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-### fetch
+### fetchData
 
-fetch is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetchData is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 - Type
 
 ```ts
-function fetch<T = any>(config: IFetchConfig): Promise<T>
+function fetchData <T = any>(config: IFetchDataConfig): Promise<T>
 ```
 
 - Example
@@ -86,7 +86,7 @@ const requestConifg = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetch({ 
+myXCrawl.fetchData({ 
   requestConifg, // Request configuration, can be IRequestConfig | IRequestConfig[]
   intervalTime: 800 // Interval between next requests, multiple requests are valid
 }).then(res => {
@@ -188,10 +188,10 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFech
+- IFechData
 
 ```ts
-type IFetch<T> = {
+type IFetchData<T> = {
   statusCode: number | undefined
   headers: IncomingHttpHeaders // node:http
   data: T
@@ -219,10 +219,10 @@ interface IXCrawlBaseConifg {
 }
 ```
 
-- IFetchConfig
+- IFetchDataConfig
 
 ```ts
-interface IFetchConfig extends IFetchBaseConifg {
+interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
@@ -291,7 +291,7 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetch<T = any>(config: IFetchConfig): Promise<IFetch<T>>
+  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchData<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchFile>
   fetchHTML(url: string): Promise<JSDOM>
 }
@@ -313,14 +313,14 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-### fetch
+### fetchData
 
 fetch 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 - 类型
 
 ```ts
-function fetch<T = any>(config: IFetchConfig): Promise<T>
+function fetchData<T = any>(config: IFetchDataConfig): Promise<T>
 ```
 
 - 示例
@@ -332,7 +332,7 @@ const requestConifg = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetch({ 
+myXCrawl.fetchData({ 
   requestConifg, // 请求配置, 可以是 IRequestConfig | IRequestConfig[]
   intervalTime: 800 // 下次请求的间隔时间, 多个请求才有效
 }).then(res => {
@@ -434,7 +434,7 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFetch
+- IFetchData
 
 ```ts
 type IFetch<T> = {
@@ -465,10 +465,10 @@ interface IXCrawlBaseConifg {
 }
 ```
 
-- IFetchConfig
+- IFetchDataConfig
 
 ```ts
-interface IFetchConfig extends IFetchBaseConifg {
+interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
