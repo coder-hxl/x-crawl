@@ -1,6 +1,7 @@
 import XCrawl from '../../src'
 
-const githubDocsXCrawl = new XCrawl({
+const testXCrawl = new XCrawl({
+  baseUrl: 'http://localhost:9001/api',
   timeout: 10000,
   intervalTime: {
     max: 3000,
@@ -8,6 +9,13 @@ const githubDocsXCrawl = new XCrawl({
   }
 })
 
-githubDocsXCrawl.fetchHTML('https://docs.github.com/zh').then((jsdom) => {
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
-})
+testXCrawl
+  .fetchData({
+    requestConifg: {
+      url: '/home/goodprice',
+      method: 'POST'
+    }
+  })
+  .then((res) => {
+    console.log(res)
+  })

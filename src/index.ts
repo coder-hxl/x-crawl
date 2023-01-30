@@ -66,7 +66,7 @@ export default class XCrawl {
     const container: IFetchData<T> = []
 
     await batchRequest(requestConfigQueue, intervalTime, (requestRes) => {
-      const data: T = JSON.parse(requestRes.data.toString())
+      const data: T = JSON.parse(JSON.stringify(requestRes.data.toString()))
       container.push({ ...requestRes, data })
     })
 
