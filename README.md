@@ -45,9 +45,9 @@ Create a crawler instance via new XCrawl.
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
+  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 }
 ```
 
@@ -64,6 +64,24 @@ const myXCrawl = new XCrawl({
     max: 2000,
     min: 1000
   }
+})
+```
+
+### fetchHTML
+
+fetchHTML is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, usually used to crawl HTML.
+
+- Type
+
+```ts
+function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+```
+
+- Example
+
+```js
+myXCrawl.fetchHTML('/xxx').then((jsdom) => {
+  console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
@@ -120,24 +138,6 @@ myXCrawl.fetchFile({
   }
 }).then(fileInfos => {
   console.log(fileInfos)
-})
-```
-
-### fetchHTML
-
-fetchHTML is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, usually used to crawl HTML.
-
-- Type
-
-```ts
-function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
-```
-
-- Example
-
-```js
-myXCrawl.fetchHTML('/xxx').then((jsdom) => {
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
@@ -220,6 +220,12 @@ interface IXCrawlBaseConifg {
 }
 ```
 
+- IFetchHTMLConfig
+
+```ts
+interface IFetchHTMLConfig extends IRequestConfig {}
+```
+
 - IFetchDataConfig
 
 ```ts
@@ -235,12 +241,6 @@ interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
-```
-
-- IFetchHTMLConfig
-
-```ts
-interface IFetchHTMLConfig extends IRequestConfig {}
 ```
 
 ## More
@@ -298,9 +298,9 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
+  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 }
 ```
 
@@ -347,6 +347,24 @@ myXCrawl.fetchData({
 })
 ```
 
+### fetchHTML
+
+fetchHTML 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
+
+- 类型
+
+```ts
+function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+```
+
+- 示例
+
+```js
+myXCrawl.fetchHTML('/xxx').then((jsdom) => {
+  console.log(jsdom.window.document.querySelector('title')?.textContent)
+})
+```
+
 ### fetchFile
 
 fetchFile 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
@@ -373,24 +391,6 @@ myXCrawl.fetchFile({
   }
 }).then(fileInfos => {
   console.log(fileInfos)
-})
-```
-
-### fetchHTML
-
-fetchHTML 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
-
-- 类型
-
-```ts
-function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
-```
-
-- 示例
-
-```js
-myXCrawl.fetchHTML('/xxx').then((jsdom) => {
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
@@ -473,6 +473,12 @@ interface IXCrawlBaseConifg {
 }
 ```
 
+- IFetchHTMLConfig
+
+```ts
+interface IFetchHTMLConfig extends IRequestConfig {}
+```
+
 - IFetchDataConfig
 
 ```ts
@@ -488,12 +494,6 @@ interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
-```
-
-- IFetchHTMLConfig
-
-```ts
-interface IFetchHTMLConfig extends IRequestConfig {}
 ```
 
 ## 更多

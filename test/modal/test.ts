@@ -49,6 +49,14 @@ test('https protocol', async () => {
 })
 
 // API
+function fetchHTMLAPI() {
+  return new Promise((resolve) => {
+    const myXCrawl = new XCrawl()
+
+    myXCrawl.fetchHTML('https://docs.github.com/zh').then(() => resolve(true))
+  })
+}
+
 function fetchDataAPI() {
   return new Promise((resolve) => {
     const myXCrawl = new XCrawl()
@@ -109,13 +117,9 @@ function fetchFileAPI() {
   })
 }
 
-function fetchHTMLAPI() {
-  return new Promise((resolve) => {
-    const myXCrawl = new XCrawl()
-
-    myXCrawl.fetchHTML('https://docs.github.com/zh').then(() => resolve(true))
-  })
-}
+test('fetchHTML API', async () => {
+  await expect(fetchHTMLAPI()).resolves.toBe(true)
+})
 
 test('fetchData API', async () => {
   await expect(fetchDataAPI()).resolves.toBe(true)
@@ -123,8 +127,4 @@ test('fetchData API', async () => {
 
 test('fetchFile API', async () => {
   await expect(fetchFileAPI()).resolves.toBe(true)
-})
-
-test('fetchHTML API', async () => {
-  await expect(fetchHTMLAPI()).resolves.toBe(true)
 })

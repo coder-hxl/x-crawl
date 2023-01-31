@@ -66,6 +66,8 @@ export interface IFetchBaseConifg {
   intervalTime?: IIntervalTime
 }
 
+export interface IFetchHTMLConfig extends IRequestConfig {}
+
 export interface IFetchDataConfig extends IFetchBaseConifg {}
 
 export interface IFetchFileConfig extends IFetchBaseConifg {
@@ -73,8 +75,6 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
-
-export interface IFetchHTMLConfig extends IRequestConfig {}
 
 export interface IFileInfo {
   fileName: string

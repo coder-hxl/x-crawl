@@ -7,9 +7,9 @@ import { isArray, isString, isUndefined } from './utils'
 
 import {
   IXCrawlBaseConifg,
+  IFetchHTMLConfig,
   IFetchDataConfig,
   IFetchFileConfig,
-  IFetchHTMLConfig,
   IFetchBaseConifg,
   IFileInfo,
   IFetchCommon,
@@ -55,6 +55,22 @@ export default class XCrawl {
 
   constructor(baseConfig: IXCrawlBaseConifg = {}) {
     this.baseConfig = baseConfig
+  }
+
+  async fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM> {
+    const rawRequestConifg: IFetchHTMLConfig = isString(config)
+      ? { url: config }
+      : config
+
+    const { requestConifg } = mergeConfig(this.baseConfig, {
+      requestConifg: rawRequestConifg
+    })
+
+    const requestResItem = await request(requestConifg)
+
+    const dom = new JSDOM(requestResItem.data)
+
+    return dom
   }
 
   async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {
@@ -144,21 +160,5 @@ export default class XCrawl {
 
       batchRequest(requestConfigQueue, intervalTime, batchRequestResHandle)
     })
-  }
-
-  async fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM> {
-    const rawRequestConifg: IFetchHTMLConfig = isString(config)
-      ? { url: config }
-      : config
-
-    const { requestConifg } = mergeConfig(this.baseConfig, {
-      requestConifg: rawRequestConifg
-    })
-
-    const requestResItem = await request(requestConifg)
-
-    const dom = new JSDOM(requestResItem.data)
-
-    return dom
   }
 }
