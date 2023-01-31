@@ -2,7 +2,7 @@
 
 English | <a href="#cn" style="text-decoration: none">简体中文</a>
 
-XCrawl is a Nodejs multifunctional crawler library. Provide configuration to batch fetch HTML, JSON, images, etc.
+XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resources, etc. through simple configuration.
 
 ## Install
 
@@ -47,7 +47,7 @@ class XCrawl {
   constructor(baseConfig?: IXCrawlBaseConifg)
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchHTML(url: string): Promise<JSDOM>
+  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 }
 ```
 
@@ -130,7 +130,7 @@ fetchHTML is the method of the above <a href="#myXCrawl"  style="text-decoration
 - Type
 
 ```ts
-function fetchHTML(url: string): Promise<JSDOM>
+function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 ```
 
 - Example
@@ -237,6 +237,12 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
+- IFetchHTMLConfig
+
+```ts
+interface IFetchHTMLConfig extends IRequestConfig {}
+```
+
 ## More
 
 If you have any **questions** or **needs** , please submit **Issues in** https://github.com/coder-hxl/x-crawl/issues .
@@ -249,7 +255,7 @@ If you have any **questions** or **needs** , please submit **Issues in** https:/
 
 <a href="#en"  style="text-decoration: none">English</a> | 简体中文
 
-XCrawl 是 Nodejs 多功能爬虫库。提供配置即可批量抓取 HTML 、JSON、图片等等。
+XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
 
 ## 安装
 
@@ -294,7 +300,7 @@ class XCrawl {
   constructor(baseConfig?: IXCrawlBaseConifg)
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchHTML(url: string): Promise<JSDOM>
+  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 }
 ```
 
@@ -377,7 +383,7 @@ fetchHTML 是上面 <a href="#cn-myXCrawl"  style="text-decoration: none">myXCra
 - 类型
 
 ```ts
-function fetchHTML(url: string): Promise<JSDOM>
+function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 ```
 
 - 示例
@@ -482,6 +488,12 @@ interface IFetchFileConfig extends IFetchBaseConifg {
     storeDir: string
   }
 }
+```
+
+- IFetchHTMLConfig
+
+```ts
+interface IFetchHTMLConfig extends IRequestConfig {}
 ```
 
 ## 更多

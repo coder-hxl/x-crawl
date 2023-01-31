@@ -74,6 +74,8 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
+export interface IFetchHTMLConfig extends IRequestConfig {}
+
 export interface IFileInfo {
   fileName: string
   mimeType: string

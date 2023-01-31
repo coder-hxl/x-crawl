@@ -2,7 +2,7 @@
 
 English | <a href="#cn" style="text-decoration: none">简体中文</a>
 
-XCrawl is a Nodejs multifunctional crawler library. Provide configuration to batch fetch HTML, JSON, images, etc.
+XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resources, etc. through simple configuration.
 
 ## Install
 
@@ -249,7 +249,7 @@ If you have any **questions** or **needs** , please submit **Issues in** https:/
 
 <a href="#en"  style="text-decoration: none">English</a> | 简体中文
 
-XCrawl 是 Nodejs 多功能爬虫库。提供配置即可批量抓取 HTML 、JSON、图片等等。
+XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
 
 ## 安装
 

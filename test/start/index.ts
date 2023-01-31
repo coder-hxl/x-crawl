@@ -22,7 +22,7 @@ const testXCrawl = new XCrawl({
 //     console.log(res)
 //   })
 
-testXCrawl.fetchHTML('https://www.bilibili.com/').then((jsdom) => {
+testXCrawl.fetchHTML({ url: 'https://www.bilibili.com/' }).then((jsdom) => {
   const document = jsdom.window.document
   const imgBoxEl = document.querySelectorAll('.bili-video-card__cover')
 

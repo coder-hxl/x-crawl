@@ -3,12 +3,13 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, request } from './request'
-import { isArray, isUndefined } from './utils'
+import { isArray, isString, isUndefined } from './utils'
 
 import {
   IXCrawlBaseConifg,
   IFetchDataConfig,
   IFetchFileConfig,
+  IFetchHTMLConfig,
   IFetchBaseConifg,
   IFileInfo,
   IFetchCommon,
@@ -145,9 +146,13 @@ export default class XCrawl {
     })
   }
 
-  async fetchHTML(url: string): Promise<JSDOM> {
+  async fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM> {
+    const rawRequestConifg: IFetchHTMLConfig = isString(config)
+      ? { url: config }
+      : config
+
     const { requestConifg } = mergeConfig(this.baseConfig, {
-      requestConifg: { url }
+      requestConifg: rawRequestConifg
     })
 
     const requestResItem = await request(requestConifg)
