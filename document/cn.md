@@ -1,50 +1,50 @@
 # x-crawl
 
-English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md)
+[English](https://github.com/coder-hxl/x-crawl/blob/main/README.md) | 简体中文
 
-XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resources, etc. through simple configuration.
+XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
 
-## highlights
+## 亮点
 
-- Call the API to grab HTML, JSON, file resources, etc
-- Batch requests can choose the mode of sending asynchronously or sending synchronously
+- 调用 API 即可抓取 HTML 、JSON 、文件资源等等
+- 批量请求可选择模式 异步发送 或 同步发送
 
-## Install
+## 安装
 
-Take NPM as an example:
+以 NPM 为例: 
 
 ```shell
 npm install x-crawl
-```
+````
 
-## example
+## 示例
 
-Get the title of https://docs.github.com/zh/get-started as an example:
+获取 https://docs.github.com/zh/get-started 的标题为例: 
 
 ```js
-// Import module ES/CJS
+// 导入模块 ES/CJS
 import XCrawl from 'x-crawl'
 
-// Create a crawler instance
+// 创建一个爬虫实例
 const docsXCrawl = new XCrawl({
   baseUrl: 'https://docs.github.com',
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
 })
 
-// Call fetchHTML API to crawl
+// 调用 fetchHTML API 爬取
 docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
-## Core concepts
+## 核心概念
 
 ### XCrawl
 
-Create a crawler instance via new XCrawl.
+通过 new XCrawl 创建一个爬虫实例。
 
-#### Type
+#### 类型
 
 ```ts
 class XCrawl {
@@ -56,15 +56,15 @@ class XCrawl {
 }
 ```
 
-#### <div id="myXCrawl">Example</div>
+#### <div id="myXCrawl"  style="text-decoration: none">示例</div>
 
-myXCrawl is the crawler instance of the following example.
+myXCrawl 为后面示例的爬虫实例。
 
 ```js
 const myXCrawl = new XCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
-  // The interval between requests, multiple requests are valid
+  // 请求的间隔时间, 多个请求才有效
   intervalTime: {
     max: 2000,
     min: 1000
@@ -72,26 +72,26 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-#### About the pattern
+#### 关于模式
 
-The mode option defaults to async .
+mode 选项默认为 async 。
 
-- async: In batch requests, the next request is made without waiting for the current request to complete
-- sync: In batch requests, you need to wait for this request to complete before making the next request
+- async: 在批量请求时，无需等当前请求完成，就进行下次请求
+- sync: 在批量请求时，需要等这次请求完成，才会进行下次请求
 
-If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
+若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
 
 ### fetchHTML
 
-fetchHTML is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, usually used to crawl HTML.
+fetchHTML 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
 
-#### Type
+#### 类型
 
 ```ts
 function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
 ```
 
-#### Example
+#### 示例
 
 ```js
 myXCrawl.fetchHTML('/xxx').then((jsdom) => {
@@ -101,15 +101,15 @@ myXCrawl.fetchHTML('/xxx').then((jsdom) => {
 
 ### fetchData
 
-fetchData is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetch 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
-#### Type
+#### 类型
 
 ```ts
 function fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
 ```
 
-#### Example
+#### 示例
 
 ```js
 const requestConifg = [
@@ -119,8 +119,8 @@ const requestConifg = [
 ]
 
 myXCrawl.fetchData({ 
-  requestConifg, // Request configuration, can be IRequestConfig | IRequestConfig[]
-  intervalTime: 800 // Interval between next requests, multiple requests are valid
+  requestConifg, // 请求配置, 可以是 IRequestConfig | IRequestConfig[]
+  intervalTime: 800 // 下次请求的间隔时间, 多个请求才有效
 }).then(res => {
   console.log(res)
 })
@@ -128,15 +128,15 @@ myXCrawl.fetchData({
 
 ### fetchFile
 
-fetchFile is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl files, such as pictures, pdf files, etc.
+fetchFile 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
-#### Type
+#### 类型
 
 ```ts
 function fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
 ```
 
-#### Example
+#### 示例
 
 ```js
 const requestConifg = [
@@ -148,14 +148,14 @@ const requestConifg = [
 myXCrawl.fetchFile({
   requestConifg,
   fileConfig: {
-    storeDir: path.resolve(__dirname, './upload') // storage folder
+    storeDir: path.resolve(__dirname, './upload') // 存放文件夹
   }
 }).then(fileInfos => {
   console.log(fileInfos)
 })
 ```
 
-## Types
+## 类型
 
 - IAnyObject
 
@@ -167,13 +167,13 @@ interface IAnyObject extends Object {
 
 - IMethod
 
-```ts 
+```ts
 type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
 - IRequestConfig
 
-```ts
+```ts 
 interface IRequestConfig {
   url: string
   method?: IMethod
@@ -258,6 +258,6 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
-## More
+## 更多
 
-If you have any **questions** or **needs** , please submit **Issues in** https://github.com/coder-hxl/x-crawl/issues .
+如有 **问题** 或 **需求** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。
