@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
-import { batchRequest, request } from './request'
+import { batchRequest, syncBatchRequest, request } from './request'
 import { isArray, isString, isUndefined } from './utils'
 
 import {
@@ -13,7 +13,9 @@ import {
   IFetchBaseConifg,
   IFileInfo,
   IFetchCommon,
-  IRequestResItem
+  IRequestResItem,
+  IRequestConfig,
+  IIntervalTime
 } from './types'
 
 function mergeConfig<T extends IFetchBaseConifg>(
@@ -57,6 +59,24 @@ export default class XCrawl {
     this.baseConfig = baseConfig
   }
 
+  private async useBatchRequestByMode(
+    requestConifg: IRequestConfig | IRequestConfig[],
+    intervalTime: IIntervalTime | undefined
+  ) {
+    const requestConfigQueue = isArray(requestConifg)
+      ? requestConifg
+      : [requestConifg]
+
+    let requestRes: IRequestResItem[] = []
+    if (this.baseConfig.mode !== 'sync') {
+      requestRes = await batchRequest(requestConfigQueue, intervalTime)
+    } else {
+      requestRes = await syncBatchRequest(requestConfigQueue, intervalTime)
+    }
+
+    return requestRes
+  }
+
   async fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM> {
     const rawRequestConifg: IFetchHTMLConfig = isString(config)
       ? { url: config }
@@ -76,58 +96,41 @@ export default class XCrawl {
   async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {
     const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
 
-    const requestConfigQueue = isArray(requestConifg)
-      ? requestConifg
-      : [requestConifg]
+    const requestRes = await this.useBatchRequestByMode(
+      requestConifg,
+      intervalTime
+    )
 
     const container: IFetchCommon<T> = []
 
-    await batchRequest(
-      requestConfigQueue,
-      intervalTime,
-      (error, requestResItem) => {
-        if (error) return
+    requestRes.forEach((item) => {
+      const contentType = item.headers['content-type'] ?? ''
+      const rawData = item.data
 
-        const contentType = requestResItem.headers['content-type'] ?? ''
-        const rawData = requestResItem.data
+      const data = contentType.includes('text')
+        ? rawData.toString()
+        : JSON.parse(rawData.toString())
 
-        const data = contentType.includes('text')
-          ? rawData.toString()
-          : JSON.parse(rawData.toString())
-
-        container.push({ ...requestResItem, data })
-      }
-    )
+      container.push({ ...item, data })
+    })
 
     return container
   }
 
-  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>> {
+  async fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>> {
+    const { requestConifg, intervalTime, fileConfig } = mergeConfig(
+      this.baseConfig,
+      config
+    )
+    const requestRes = await this.useBatchRequestByMode(
+      requestConifg,
+      intervalTime
+    )
+
     return new Promise((resolve) => {
-      const { requestConifg, intervalTime, fileConfig } = mergeConfig(
-        this.baseConfig,
-        config
-      )
-
-      const requestConfigQueue = isArray(requestConifg)
-        ? requestConifg
-        : [requestConifg]
-
-      const requestTotal = requestConfigQueue.length
       const container: IFetchCommon<IFileInfo> = []
 
-      function batchRequestResHandle(
-        error: Error | null,
-        requestResItem: IRequestResItem
-      ) {
-        if (error) {
-          if (requestResItem.id === requestTotal) {
-            resolve(container)
-          }
-
-          return
-        }
-
+      requestRes.forEach((requestResItem, index) => {
         const { id, statusCode, headers, data } = requestResItem
 
         const mimeType = headers['content-type'] ?? ''
@@ -140,25 +143,23 @@ export default class XCrawl {
 
         fs.createWriteStream(filePath, 'binary').write(data, (err) => {
           if (err) {
-            return console.log(`File save error at id ${id}: ${err.message}`)
+            console.log(`File save error at id ${id}: ${err.message}`)
+          } else {
+            const fileInfo: IFileInfo = {
+              fileName,
+              mimeType,
+              size: data.length,
+              filePath
+            }
+
+            container.push({ id, statusCode, headers, data: fileInfo })
           }
 
-          const fileInfo: IFileInfo = {
-            fileName,
-            mimeType,
-            size: data.length,
-            filePath
-          }
-
-          container.push({ id, statusCode, headers, data: fileInfo })
-
-          if (id === requestTotal) {
+          if (index === requestRes.length - 1) {
             resolve(container)
           }
         })
-      }
-
-      batchRequest(requestConfigQueue, intervalTime, batchRequestResHandle)
+      })
     })
   }
 }

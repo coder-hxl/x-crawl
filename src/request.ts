@@ -13,7 +13,7 @@ import {
   IRequestResItem
 } from './types'
 
-export function parseParams(urlSearch: string, params?: IAnyObject): string {
+function parseParams(urlSearch: string, params?: IAnyObject): string {
   let res = urlSearch ? `${urlSearch}` : '?'
 
   if (params) {
@@ -28,7 +28,7 @@ export function parseParams(urlSearch: string, params?: IAnyObject): string {
   return res
 }
 
-export function parseHeaders(
+function parseHeaders(
   rawConfig: IRequestConfig,
   config: RequestOptions & IMapTypeEmptyObject<URL>
 ) {
@@ -47,7 +47,7 @@ export function parseHeaders(
   return headers
 }
 
-export function handleRequestConfig(
+function handleRequestConfig(
   rawConfig: IRequestConfig
 ): RequestOptions & IMapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
@@ -75,6 +75,27 @@ export function handleRequestConfig(
   }
 
   return config
+}
+
+async function useSleepByBatch(
+  isHaveIntervalTime: boolean,
+  isNumberIntervalTime: boolean,
+  intervalTime: any,
+  id: number
+) {
+  if (isHaveIntervalTime && id > 1) {
+    const timeout: number = isNumberIntervalTime
+      ? intervalTime
+      : random(intervalTime.max, intervalTime.min)
+
+    console.log(
+      `Request ${id} needs to sleep for ${timeout} milliseconds before sending`
+    )
+
+    await sleep(timeout)
+  } else {
+    console.log(`Request ${id} does not need to sleep, send immediately`)
+  }
 }
 
 export function request(config: IRequestConfig) {
@@ -122,47 +143,93 @@ export function request(config: IRequestConfig) {
 
 export async function batchRequest(
   requestConifgs: IRequestConfig[],
-  intervalTime: IIntervalTime | undefined,
-  batchRequestResHandle: (
-    error: Error | null,
-    requestResItem: IRequestResItem
-  ) => void
+  intervalTime: IIntervalTime | undefined
 ) {
-  const total = requestConifgs.length
-  let id = 0
-
   const isHaveIntervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  console.log(`Begin execution, total: ${total} `)
+  console.log(`Begin execution, mode: async, total: ${requestConifgs.length} `)
 
+  const requestQueue: Promise<IRequestResItem | string>[] = []
+
+  let index = 0
+  for (const requestConifg of requestConifgs) {
+    const id = ++index
+
+    await useSleepByBatch(
+      isHaveIntervalTime,
+      isNumberIntervalTime,
+      intervalTime,
+      id
+    )
+
+    const requestItem = request(requestConifg)
+      .catch((error: any) => {
+        return `Request ${id} is an error: ${error.message}`
+      })
+      .then((requestRes) => {
+        if (typeof requestRes === 'string') return requestRes
+
+        return { id, ...requestRes }
+      })
+
+    requestQueue.push(requestItem)
+  }
+
+  console.log('All requests have been sent!')
+
+  const res = await Promise.all(requestQueue)
+
+  const success: IRequestResItem[] = []
+  const error: string[] = []
+
+  // 通过类型分类
+  res.forEach((item) => {
+    if (typeof item === 'string') {
+      return error.push(item)
+    }
+
+    success.push(item)
+  })
+
+  error.forEach((message) => {
+    console.log(message)
+  })
+
+  return success
+}
+
+export async function syncBatchRequest(
+  requestConifgs: IRequestConfig[],
+  intervalTime: IIntervalTime | undefined
+) {
+  const isHaveIntervalTime = !isUndefined(intervalTime)
+  const isNumberIntervalTime = isNumber(intervalTime)
+
+  console.log(`Begin execution, mode: sync, total: ${requestConifgs.length} `)
+
+  let id = 0
+  const requestRes: IRequestResItem[] = []
   for (const requestConifg of requestConifgs) {
     id++
 
-    let state = 'success'
-    let error: Error | null = null
+    await useSleepByBatch(
+      isHaveIntervalTime,
+      isNumberIntervalTime,
+      intervalTime,
+      id
+    )
 
-    let requestRes: IRequest = {} as IRequest
     try {
-      requestRes = await request(requestConifg)
-    } catch (err: any) {
-      error = err
-      state = `error: ${err.message}`
-    }
-
-    batchRequestResHandle(error, { id, ...requestRes })
-
-    if (isHaveIntervalTime && id !== total) {
-      const timeout = isNumberIntervalTime
-        ? intervalTime
-        : random(intervalTime.max, intervalTime.min)
-
-      console.log(`The ${id} request is ${state}, sleep for ${timeout}ms`)
-
-      await sleep(timeout)
-    } else {
-      console.log(`The ${id} request is ${state}`)
-      console.log(`All requests completed!`)
+      const requestResItem = await request(requestConifg)
+      requestRes.push({ id, ...requestResItem })
+      console.log(`Request ${id} is an success`)
+    } catch (error: any) {
+      console.log(`Request ${id} is an error: ${error.message}`)
     }
   }
+
+  console.log('All requests are over!')
+
+  return requestRes
 }

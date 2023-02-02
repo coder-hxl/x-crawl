@@ -59,6 +59,7 @@ export interface IXCrawlBaseConifg {
   baseUrl?: string
   timeout?: number
   intervalTime?: IIntervalTime
+  mode?: 'async' | 'sync'
 }
 
 export interface IFetchBaseConifg {
