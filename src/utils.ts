@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+
 export function sleep(timeout: number) {
   return new Promise((resolve) => setTimeout(resolve, timeout))
 }
@@ -11,6 +13,11 @@ export function random(max: number, min = 0) {
 
   return res
 }
+
+export const log = console.log
+export const logNumber = chalk.hex('#a57fff')
+export const logSuccess = chalk.green
+export const logError = chalk.red
 
 export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined'

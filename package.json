@@ -15,6 +15,7 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
+    "chalk": "4.1.2",
     "jsdom": "^21.1.0",
     "x-crawl": "link:"
   },

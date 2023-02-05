@@ -2,7 +2,16 @@ import http, { Agent, RequestOptions } from 'node:http'
 import { Agent as httpsAgent } from 'https'
 import Url, { URL } from 'node:url'
 
-import { isNumber, isUndefined, random, sleep } from './utils'
+import {
+  isNumber,
+  isUndefined,
+  log,
+  logError,
+  logNumber,
+  logSuccess,
+  random,
+  sleep
+} from './utils'
 
 import {
   IIntervalTime,
@@ -88,13 +97,15 @@ async function useSleepByBatch(
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
-    console.log(
-      `Request ${id} needs to sleep for ${timeout} milliseconds before sending`
+    log(
+      `Request ${logNumber(id)} needs to sleep for ${logNumber(
+        timeout + 'ms'
+      )} milliseconds before sending`
     )
 
     await sleep(timeout)
   } else {
-    console.log(`Request ${id} does not need to sleep, send immediately`)
+    log(`Request ${logNumber(id)} does not need to sleep, send immediately`)
   }
 }
 
@@ -148,7 +159,9 @@ export async function batchRequest(
   const isHaveIntervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  console.log(`Begin execution, mode: async, total: ${requestConifgs.length} `)
+  log(
+    `Begin execution, mode: async, total: ${logNumber(requestConifgs.length)} `
+  )
 
   const requestQueue: Promise<IRequestResItem | string>[] = []
 
@@ -176,7 +189,7 @@ export async function batchRequest(
     requestQueue.push(requestItem)
   }
 
-  console.log('All requests have been sent!')
+  log(logSuccess('All requests have been sent!'))
 
   const res = await Promise.all(requestQueue)
 
@@ -192,9 +205,13 @@ export async function batchRequest(
     success.push(item)
   })
 
-  error.forEach((message) => {
-    console.log(message)
-  })
+  error.forEach((message) => log(logError(message)))
+
+  log(
+    `total: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+      success.length
+    )}, error: ${logError(error.length)}`
+  )
 
   return success
 }
@@ -206,9 +223,13 @@ export async function syncBatchRequest(
   const isHaveIntervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  console.log(`Begin execution, mode: sync, total: ${requestConifgs.length} `)
+  log(
+    `Begin execution, mode: sync, total: ${logNumber(requestConifgs.length)} `
+  )
 
   let id = 0
+  let successTotal = 0
+  let errorTotal = 0
   const requestRes: IRequestResItem[] = []
   for (const requestConifg of requestConifgs) {
     id++
@@ -223,13 +244,21 @@ export async function syncBatchRequest(
     try {
       const requestResItem = await request(requestConifg)
       requestRes.push({ id, ...requestResItem })
-      console.log(`Request ${id} is an success`)
+      log(logSuccess(`Request ${logNumber(id)} is an success`))
+      successTotal++
     } catch (error: any) {
-      console.log(`Request ${id} is an error: ${error.message}`)
+      log(logError(`Request ${id} is an error: ${error.message}`))
+      errorTotal++
     }
   }
 
-  console.log('All requests are over!')
+  log(logSuccess('All requests are over!'))
+
+  log(
+    `total: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+      successTotal
+    )}, error: ${logError(errorTotal)}`
+  )
 
   return requestRes
 }

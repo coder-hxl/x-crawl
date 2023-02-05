@@ -7,24 +7,26 @@ const testXCrawl = new XCrawl({
     max: 3000,
     min: 2000
   },
-  mode: 'sync'
+  mode: 'async'
 })
 
-// testXCrawl
-//   .fetchData({
-//     requestConifg: [
-//       { url: 'http://localhost:3001/home' },
-//       { url: 'http://localhost:9001/api/home/wonderfulplace' },
-//       { url: 'http://localhost:9001/api/home/goodprice' },
-//       { url: 'http://localhost:3001/home' },
-//       { url: 'http://localhost:9001/ai/home/goodprice' }
-//     ]
-//   })
-//   .then((res) => {
-//     console.log(res)
-//   })
+testXCrawl
+  .fetchData({
+    requestConifg: [
+      { url: 'http://localhost:3001/home' },
+      { url: 'http://localhost:9001/api/home/wonderfulplace' },
+      { url: 'http://localhost:9001/api/home/goodprice' },
+      { url: 'http://localhost:3001/home' },
+      { url: 'http://localhost:9001/ai/home/goodprice' }
+    ]
+  })
+  .then((res) => {
+    // console.log(res)
+  })
 
-// testXCrawl.fetchHTML({ url: 'https://www.bilibili.com/' }).then((jsdom) => {
+// testXCrawl.fetchHTML({ url: 'https://www.bilibili.com/' }).then((res) => {
+//   const { jsdom } = res.data
+
 //   const document = jsdom.window.document
 //   const imgBoxEl = document.querySelectorAll('.bili-video-card__cover')
 
@@ -52,12 +54,3 @@ const testXCrawl = new XCrawl({
 //       console.log(res)
 //     })
 // })
-
-testXCrawl.fetchHTML('https://cn.bing.com').then((res) => {
-  const { jsdom } = res.data
-})
-
-testXCrawl.fetchHTML('https://docs.github.com/zh/get-started').then((res) => {
-  const { jsdom } = res.data
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
-})

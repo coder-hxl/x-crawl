@@ -3,7 +3,7 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, syncBatchRequest, request } from './request'
-import { isArray, isString, isUndefined } from './utils'
+import { isArray, isString, isUndefined, log, logError } from './utils'
 
 import {
   IXCrawlBaseConifg,
@@ -151,7 +151,7 @@ export default class XCrawl {
 
         fs.createWriteStream(filePath, 'binary').write(data, (err) => {
           if (err) {
-            console.log(`File save error at id ${id}: ${err.message}`)
+            log(logError(`File save error at id ${id}: ${err.message}`))
           } else {
             const fileInfo: IFileInfo = {
               fileName,
