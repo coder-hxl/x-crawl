@@ -208,7 +208,7 @@ export async function batchRequest(
   error.forEach((message) => log(logError(message)))
 
   log(
-    `total: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+    `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
       success.length
     )}, error: ${logError(error.length)}`
   )
@@ -255,7 +255,7 @@ export async function syncBatchRequest(
   log(logSuccess('All requests are over!'))
 
   log(
-    `total: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+    `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
       successTotal
     )}, error: ${logError(errorTotal)}`
   )

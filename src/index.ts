@@ -3,7 +3,15 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, syncBatchRequest, request } from './request'
-import { isArray, isString, isUndefined, log, logError } from './utils'
+import {
+  isArray,
+  isString,
+  isUndefined,
+  log,
+  logError,
+  logNumber,
+  logSuccess
+} from './utils'
 
 import {
   IXCrawlBaseConifg,
@@ -135,39 +143,40 @@ export default class XCrawl {
       intervalTime
     )
 
-    return new Promise((resolve) => {
-      const container: IFetchCommon<IFileInfo> = []
+    const container: IFetchCommon<IFileInfo> = []
 
-      requestRes.forEach((requestResItem, index) => {
-        const { id, statusCode, headers, data } = requestResItem
+    requestRes.forEach((requestResItem) => {
+      const { id, headers, data } = requestResItem
 
-        const mimeType = headers['content-type'] ?? ''
-        const suffix = mimeType.split('/').pop()
-        const fileName = new Date().getTime().toString()
-        const filePath = path.resolve(
-          fileConfig.storeDir,
-          `${fileName}.${suffix}`
-        )
+      const mimeType = headers['content-type'] ?? ''
+      const suffix = mimeType.split('/').pop()
+      const fileName = new Date().getTime().toString()
+      const filePath = path.resolve(
+        fileConfig.storeDir,
+        `${fileName}.${suffix}`
+      )
 
-        fs.createWriteStream(filePath, 'binary').write(data, (err) => {
-          if (err) {
-            log(logError(`File save error at id ${id}: ${err.message}`))
-          } else {
-            const fileInfo: IFileInfo = {
-              fileName,
-              mimeType,
-              size: data.length,
-              filePath
-            }
+      try {
+        fs.writeFileSync(filePath, data)
 
-            container.push({ id, statusCode, headers, data: fileInfo })
-          }
-
-          if (index === requestRes.length - 1) {
-            resolve(container)
-          }
+        container.push({
+          ...requestResItem,
+          data: { fileName, mimeType, size: data.length, filePath }
         })
-      })
+      } catch (error: any) {
+        log(logError(`File save error at id ${id}: ${error.message}`))
+      }
     })
+
+    const saveTotal = requestRes.length
+    const success = container.length
+    const error = requestRes.length - container.length
+    log(
+      `saveTotal: ${logNumber(saveTotal)}, success: ${logSuccess(
+        success
+      )}, error: ${logError(error)}`
+    )
+
+    return container
   }
 }
