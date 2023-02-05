@@ -1,6 +1,6 @@
 # x-crawl
 
-[English](https://github.com/coder-hxl/x-crawl/blob/main/README.md) | 简体中文
+[English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
 XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
 
