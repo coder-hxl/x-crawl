@@ -6,8 +6,9 @@ XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resou
 
 ## highlights
 
-- Call the API to grab HTML, JSON, file resources, etc
-- Batch requests can choose the mode of sending asynchronously or sending synchronously
+- Simple configuration to grab HTML, JSON, file resources, etc.
+- Batch requests can choose mode asynchronous or synchronous
+- Anthropomorphic request interval
 
 ## Install
 
@@ -33,7 +34,8 @@ const docsXCrawl = new XCrawl({
 })
 
 // Call fetchHTML API to crawl
-docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
+docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
+  const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
@@ -42,7 +44,7 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 
 ### XCrawl
 
-Create a crawler instance via new XCrawl.
+Create a crawler instance via new XCrawl. The request queue is maintained by the instance method itself and is not shared.
 
 #### Type
 
@@ -50,15 +52,13 @@ Create a crawler instance via new XCrawl.
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+  fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
 }
 ```
 
-#### <div id="myXCrawl">Example</div>
-
-myXCrawl is the crawler instance of the following example.
+#### Example
 
 ```js
 const myXCrawl = new XCrawl({
@@ -72,7 +72,11 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-#### About the pattern
+Passing **baseConfig** is for **fetchHTML/fetchData/fetchFile** to use these values by default.
+
+**Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **fetchHTML/fetchData/fetchFile** example.
+
+#### Mode 
 
 The mode option defaults to async .
 
@@ -81,27 +85,37 @@ The mode option defaults to async .
 
 If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
 
+#### IntervalTime 
+
+The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
+
+- number: The time that must wait before each request is fixed
+- Object: Randomly select a value from max and min, which is more anthropomorphic
+
+The first request is not to trigger the interval.
+
 ### fetchHTML
 
-fetchHTML is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, usually used to crawl HTML.
+fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl HTML.
 
 #### Type
 
 ```ts
-function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+function fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
 ```
 
 #### Example
 
 ```js
-myXCrawl.fetchHTML('/xxx').then((jsdom) => {
+myXCrawl.fetchHTML('/xxx').then((res) => {
+  const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
 ### fetchData
 
-fetchData is the method of the above <a href="#myXCrawl" style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetchData is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 #### Type
 
@@ -120,7 +134,7 @@ const requestConifg = [
 
 myXCrawl.fetchData({ 
   requestConifg, // Request configuration, can be IRequestConfig | IRequestConfig[]
-  intervalTime: 800 // Interval between next requests, multiple requests are valid
+  intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when not using myXCrawl
 }).then(res => {
   console.log(res)
 })
@@ -128,7 +142,7 @@ myXCrawl.fetchData({
 
 ### fetchFile
 
-fetchFile is the method of the above <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> instance, which is usually used to crawl files, such as pictures, pdf files, etc.
+fetchFile is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
 
 #### Type
 
@@ -157,7 +171,7 @@ myXCrawl.fetchFile({
 
 ## Types
 
-- IAnyObject
+#### IAnyObject
 
 ```ts
 interface IAnyObject extends Object {
@@ -165,15 +179,15 @@ interface IAnyObject extends Object {
 }
 ```
 
-- IMethod
+#### IMethod
 
-```ts 
+```ts
 type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-- IRequestConfig
+#### IRequestConfig
 
-```ts
+```ts 
 interface IRequestConfig {
   url: string
   method?: IMethod
@@ -184,7 +198,7 @@ interface IRequestConfig {
 }
 ```
 
-- IIntervalTime
+#### IIntervalTime
 
 ```ts
 type IIntervalTime = number | {
@@ -193,7 +207,7 @@ type IIntervalTime = number | {
 }
 ```
 
-- IFetchBaseConifg
+#### IFetchBaseConifg
 
 ```ts
 interface IFetchBaseConifg {
@@ -202,7 +216,41 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFetchCommon
+#### IXCrawlBaseConifg
+
+```ts
+interface IXCrawlBaseConifg {
+  baseUrl?: string
+  timeout?: number
+  intervalTime?: IIntervalTime
+  mode?: 'async' | 'sync'
+}
+```
+
+#### IFetchHTMLConfig
+
+```ts
+type IFetchHTMLConfig = string | IRequestConfig
+```
+
+#### IFetchDataConfig
+
+```ts
+interface IFetchDataConfig extends IFetchBaseConifg {
+}
+```
+
+#### IFetchFileConfig
+
+```ts
+interface IFetchFileConfig extends IFetchBaseConifg {
+  fileConfig: {
+    storeDir: string
+  }
+}
+```
+
+#### IFetchCommon
 
 ```ts
 type IFetchCommon<T> = {
@@ -213,7 +261,7 @@ type IFetchCommon<T> = {
 }[]
 ```
 
-- IFileInfo
+#### IFileInfo
 
 ```ts
 interface IFileInfo {
@@ -224,36 +272,15 @@ interface IFileInfo {
 }
 ```
 
-- IXCrawlBaseConifg
+#### IFetchHTML
 
 ```ts
-interface IXCrawlBaseConifg {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IIntervalTime
-  mode?: 'async' | 'sync' // default: 'async'
-}
-```
-
-- IFetchHTMLConfig
-
-```ts
-interface IFetchHTMLConfig extends IRequestConfig {}
-```
-
-- IFetchDataConfig
-
-```ts
-interface IFetchDataConfig extends IFetchBaseConifg {
-}
-```
-
-- IFetchFileConfig
-
-```ts
-interface IFetchFileConfig extends IFetchBaseConifg {
-  fileConfig: {
-    storeDir: string
+interface IFetchHTML {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: {
+    raw: string // HTML String
+    jsdom: JSDOM // HTML parsing using the jsdom library
   }
 }
 ```

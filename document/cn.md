@@ -6,8 +6,9 @@ XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML �
 
 ## 亮点
 
-- 调用 API 即可抓取 HTML 、JSON 、文件资源等等
-- 批量请求可选择模式 异步发送 或 同步发送
+- 简单的配置即可抓取 HTML 、JSON 、文件资源等等
+- 批量请求可选择模式 异步 或 同步
+- 拟人化的请求间隔时间
 
 ## 安装
 
@@ -33,7 +34,8 @@ const docsXCrawl = new XCrawl({
 })
 
 // 调用 fetchHTML API 爬取
-docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
+docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
+  const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
@@ -42,7 +44,7 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 
 ### XCrawl
 
-通过 new XCrawl 创建一个爬虫实例。
+通过 new XCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非共享的。
 
 #### 类型
 
@@ -50,15 +52,13 @@ docsXCrawl.fetchHTML('/zh/get-started').then((jsdom) => {
 class XCrawl {
   private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+  fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
 }
 ```
 
-#### <div id="myXCrawl"  style="text-decoration: none">示例</div>
-
-myXCrawl 为后面示例的爬虫实例。
+#### 示例
 
 ```js
 const myXCrawl = new XCrawl({
@@ -72,7 +72,11 @@ const myXCrawl = new XCrawl({
 })
 ```
 
-#### 关于模式
+传入 **baseConfig** 是为了让 **fetchHTML/fetchData/fetchFile** 默认使用这些值。
+
+**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **fetchHTML/fetchData/fetchFile** 示例中的爬虫实例。
+
+#### 模式
 
 mode 选项默认为 async 。
 
@@ -81,27 +85,37 @@ mode 选项默认为 async 。
 
 若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
 
+#### 间隔时间
+
+intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
+
+- number: 固定每次请求前必须等待的时间
+- Object: 在 max 和 min 中随机取一个值，更加拟人化
+
+第一次请求是不会触发间隔时间。
+
 ### fetchHTML
 
-fetchHTML 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 HTML 。
+fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取 HTML 。
 
 #### 类型
 
 ```ts
-function fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM>
+function fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
 ```
 
 #### 示例
 
 ```js
-myXCrawl.fetchHTML('/xxx').then((jsdom) => {
+myXCrawl.fetchHTML('/xxx').then((res) => {
+  const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
 ### fetchData
 
-fetch 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+fetch 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
 
@@ -120,7 +134,7 @@ const requestConifg = [
 
 myXCrawl.fetchData({ 
   requestConifg, // 请求配置, 可以是 IRequestConfig | IRequestConfig[]
-  intervalTime: 800 // 下次请求的间隔时间, 多个请求才有效
+  intervalTime: { max: 5000, min: 1000 } // 不使用 myXCrawl 时传入的 intervalTime
 }).then(res => {
   console.log(res)
 })
@@ -128,7 +142,7 @@ myXCrawl.fetchData({
 
 ### fetchFile
 
-fetchFile 是上面 <a href="#myXCrawl"  style="text-decoration: none">myXCrawl</a> 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+fetchFile 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
 
@@ -157,7 +171,7 @@ myXCrawl.fetchFile({
 
 ## 类型
 
-- IAnyObject
+#### IAnyObject
 
 ```ts
 interface IAnyObject extends Object {
@@ -165,13 +179,13 @@ interface IAnyObject extends Object {
 }
 ```
 
-- IMethod
+#### IMethod
 
 ```ts
 type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-- IRequestConfig
+#### IRequestConfig
 
 ```ts 
 interface IRequestConfig {
@@ -184,7 +198,7 @@ interface IRequestConfig {
 }
 ```
 
-- IIntervalTime
+#### IIntervalTime
 
 ```ts
 type IIntervalTime = number | {
@@ -193,7 +207,7 @@ type IIntervalTime = number | {
 }
 ```
 
-- IFetchBaseConifg
+#### IFetchBaseConifg
 
 ```ts
 interface IFetchBaseConifg {
@@ -202,7 +216,41 @@ interface IFetchBaseConifg {
 }
 ```
 
-- IFetchCommon
+#### IXCrawlBaseConifg
+
+```ts
+interface IXCrawlBaseConifg {
+  baseUrl?: string
+  timeout?: number
+  intervalTime?: IIntervalTime
+  mode?: 'async' | 'sync'
+}
+```
+
+#### IFetchHTMLConfig
+
+```ts
+type IFetchHTMLConfig = string | IRequestConfig
+```
+
+#### IFetchDataConfig
+
+```ts
+interface IFetchDataConfig extends IFetchBaseConifg {
+}
+```
+
+#### IFetchFileConfig
+
+```ts
+interface IFetchFileConfig extends IFetchBaseConifg {
+  fileConfig: {
+    storeDir: string
+  }
+}
+```
+
+#### IFetchCommon
 
 ```ts
 type IFetchCommon<T> = {
@@ -213,7 +261,7 @@ type IFetchCommon<T> = {
 }[]
 ```
 
-- IFileInfo
+#### IFileInfo
 
 ```ts
 interface IFileInfo {
@@ -224,36 +272,15 @@ interface IFileInfo {
 }
 ```
 
-- IXCrawlBaseConifg
+#### IFetchHTML
 
 ```ts
-interface IXCrawlBaseConifg {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IIntervalTime
-  mode?: 'async' | 'sync' // default: 'async'
-}
-```
-
-- IFetchHTMLConfig
-
-```ts
-interface IFetchHTMLConfig extends IRequestConfig {}
-```
-
-- IFetchDataConfig
-
-```ts
-interface IFetchDataConfig extends IFetchBaseConifg {
-}
-```
-
-- IFetchFileConfig
-
-```ts
-interface IFetchFileConfig extends IFetchBaseConifg {
-  fileConfig: {
-    storeDir: string
+interface IFetchHTML {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: {
+    raw: string // HTML String
+    jsdom: JSDOM // 使用了 jsdom 库对 HTML 解析
   }
 }
 ```
