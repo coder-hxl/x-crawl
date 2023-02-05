@@ -11,8 +11,9 @@ import {
   IFetchDataConfig,
   IFetchFileConfig,
   IFetchBaseConifg,
-  IFileInfo,
   IFetchCommon,
+  IFileInfo,
+  IFetchHTML,
   IRequestResItem,
   IRequestConfig,
   IIntervalTime
@@ -77,7 +78,7 @@ export default class XCrawl {
     return requestRes
   }
 
-  async fetchHTML(config: string | IFetchHTMLConfig): Promise<JSDOM> {
+  async fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML> {
     const rawRequestConifg: IFetchHTMLConfig = isString(config)
       ? { url: config }
       : config
@@ -86,11 +87,18 @@ export default class XCrawl {
       requestConifg: rawRequestConifg
     })
 
-    const requestResItem = await request(requestConifg)
+    const requestRes = await request(requestConifg)
+    const rawData = requestRes.data.toString()
 
-    const dom = new JSDOM(requestResItem.data)
+    const res: IFetchHTML = {
+      ...requestRes,
+      data: {
+        raw: rawData,
+        jsdom: new JSDOM(rawData)
+      }
+    }
 
-    return dom
+    return res
   }
 
   async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {

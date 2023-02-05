@@ -10,19 +10,19 @@ const testXCrawl = new XCrawl({
   mode: 'sync'
 })
 
-testXCrawl
-  .fetchData({
-    requestConifg: [
-      { url: 'http://localhost:3001/home' },
-      { url: 'http://localhost:9001/api/home/wonderfulplace' },
-      { url: 'http://localhost:9001/api/home/goodprice' },
-      { url: 'http://localhost:3001/home' },
-      { url: 'http://localhost:9001/ai/home/goodprice' }
-    ]
-  })
-  .then((res) => {
-    console.log(res)
-  })
+// testXCrawl
+//   .fetchData({
+//     requestConifg: [
+//       { url: 'http://localhost:3001/home' },
+//       { url: 'http://localhost:9001/api/home/wonderfulplace' },
+//       { url: 'http://localhost:9001/api/home/goodprice' },
+//       { url: 'http://localhost:3001/home' },
+//       { url: 'http://localhost:9001/ai/home/goodprice' }
+//     ]
+//   })
+//   .then((res) => {
+//     console.log(res)
+//   })
 
 // testXCrawl.fetchHTML({ url: 'https://www.bilibili.com/' }).then((jsdom) => {
 //   const document = jsdom.window.document
@@ -52,3 +52,12 @@ testXCrawl
 //       console.log(res)
 //     })
 // })
+
+testXCrawl.fetchHTML('https://cn.bing.com').then((res) => {
+  const { jsdom } = res.data
+})
+
+testXCrawl.fetchHTML('https://docs.github.com/zh/get-started').then((res) => {
+  const { jsdom } = res.data
+  console.log(jsdom.window.document.querySelector('title')?.textContent)
+})

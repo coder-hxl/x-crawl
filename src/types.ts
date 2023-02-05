@@ -1,4 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http'
+import { JSDOM } from 'jsdom'
 
 export interface IAnyObject extends Object {
   [key: string | number | symbol]: any
@@ -67,7 +68,7 @@ export interface IFetchBaseConifg {
   intervalTime?: IIntervalTime
 }
 
-export interface IFetchHTMLConfig extends IRequestConfig {}
+export type IFetchHTMLConfig = string | IRequestConfig
 
 export interface IFetchDataConfig extends IFetchBaseConifg {}
 
@@ -77,6 +78,13 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
+export type IFetchCommon<T> = {
+  id: number
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: T
+}[]
+
 export interface IFileInfo {
   fileName: string
   mimeType: string
@@ -84,9 +92,11 @@ export interface IFileInfo {
   filePath: string
 }
 
-export type IFetchCommon<T> = {
-  id: number
+export interface IFetchHTML {
   statusCode: number | undefined
   headers: IncomingHttpHeaders
-  data: T
-}[]
+  data: {
+    raw: string
+    jsdom: JSDOM
+  }
+}
