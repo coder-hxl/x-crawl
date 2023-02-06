@@ -20,25 +20,35 @@ npm install x-crawl
 
 ## 示例
 
-获取 https://docs.github.com/zh/get-started 的标题为例: 
+获取 bilibili 国漫主页的推荐轮播图片为例: 
 
 ```js
-// 导入模块 ES/CJS
+// 1.导入模块 ES/CJS
 import XCrawl from 'x-crawl'
 
-// 创建一个爬虫实例
-const docsXCrawl = new XCrawl({
-  baseUrl: 'https://docs.github.com',
-  timeout: 10000,
-  intervalTime: { max: 2000, min: 1000 }
+// 2.创建一个爬虫实例
+const myXCrawl = new XCrawl({
+  baseUrl: 'https://www.bilibili.com',
+  timeout: 10000, // 超时时间
+  intervalTime: { max: 6000, min: 2000 } // 控制请求频率
 })
 
-// 调用 fetchHTML API 爬取
-docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
-  const { jsdom } = res.data
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
+// 3.调用 fetchHTML API 爬取 HTML
+myXCrawl.fetchHTML('/guochuang/').then((res) => {
+  const { jsdom } = res.data  // 默认使用了 JSDOM 库解析 HTML
+  
+   // 3.1.获取轮播图片的 src
+  const imgSrc: string[] = []
+  const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
+  recomEls.forEach((item) => imgSrc.push(item.querySelector('img').src))
+ 
+  // 3.2.调用 fetchFile API 爬取图片
+  const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+  myXCrawl.fetchFile({ requestConifg, fileConfig: { storeDir: './upload' } })
 })
 ```
+
+**注意:** 请勿随意爬取，这里只是为了演示爬取过程，并将请求频率控制在 6000ms 到 2000ms 内。
 
 ## 核心概念
 
