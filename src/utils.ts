@@ -7,8 +7,8 @@ export function sleep(timeout: number) {
 export function random(max: number, min = 0) {
   let res = Math.floor(Math.random() * max)
 
-  if (res < min) {
-    res = random(max, min)
+  while (res < min) {
+    res = Math.floor(Math.random() * max)
   }
 
   return res

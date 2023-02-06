@@ -50,7 +50,6 @@ docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
 
 ```ts
 class XCrawl {
-  private readonly baseConfig
   constructor(baseConfig?: IXCrawlBaseConifg)
   fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>

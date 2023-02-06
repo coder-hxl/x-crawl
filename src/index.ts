@@ -27,45 +27,39 @@ import {
   IIntervalTime
 } from './types'
 
-function mergeConfig<T extends IFetchBaseConifg>(
-  baseConfig: IXCrawlBaseConifg,
-  config: T
-): IFetchBaseConifg & T {
-  const {
-    baseUrl,
-    timeout: baseTimeout,
-    intervalTime: baseIntervalTime
-  } = baseConfig
-  const { requestConifg, intervalTime } = config
-
-  const requestConifgArr = isArray(requestConifg)
-    ? requestConifg
-    : [requestConifg]
-
-  for (const requestItem of requestConifgArr) {
-    const { url, timeout } = requestItem
-
-    if (!isUndefined(baseUrl)) {
-      requestItem.url = baseUrl + url
-    }
-
-    if (isUndefined(timeout) && !isUndefined(baseTimeout)) {
-      requestItem.timeout = baseTimeout
-    }
-  }
-
-  if (isUndefined(intervalTime) && !isUndefined(baseIntervalTime)) {
-    config.intervalTime = baseIntervalTime
-  }
-
-  return config
-}
-
 export default class XCrawl {
   private readonly baseConfig: IXCrawlBaseConifg
 
   constructor(baseConfig: IXCrawlBaseConifg = {}) {
     this.baseConfig = baseConfig
+  }
+
+  private mergeConfig<T extends IFetchBaseConifg>(rawConfig: T): T {
+    const baseConfig = this.baseConfig
+    const newConfig: T = structuredClone(rawConfig)
+
+    // 1.处理 requestConifg
+    const requestConifgArr = isArray(newConfig.requestConifg)
+      ? newConfig.requestConifg
+      : [newConfig.requestConifg]
+    for (const requestItem of requestConifgArr) {
+      const { url, timeout } = requestItem
+
+      if (!isUndefined(baseConfig.baseUrl)) {
+        requestItem.url = baseConfig.baseUrl + url
+      }
+
+      if (isUndefined(timeout)) {
+        requestItem.timeout = baseConfig.timeout
+      }
+    }
+
+    // 2.处理 intervalTime
+    if (isUndefined(newConfig.intervalTime)) {
+      newConfig.intervalTime = baseConfig.intervalTime
+    }
+
+    return newConfig
   }
 
   private async useBatchRequestByMode(
@@ -87,12 +81,8 @@ export default class XCrawl {
   }
 
   async fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML> {
-    const rawRequestConifg: IFetchHTMLConfig = isString(config)
-      ? { url: config }
-      : config
-
-    const { requestConifg } = mergeConfig(this.baseConfig, {
-      requestConifg: rawRequestConifg
+    const { requestConifg } = this.mergeConfig({
+      requestConifg: isString(config) ? { url: config } : config
     })
 
     const requestRes = await request(requestConifg)
@@ -110,7 +100,7 @@ export default class XCrawl {
   }
 
   async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {
-    const { requestConifg, intervalTime } = mergeConfig(this.baseConfig, config)
+    const { requestConifg, intervalTime } = this.mergeConfig(config)
 
     const requestRes = await this.useBatchRequestByMode(
       requestConifg,
@@ -134,10 +124,8 @@ export default class XCrawl {
   }
 
   async fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>> {
-    const { requestConifg, intervalTime, fileConfig } = mergeConfig(
-      this.baseConfig,
-      config
-    )
+    const { requestConifg, intervalTime, fileConfig } = this.mergeConfig(config)
+
     const requestRes = await this.useBatchRequestByMode(
       requestConifg,
       intervalTime
@@ -170,7 +158,7 @@ export default class XCrawl {
 
     const saveTotal = requestRes.length
     const success = container.length
-    const error = requestRes.length - container.length
+    const error = saveTotal - success
     log(
       `saveTotal: ${logNumber(saveTotal)}, success: ${logSuccess(
         success
