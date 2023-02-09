@@ -21,59 +21,20 @@ const testXCrawl = new XCrawl({
 //     // console.log(res)
 //   })
 
-testXCrawl.fetchHTML({ url: 'https://www.bilibili.com/' }).then((res) => {
-  const { jsdom } = res.data
+testXCrawl.fetchPolling({ m: 3 }, () => {
+  testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
+    const { jsdom } = res.data
 
-  const document = jsdom.window.document
-  const imgBoxEl = document.querySelectorAll('.bili-video-card__cover')
+    const imgSrc: string[] = []
+    const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
+    recomEls.forEach((item) => imgSrc.push(item.querySelector('img')!.src))
 
-  const imgUrls: string[] = []
-  imgBoxEl.forEach((item, index) => {
-    const img = item.lastChild as HTMLImageElement
+    const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+    requestConifg.pop()
 
-    if (index % 2) {
-      imgUrls.push('https:' + img.src)
-    } else {
-      imgUrls.push(img.src)
-    }
-  })
-
-  console.log(imgUrls)
-
-  const requestConifg = imgUrls.map((url) => ({ url }))
-
-  testXCrawl
-    .fetchFile({
+    testXCrawl.fetchFile({
       requestConifg,
       fileConfig: { storeDir: path.resolve(__dirname, './upload') }
     })
-    .then((res) => {
-      // console.log(res)
-    })
+  })
 })
-
-// testXCrawl
-//   .fetchData({
-//     requestConifg: {
-//       url: 'http://localhost:9001/api/area/阳江市',
-//       method: 'POST',
-//       data: {
-//         type: 'plus',
-//         offset: 0,
-//         size: 20
-//       }
-//     }
-//   })
-//   .then((res) => {
-//     const room = res[0].data.data.list[0]
-//     const requestConifg = room.pictureUrls.map((item: any) => ({
-//       url: item
-//     }))
-
-//     testXCrawl.fetchFile({
-//       requestConifg,
-//       fileConfig: {
-//         storeDir: path.resolve(__dirname, './upload')
-//       }
-//     })
-//   })

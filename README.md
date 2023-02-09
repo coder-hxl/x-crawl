@@ -6,8 +6,9 @@ XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resou
 
 ## highlights
 
-- Simple configuration to grab HTML, JSON, file resources, etc.
+- Simple configuration to grab HTML, JSON, file resources, etc
 - Batch requests can choose mode asynchronous or synchronous
+- polling function
 - Anthropomorphic request interval
 
 ## Install
@@ -54,6 +55,7 @@ class XCrawl {
   fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
+  fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void): void
 }
 ```
 
@@ -168,6 +170,28 @@ myXCrawl.fetchFile({
 })
 ```
 
+### fetchPolling
+
+fetchPolling is a method of the [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
+
+#### 类型
+
+```ts
+function fetchPolling(
+  config: IFetchPollingConfig,
+  callback: (count: number) => void
+): void
+```
+
+#### 示例
+
+```js
+myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
+  // will be executed every one and a half hours
+  // fetchHTML/fetchData/fetchFile
+})
+```
+
 ## Types
 
 #### IAnyObject
@@ -246,6 +270,18 @@ interface IFetchFileConfig extends IFetchBaseConifg {
   fileConfig: {
     storeDir: string
   }
+}
+```
+
+#### IFetchPollingConfig
+
+```ts
+interface IFetchPollingConfig {
+ Y?: number // Year (365 days per year)
+ M?: number // Month (30 days per month)
+ d?: number // day
+ h?: number // hour
+ m?: number // minute
 }
 ```
 

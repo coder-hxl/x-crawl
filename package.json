@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "x-crawl",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "author": "CoderHxl",
   "description": "XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resources, etc. through simple configuration.",
   "license": "MIT",

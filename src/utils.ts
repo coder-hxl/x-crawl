@@ -18,6 +18,7 @@ export const log = console.log
 export const logNumber = chalk.hex('#a57fff')
 export const logSuccess = chalk.green
 export const logError = chalk.red
+export const logWarn = chalk.yellow
 
 export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined'

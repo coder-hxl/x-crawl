@@ -8,6 +8,7 @@ XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML �
 
 - 简单的配置即可抓取 HTML 、JSON 、文件资源等等
 - 批量请求可选择模式 异步 或 同步
+- 轮询功能
 - 拟人化的请求间隔时间
 
 ## 安装
@@ -20,7 +21,7 @@ npm install x-crawl
 
 ## 示例
 
-获取 bilibili 国漫主页的推荐轮播图片为例: 
+每隔一天就获取 bilibili 国漫主页的推荐轮播图片为例: 
 
 ```js
 // 1.导入模块 ES/CJS
@@ -32,18 +33,21 @@ const myXCrawl = new XCrawl({
   intervalTime: { max: 6000, min: 2000 } // 控制请求频率
 })
 
-// 3.调用 fetchHTML API 爬取 HTML
-myXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-  const { jsdom } = res.data  // 默认使用了 JSDOM 库解析 HTML
+// 3.调用 fetchPolling API 开始轮询功能，每隔一天会调用回调函数
+myXCrawl.fetchPolling({ d: 1 }, () => {
+  // 3.1.调用 fetchHTML API 爬取 HTML
+  myXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
+    const { jsdom } = res.data  // 默认使用了 JSDOM 库解析 HTML
   
-   // 3.1.获取轮播图片的 src
-  const imgSrc = []
-  const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
-  recomEls.forEach((item) => imgSrc.push(item.querySelector('img').src))
+     // 3.2.获取轮播图片的 src
+    const imgSrc = []
+    const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
+    recomEls.forEach((item) => imgSrc.push(item.querySelector('img').src))
  
-  // 3.2.调用 fetchFile API 爬取图片
-  const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
-  myXCrawl.fetchFile({ requestConifg, fileConfig: { storeDir: './upload' } })
+    // 3.3.调用 fetchFile API 爬取图片
+    const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+    myXCrawl.fetchFile({ requestConifg, fileConfig: { storeDir: './upload' } })
+  })
 })
 ```
 
@@ -63,6 +67,7 @@ class XCrawl {
   fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
   fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
   fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
+  fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void): void
 }
 ```
 
@@ -177,6 +182,28 @@ myXCrawl.fetchFile({
 })
 ```
 
+### fetchPolling
+
+fetchPolling 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
+
+#### 类型
+
+```ts
+function fetchPolling(
+  config: IFetchPollingConfig,
+  callback: (count: number) => void
+): void
+```
+
+#### 示例
+
+```js
+myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
+  // 每隔一个半小时会执行一次
+  // fetchHTML/fetchData/fetchFile
+})
+```
+
 ## 类型
 
 #### IAnyObject
@@ -258,13 +285,25 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
+#### IFetchPollingConfig
+
+```ts
+interface IFetchPollingConfig {
+  Y?: number // 年 (按每年365天)
+  M?: number // 月 (按每月30天)
+  d?: number // 日
+  h?: number // 小时
+  m?: number // 分钟
+}
+```
+
 #### IFetchCommon
 
 ```ts
 type IFetchCommon<T> = {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http type
+  headers: IncomingHttpHeaders // node:http 类型
   data: T
 }[]
 ```

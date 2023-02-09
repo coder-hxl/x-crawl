@@ -78,6 +78,14 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
+export interface IFetchPollingConfig {
+  Y?: number
+  M?: number
+  d?: number
+  h?: number
+  m?: number
+}
+
 export type IFetchCommon<T> = {
   id: number
   statusCode: number | undefined

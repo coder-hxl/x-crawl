@@ -10,7 +10,8 @@ import {
   log,
   logError,
   logNumber,
-  logSuccess
+  logSuccess,
+  logWarn
 } from './utils'
 
 import {
@@ -18,6 +19,7 @@ import {
   IFetchHTMLConfig,
   IFetchDataConfig,
   IFetchFileConfig,
+  IFetchPollingConfig,
   IFetchBaseConifg,
   IFetchCommon,
   IFileInfo,
@@ -166,5 +168,25 @@ export default class XCrawl {
     )
 
     return container
+  }
+
+  fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void) {
+    const { Y, M, d, h, m } = config
+
+    const year = !isUndefined(Y) ? Y * 1000 * 60 * 60 * 24 * 365 : 0
+    const month = !isUndefined(M) ? M * 1000 * 60 * 60 * 24 * 30 : 0
+    const day = !isUndefined(d) ? d * 1000 * 60 * 60 * 24 : 0
+    const hour = !isUndefined(h) ? h * 1000 * 60 * 60 : 0
+    const minute = !isUndefined(m) ? m * 1000 * 60 : 0
+    const total = year + month + day + hour + minute
+
+    let count = 0
+    function cb() {
+      console.log(logWarn(`Start the ${logWarn.bold(++count)} polling`))
+      callback(count)
+    }
+
+    cb()
+    setInterval(cb, total)
   }
 }
