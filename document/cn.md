@@ -13,9 +13,43 @@ XCrawl 是 Nodejs 多功能爬虫库。
 - 拟人化的请求间隔时间
 - 使用 TypeScript 编写
 
-## 目录
+# 目录
 
-[TOC]
+- [安装](#安装)
+- [示例](#示例)
+- [核心概念](#核心概念)
+    * [XCrawl](#XCrawl)
+       + [类型](#Type-1)
+       + [示例](#示例-1)
+       + [模式](#模式)
+       + [间隔时间](#间隔时间)
+    * [fetchHTML](#fetchHTML)
+       + [类型](#类型-2)
+       + [示例](#示例-2)
+    * [fetchData](#fetchData)
+       + [类型](#类型-3)
+       + [示例](#示例-3)
+    * [fetchFile](#fetchFile)
+       + [类型](#类型-4)
+       + [示例](#示例-4)
+    * [fetchPolling](#fetchPolling)
+       + [类型](#类型-5)
+       + [示例](#示例-5)
+- [类型](#类型-6)
+    * [IAnyObject](#IAnyObject)
+    * [IMethod](#IMethod)
+    * [IRequestConfig](#IRequestConfig)
+    * [IIntervalTime](#IIntervalTime)
+    * [IFetchBaseConifg](#IFetchBaseConifg)
+    * [IXCrawlBaseConifg](#IXCrawlBaseConifg)
+    * [IFetchHTMLConfig](#IFetchHTMLConfig	)
+    * [IFetchDataConfig](#IFetchDataConfig) 
+    * [IFetchFileConfig](#IFetchFileConfig)
+    * [IFetchPollingConfig](#IFetchPollingConfig)
+    * [IFetchCommon](#IFetchCommon)
+    * [IFileInfo](#IFileInfo)
+    * [IFetchHTML](#IFetchHTML)
+- [更多](#更多)
 
 ## 安装
 
@@ -134,7 +168,7 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
 
 ### fetchData
 
-fetch 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+fetch 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
 
@@ -161,7 +195,7 @@ myXCrawl.fetchData({
 
 ### fetchFile
 
-fetchFile 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+fetchFile 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
 
@@ -190,7 +224,7 @@ myXCrawl.fetchFile({
 
 ### fetchPolling
 
-fetchPolling 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
+fetchPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
 
 #### 类型
 

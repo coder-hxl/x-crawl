@@ -13,9 +13,43 @@ XCrawl is a Nodejs multifunctional crawler library.
 - Anthropomorphic request interval
 - Written in TypeScript
 
-## Catalog
+# Table of Contents
 
-[TOC]
+- [Install](#Install)
+- [Example](#Example)
+- [Core concepts](#Core concepts)
+    * [XCrawl](#XCrawl)
+       + [Type](#Type-1)
+       + [Example](#Example-1)
+       + [Mode](#Mode)
+       + [IntervalTime](#IntervalTime)
+    * [fetchHTML](#fetchHTML)
+       + [Type](#Type-2)
+       + [Example](#Example-2)
+    * [fetchData](#fetchData)
+       + [Type](#Type-3)
+       + [Example](#Example-3)
+    * [fetchFile](#fetchFile)
+       + [Type](#Type-4)
+       + [Example](#Example-4)
+    * [fetchPolling](#fetchPolling)
+       + [Type](#Type-5)
+       + [Example](#Example-5)
+- [Types](#Types)
+    * [IAnyObject](#IAnyObject)
+    * [IMethod](#IMethod)
+    * [IRequestConfig](#IRequestConfig)
+    * [IIntervalTime](#IIntervalTime)
+    * [IFetchBaseConifg](#IFetchBaseConifg)
+    * [IXCrawlBaseConifg](#IXCrawlBaseConifg)
+    * [IFetchHTMLConfig](#IFetchHTMLConfig	)
+    * [IFetchDataConfig](#IFetchDataConfig)   
+    * [IFetchFileConfig](#IFetchFileConfig)
+    * [IFetchPollingConfig](#IFetchPollingConfig)
+    * [IFetchCommon](#IFetchCommon)
+    * [IFileInfo](#IFileInfo)
+    * [IFetchHTML](#IFetchHTML)
+- [More](#More)
 
 ## Install
 
@@ -25,7 +59,7 @@ Take NPM as an example:
 npm install x-crawl
 ```
 
-## example
+## Example
 
 Get the title of https://docs.github.com/zh/get-started as an example:
 
@@ -122,7 +156,7 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
 
 ### fetchData
 
-fetchData is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
+fetchData is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 #### Type
 
@@ -149,7 +183,7 @@ myXCrawl.fetchData({
 
 ### fetchFile
 
-fetchFile is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
+fetchFile is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
 
 #### Type
 
@@ -178,7 +212,7 @@ myXCrawl.fetchFile({
 
 ### fetchPolling
 
-fetchPolling is a method of the [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
+fetchPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
 
 #### Type
 
