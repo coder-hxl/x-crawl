@@ -2,14 +2,20 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-XCrawl 是 Nodejs 多功能爬虫库。只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
+XCrawl 是 Nodejs 多功能爬虫库。
 
-## 亮点
+## 特点
 
-- 简单的配置即可抓取 HTML 、JSON 、文件资源等等
-- 批量请求可选择模式 异步 或 同步
+- 只需简单的配置即可抓取 HTML 、JSON、文件资源等等
+- 使用 JSDOM 库对 HTML 解析，也可自行解析 HTML
+- 批量请求时可选择模式 异步/同步
 - 轮询功能
 - 拟人化的请求间隔时间
+- 使用 TypeScript 编写
+
+## 目录
+
+[TOC]
 
 ## 安装
 
@@ -206,7 +212,7 @@ myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
 
 ## 类型
 
-#### IAnyObject
+### IAnyObject
 
 ```ts
 interface IAnyObject extends Object {
@@ -214,13 +220,13 @@ interface IAnyObject extends Object {
 }
 ```
 
-#### IMethod
+### IMethod
 
 ```ts
 type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-#### IRequestConfig
+### IRequestConfig
 
 ```ts 
 interface IRequestConfig {
@@ -230,10 +236,11 @@ interface IRequestConfig {
   params?: IAnyObject
   data?: any
   timeout?: number
+  proxy?: string
 }
 ```
 
-#### IIntervalTime
+### IIntervalTime
 
 ```ts
 type IIntervalTime = number | {
@@ -242,7 +249,7 @@ type IIntervalTime = number | {
 }
 ```
 
-#### IFetchBaseConifg
+### IFetchBaseConifg
 
 ```ts
 interface IFetchBaseConifg {
@@ -251,7 +258,7 @@ interface IFetchBaseConifg {
 }
 ```
 
-#### IXCrawlBaseConifg
+### IXCrawlBaseConifg
 
 ```ts
 interface IXCrawlBaseConifg {
@@ -259,23 +266,24 @@ interface IXCrawlBaseConifg {
   timeout?: number
   intervalTime?: IIntervalTime
   mode?: 'async' | 'sync'
+  proxy?: string
 }
 ```
 
-#### IFetchHTMLConfig
+### IFetchHTMLConfig
 
 ```ts
 type IFetchHTMLConfig = string | IRequestConfig
 ```
 
-#### IFetchDataConfig
+### IFetchDataConfig
 
 ```ts
 interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
-#### IFetchFileConfig
+### IFetchFileConfig
 
 ```ts
 interface IFetchFileConfig extends IFetchBaseConifg {
@@ -285,7 +293,7 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
-#### IFetchPollingConfig
+### IFetchPollingConfig
 
 ```ts
 interface IFetchPollingConfig {
@@ -297,7 +305,7 @@ interface IFetchPollingConfig {
 }
 ```
 
-#### IFetchCommon
+### IFetchCommon
 
 ```ts
 type IFetchCommon<T> = {
@@ -308,7 +316,7 @@ type IFetchCommon<T> = {
 }[]
 ```
 
-#### IFileInfo
+### IFileInfo
 
 ```ts
 interface IFileInfo {
@@ -319,14 +327,14 @@ interface IFileInfo {
 }
 ```
 
-#### IFetchHTML
+### IFetchHTML
 
 ```ts
 interface IFetchHTML {
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: {
-    raw: string // HTML String
+    html: string // HTML String
     jsdom: JSDOM // 使用了 jsdom 库对 HTML 解析
   }
 }

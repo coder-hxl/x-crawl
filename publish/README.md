@@ -2,14 +2,20 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md)
 
-XCrawl is a Nodejs multifunctional crawler library. Crawl HTML, JSON, file resources, etc. through simple configuration.
+XCrawl is a Nodejs multifunctional crawler library. 
 
-## highlights
+## Feature
 
-- Simple configuration to grab HTML, JSON, file resources, etc
-- Batch requests can choose mode asynchronous or synchronous
-- polling function
+- Crawl HTML, JSON, file resources, etc. with simple configuration
+- Use the JSDOM library to parse HTML, or parse HTML by yourself
+- Optional mode asynchronous/synchronous for batch requests
+- Polling function
 - Anthropomorphic request interval
+- Written in TypeScript
+
+## Catalog
+
+[TOC]
 
 ## Install
 
@@ -174,7 +180,7 @@ myXCrawl.fetchFile({
 
 fetchPolling is a method of the [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
 
-#### 类型
+#### Type
 
 ```ts
 function fetchPolling(
@@ -183,7 +189,7 @@ function fetchPolling(
 ): void
 ```
 
-#### 示例
+#### Example
 
 ```js
 myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
@@ -194,7 +200,7 @@ myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
 
 ## Types
 
-#### IAnyObject
+### IAnyObject
 
 ```ts
 interface IAnyObject extends Object {
@@ -202,13 +208,13 @@ interface IAnyObject extends Object {
 }
 ```
 
-#### IMethod
+### IMethod
 
 ```ts
 type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-#### IRequestConfig
+### IRequestConfig
 
 ```ts 
 interface IRequestConfig {
@@ -218,10 +224,11 @@ interface IRequestConfig {
   params?: IAnyObject
   data?: any
   timeout?: number
+  proxy?: string
 }
 ```
 
-#### IIntervalTime
+### IIntervalTime
 
 ```ts
 type IIntervalTime = number | {
@@ -230,7 +237,7 @@ type IIntervalTime = number | {
 }
 ```
 
-#### IFetchBaseConifg
+### IFetchBaseConifg
 
 ```ts
 interface IFetchBaseConifg {
@@ -239,7 +246,7 @@ interface IFetchBaseConifg {
 }
 ```
 
-#### IXCrawlBaseConifg
+### IXCrawlBaseConifg
 
 ```ts
 interface IXCrawlBaseConifg {
@@ -247,23 +254,24 @@ interface IXCrawlBaseConifg {
   timeout?: number
   intervalTime?: IIntervalTime
   mode?: 'async' | 'sync'
+  proxy?: string
 }
 ```
 
-#### IFetchHTMLConfig
+### IFetchHTMLConfig
 
 ```ts
 type IFetchHTMLConfig = string | IRequestConfig
 ```
 
-#### IFetchDataConfig
+### IFetchDataConfig
 
 ```ts
 interface IFetchDataConfig extends IFetchBaseConifg {
 }
 ```
 
-#### IFetchFileConfig
+### IFetchFileConfig
 
 ```ts
 interface IFetchFileConfig extends IFetchBaseConifg {
@@ -273,7 +281,7 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
-#### IFetchPollingConfig
+### IFetchPollingConfig
 
 ```ts
 interface IFetchPollingConfig {
@@ -285,7 +293,7 @@ interface IFetchPollingConfig {
 }
 ```
 
-#### IFetchCommon
+### IFetchCommon
 
 ```ts
 type IFetchCommon<T> = {
@@ -296,7 +304,7 @@ type IFetchCommon<T> = {
 }[]
 ```
 
-#### IFileInfo
+### IFileInfo
 
 ```ts
 interface IFileInfo {
@@ -307,14 +315,14 @@ interface IFileInfo {
 }
 ```
 
-#### IFetchHTML
+### IFetchHTML
 
 ```ts
 interface IFetchHTML {
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: {
-    raw: string // HTML String
+    html: string // HTML String
     jsdom: JSDOM // HTML parsing using the jsdom library
   }
 }

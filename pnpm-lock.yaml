@@ -13,6 +13,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.48.2
   chalk: 4.1.2
   eslint: ^8.32.0
+  https-proxy-agent: ^5.0.1
   jest: ^29.3.1
   jsdom: ^21.1.0
   prettier: ^2.8.3
@@ -24,6 +25,7 @@ specifiers:
 
 dependencies:
   chalk: 4.1.2
+  https-proxy-agent: 5.0.1
   jsdom: 21.1.0
   x-crawl: 'link:'
 
