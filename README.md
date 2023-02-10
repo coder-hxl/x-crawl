@@ -17,7 +17,7 @@ XCrawl is a Nodejs multifunctional crawler library.
 
 - [Install](#Install)
 - [Example](#Example)
-- [Core concepts](#Core concepts)
+- [Core concepts](#Core-concepts)
     * [XCrawl](#XCrawl)
        + [Type](#Type-1)
        + [Example](#Example-1)
