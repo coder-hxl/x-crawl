@@ -1,6 +1,7 @@
-import http, { Agent, RequestOptions } from 'node:http'
-import { Agent as httpsAgent } from 'https'
+import http, { RequestOptions, IncomingMessage, ClientRequest } from 'node:http'
+import https from 'node:https'
 import Url, { URL } from 'node:url'
+import HttpsProxyAgent from 'https-proxy-agent'
 
 import {
   isNumber,
@@ -62,8 +63,15 @@ function handleRequestConfig(
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
   )
+  const isHttp = protocol === 'http:'
 
   const config: RequestOptions & IMapTypeEmptyObject<URL> = {
+    agent: rawConfig.proxy
+      ? HttpsProxyAgent(rawConfig.proxy)
+      : isHttp
+      ? new http.Agent()
+      : new https.Agent(),
+
     protocol,
     hostname,
     port,
@@ -77,13 +85,57 @@ function handleRequestConfig(
 
   config.headers = parseHeaders(rawConfig, config)
 
-  if (protocol === 'http:') {
-    config.agent = new Agent()
-  } else {
-    config.agent = new httpsAgent()
-  }
-
   return config
+}
+
+export function request(config: IRequestConfig) {
+  return new Promise<IRequest>((resolve, reject) => {
+    const isDataUndefine = isUndefined(config.data)
+    config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
+
+    const requestConfig = handleRequestConfig(config)
+
+    function handleRes(res: IncomingMessage) {
+      const { statusCode, headers } = res
+
+      const container: Buffer[] = []
+
+      res.on('data', (chunk) => container.push(chunk))
+
+      res.on('end', () => {
+        const data = Buffer.concat(container)
+        const resolveRes: IRequest = {
+          statusCode,
+          headers,
+          data
+        }
+
+        resolve(resolveRes)
+      })
+    }
+
+    let req: ClientRequest
+    if (requestConfig.protocol === 'http:') {
+      req = http.request(requestConfig, handleRes)
+    } else {
+      req = https.request(requestConfig, handleRes)
+    }
+
+    req.on('timeout', () => {
+      reject(new Error(`Timeout ${config.timeout}ms`))
+    })
+
+    req.on('error', (err) => {
+      reject(err)
+    })
+
+    // 其他处理
+    if (requestConfig.method === 'POST' && !isDataUndefine) {
+      req.write(config.data)
+    }
+
+    req.end()
+  })
 }
 
 async function useSleepByBatch(
@@ -107,49 +159,6 @@ async function useSleepByBatch(
   } else {
     log(`Request ${logNumber(id)} does not need to sleep, send immediately`)
   }
-}
-
-export function request(config: IRequestConfig) {
-  return new Promise<IRequest>((resolve, reject) => {
-    const isDataUndefine = isUndefined(config.data)
-    config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
-
-    const requestConfig = handleRequestConfig(config)
-
-    const req = http.request(requestConfig, (res) => {
-      const { statusCode, headers } = res
-
-      const container: Buffer[] = []
-
-      res.on('data', (chunk) => container.push(chunk))
-
-      res.on('end', () => {
-        const data = Buffer.concat(container)
-        const resolveRes: IRequest = {
-          statusCode,
-          headers,
-          data
-        }
-
-        resolve(resolveRes)
-      })
-    })
-
-    req.on('timeout', () => {
-      reject(new Error(`Timeout ${config.timeout}ms`))
-    })
-
-    req.on('error', (err) => {
-      reject(err)
-    })
-
-    // 其他处理
-    if (requestConfig.method === 'POST' && !isDataUndefine) {
-      req.write(config.data)
-    }
-
-    req.end()
-  })
 }
 
 export async function batchRequest(

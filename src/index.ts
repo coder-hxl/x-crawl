@@ -38,21 +38,28 @@ export default class XCrawl {
 
   private mergeConfig<T extends IFetchBaseConifg>(rawConfig: T): T {
     const baseConfig = this.baseConfig
-    const newConfig: T = structuredClone(rawConfig)
+    const newConfig = structuredClone(rawConfig)
 
     // 1.处理 requestConifg
     const requestConifgArr = isArray(newConfig.requestConifg)
       ? newConfig.requestConifg
       : [newConfig.requestConifg]
     for (const requestItem of requestConifgArr) {
-      const { url, timeout } = requestItem
+      const { url, timeout, proxy } = requestItem
 
+      // 1.1.baseUrl
       if (!isUndefined(baseConfig.baseUrl)) {
         requestItem.url = baseConfig.baseUrl + url
       }
 
+      // 1.2.timeout
       if (isUndefined(timeout)) {
         requestItem.timeout = baseConfig.timeout
+      }
+
+      // 1.3.porxy
+      if (isUndefined(proxy)) {
+        requestItem.proxy = baseConfig.proxy
       }
     }
 
@@ -88,13 +95,13 @@ export default class XCrawl {
     })
 
     const requestRes = await request(requestConifg)
-    const rawData = requestRes.data.toString()
+    const html = requestRes.data.toString()
 
     const res: IFetchHTML = {
       ...requestRes,
       data: {
-        raw: rawData,
-        jsdom: new JSDOM(rawData)
+        html,
+        jsdom: new JSDOM(html)
       }
     }
 

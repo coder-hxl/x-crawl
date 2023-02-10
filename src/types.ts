@@ -52,6 +52,7 @@ export interface IRequestConfig {
   params?: IAnyObject
   data?: any
   timeout?: number
+  proxy?: string
 }
 
 export type IIntervalTime = number | { max: number; min?: number }
@@ -61,6 +62,7 @@ export interface IXCrawlBaseConifg {
   timeout?: number
   intervalTime?: IIntervalTime
   mode?: 'async' | 'sync'
+  proxy?: string
 }
 
 export interface IFetchBaseConifg {
@@ -104,7 +106,7 @@ export interface IFetchHTML {
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: {
-    raw: string
+    html: string
     jsdom: JSDOM
   }
 }
