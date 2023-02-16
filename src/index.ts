@@ -146,11 +146,11 @@ export default class XCrawl {
       const { id, headers, data } = requestResItem
 
       const mimeType = headers['content-type'] ?? ''
-      const suffix = mimeType.split('/').pop()
+      const fileExtension = fileConfig.extension ?? mimeType.split('/').pop()
       const fileName = new Date().getTime().toString()
       const filePath = path.resolve(
         fileConfig.storeDir,
-        `${fileName}.${suffix}`
+        `${fileName}.${fileExtension}`
       )
 
       try {

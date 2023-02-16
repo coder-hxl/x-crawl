@@ -77,6 +77,7 @@ export interface IFetchDataConfig extends IFetchBaseConifg {}
 export interface IFetchFileConfig extends IFetchBaseConifg {
   fileConfig: {
     storeDir: string
+    extension?: string
   }
 }
 
