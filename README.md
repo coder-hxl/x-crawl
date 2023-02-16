@@ -310,7 +310,8 @@ interface IFetchDataConfig extends IFetchBaseConifg {
 ```ts
 interface IFetchFileConfig extends IFetchBaseConifg {
   fileConfig: {
-    storeDir: string
+    storeDir: string // store folder
+    extension?: string // filename extension
   }
 }
 ```

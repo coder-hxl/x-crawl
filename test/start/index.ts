@@ -54,6 +54,9 @@ testXCrawl
         url: 'https://www.google.com.hk/' + imgEl!.src,
         proxy: 'http://127.0.0.1:14892'
       },
-      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+      fileConfig: {
+        storeDir: path.resolve(__dirname, './upload'),
+        extension: 'jpg'
+      }
     })
   })
