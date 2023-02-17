@@ -163,7 +163,8 @@ async function useSleepByBatch(
 
 export async function batchRequest(
   requestConifgs: IRequestConfig[],
-  intervalTime: IIntervalTime | undefined
+  intervalTime: IIntervalTime | undefined,
+  callback: (requestResItem: IRequestResItem) => void
 ) {
   const isHaveIntervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
@@ -172,9 +173,10 @@ export async function batchRequest(
     `Begin execution, mode: async, total: ${logNumber(requestConifgs.length)} `
   )
 
-  const requestQueue: Promise<IRequestResItem | string>[] = []
-
   let index = 0
+  let successTotal = 0
+  let errorTotal = 0
+  const requestQueue: Promise<undefined | string>[] = []
   for (const requestConifg of requestConifgs) {
     const id = ++index
 
@@ -187,12 +189,14 @@ export async function batchRequest(
 
     const requestItem = request(requestConifg)
       .catch((error: any) => {
+        errorTotal++
         return `Request ${id} is an error: ${error.message}`
       })
       .then((requestRes) => {
         if (typeof requestRes === 'string') return requestRes
 
-        return { id, ...requestRes }
+        successTotal++
+        callback({ id, ...requestRes })
       })
 
     requestQueue.push(requestItem)
@@ -202,32 +206,20 @@ export async function batchRequest(
 
   const res = await Promise.all(requestQueue)
 
-  const success: IRequestResItem[] = []
-  const error: string[] = []
-
-  // 通过类型分类
-  res.forEach((item) => {
-    if (typeof item === 'string') {
-      return error.push(item)
-    }
-
-    success.push(item)
-  })
-
-  error.forEach((message) => log(logError(message)))
+  // 打印错误消息
+  res.forEach((item) => (item ? log(logError(item)) : ''))
 
   log(
     `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
-      success.length
-    )}, error: ${logError(error.length)}`
+      successTotal
+    )}, error: ${logError(errorTotal)}`
   )
-
-  return success
 }
 
 export async function syncBatchRequest(
   requestConifgs: IRequestConfig[],
-  intervalTime: IIntervalTime | undefined
+  intervalTime: IIntervalTime | undefined,
+  callback: (requestResItem: IRequestResItem) => void
 ) {
   const isHaveIntervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
@@ -239,7 +231,6 @@ export async function syncBatchRequest(
   let id = 0
   let successTotal = 0
   let errorTotal = 0
-  const requestRes: IRequestResItem[] = []
   for (const requestConifg of requestConifgs) {
     id++
 
@@ -250,14 +241,21 @@ export async function syncBatchRequest(
       id
     )
 
+    let isRequestSuccess = true
+    let requestResItem: IRequestResItem | null = null
     try {
-      const requestResItem = await request(requestConifg)
-      requestRes.push({ id, ...requestResItem })
+      const requestRes = await request(requestConifg)
+      requestResItem = { id, ...requestRes }
       log(logSuccess(`Request ${logNumber(id)} is an success`))
       successTotal++
     } catch (error: any) {
+      isRequestSuccess = false
       log(logError(`Request ${id} is an error: ${error.message}`))
       errorTotal++
+    }
+
+    if (isRequestSuccess && callback) {
+      callback(requestResItem as IRequestResItem)
     }
   }
 
@@ -268,6 +266,4 @@ export async function syncBatchRequest(
       successTotal
     )}, error: ${logError(errorTotal)}`
   )
-
-  return requestRes
 }

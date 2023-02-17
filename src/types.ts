@@ -89,12 +89,14 @@ export interface IFetchPollingConfig {
   m?: number
 }
 
-export type IFetchCommon<T> = {
+export interface IFetchCommon<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: T
-}[]
+}
+
+export type IFetchCommonArr<T> = IFetchCommon<T>[]
 
 export interface IFileInfo {
   fileName: string

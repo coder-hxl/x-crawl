@@ -21,12 +21,13 @@ import {
   IFetchFileConfig,
   IFetchPollingConfig,
   IFetchBaseConifg,
-  IFetchCommon,
   IFileInfo,
   IFetchHTML,
   IRequestResItem,
   IRequestConfig,
-  IIntervalTime
+  IIntervalTime,
+  IFetchCommon,
+  IFetchCommonArr
 } from './types'
 
 export default class XCrawl {
@@ -73,23 +74,24 @@ export default class XCrawl {
 
   private async useBatchRequestByMode(
     requestConifg: IRequestConfig | IRequestConfig[],
-    intervalTime: IIntervalTime | undefined
+    intervalTime: IIntervalTime | undefined,
+    callback: (requestResItem: IRequestResItem) => void
   ) {
     const requestConfigQueue = isArray(requestConifg)
       ? requestConifg
       : [requestConifg]
 
-    let requestRes: IRequestResItem[] = []
     if (this.baseConfig.mode !== 'sync') {
-      requestRes = await batchRequest(requestConfigQueue, intervalTime)
+      await batchRequest(requestConfigQueue, intervalTime, callback)
     } else {
-      requestRes = await syncBatchRequest(requestConfigQueue, intervalTime)
+      await syncBatchRequest(requestConfigQueue, intervalTime, callback)
     }
-
-    return requestRes
   }
 
-  async fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML> {
+  async fetchHTML(
+    config: IFetchHTMLConfig,
+    callback?: (res: IFetchHTML) => void
+  ): Promise<IFetchHTML> {
     const { requestConifg } = this.mergeConfig({
       requestConifg: isString(config) ? { url: config } : config
     })
@@ -105,44 +107,50 @@ export default class XCrawl {
       }
     }
 
+    if (callback) {
+      callback(res)
+    }
+
     return res
   }
 
-  async fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>> {
+  async fetchData<T = any>(
+    config: IFetchDataConfig,
+    callback?: (res: IFetchCommon<T>) => void
+  ): Promise<IFetchCommonArr<T>> {
     const { requestConifg, intervalTime } = this.mergeConfig(config)
 
-    const requestRes = await this.useBatchRequestByMode(
-      requestConifg,
-      intervalTime
-    )
-
-    const container: IFetchCommon<T> = []
-
-    requestRes.forEach((item) => {
-      const contentType = item.headers['content-type'] ?? ''
-      const rawData = item.data
+    const container: IFetchCommonArr<T> = []
+    function handleResItem(requestResItem: IRequestResItem) {
+      const contentType = requestResItem.headers['content-type'] ?? ''
+      const rawData = requestResItem.data
 
       const data = contentType.includes('text')
         ? rawData.toString()
         : JSON.parse(rawData.toString())
 
-      container.push({ ...item, data })
-    })
+      const itemRes = { ...requestResItem, data }
+
+      if (callback) {
+        callback(itemRes)
+      }
+
+      container.push(itemRes)
+    }
+
+    await this.useBatchRequestByMode(requestConifg, intervalTime, handleResItem)
 
     return container
   }
 
-  async fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>> {
+  async fetchFile(
+    config: IFetchFileConfig,
+    callback?: (res: IFetchCommon<IFileInfo>) => void
+  ): Promise<IFetchCommonArr<IFileInfo>> {
     const { requestConifg, intervalTime, fileConfig } = this.mergeConfig(config)
 
-    const requestRes = await this.useBatchRequestByMode(
-      requestConifg,
-      intervalTime
-    )
-
-    const container: IFetchCommon<IFileInfo> = []
-
-    requestRes.forEach((requestResItem) => {
+    const container: IFetchCommonArr<IFileInfo> = []
+    function handleResItem(requestResItem: IRequestResItem) {
       const { id, headers, data } = requestResItem
 
       const mimeType = headers['content-type'] ?? ''
@@ -156,16 +164,24 @@ export default class XCrawl {
       try {
         fs.writeFileSync(filePath, data)
 
-        container.push({
+        const res = {
           ...requestResItem,
           data: { fileName, mimeType, size: data.length, filePath }
-        })
+        }
+
+        if (callback) {
+          callback(res)
+        }
+
+        container.push(res)
       } catch (error: any) {
         log(logError(`File save error at id ${id}: ${error.message}`))
       }
-    })
+    }
 
-    const saveTotal = requestRes.length
+    await this.useBatchRequestByMode(requestConifg, intervalTime, handleResItem)
+
+    const saveTotal = isArray(requestConifg) ? requestConifg.length : 1
     const success = container.length
     const error = saveTotal - success
     log(
@@ -188,12 +204,12 @@ export default class XCrawl {
     const total = year + month + day + hour + minute
 
     let count = 0
-    function cb() {
+    function startCallback() {
       console.log(logWarn(`Start the ${logWarn.bold(++count)} polling`))
       callback(count)
     }
 
-    cb()
-    setInterval(cb, total)
+    startCallback()
+    setInterval(startCallback, total)
   }
 }
