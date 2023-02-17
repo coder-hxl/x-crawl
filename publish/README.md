@@ -8,7 +8,8 @@ XCrawl is a Nodejs multifunctional crawler library.
 
 - Crawl HTML, JSON, file resources, etc. with simple configuration
 - Use the JSDOM library to parse HTML, or parse HTML by yourself
-- Optional mode asynchronous/synchronous for batch requests
+- The request method supports asynchronous/synchronous
+- Support Promise/Callback
 - Polling function
 - Anthropomorphic request interval
 - Written in TypeScript
@@ -47,6 +48,7 @@ XCrawl is a Nodejs multifunctional crawler library.
     * [IFetchFileConfig](#IFetchFileConfig)
     * [IFetchPollingConfig](#IFetchPollingConfig)
     * [IFetchCommon](#IFetchCommon)
+    * [IFetchCommonArr](#IFetchCommonArr)
     * [IFileInfo](#IFileInfo)
     * [IFetchHTML](#IFetchHTML)
 - [More](#More)
@@ -92,10 +94,26 @@ Create a crawler instance via new XCrawl. The request queue is maintained by the
 ```ts
 class XCrawl {
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
-  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
-  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void): void
+
+  fetchHTML(
+    config: IFetchHTMLConfig,
+    callback?: (res: IFetchHTML) => void
+  ): Promise<IFetchHTML>
+
+  fetchData<T = any>(
+    config: IFetchDataConfig,
+    callback?: (res: IFetchCommon<T>) => void
+  ): Promise<IFetchCommonArr<T>>
+
+  fetchFile(
+    config: IFetchFileConfig,
+    callback?: (res: IFetchCommon<IFileInfo>) => void
+  ): Promise<IFetchCommonArr<IFileInfo>>
+
+  fetchPolling(
+    config: IFetchPollingConfig,
+    callback: (count: number) => void
+  ): void
 }
 ```
 
@@ -142,7 +160,10 @@ fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-c
 #### Type
 
 ```ts
-function fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
+fetchHTML(
+  config: IFetchHTMLConfig, 
+  callback?: (res: IFetchHTML) => void
+): Promise<IFetchHTML>
 ```
 
 #### Example
@@ -161,7 +182,10 @@ fetchData is the method of the above [myXCrawl](#Example-1) instance, which is u
 #### Type
 
 ```ts
-function fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
+fetchData<T = any>(
+  config: IFetchDataConfig,
+  callback?: (res: IFetchCommon<T>) => void
+): Promise<IFetchCommonArr<T>>
 ```
 
 #### Example
@@ -188,7 +212,10 @@ fetchFile is the method of the above [myXCrawl](#Example-1) instance, which is u
 #### Type
 
 ```ts
-function fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
+fetchFile(
+  config: IFetchFileConfig,
+  callback?: (res: IFetchCommon<IFileInfo>) => void
+): Promise<IFetchCommonArr<IFileInfo>>
 ```
 
 #### Example
@@ -331,12 +358,18 @@ interface IFetchPollingConfig {
 ### IFetchCommon
 
 ```ts
-type IFetchCommon<T> = {
+interface IFetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http type
+  headers: IncomingHttpHeaders // node:http 类型
   data: T
-}[]
+}
+```
+
+### IFetchCommonArr
+
+```ts
+type IFetchCommonArr<T> = IFetchCommon<T>[]
 ```
 
 ### IFileInfo

@@ -17,46 +17,30 @@ const testXCrawl = new XCrawl({
 //   ]
 // })
 
-// testXCrawl.fetchPolling({ m: 3 }, () => {
-//   testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-//     const { jsdom } = res.data
-
-//     const imgSrc: string[] = []
-//     const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
-//     recomEls.forEach((item) => imgSrc.push(item.querySelector('img')!.src))
-
-//     const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
-//     requestConifg.pop()
-
-//     testXCrawl.fetchFile({
-//       requestConifg,
-//       fileConfig: { storeDir: path.resolve(__dirname, './upload') }
-//     })
-//   })
-// })
-
-// 'http://127.0.0.1:14892'
-testXCrawl
-  .fetchHTML({
-    url: 'https://www.google.com.hk/',
-    proxy: 'http://127.0.0.1:14892'
-  })
-  .then((res) => {
-    console.log(res.statusCode)
-
-    const { jsdom } = res.data
-
-    const imgEl =
-      jsdom.window.document.querySelector<HTMLImageElement>('.lnXdpd')
-
-    testXCrawl.fetchFile({
-      requestConifg: {
-        url: 'https://www.google.com.hk/' + imgEl!.src,
-        proxy: 'http://127.0.0.1:14892'
-      },
-      fileConfig: {
-        storeDir: path.resolve(__dirname, './upload'),
-        extension: 'jpg'
-      }
+testXCrawl.fetchPolling({ m: 3 }, () => {
+  testXCrawl
+    .fetchHTML('https://www.bilibili.com/guochuang/', (res) => {
+      console.log('fetchHTML Callback: ', res.statusCode)
     })
-  })
+    .then((res) => {
+      const { jsdom } = res.data
+
+      const imgSrc: string[] = []
+      const recomEls =
+        jsdom.window.document.querySelectorAll('.chief-recom-item')
+      recomEls.forEach((item) => imgSrc.push(item.querySelector('img')!.src))
+
+      const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+      requestConifg.pop()
+
+      testXCrawl.fetchFile(
+        {
+          requestConifg,
+          fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+        },
+        (res) => {
+          console.log(res.id, res.statusCode, res.data.fileName)
+        }
+      )
+    })
+})

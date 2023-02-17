@@ -8,7 +8,8 @@ XCrawl 是 Nodejs 多功能爬虫库。
 
 - 只需简单的配置即可抓取 HTML 、JSON、文件资源等等
 - 使用 JSDOM 库对 HTML 解析，也可自行解析 HTML
-- 批量请求时可选择模式 异步/同步
+- 请求方式支持 异步/同步
+- 支持 Promise/Callback
 - 轮询功能
 - 拟人化的请求间隔时间
 - 使用 TypeScript 编写
@@ -47,6 +48,7 @@ XCrawl 是 Nodejs 多功能爬虫库。
     * [IFetchFileConfig](#IFetchFileConfig)
     * [IFetchPollingConfig](#IFetchPollingConfig)
     * [IFetchCommon](#IFetchCommon)
+    * [IFetchCommonArr](#IFetchCommonArr)
     * [IFileInfo](#IFileInfo)
     * [IFetchHTML](#IFetchHTML)
 - [更多](#更多)
@@ -104,10 +106,26 @@ myXCrawl.fetchPolling({ d: 1 }, () => {
 ```ts
 class XCrawl {
   constructor(baseConfig?: IXCrawlBaseConifg)
-  fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
-  fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
-  fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
-  fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void): void
+
+  fetchHTML(
+    config: IFetchHTMLConfig,
+    callback?: (res: IFetchHTML) => void
+  ): Promise<IFetchHTML>
+
+  fetchData<T = any>(
+    config: IFetchDataConfig,
+    callback?: (res: IFetchCommon<T>) => void
+  ): Promise<IFetchCommonArr<T>>
+
+  fetchFile(
+    config: IFetchFileConfig,
+    callback?: (res: IFetchCommon<IFileInfo>) => void
+  ): Promise<IFetchCommonArr<IFileInfo>>
+
+  fetchPolling(
+    config: IFetchPollingConfig,
+    callback: (count: number) => void
+  ): void
 }
 ```
 
@@ -154,7 +172,10 @@ fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document
 #### 类型
 
 ```ts
-function fetchHTML(config: IFetchHTMLConfig): Promise<IFetchHTML>
+fetchHTML(
+  config: IFetchHTMLConfig, 
+  callback?: (res: IFetchHTML) => void
+): Promise<IFetchHTML>
 ```
 
 #### 示例
@@ -173,7 +194,10 @@ fetch 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取 API ，可�
 #### 类型
 
 ```ts
-function fetchData<T = any>(config: IFetchDataConfig): Promise<IFetchCommon<T>>
+fetchData<T = any>(
+  config: IFetchDataConfig,
+  callback?: (res: IFetchCommon<T>) => void
+): Promise<IFetchCommonArr<T>>
 ```
 
 #### 示例
@@ -200,7 +224,10 @@ fetchFile 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取文件�
 #### 类型
 
 ```ts
-function fetchFile(config: IFetchFileConfig): Promise<IFetchCommon<IFileInfo>>
+fetchFile(
+  config: IFetchFileConfig,
+  callback?: (res: IFetchCommon<IFileInfo>) => void
+): Promise<IFetchCommonArr<IFileInfo>>
 ```
 
 #### 示例
@@ -343,12 +370,18 @@ interface IFetchPollingConfig {
 ### IFetchCommon
 
 ```ts
-type IFetchCommon<T> = {
+interface IFetchCommon<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // node:http 类型
   data: T
-}[]
+}
+```
+
+### IFetchCommonArr
+
+```ts
+type IFetchCommonArr<T> = IFetchCommon<T>[]
 ```
 
 ### IFileInfo
