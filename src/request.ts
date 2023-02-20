@@ -3,6 +3,7 @@ import https from 'node:https'
 import Url, { URL } from 'node:url'
 import HttpsProxyAgent from 'https-proxy-agent'
 
+import { quickSort } from './sort'
 import {
   isNumber,
   isUndefined,
@@ -176,7 +177,9 @@ export async function batchRequest(
   let index = 0
   let successTotal = 0
   let errorTotal = 0
-  const requestQueue: Promise<undefined | string>[] = []
+  const requestQueue: Promise<void>[] = []
+  const errorMessage: { id: number; message: string; valueOf: () => number }[] =
+    []
   for (const requestConifg of requestConifgs) {
     const id = ++index
 
@@ -190,10 +193,15 @@ export async function batchRequest(
     const requestItem = request(requestConifg)
       .catch((error: any) => {
         errorTotal++
-        return `Request ${id} is an error: ${error.message}`
+
+        const message = `Request ${id} is an error: ${error.message}`
+        // valueOf 为排序做准备
+        const valueOf = () => id
+
+        errorMessage.push({ id, message, valueOf })
       })
       .then((requestRes) => {
-        if (typeof requestRes === 'string') return requestRes
+        if (!requestRes) return
 
         successTotal++
         callback({ id, ...requestRes })
@@ -204,10 +212,11 @@ export async function batchRequest(
 
   log(logSuccess('All requests have been sent!'))
 
-  const res = await Promise.all(requestQueue)
+  // 等待所有请求结束
+  await Promise.all(requestQueue)
 
-  // 打印错误消息
-  res.forEach((item) => (item ? log(logError(item)) : ''))
+  // 排序后打印错误消息
+  quickSort(errorMessage).forEach((item) => log(logError(item.message)))
 
   log(
     `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(

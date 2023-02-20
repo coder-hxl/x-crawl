@@ -3,6 +3,7 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
 import { batchRequest, syncBatchRequest, request } from './request'
+import { quickSort } from './sort'
 import {
   isArray,
   isString,
@@ -140,7 +141,10 @@ export default class XCrawl {
 
     await this.useBatchRequestByMode(requestConifg, intervalTime, handleResItem)
 
-    return container
+    const res = quickSort(
+      container.map((item) => ({ ...item, valueOf: () => item.id }))
+    )
+    return res
   }
 
   async fetchFile(
@@ -189,8 +193,11 @@ export default class XCrawl {
         success
       )}, error: ${logError(error)}`
     )
+    const res = quickSort(
+      container.map((item) => ({ ...item, valueOf: () => item.id }))
+    )
 
-    return container
+    return res
   }
 
   fetchPolling(config: IFetchPollingConfig, callback: (count: number) => void) {
