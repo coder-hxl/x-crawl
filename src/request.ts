@@ -178,8 +178,7 @@ export async function batchRequest(
   let successTotal = 0
   let errorTotal = 0
   const requestQueue: Promise<void>[] = []
-  const errorMessage: { id: number; message: string; valueOf: () => number }[] =
-    []
+  const errorMessage: { message: string; valueOf: () => number }[] = []
   for (const requestConifg of requestConifgs) {
     const id = ++index
 
@@ -195,10 +194,9 @@ export async function batchRequest(
         errorTotal++
 
         const message = `Request ${id} is an error: ${error.message}`
-        // valueOf 为排序做准备
         const valueOf = () => id
 
-        errorMessage.push({ id, message, valueOf })
+        errorMessage.push({ message, valueOf })
       })
       .then((requestRes) => {
         if (!requestRes) return

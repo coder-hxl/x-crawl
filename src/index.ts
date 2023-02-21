@@ -1,4 +1,5 @@
 import fs from 'node:fs'
+import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { JSDOM } from 'jsdom'
 
@@ -154,6 +155,9 @@ export default class XCrawl {
     const { requestConifg, intervalTime, fileConfig } = this.mergeConfig(config)
 
     const container: IFetchCommonArr<IFileInfo> = []
+    const saveFileArr: Promise<void>[] = []
+    const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
+
     function handleResItem(requestResItem: IRequestResItem) {
       const { id, headers, data } = requestResItem
 
@@ -165,34 +169,51 @@ export default class XCrawl {
         `${fileName}.${fileExtension}`
       )
 
-      try {
-        fs.writeFileSync(filePath, data)
+      const saveFileItem = writeFile(filePath, data)
+        .catch((err) => {
+          const message = `File save error at id ${id}: ${err.message}`
+          const valueOf = () => id
 
-        const res = {
-          ...requestResItem,
-          data: { fileName, mimeType, size: data.length, filePath }
-        }
+          saveFileErrorArr.push({ message, valueOf })
 
-        if (callback) {
-          callback(res)
-        }
+          return true
+        })
+        .then((isError) => {
+          if (isError) return
 
-        container.push(res)
-      } catch (error: any) {
-        log(logError(`File save error at id ${id}: ${error.message}`))
-      }
+          const res = {
+            ...requestResItem,
+            data: { fileName, mimeType, size: data.length, filePath }
+          }
+
+          if (callback) {
+            callback(res)
+          }
+
+          container.push(res)
+        })
+
+      saveFileArr.push(saveFileItem)
     }
 
     await this.useBatchRequestByMode(requestConifg, intervalTime, handleResItem)
 
-    const saveTotal = isArray(requestConifg) ? requestConifg.length : 1
+    // 等待保存文件任务完成
+    await Promise.all(saveFileArr)
+
+    // 打印保存文件的错误
+    quickSort(saveFileErrorArr).forEach((item) => log(logError(item.message)))
+
+    const saveFileTotal = isArray(requestConifg) ? requestConifg.length : 1
     const success = container.length
-    const error = saveTotal - success
+    const error = saveFileTotal - success
     log(
-      `saveTotal: ${logNumber(saveTotal)}, success: ${logSuccess(
+      `saveFileTotal: ${logNumber(saveFileTotal)}, success: ${logSuccess(
         success
       )}, error: ${logError(error)}`
     )
+
+    // 排序结果
     const res = quickSort(
       container.map((item) => ({ ...item, valueOf: () => item.id }))
     )
