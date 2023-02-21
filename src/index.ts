@@ -158,6 +158,10 @@ export default class XCrawl {
     const saveFileArr: Promise<void>[] = []
     const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
 
+    if (!fs.existsSync(fileConfig.storeDir)) {
+      fs.mkdirSync(fileConfig.storeDir)
+    }
+
     function handleResItem(requestResItem: IRequestResItem) {
       const { id, headers, data } = requestResItem
 
