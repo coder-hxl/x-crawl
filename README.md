@@ -1,6 +1,6 @@
 # x-crawl
 
-English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md)
+English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
 XCrawl is a Nodejs multifunctional crawler library. 
 
@@ -8,8 +8,8 @@ XCrawl is a Nodejs multifunctional crawler library.
 
 - Crawl HTML, JSON, file resources, etc. with simple configuration
 - Use the JSDOM library to parse HTML, or parse HTML by yourself
-- The request method supports asynchronous/synchronous
-- Support Promise/Callback
+- Support asynchronous/synchronous way to crawl data
+- Support Promise/Callback way to get the result
 - Polling function
 - Anthropomorphic request interval
 - Written in TypeScript
@@ -87,9 +87,11 @@ docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
 
 ### XCrawl
 
-Create a crawler instance via new XCrawl. The request queue is maintained by the instance method itself and is not shared.
+Create a crawler instance via new XCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
 
 #### Type
+
+For more detailed types, please see the [Types](#Types) section
 
 ```ts
 class XCrawl {
@@ -159,6 +161,9 @@ fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-c
 
 #### Type
 
+- Look at the [IFetchHTMLConfig](#IFetchHTMLConfig) type
+- Look at the [IFetchHTML](#IFetchHTML) type
+
 ```ts
 fetchHTML(
   config: IFetchHTMLConfig, 
@@ -180,6 +185,10 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
 fetchData is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 #### Type
+
+- Look at the [IFetchDataConfig](#IFetchDataConfig) type
+- Look at the [IFetchCommon](#IFetchCommon) type
+- Look at the [IFetchCommonArr](#IFetchCommonArr) type
 
 ```ts
 fetchData<T = any>(
@@ -210,6 +219,11 @@ myXCrawl.fetchData({
 fetchFile is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
 
 #### Type
+
+- Look at the [IFetchFileConfig](#IFetchFileConfig) type
+- Look at the [IFetchCommon](#IFetchCommon) type
+- Look at the [IFetchCommonArr](#IFetchCommonArr) type
+- Look at the [IFileInfo](#IFileInfo) type
 
 ```ts
 fetchFile(
@@ -242,6 +256,8 @@ myXCrawl.fetchFile({
 fetchPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
 
 #### Type
+
+- Look at the [IFetchPollingConfig](#IFetchPollingConfig) type
 
 ```ts
 function fetchPolling(
@@ -361,7 +377,7 @@ interface IFetchPollingConfig {
 interface IFetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http 类型
+  headers: IncomingHttpHeaders // node:http type
   data: T
 }
 ```

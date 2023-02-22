@@ -4,12 +4,12 @@
 
 XCrawl 是 Nodejs 多功能爬虫库。
 
-## 特点
+## 特征
 
 - 只需简单的配置即可抓取 HTML 、JSON、文件资源等等
 - 使用 JSDOM 库对 HTML 解析，也可自行解析 HTML
-- 请求方式支持 异步/同步
-- 支持 Promise/Callback
+- 支持 异步/同步 方式爬取数据
+- 支持 Promise/Callback 方式获取结果
 - 轮询功能
 - 拟人化的请求间隔时间
 - 使用 TypeScript 编写
@@ -20,7 +20,7 @@ XCrawl 是 Nodejs 多功能爬虫库。
 - [示例](#示例)
 - [核心概念](#核心概念)
     * [XCrawl](#XCrawl)
-       + [类型](#Type-1)
+       + [类型](#类型-1)
        + [示例](#示例-1)
        + [模式](#模式)
        + [间隔时间](#间隔时间)
@@ -99,9 +99,11 @@ myXCrawl.fetchPolling({ d: 1 }, () => {
 
 ### XCrawl
 
-通过 new XCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非共享的。
+通过 new XCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非由实例自己维护。
 
 #### 类型
+
+更详细的类型请看[类型](#类型-6)部分内容
 
 ```ts
 class XCrawl {
@@ -171,6 +173,9 @@ fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document
 
 #### 类型
 
+- 查看 [IFetchHTMLConfig](#IFetchHTMLConfig) 类型
+- 查看 [IFetchHTML](#IFetchHTML) 类型
+
 ```ts
 fetchHTML(
   config: IFetchHTMLConfig, 
@@ -192,6 +197,10 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
 fetch 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
+
+- 查看 [IFetchDataConfig](#IFetchDataConfig) 类型
+- 查看 [IFetchCommon](#IFetchCommon) 类型
+- 查看 [IFetchCommonArr](#IFetchCommonArr) 类型
 
 ```ts
 fetchData<T = any>(
@@ -222,6 +231,11 @@ myXCrawl.fetchData({
 fetchFile 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
+
+- 查看 [IFetchFileConfig](#IFetchFileConfig) 类型
+- 查看 [IFetchCommon](#IFetchCommon) 类型
+- 查看 [IFetchCommonArr](#IFetchCommonArr) 类型
+- 查看 [IFileInfo](#IFileInfo) 类型
 
 ```ts
 fetchFile(
@@ -254,6 +268,8 @@ myXCrawl.fetchFile({
 fetchPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
 
 #### 类型
+
+- 查看 [IFetchPollingConfig](#IFetchPollingConfig) 类型
 
 ```ts
 function fetchPolling(
@@ -373,7 +389,7 @@ interface IFetchPollingConfig {
 interface IFetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http 类型
+  headers: IncomingHttpHeaders // node: http 类型
   data: T
 }
 ```
@@ -400,7 +416,7 @@ interface IFileInfo {
 ```ts
 interface IFetchHTML {
   statusCode: number | undefined
-  headers: IncomingHttpHeaders
+  headers: IncomingHttpHeaders // node: http 类型
   data: {
     html: string // HTML String
     jsdom: JSDOM // 使用了 jsdom 库对 HTML 解析
