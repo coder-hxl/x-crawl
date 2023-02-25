@@ -72,7 +72,7 @@ import XCrawl from 'x-crawl'
 // 2.创建一个爬虫实例
 const myXCrawl = new XCrawl({
   timeout: 10000, // 超时时间
-  intervalTime: { max: 6000, min: 2000 } // 控制请求频率
+  intervalTime: { max: 3000, min: 2000 } // 控制请求频率
 })
 
 // 3.调用 fetchPolling API 开始轮询功能，每隔一天会调用回调函数
@@ -93,7 +93,7 @@ myXCrawl.fetchPolling({ d: 1 }, () => {
 })
 ```
 
-**注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 6000ms 到 2000ms 内。
+**注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 3000ms 到 2000ms 内。
 
 ## 核心概念
 
