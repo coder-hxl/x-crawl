@@ -12,7 +12,7 @@ XCrawl 是 Nodejs 多功能爬虫库。
 - 支持 Promise/Callback 方式获取结果
 - 轮询功能
 - 拟人化的请求间隔时间
-- 使用 TypeScript 编写
+- 使用 TypeScript 编写，提供泛型
 
 # 目录
 
@@ -75,23 +75,31 @@ const myXCrawl = new XCrawl({
   intervalTime: { max: 3000, min: 2000 } // 控制请求频率
 })
 
-// 3.调用 fetchPolling API 开始轮询功能，每隔一天会调用回调函数
+// 3.设置爬取任务
+// 调用 fetchPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.fetchPolling({ d: 1 }, () => {
-  // 3.1.调用 fetchHTML API 爬取 HTML
+  // 调用 fetchHTML API 爬取 HTML
   myXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-    const { jsdom } = res.data  // 默认使用了 JSDOM 库解析 HTML
-  
-     // 3.2.获取轮播图片的 src
-    const imgSrc = []
-    const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
-    recomEls.forEach((item) => imgSrc.push(item.querySelector('img').src))
- 
-    // 3.3.调用 fetchFile API 爬取图片
-    const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+    const { jsdom } = res.data // 默认使用了 JSDOM 库解析 HTML
+
+    // 获取轮播图片元素
+    const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
+
+    // 设置请求配置
+    const requestConifg = []
+    imgEls.forEach((item) => requestConifg.push({ url: `https:${item.src}` }))
+
+    // 调用 fetchFile API 爬取图片
     myXCrawl.fetchFile({ requestConifg, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
+
+运行效果:
+
+![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler.png)
+
+![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler-result.png)
 
 **注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 3000ms 到 2000ms 内。
 

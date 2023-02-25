@@ -12,7 +12,7 @@ XCrawl is a Nodejs multifunctional crawler library.
 - Support Promise/Callback way to get the result
 - Polling function
 - Anthropomorphic request interval
-- Written in TypeScript
+- Written in TypeScript, provides generics
 
 # Table of Contents
 
