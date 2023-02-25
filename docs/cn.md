@@ -97,9 +97,13 @@ myXCrawl.fetchPolling({ d: 1 }, () => {
 
 运行效果:
 
-![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler.png)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler.png" />
+</div>
 
-![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler-result.png)
+<div align="center">
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler-result.png" />
+</div>
 
 **注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 3000ms 到 2000ms 内。
 
