@@ -2,12 +2,12 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-XCrawl is a Nodejs multifunctional crawler library. 
+x-crawl is a Nodejs multifunctional crawler library. 
 
 ## Feature
 
 - Crawl HTML, JSON, file resources, etc. with simple configuration
-- Use the JSDOM library to parse HTML, or parse HTML by yourself
+- Use puppeteer to crawl HTML, and use JSDOM library to parse HTML, or parse HTML by yourself
 - Support asynchronous/synchronous way to crawl data
 - Support Promise/Callback way to get the result
 - Polling function
@@ -19,7 +19,7 @@ XCrawl is a Nodejs multifunctional crawler library.
 - [Install](#Install)
 - [Example](#Example)
 - [Core concepts](#Core-concepts)
-    * [XCrawl](#XCrawl)
+    * [x-crawl](#x-crawl-2)
        + [Type](#Type-1)
        + [Example](#Example-1)
        + [Mode](#Mode)
@@ -37,20 +37,20 @@ XCrawl is a Nodejs multifunctional crawler library.
        + [Type](#Type-5)
        + [Example](#Example-5)
 - [Types](#Types)
-    * [IAnyObject](#IAnyObject)
-    * [IMethod](#IMethod)
-    * [IRequestConfig](#IRequestConfig)
-    * [IIntervalTime](#IIntervalTime)
-    * [IFetchBaseConifg](#IFetchBaseConifg)
-    * [IXCrawlBaseConifg](#IXCrawlBaseConifg)
-    * [IFetchHTMLConfig](#IFetchHTMLConfig	)
-    * [IFetchDataConfig](#IFetchDataConfig)   
-    * [IFetchFileConfig](#IFetchFileConfig)
-    * [IFetchPollingConfig](#IFetchPollingConfig)
-    * [IFetchCommon](#IFetchCommon)
-    * [IFetchCommonArr](#IFetchCommonArr)
-    * [IFileInfo](#IFileInfo)
-    * [IFetchHTML](#IFetchHTML)
+    * [AnyObject](#AnyObject)
+    * [Method](#Method)
+    * [RequestConfig](#RequestConfig)
+    * [IntervalTime](#IntervalTime)
+    * [FetchBaseConifg](#FetchBaseConifg)
+    * [XCrawlBaseConifg](#XCrawlBaseConifg)
+    * [FetchHTMLConfig](#FetchHTMLConfig	)
+    * [FetchDataConfig](#FetchDataConfig)   
+    * [FetchFileConfig](#FetchFileConfig)
+    * [StartPollingConfig](#StartPollingConfig)
+    * [FetchCommon](#FetchCommon)
+    * [FetchCommonArr](#FetchCommonArr)
+    * [FileInfo](#FileInfo)
+    * [FetchHTML](#FetchHTML)
 - [More](#More)
 
 ## Install
@@ -67,10 +67,10 @@ Get the title of https://docs.github.com/zh/get-started as an example:
 
 ```js
 // Import module ES/CJS
-import XCrawl from 'x-crawl'
+import xCrawl from 'x-crawl'
 
 // Create a crawler instance
-const docsXCrawl = new XCrawl({
+const docsXCrawl = xCrawl({
   baseUrl: 'https://docs.github.com',
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
@@ -85,44 +85,22 @@ docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
 
 ## Core concepts
 
-### XCrawl
+### x-crawl
 
-Create a crawler instance via new XCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
+Create a crawler instance via call xCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
 
 #### Type
 
 For more detailed types, please see the [Types](#Types) section
 
 ```ts
-class XCrawl {
-  constructor(baseConfig?: IXCrawlBaseConifg)
-
-  fetchHTML(
-    config: IFetchHTMLConfig,
-    callback?: (res: IFetchHTML) => void
-  ): Promise<IFetchHTML>
-
-  fetchData<T = any>(
-    config: IFetchDataConfig,
-    callback?: (res: IFetchCommon<T>) => void
-  ): Promise<IFetchCommonArr<T>>
-
-  fetchFile(
-    config: IFetchFileConfig,
-    callback?: (res: IFetchCommon<IFileInfo>) => void
-  ): Promise<IFetchCommonArr<IFileInfo>>
-
-  fetchPolling(
-    config: IFetchPollingConfig,
-    callback: (count: number) => void
-  ): void
-}
+function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance
 ```
 
 #### Example
 
 ```js
-const myXCrawl = new XCrawl({
+const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
   // The interval between requests, multiple requests are valid
@@ -161,14 +139,14 @@ fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-c
 
 #### Type
 
-- Look at the [IFetchHTMLConfig](#IFetchHTMLConfig) type
-- Look at the [IFetchHTML](#IFetchHTML) type
+- Look at the [FetchHTMLConfig](#FetchHTMLConfig) type
+- Look at the [FetchHTML](#FetchHTML) type
 
 ```ts
-fetchHTML(
-  config: IFetchHTMLConfig, 
-  callback?: (res: IFetchHTML) => void
-): Promise<IFetchHTML>
+function fetchHTML: (
+  config: FetchHTMLConfig,
+  callback?: (res: FetchHTML) => void
+) => Promise<FetchHTML>
 ```
 
 #### Example
@@ -186,15 +164,15 @@ fetchData is the method of the above [myXCrawl](#Example-1) instance, which is u
 
 #### Type
 
-- Look at the [IFetchDataConfig](#IFetchDataConfig) type
-- Look at the [IFetchCommon](#IFetchCommon) type
-- Look at the [IFetchCommonArr](#IFetchCommonArr) type
+- Look at the [FetchDataConfig](#FetchDataConfig) type
+- Look at the [FetchResCommonV1](#FetchResCommonV1) type
+- Look at the [FetchResCommonArrV1](#FetchResCommonArrV1) type
 
 ```ts
-fetchData<T = any>(
-  config: IFetchDataConfig,
-  callback?: (res: IFetchCommon<T>) => void
-): Promise<IFetchCommonArr<T>>
+function fetchData: <T = any>(
+  config: FetchDataConfig,
+  callback?: (res: FetchResCommonV1<T>) => void
+) => Promise<FetchResCommonArrV1<T>>
 ```
 
 #### Example
@@ -207,7 +185,7 @@ const requestConifg = [
 ]
 
 myXCrawl.fetchData({ 
-  requestConifg, // Request configuration, can be IRequestConfig | IRequestConfig[]
+  requestConifg, // Request configuration, can be RequestConfig | RequestConfig[]
   intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when not using myXCrawl
 }).then(res => {
   console.log(res)
@@ -220,16 +198,16 @@ fetchFile is the method of the above [myXCrawl](#Example-1) instance, which is u
 
 #### Type
 
-- Look at the [IFetchFileConfig](#IFetchFileConfig) type
-- Look at the [IFetchCommon](#IFetchCommon) type
-- Look at the [IFetchCommonArr](#IFetchCommonArr) type
-- Look at the [IFileInfo](#IFileInfo) type
+- Look at the [FetchFileConfig](#FetchFileConfig) type
+- Look at the [FetchResCommonV1](#FetchResCommonV1) type
+- Look at the [FetchResCommonArrV1](#FetchResCommonArrV1) type
+- Look at the [FileInfo](#FileInfo) type
 
 ```ts
-fetchFile(
-  config: IFetchFileConfig,
-  callback?: (res: IFetchCommon<IFileInfo>) => void
-): Promise<IFetchCommonArr<IFileInfo>>
+function fetchFile: (
+  config: FetchFileConfig,
+  callback?: (res: FetchResCommonV1<FileInfo>) => void
+) => Promise<FetchResCommonArrV1<FileInfo>>
 ```
 
 #### Example
@@ -251,17 +229,17 @@ myXCrawl.fetchFile({
 })
 ```
 
-### fetchPolling
+### startPolling
 
 fetchPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
 
 #### Type
 
-- Look at the [IFetchPollingConfig](#IFetchPollingConfig) type
+- Look at the [StartPollingConfig](#StartPollingConfig) type
 
 ```ts
-function fetchPolling(
-  config: IFetchPollingConfig,
+function startPolling(
+  config: StartPollingConfig,
   callback: (count: number) => void
 ): void
 ```
@@ -269,7 +247,7 @@ function fetchPolling(
 #### Example
 
 ```js
-myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
+myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // will be executed every one and a half hours
   // fetchHTML/fetchData/fetchFile
 })
@@ -277,121 +255,130 @@ myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
 
 ## Types
 
-### IAnyObject
+### AnyObject
 
 ```ts
-interface IAnyObject extends Object {
+interface AnyObject extends Object {
   [key: string | number | symbol]: any
 }
 ```
 
-### IMethod
+### Method
 
 ```ts
-type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### IRequestConfig
+### RequestConfig
 
 ```ts 
-interface IRequestConfig {
+interface RequestConfig {
   url: string
-  method?: IMethod
-  headers?: IAnyObject
-  params?: IAnyObject
+  method?: Method
+  headers?: AnyObject
+  params?: AnyObject
   data?: any
   timeout?: number
   proxy?: string
 }
 ```
 
-### IIntervalTime
+### IntervalTime
 
 ```ts
-type IIntervalTime = number | {
+type IntervalTime = number | {
   max: number
   min?: number
 }
 ```
 
-### IFetchBaseConifg
+### XCrawlBaseConifg
 
 ```ts
-interface IFetchBaseConifg {
-  requestConifg: IRequestConfig | IRequestConfig[]
-  intervalTime?: IIntervalTime
-}
-```
-
-### IXCrawlBaseConifg
-
-```ts
-interface IXCrawlBaseConifg {
+interface XCrawlBaseConifg {
   baseUrl?: string
   timeout?: number
-  intervalTime?: IIntervalTime
+  intervalTime?: IntervalTime
   mode?: 'async' | 'sync'
   proxy?: string
 }
 ```
 
-### IFetchHTMLConfig
+### FetchBaseConifgV1
 
 ```ts
-type IFetchHTMLConfig = string | IRequestConfig
-```
-
-### IFetchDataConfig
-
-```ts
-interface IFetchDataConfig extends IFetchBaseConifg {
+interface FetchBaseConifgV1 {
+  requestConifg: RequestConfig | RequestConfig[]
+  intervalTime?: IntervalTime
 }
 ```
 
-### IFetchFileConfig
+### FetchBaseConifgV2
 
 ```ts
-interface IFetchFileConfig extends IFetchBaseConifg {
+interface FetchBaseConifgV2 {
+  url: string
+  header?: AnyObject
+  timeout?: number
+  proxy?: string
+}
+```
+
+### FetchHTMLConfig
+
+```ts
+type FetchHTMLConfig = string | FetchBaseConifgV2
+```
+
+### FetchDataConfig
+
+```ts
+interface FetchDataConfig extends FetchBaseConifgV1 {
+}
+```
+
+### FetchFileConfig
+
+```ts
+interface FetchFileConfig extends FetchBaseConifgV1 {
   fileConfig: {
-    storeDir: string // store folder
+    storeDir: string // Store folder
     extension?: string // filename extension
   }
 }
 ```
 
-### IFetchPollingConfig
+### StartPollingConfig
 
 ```ts
-interface IFetchPollingConfig {
- Y?: number // Year (365 days per year)
- M?: number // Month (30 days per month)
- d?: number // day
- h?: number // hour
- m?: number // minute
+interface StartPollingConfig {
+  d?: number // day
+  h?: number // hour
+  m?: number // minute
 }
 ```
 
-### IFetchCommon
+### FetchResCommonV1
 
 ```ts
-interface IFetchCommon<T> {
+interface FetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node:http type
+  headers: IncomingHttpHeaders // node: http type
   data: T
 }
 ```
 
-### IFetchCommonArr
+### FetchResCommonArrV1
 
 ```ts
-type IFetchCommonArr<T> = IFetchCommon<T>[]
+type FetchCommonArr<T> = FetchCommon<T>[]
 ```
 
-### IFileInfo
+### FileInfo
 
 ```ts
-interface IFileInfo {
+interface FileInfo {
   fileName: string
   mimeType: string
   size: number
@@ -399,15 +386,15 @@ interface IFileInfo {
 }
 ```
 
-### IFetchHTML
+### FetchHTML
 
 ```ts
-interface IFetchHTML {
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders
+interface FetchHTML {
+  httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
   data: {
-    html: string // HTML String
-    jsdom: JSDOM // HTML parsing using the jsdom library
+    page: Page
+    content: string
+    jsdom: JSDOM // The type of JSDOM in the jsdom library
   }
 }
 ```

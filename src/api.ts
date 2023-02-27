@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { JSDOM } from 'jsdom'
-import puppeteer, { Browser, Page } from 'puppeteer'
+import puppeteer, { Browser } from 'puppeteer'
 
 import { batchRequest, syncBatchRequest } from './request'
 import { quickSort } from './sort'
@@ -18,23 +18,22 @@ import {
 } from './utils'
 
 import {
-  IXCrawlBaseConifg,
-  IFetchHTMLConfig,
-  IFetchDataConfig,
-  IFetchFileConfig,
-  IStartPollingConfig,
-  IFetchBaseConifg,
-  IFileInfo,
-  IFetchHTML,
-  IRequestResItem,
-  IRequestConfig,
-  IIntervalTime,
-  IFetchCommon,
-  IFetchCommonArr
-} from './types'
+  FetchBaseConifgV1,
+  FetchDataConfig,
+  FetchFileConfig,
+  FetchHTML,
+  FetchHTMLConfig,
+  FetchResCommonArrV1,
+  FetchResCommonV1,
+  FileInfo,
+  IntervalTime,
+  StartPollingConfig
+} from './types/api'
+import { XCrawlBaseConifg } from './types'
+import { RequestConfig, RequestResItem } from './types/request'
 
-function mergeConfig<T extends IFetchBaseConifg>(
-  baseConfig: IXCrawlBaseConifg,
+function mergeConfig<T extends FetchBaseConifgV1>(
+  baseConfig: XCrawlBaseConifg,
   rawConfig: T
 ): T {
   const newConfig = structuredClone(rawConfig)
@@ -43,22 +42,22 @@ function mergeConfig<T extends IFetchBaseConifg>(
   const requestConifgArr = isArray(newConfig.requestConifg)
     ? newConfig.requestConifg
     : [newConfig.requestConifg]
-  for (const requestItem of requestConifgArr) {
-    const { url, timeout, proxy } = requestItem
+  for (const requesttem of requestConifgArr) {
+    const { url, timeout, proxy } = requesttem
 
     // 1.1.baseUrl
     if (!isUndefined(baseConfig.baseUrl)) {
-      requestItem.url = baseConfig.baseUrl + url
+      requesttem.url = baseConfig.baseUrl + url
     }
 
     // 1.2.timeout
     if (isUndefined(timeout)) {
-      requestItem.timeout = baseConfig.timeout
+      requesttem.timeout = baseConfig.timeout
     }
 
     // 1.3.porxy
     if (isUndefined(proxy)) {
-      requestItem.proxy = baseConfig.proxy
+      requesttem.proxy = baseConfig.proxy
     }
   }
 
@@ -72,9 +71,9 @@ function mergeConfig<T extends IFetchBaseConifg>(
 
 async function useBatchRequestByMode(
   mode: 'async' | 'sync' | undefined,
-  requestConifg: IRequestConfig | IRequestConfig[],
-  intervalTime: IIntervalTime | undefined,
-  callback: (requestResItem: IRequestResItem) => void
+  requestConifg: RequestConfig | RequestConfig[],
+  intervalTime: IntervalTime | undefined,
+  callback: (requestRestem: RequestResItem) => void
 ) {
   const requestConfigQueue = isArray(requestConifg)
     ? requestConifg
@@ -87,25 +86,33 @@ async function useBatchRequestByMode(
   }
 }
 
-export function createFetchHTML(baseConfig: IXCrawlBaseConifg) {
-  // 初始值
+export function createFetchHTML(baseConfig: XCrawlBaseConifg) {
   let browser: Browser | null = null
-  let page: Page | null = null
-  let useTotal = 0
+  let createBrowserState: Promise<void> | null = null
+  let callTotal = 0
 
   async function fetchHTML(
-    config: IFetchHTMLConfig,
-    callback?: (res: IFetchHTML) => void
-  ): Promise<IFetchHTML> {
-    // 完成初始化
-    if (useTotal === 0) {
-      browser = await puppeteer.launch()
-      page = await browser.newPage()
-      await page.setViewport({ width: 1280, height: 1024 })
+    config: FetchHTMLConfig,
+    callback?: (res: FetchHTML) => void
+  ): Promise<FetchHTML> {
+    // 记录调用次数, 为关闭浏览器
+    callTotal++
+
+    // 只创建一次浏览器
+    if (callTotal === 1) {
+      createBrowserState = puppeteer.launch().then((res) => {
+        browser = res
+      })
     }
 
-    // 记录调用次数
-    useTotal++
+    // 等待浏览器创建完毕
+    if (createBrowserState) {
+      await Promise.all([createBrowserState])
+      createBrowserState = null
+    }
+
+    const page = await browser!.newPage()
+    await page.setViewport({ width: 1280, height: 1024 })
 
     const { requestConifg } = mergeConfig(baseConfig, {
       requestConifg: isString(config) ? { url: config } : config
@@ -127,13 +134,14 @@ export function createFetchHTML(baseConfig: IXCrawlBaseConifg) {
     const content = await page!.content()
 
     // 关闭浏览器
-    if (--useTotal === 0) {
+    if (--callTotal === 0) {
       await browser!.close()
     }
 
-    const res: IFetchHTML = {
+    const res: FetchHTML = {
       httpResponse,
       data: {
+        page,
         content,
         jsdom: new JSDOM(content)
       }
@@ -149,23 +157,23 @@ export function createFetchHTML(baseConfig: IXCrawlBaseConifg) {
   return fetchHTML
 }
 
-export function createFetchData(baseConfig: IXCrawlBaseConifg) {
+export function createFetchData(baseConfig: XCrawlBaseConifg) {
   async function fetchData<T = any>(
-    config: IFetchDataConfig,
-    callback?: (res: IFetchCommon<T>) => void
-  ): Promise<IFetchCommonArr<T>> {
+    config: FetchDataConfig,
+    callback?: (res: FetchResCommonV1<T>) => void
+  ): Promise<FetchResCommonArrV1<T>> {
     const { requestConifg, intervalTime } = mergeConfig(baseConfig, config)
 
-    const container: IFetchCommonArr<T> = []
-    function handleResItem(requestResItem: IRequestResItem) {
-      const contentType = requestResItem.headers['content-type'] ?? ''
-      const rawData = requestResItem.data
+    const container: FetchResCommonArrV1<T> = []
+    function handleRestem(requestRestem: RequestResItem) {
+      const contentType = requestRestem.headers['content-type'] ?? ''
+      const rawData = requestRestem.data
 
       const data = contentType.includes('text')
         ? rawData.toString()
         : JSON.parse(rawData.toString())
 
-      const itemRes = { ...requestResItem, data }
+      const itemRes = { ...requestRestem, data }
 
       if (callback) {
         callback(itemRes)
@@ -178,7 +186,7 @@ export function createFetchData(baseConfig: IXCrawlBaseConifg) {
       baseConfig.mode,
       requestConifg,
       intervalTime,
-      handleResItem
+      handleRestem
     )
 
     const res = quickSort(
@@ -190,17 +198,17 @@ export function createFetchData(baseConfig: IXCrawlBaseConifg) {
   return fetchData
 }
 
-export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
+export function createFetchFile(baseConfig: XCrawlBaseConifg) {
   async function fetchFile(
-    config: IFetchFileConfig,
-    callback?: (res: IFetchCommon<IFileInfo>) => void
-  ): Promise<IFetchCommonArr<IFileInfo>> {
+    config: FetchFileConfig,
+    callback?: (res: FetchResCommonV1<FileInfo>) => void
+  ): Promise<FetchResCommonArrV1<FileInfo>> {
     const { requestConifg, intervalTime, fileConfig } = mergeConfig(
       baseConfig,
       config
     )
 
-    const container: IFetchCommonArr<IFileInfo> = []
+    const container: FetchResCommonArrV1<FileInfo> = []
     const saveFileArr: Promise<void>[] = []
     const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
 
@@ -208,8 +216,8 @@ export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
       fs.mkdirSync(fileConfig.storeDir)
     }
 
-    function handleResItem(requestResItem: IRequestResItem) {
-      const { id, headers, data } = requestResItem
+    function handleRestem(requestRestem: RequestResItem) {
+      const { id, headers, data } = requestRestem
 
       const mimeType = headers['content-type'] ?? ''
       const fileExtension = fileConfig.extension ?? mimeType.split('/').pop()
@@ -219,7 +227,7 @@ export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
         `${fileName}.${fileExtension}`
       )
 
-      const saveFileItem = writeFile(filePath, data)
+      const saveFiletem = writeFile(filePath, data)
         .catch((err) => {
           const message = `File save error at id ${id}: ${err.message}`
           const valueOf = () => id
@@ -232,7 +240,7 @@ export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
           if (isError) return
 
           const res = {
-            ...requestResItem,
+            ...requestRestem,
             data: { fileName, mimeType, size: data.length, filePath }
           }
 
@@ -243,14 +251,14 @@ export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
           container.push(res)
         })
 
-      saveFileArr.push(saveFileItem)
+      saveFileArr.push(saveFiletem)
     }
 
     await useBatchRequestByMode(
       baseConfig.mode,
       requestConifg,
       intervalTime,
-      handleResItem
+      handleRestem
     )
 
     // 等待保存文件任务完成
@@ -280,17 +288,15 @@ export function createFetchFile(baseConfig: IXCrawlBaseConifg) {
 }
 
 export function startPolling(
-  config: IStartPollingConfig,
+  config: StartPollingConfig,
   callback: (count: number) => void
 ) {
-  const { Y, M, d, h, m } = config
+  const { d, h, m } = config
 
-  const year = !isUndefined(Y) ? Y * 1000 * 60 * 60 * 24 * 365 : 0
-  const month = !isUndefined(M) ? M * 1000 * 60 * 60 * 24 * 30 : 0
   const day = !isUndefined(d) ? d * 1000 * 60 * 60 * 24 : 0
   const hour = !isUndefined(h) ? h * 1000 * 60 * 60 : 0
   const minute = !isUndefined(m) ? m * 1000 * 60 : 0
-  const total = year + month + day + hour + minute
+  const total = day + hour + minute
 
   let count = 0
   function startCallback() {

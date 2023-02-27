@@ -15,16 +15,11 @@ import {
   sleep
 } from './utils'
 
-import {
-  IIntervalTime,
-  IRequest,
-  IRequestConfig,
-  IAnyObject,
-  IMapTypeEmptyObject,
-  IRequestResItem
-} from './types'
+import { AnyObject, MapTypeEmptyObject } from './types/common'
+import { RequestConfig, RequestResItem, Request } from './types/request'
+import { IntervalTime } from './types/api'
 
-function parseParams(urlSearch: string, params?: IAnyObject): string {
+function parseParams(urlSearch: string, params?: AnyObject): string {
   let res = urlSearch ? `${urlSearch}` : '?'
 
   if (params) {
@@ -40,11 +35,11 @@ function parseParams(urlSearch: string, params?: IAnyObject): string {
 }
 
 function parseHeaders(
-  rawConfig: IRequestConfig,
-  config: RequestOptions & IMapTypeEmptyObject<URL>
+  rawConfig: RequestConfig,
+  config: RequestOptions & MapTypeEmptyObject<URL>
 ) {
   const rawHeaders = rawConfig.headers ?? {}
-  const headers: IAnyObject = {
+  const headers: AnyObject = {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
     ...rawHeaders
@@ -59,14 +54,14 @@ function parseHeaders(
 }
 
 function handleRequestConfig(
-  rawConfig: IRequestConfig
-): RequestOptions & IMapTypeEmptyObject<URL> {
+  rawConfig: RequestConfig
+): RequestOptions & MapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
   )
   const isHttp = protocol === 'http:'
 
-  const config: RequestOptions & IMapTypeEmptyObject<URL> = {
+  const config: RequestOptions & MapTypeEmptyObject<URL> = {
     agent: rawConfig.proxy
       ? HttpsProxyAgent(rawConfig.proxy)
       : isHttp
@@ -89,8 +84,8 @@ function handleRequestConfig(
   return config
 }
 
-export function request(config: IRequestConfig) {
-  return new Promise<IRequest>((resolve, reject) => {
+export function request(config: RequestConfig) {
+  return new Promise<Request>((resolve, reject) => {
     const isDataUndefine = isUndefined(config.data)
     config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
 
@@ -105,7 +100,7 @@ export function request(config: IRequestConfig) {
 
       res.on('end', () => {
         const data = Buffer.concat(container)
-        const resolveRes: IRequest = {
+        const resolveRes: Request = {
           statusCode,
           headers,
           data
@@ -140,13 +135,13 @@ export function request(config: IRequestConfig) {
 }
 
 async function useSleepByBatch(
-  isHaveIntervalTime: boolean,
-  isNumberIntervalTime: boolean,
+  isHaventervalTime: boolean,
+  isNumberntervalTime: boolean,
   intervalTime: any,
   id: number
 ) {
-  if (isHaveIntervalTime && id > 1) {
-    const timeout: number = isNumberIntervalTime
+  if (isHaventervalTime && id > 1) {
+    const timeout: number = isNumberntervalTime
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
@@ -163,12 +158,12 @@ async function useSleepByBatch(
 }
 
 export async function batchRequest(
-  requestConifgs: IRequestConfig[],
-  intervalTime: IIntervalTime | undefined,
-  callback: (requestResItem: IRequestResItem) => void
+  requestConifgs: RequestConfig[],
+  intervalTime: IntervalTime | undefined,
+  callback: (requestResItem: RequestResItem) => void
 ) {
-  const isHaveIntervalTime = !isUndefined(intervalTime)
-  const isNumberIntervalTime = isNumber(intervalTime)
+  const isHaventervalTime = !isUndefined(intervalTime)
+  const isNumberntervalTime = isNumber(intervalTime)
 
   log(
     `Begin execution, mode: async, total: ${logNumber(requestConifgs.length)} `
@@ -183,13 +178,13 @@ export async function batchRequest(
     const id = ++index
 
     await useSleepByBatch(
-      isHaveIntervalTime,
-      isNumberIntervalTime,
+      isHaventervalTime,
+      isNumberntervalTime,
       intervalTime,
       id
     )
 
-    const requestItem = request(requestConifg)
+    const requesttem = request(requestConifg)
       .catch((error: any) => {
         errorTotal++
 
@@ -205,7 +200,7 @@ export async function batchRequest(
         callback({ id, ...requestRes })
       })
 
-    requestQueue.push(requestItem)
+    requestQueue.push(requesttem)
   }
 
   log(logSuccess('All requests have been sent!'))
@@ -224,12 +219,12 @@ export async function batchRequest(
 }
 
 export async function syncBatchRequest(
-  requestConifgs: IRequestConfig[],
-  intervalTime: IIntervalTime | undefined,
-  callback: (requestResItem: IRequestResItem) => void
+  requestConifgs: RequestConfig[],
+  intervalTime: IntervalTime | undefined,
+  callback: (requestResItem: RequestResItem) => void
 ) {
-  const isHaveIntervalTime = !isUndefined(intervalTime)
-  const isNumberIntervalTime = isNumber(intervalTime)
+  const isHaventervalTime = !isUndefined(intervalTime)
+  const isNumberntervalTime = isNumber(intervalTime)
 
   log(
     `Begin execution, mode: sync, total: ${logNumber(requestConifgs.length)} `
@@ -242,14 +237,14 @@ export async function syncBatchRequest(
     id++
 
     await useSleepByBatch(
-      isHaveIntervalTime,
-      isNumberIntervalTime,
+      isHaventervalTime,
+      isNumberntervalTime,
       intervalTime,
       id
     )
 
     let isRequestSuccess = true
-    let requestResItem: IRequestResItem | null = null
+    let requestResItem: RequestResItem | null = null
     try {
       const requestRes = await request(requestConifg)
       requestResItem = { id, ...requestRes }
@@ -262,7 +257,7 @@ export async function syncBatchRequest(
     }
 
     if (isRequestSuccess && callback) {
-      callback(requestResItem as IRequestResItem)
+      callback(requestResItem as RequestResItem)
     }
   }
 

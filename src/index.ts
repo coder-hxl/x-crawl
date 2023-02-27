@@ -5,10 +5,10 @@ import {
   startPolling
 } from './api'
 
-import { IXCrawlInstance, IXCrawlBaseConifg } from './types'
+import { XCrawlBaseConifg, XCrawlInstance } from './types'
 
-function createInstance(baseConfig: IXCrawlBaseConifg): IXCrawlInstance {
-  const instance: IXCrawlInstance = {
+function createnstance(baseConfig: XCrawlBaseConifg): XCrawlInstance {
+  const instance: XCrawlInstance = {
     fetchHTML: createFetchHTML(baseConfig),
     fetchData: createFetchData(baseConfig),
     fetchFile: createFetchFile(baseConfig),
@@ -19,9 +19,9 @@ function createInstance(baseConfig: IXCrawlBaseConifg): IXCrawlInstance {
 }
 
 export default function xCrawl(
-  baseConfig: IXCrawlBaseConifg = {}
-): IXCrawlInstance {
-  const instance = createInstance(baseConfig)
+  baseConfig: XCrawlBaseConifg = {}
+): XCrawlInstance {
+  const instance = createnstance(baseConfig)
 
   return instance
 }

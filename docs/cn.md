@@ -2,12 +2,12 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-XCrawl 是 Nodejs 多功能爬虫库。
+x-crawl 是 Nodejs 多功能爬虫库。
 
 ## 特征
 
 - 只需简单的配置即可抓取 HTML 、JSON、文件资源等等
-- 使用 JSDOM 库对 HTML 解析，也可自行解析 HTML
+- 使用 puppeteer 爬取 HTML ，并用 JSDOM 库对 HTML 解析，也可自行解析 HTML
 - 支持 异步/同步 方式爬取数据
 - 支持 Promise/Callback 方式获取结果
 - 轮询功能
@@ -19,7 +19,7 @@ XCrawl 是 Nodejs 多功能爬虫库。
 - [安装](#安装)
 - [示例](#示例)
 - [核心概念](#核心概念)
-    * [XCrawl](#XCrawl)
+    * [xCrawl](#xCrawl)
        + [类型](#类型-1)
        + [示例](#示例-1)
        + [模式](#模式)
@@ -33,24 +33,24 @@ XCrawl 是 Nodejs 多功能爬虫库。
     * [fetchFile](#fetchFile)
        + [类型](#类型-4)
        + [示例](#示例-4)
-    * [fetchPolling](#fetchPolling)
+    * [startPolling](#startPolling)
        + [类型](#类型-5)
        + [示例](#示例-5)
 - [类型](#类型-6)
-    * [IAnyObject](#IAnyObject)
-    * [IMethod](#IMethod)
-    * [IRequestConfig](#IRequestConfig)
-    * [IIntervalTime](#IIntervalTime)
-    * [IFetchBaseConifg](#IFetchBaseConifg)
-    * [IXCrawlBaseConifg](#IXCrawlBaseConifg)
-    * [IFetchHTMLConfig](#IFetchHTMLConfig	)
-    * [IFetchDataConfig](#IFetchDataConfig) 
-    * [IFetchFileConfig](#IFetchFileConfig)
-    * [IFetchPollingConfig](#IFetchPollingConfig)
-    * [IFetchCommon](#IFetchCommon)
-    * [IFetchCommonArr](#IFetchCommonArr)
-    * [IFileInfo](#IFileInfo)
-    * [IFetchHTML](#IFetchHTML)
+    * [AnyObject](#AnyObject)
+    * [Method](#Method)
+    * [RequestConfig](#RequestConfig)
+    * [IntervalTime](#IntervalTime)
+    * [FetchBaseConifg](#FetchBaseConifg)
+    * [XCrawlBaseConifg](#XCrawlBaseConifg)
+    * [FetchHTMLConfig](#FetchHTMLConfig	)
+    * [FetchDataConfig](#FetchDataConfig) 
+    * [FetchFileConfig](#FetchFileConfig)
+    * [FetchPollingConfig](#FetchPollingConfig)
+    * [FetchCommon](#FetchCommon)
+    * [FetchCommonArr](#FetchCommonArr)
+    * [FileInfo](#FileInfo)
+    * [FetchHTML](#FetchHTML)
 - [更多](#更多)
 
 ## 安装
@@ -67,10 +67,10 @@ npm install x-crawl
 
 ```js
 // 1.导入模块 ES/CJS
-import XCrawl from 'x-crawl'
+import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
-const myXCrawl = new XCrawl({
+const myXCrawl = xCrawl({
   timeout: 10000, // 超时时间
   intervalTime: { max: 3000, min: 2000 } // 控制请求频率
 })
@@ -109,44 +109,22 @@ myXCrawl.fetchPolling({ d: 1 }, () => {
 
 ## 核心概念
 
-### XCrawl
+### xCrawl
 
-通过 new XCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非由实例自己维护。
+通过调用 xCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非由实例自己维护。
 
 #### 类型
 
 更详细的类型请看[类型](#类型-6)部分内容
 
 ```ts
-class XCrawl {
-  constructor(baseConfig?: IXCrawlBaseConifg)
-
-  fetchHTML(
-    config: IFetchHTMLConfig,
-    callback?: (res: IFetchHTML) => void
-  ): Promise<IFetchHTML>
-
-  fetchData<T = any>(
-    config: IFetchDataConfig,
-    callback?: (res: IFetchCommon<T>) => void
-  ): Promise<IFetchCommonArr<T>>
-
-  fetchFile(
-    config: IFetchFileConfig,
-    callback?: (res: IFetchCommon<IFileInfo>) => void
-  ): Promise<IFetchCommonArr<IFileInfo>>
-
-  fetchPolling(
-    config: IFetchPollingConfig,
-    callback: (count: number) => void
-  ): void
-}
+function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance
 ```
 
 #### 示例
 
 ```js
-const myXCrawl = new XCrawl({
+const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
   // 请求的间隔时间, 多个请求才有效
@@ -185,14 +163,14 @@ fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document
 
 #### 类型
 
-- 查看 [IFetchHTMLConfig](#IFetchHTMLConfig) 类型
-- 查看 [IFetchHTML](#IFetchHTML) 类型
+- 查看 [FetchHTMLConfig](#FetchHTMLConfig) 类型
+- 查看 [FetchHTML](#FetchHTML) 类型
 
 ```ts
-fetchHTML(
-  config: IFetchHTMLConfig, 
-  callback?: (res: IFetchHTML) => void
-): Promise<IFetchHTML>
+function fetchHTML: (
+  config: FetchHTMLConfig,
+  callback?: (res: FetchHTML) => void
+) => Promise<FetchHTML>
 ```
 
 #### 示例
@@ -210,15 +188,15 @@ fetch 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取 API ，可�
 
 #### 类型
 
-- 查看 [IFetchDataConfig](#IFetchDataConfig) 类型
-- 查看 [IFetchCommon](#IFetchCommon) 类型
-- 查看 [IFetchCommonArr](#IFetchCommonArr) 类型
+- 查看 [FetchDataConfig](#FetchDataConfig) 类型
+- 查看 [FetchResCommonV1](#FetchResCommonV1) 类型
+- 查看 [FetchResCommonArrV1](#FetchResCommonArrV1) 类型
 
 ```ts
-fetchData<T = any>(
-  config: IFetchDataConfig,
-  callback?: (res: IFetchCommon<T>) => void
-): Promise<IFetchCommonArr<T>>
+function fetchData: <T = any>(
+  config: FetchDataConfig,
+  callback?: (res: FetchResCommonV1<T>) => void
+) => Promise<FetchResCommonArrV1<T>>
 ```
 
 #### 示例
@@ -231,7 +209,7 @@ const requestConifg = [
 ]
 
 myXCrawl.fetchData({ 
-  requestConifg, // 请求配置, 可以是 IRequestConfig | IRequestConfig[]
+  requestConifg, // 请求配置, 可以是 RequestConfig | RequestConfig[]
   intervalTime: { max: 5000, min: 1000 } // 不使用 myXCrawl 时传入的 intervalTime
 }).then(res => {
   console.log(res)
@@ -244,16 +222,16 @@ fetchFile 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取文件�
 
 #### 类型
 
-- 查看 [IFetchFileConfig](#IFetchFileConfig) 类型
-- 查看 [IFetchCommon](#IFetchCommon) 类型
-- 查看 [IFetchCommonArr](#IFetchCommonArr) 类型
-- 查看 [IFileInfo](#IFileInfo) 类型
+- 查看 [FetchFileConfig](#FetchFileConfig) 类型
+- 查看 [FetchResCommonV1](#FetchResCommonV1) 类型
+- 查看 [FetchResCommonArrV1](#FetchResCommonArrV1) 类型
+- 查看 [FileInfo](#FileInfo) 类型
 
 ```ts
-fetchFile(
-  config: IFetchFileConfig,
-  callback?: (res: IFetchCommon<IFileInfo>) => void
-): Promise<IFetchCommonArr<IFileInfo>>
+function fetchFile: (
+  config: FetchFileConfig,
+  callback?: (res: FetchResCommonV1<FileInfo>) => void
+) => Promise<FetchResCommonArrV1<FileInfo>>
 ```
 
 #### 示例
@@ -275,25 +253,25 @@ myXCrawl.fetchFile({
 })
 ```
 
-### fetchPolling
+### startPolling
 
 fetchPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
 
 #### 类型
 
-- 查看 [IFetchPollingConfig](#IFetchPollingConfig) 类型
+- 查看 [StartPollingConfig](#StartPollingConfig) 类型
 
 ```ts
-function fetchPolling(
-  config: IFetchPollingConfig,
+function startPolling: (
+  config: StartPollingConfig,
   callback: (count: number) => void
-): void
+) => void
 ```
 
 #### 示例
 
 ```js
-myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
+myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // 每隔一个半小时会执行一次
   // fetchHTML/fetchData/fetchFile
 })
@@ -301,81 +279,92 @@ myXCrawl.fetchPolling({ h: 1, m: 30 }, () => {
 
 ## 类型
 
-### IAnyObject
+### AnyObject
 
 ```ts
-interface IAnyObject extends Object {
+interface AnyObject extends Object {
   [key: string | number | symbol]: any
 }
 ```
 
-### IMethod
+### Method
 
 ```ts
-type IMethod = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTIONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### IRequestConfig
+### RequestConfig
 
 ```ts 
-interface IRequestConfig {
+interface RequestConfig {
   url: string
-  method?: IMethod
-  headers?: IAnyObject
-  params?: IAnyObject
+  method?: Method
+  headers?: AnyObject
+  params?: AnyObject
   data?: any
   timeout?: number
   proxy?: string
 }
 ```
 
-### IIntervalTime
+### IntervalTime
 
 ```ts
-type IIntervalTime = number | {
+type IntervalTime = number | {
   max: number
   min?: number
 }
 ```
 
-### IFetchBaseConifg
+### XCrawlBaseConifg
 
 ```ts
-interface IFetchBaseConifg {
-  requestConifg: IRequestConfig | IRequestConfig[]
-  intervalTime?: IIntervalTime
-}
-```
-
-### IXCrawlBaseConifg
-
-```ts
-interface IXCrawlBaseConifg {
+interface XCrawlBaseConifg {
   baseUrl?: string
   timeout?: number
-  intervalTime?: IIntervalTime
+  intervalTime?: IntervalTime
   mode?: 'async' | 'sync'
   proxy?: string
 }
 ```
 
-### IFetchHTMLConfig
+### FetchBaseConifgV1
 
 ```ts
-type IFetchHTMLConfig = string | IRequestConfig
-```
-
-### IFetchDataConfig
-
-```ts
-interface IFetchDataConfig extends IFetchBaseConifg {
+interface FetchBaseConifgV1 {
+  requestConifg: RequestConfig | RequestConfig[]
+  intervalTime?: IntervalTime
 }
 ```
 
-### IFetchFileConfig
+### FetchBaseConifgV2
 
 ```ts
-interface IFetchFileConfig extends IFetchBaseConifg {
+interface FetchBaseConifgV2 {
+  url: string
+  header?: AnyObject
+  timeout?: number
+  proxy?: string
+}
+```
+
+### FetchHTMLConfig
+
+```ts
+type FetchHTMLConfig = string | FetchBaseConifgV2
+```
+
+### FetchDataConfig
+
+```ts
+interface FetchDataConfig extends FetchBaseConifgV1 {
+}
+```
+
+### FetchFileConfig
+
+```ts
+interface FetchFileConfig extends FetchBaseConifgV1 {
   fileConfig: {
     storeDir: string // 存放文件夹
     extension?: string // 文件扩展名
@@ -383,22 +372,20 @@ interface IFetchFileConfig extends IFetchBaseConifg {
 }
 ```
 
-### IFetchPollingConfig
+### StartPollingConfig
 
 ```ts
-interface IFetchPollingConfig {
-  Y?: number // 年 (按每年365天)
-  M?: number // 月 (按每月30天)
+interface StartPollingConfig {
   d?: number // 日
   h?: number // 小时
   m?: number // 分钟
 }
 ```
 
-### IFetchCommon
+### FetchResCommonV1
 
 ```ts
-interface IFetchCommon<T> {
+interface FetchCommon<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // node: http 类型
@@ -406,16 +393,16 @@ interface IFetchCommon<T> {
 }
 ```
 
-### IFetchCommonArr
+### FetchResCommonArrV1
 
 ```ts
-type IFetchCommonArr<T> = IFetchCommon<T>[]
+type FetchCommonArr<T> = FetchCommon<T>[]
 ```
 
-### IFileInfo
+### FileInfo
 
 ```ts
-interface IFileInfo {
+interface FileInfo {
   fileName: string
   mimeType: string
   size: number
@@ -423,15 +410,15 @@ interface IFileInfo {
 }
 ```
 
-### IFetchHTML
+### FetchHTML
 
 ```ts
-interface IFetchHTML {
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders // node: http 类型
+interface FetchHTML {
+  httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   data: {
-    html: string // HTML String
-    jsdom: JSDOM // 使用了 jsdom 库对 HTML 解析
+    page: Page
+    content: string
+    jsdom: JSDOM
   }
 }
 ```
