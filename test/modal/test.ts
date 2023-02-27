@@ -18,7 +18,7 @@ if (currentModel === 'dev') {
 
 function httpProtocol() {
   return new Promise((resolve) => {
-    const httpXCrawl = new XCrawl()
+    const httpXCrawl = XCrawl()
 
     httpXCrawl
       .fetchData({
@@ -32,7 +32,7 @@ function httpProtocol() {
 
 function httpsProtocol() {
   return new Promise((resolve) => {
-    const httpsXCrawl = new XCrawl({ timeout: 10000 })
+    const httpsXCrawl = XCrawl({ timeout: 10000 })
 
     httpsXCrawl
       .fetchHTML('https://docs.github.com/zh')
@@ -51,7 +51,7 @@ test('https protocol', async () => {
 // API
 function fetchHTMLAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = new XCrawl()
+    const myXCrawl = XCrawl()
 
     myXCrawl.fetchHTML('https://docs.github.com/zh').then(() => resolve(true))
   })
@@ -59,7 +59,7 @@ function fetchHTMLAPI() {
 
 function fetchDataAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = new XCrawl()
+    const myXCrawl = XCrawl()
 
     myXCrawl
       .fetchData({
@@ -79,7 +79,7 @@ function fetchDataAPI() {
 
 function fetchFileAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = new XCrawl({
+    const myXCrawl = XCrawl({
       timeout: 10000,
       intervalTime: {
         max: 2000,

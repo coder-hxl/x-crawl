@@ -1,7 +1,7 @@
 import path from 'node:path'
 import XCrawl from '../../src'
 
-const testXCrawl = new XCrawl({
+const testXCrawl = XCrawl({
   timeout: 10000,
   intervalTime: { max: 0, min: 0 },
   mode: 'async'
@@ -18,30 +18,30 @@ const testXCrawl = new XCrawl({
 // })
 
 // testXCrawl.fetchPolling({ m: 3 }, () => {
-testXCrawl
-  .fetchHTML('https://www.bilibili.com/guochuang/', (res) => {
-    console.log('fetchHTML Callback: ', res.statusCode)
-  })
-  .then((res) => {
-    const { jsdom } = res.data
+// testXCrawl
+//   .fetchHTML('https://www.bilibili.com/guochuang/', (res) => {
+//     console.log('fetchHTML Callback: ', res.statusCode)
+//   })
+//   .then((res) => {
+//     const { jsdom } = res.data
 
-    const imgSrc: string[] = []
-    const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
-    recomEls.forEach((item) => imgSrc.push(item.querySelector('img')!.src))
+//     const imgSrc: string[] = []
+//     const recomEls = jsdom.window.document.querySelectorAll('.chief-recom-item')
+//     recomEls.forEach((item) => imgSrc.push(item.querySelector('img')!.src))
 
-    const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
-    requestConifg.pop()
+//     const requestConifg = imgSrc.map((src) => ({ url: `https:${src}` }))
+//     requestConifg.pop()
 
-    testXCrawl
-      .fetchFile(
-        {
-          requestConifg,
-          fileConfig: { storeDir: path.resolve(__dirname, './upload') }
-        },
-        (res) => {
-          console.log(res.id, res.statusCode, res.data.fileName)
-        }
-      )
-      .then((res) => console.log(res))
-  })
+//     testXCrawl
+//       .fetchFile(
+//         {
+//           requestConifg,
+//           fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+//         },
+//         (res) => {
+//           console.log(res.id, res.statusCode, res.data.fileName)
+//         }
+//       )
+//       .then((res) => console.log(res))
+//   })
 // })

@@ -1,5 +1,6 @@
 import { IncomingHttpHeaders } from 'node:http'
 import { JSDOM } from 'jsdom'
+import { HTTPResponse } from 'puppeteer'
 
 export interface IAnyObject extends Object {
   [key: string | number | symbol]: any
@@ -70,7 +71,14 @@ export interface IFetchBaseConifg {
   intervalTime?: IIntervalTime
 }
 
-export type IFetchHTMLConfig = string | IRequestConfig
+export type IFetchHTMLConfig =
+  | string
+  | {
+      url: string
+      header?: IAnyObject
+      timeout?: number
+      proxy?: string
+    }
 
 export interface IFetchDataConfig extends IFetchBaseConifg {}
 
@@ -81,7 +89,7 @@ export interface IFetchFileConfig extends IFetchBaseConifg {
   }
 }
 
-export interface IFetchPollingConfig {
+export interface IStartPollingConfig {
   Y?: number
   M?: number
   d?: number
@@ -106,10 +114,31 @@ export interface IFileInfo {
 }
 
 export interface IFetchHTML {
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders
+  httpResponse: HTTPResponse | null
   data: {
-    html: string
+    content: string
     jsdom: JSDOM
   }
+}
+
+export interface IXCrawlInstance {
+  fetchHTML: (
+    config: IFetchHTMLConfig,
+    callback?: (res: IFetchHTML) => void
+  ) => Promise<IFetchHTML>
+
+  fetchData: <T = any>(
+    config: IFetchDataConfig,
+    callback?: (res: IFetchCommon<T>) => void
+  ) => Promise<IFetchCommonArr<T>>
+
+  fetchFile: (
+    config: IFetchFileConfig,
+    callback?: (res: IFetchCommon<IFileInfo>) => void
+  ) => Promise<IFetchCommonArr<IFileInfo>>
+
+  startPolling: (
+    config: IStartPollingConfig,
+    callback: (count: number) => void
+  ) => void
 }
