@@ -29,11 +29,11 @@ import {
   IntervalTime,
   StartPollingConfig
 } from './types/api'
-import { XCrawlBaseConifg } from './types'
+import { LoaderXCrawlBaseConifg } from './types'
 import { RequestConfig, RequestResItem } from './types/request'
 
 function mergeConfig<T extends FetchBaseConifgV1>(
-  baseConfig: XCrawlBaseConifg,
+  baseConfig: LoaderXCrawlBaseConifg,
   rawConfig: T
 ): T {
   const newConfig = structuredClone(rawConfig)
@@ -70,7 +70,7 @@ function mergeConfig<T extends FetchBaseConifgV1>(
 }
 
 async function useBatchRequestByMode(
-  mode: 'async' | 'sync' | undefined,
+  mode: 'async' | 'sync',
   requestConifg: RequestConfig | RequestConfig[],
   intervalTime: IntervalTime | undefined,
   callback: (requestRestem: RequestResItem) => void
@@ -79,14 +79,14 @@ async function useBatchRequestByMode(
     ? requestConifg
     : [requestConifg]
 
-  if (mode !== 'sync') {
+  if (mode === 'async') {
     await batchRequest(requestConfigQueue, intervalTime, callback)
   } else {
     await syncBatchRequest(requestConfigQueue, intervalTime, callback)
   }
 }
 
-export function createFetchHTML(baseConfig: XCrawlBaseConifg) {
+export function createFetchHTML(baseConfig: LoaderXCrawlBaseConifg) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
   let callTotal = 0
@@ -95,7 +95,7 @@ export function createFetchHTML(baseConfig: XCrawlBaseConifg) {
     config: FetchHTMLConfig,
     callback?: (res: FetchHTML) => void
   ): Promise<FetchHTML> {
-    // 记录调用次数, 为关闭浏览器
+    // 记录调用次数, 目的: 关闭浏览器
     callTotal++
 
     // 只创建一次浏览器
@@ -129,22 +129,20 @@ export function createFetchHTML(baseConfig: XCrawlBaseConifg) {
       })
     }
 
-    const httpResponse = await page!.goto(requestConifg.url)
+    const httpResponse = await page!.goto(requestConifg.url, {
+      timeout: requestConifg.timeout
+    })
 
     const content = await page!.content()
 
     // 关闭浏览器
     if (--callTotal === 0) {
-      await browser!.close()
+      browser!.close()
     }
 
     const res: FetchHTML = {
       httpResponse,
-      data: {
-        page,
-        content,
-        jsdom: new JSDOM(content)
-      }
+      data: { page, jsdom: new JSDOM(content) }
     }
 
     if (callback) {
@@ -157,7 +155,7 @@ export function createFetchHTML(baseConfig: XCrawlBaseConifg) {
   return fetchHTML
 }
 
-export function createFetchData(baseConfig: XCrawlBaseConifg) {
+export function createFetchData(baseConfig: LoaderXCrawlBaseConifg) {
   async function fetchData<T = any>(
     config: FetchDataConfig,
     callback?: (res: FetchResCommonV1<T>) => void
@@ -198,7 +196,7 @@ export function createFetchData(baseConfig: XCrawlBaseConifg) {
   return fetchData
 }
 
-export function createFetchFile(baseConfig: XCrawlBaseConifg) {
+export function createFetchFile(baseConfig: LoaderXCrawlBaseConifg) {
   async function fetchFile(
     config: FetchFileConfig,
     callback?: (res: FetchResCommonV1<FileInfo>) => void

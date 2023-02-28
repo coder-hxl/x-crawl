@@ -5,9 +5,25 @@ import {
   startPolling
 } from './api'
 
-import { XCrawlBaseConifg, XCrawlInstance } from './types'
+import {
+  LoaderXCrawlBaseConifg,
+  XCrawlBaseConifg,
+  XCrawlInstance
+} from './types'
 
-function createnstance(baseConfig: XCrawlBaseConifg): XCrawlInstance {
+function loaderBaseConifg(
+  baseConfig: XCrawlBaseConifg | undefined
+): LoaderXCrawlBaseConifg {
+  const loaderBaseConfig = baseConfig ? baseConfig : {}
+
+  if (!loaderBaseConfig.mode) {
+    loaderBaseConfig.mode = 'async'
+  }
+
+  return loaderBaseConfig as LoaderXCrawlBaseConifg
+}
+
+function createnInstance(baseConfig: LoaderXCrawlBaseConifg): XCrawlInstance {
   const instance: XCrawlInstance = {
     fetchHTML: createFetchHTML(baseConfig),
     fetchData: createFetchData(baseConfig),
@@ -18,10 +34,10 @@ function createnstance(baseConfig: XCrawlBaseConifg): XCrawlInstance {
   return instance
 }
 
-export default function xCrawl(
-  baseConfig: XCrawlBaseConifg = {}
-): XCrawlInstance {
-  const instance = createnstance(baseConfig)
+export default function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance {
+  const newBaseConfig = loaderBaseConifg(baseConfig)
+
+  const instance = createnInstance(newBaseConfig)
 
   return instance
 }

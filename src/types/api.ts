@@ -3,7 +3,6 @@ import { HTTPResponse, Page } from 'puppeteer'
 import { JSDOM } from 'jsdom'
 
 import { RequestConfig } from './request'
-import { AnyObject } from './common'
 
 export type IntervalTime = number | { max: number; min?: number }
 
@@ -14,7 +13,6 @@ export interface FetchBaseConifgV1 {
 
 export interface FetchBaseConifgV2 {
   url: string
-  header?: AnyObject
   timeout?: number
   proxy?: string
 }
@@ -56,7 +54,6 @@ export interface FetchHTML {
   httpResponse: HTTPResponse | null
   data: {
     page: Page
-    content: string
     jsdom: JSDOM
   }
 }

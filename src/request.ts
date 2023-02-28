@@ -11,6 +11,7 @@ import {
   logError,
   logNumber,
   logSuccess,
+  logWarn,
   random,
   sleep
 } from './utils'
@@ -166,7 +167,9 @@ export async function batchRequest(
   const isNumberntervalTime = isNumber(intervalTime)
 
   log(
-    `Begin execution, mode: async, total: ${logNumber(requestConifgs.length)} `
+    `Begin execution, mode: ${logWarn('async')}, total: ${logNumber(
+      requestConifgs.length
+    )} `
   )
 
   let index = 0
@@ -227,7 +230,9 @@ export async function syncBatchRequest(
   const isNumberntervalTime = isNumber(intervalTime)
 
   log(
-    `Begin execution, mode: sync, total: ${logNumber(requestConifgs.length)} `
+    `Begin execution, mode: ${logWarn('sync')}, total: ${logNumber(
+      requestConifgs.length
+    )} `
   )
 
   let id = 0
