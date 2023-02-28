@@ -6,13 +6,19 @@ x-crawl is a Nodejs multifunctional crawler library.
 
 ## Feature
 
-- Crawl HTML, JSON, file resources, etc. with simple configuration
-- Use puppeteer to crawl HTML, and use JSDOM library to parse HTML, or parse HTML by yourself
-- Support asynchronous/synchronous way to crawl data
-- Support Promise/Callback way to get the result
-- Polling function
-- Anthropomorphic request interval
-- Written in TypeScript, provides generics
+- Crawl HTML, JSON, file resources, etc. with simple configuration.
+- Built-in puppeteer crawls HTML and uses JSDOM library to parse HTML.
+- Support asynchronous/synchronous way to crawl data.
+- Support Promise/Callback way to get the result.
+- Polling function.
+- Anthropomorphic request interval.
+- Written in TypeScript, provides generics.
+
+## Benefits provided by using puppeter
+
+- Generate screenshots and PDFs of pages.
+- Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
+- Automate form submission, UI testing, keyboard input, etc.
 
 # Table of Contents
 
@@ -41,14 +47,15 @@ x-crawl is a Nodejs multifunctional crawler library.
     * [Method](#Method)
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
-    * [FetchBaseConifg](#FetchBaseConifg)
     * [XCrawlBaseConifg](#XCrawlBaseConifg)
+    * [FetchBaseConifgV1](#FetchBaseConifgV1)
+    * [FetchBaseConifgV2](#FetchBaseConifgV2)
     * [FetchHTMLConfig](#FetchHTMLConfig	)
-    * [FetchDataConfig](#FetchDataConfig)   
+    * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
-    * [FetchCommon](#FetchCommon)
-    * [FetchCommonArr](#FetchCommonArr)
+    * [FetchResCommonV1](#FetchResCommonV1)
+    * [FetchResCommonArrV1](#FetchResCommonArrV1)
     * [FileInfo](#FileInfo)
     * [FetchHTML](#FetchHTML)
 - [More](#More)
@@ -318,7 +325,6 @@ interface FetchBaseConifgV1 {
 ```ts
 interface FetchBaseConifgV2 {
   url: string
-  header?: AnyObject
   timeout?: number
   proxy?: string
 }
@@ -364,7 +370,7 @@ interface StartPollingConfig {
 interface FetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node: http type
+  headers: IncomingHttpHeaders // nodejs: http type
   data: T
 }
 ```
@@ -392,8 +398,7 @@ interface FileInfo {
 interface FetchHTML {
   httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
   data: {
-    page: Page
-    content: string
+    page: Page // The type of Page in the puppeteer library
     jsdom: JSDOM // The type of JSDOM in the jsdom library
   }
 }

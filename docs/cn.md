@@ -6,13 +6,19 @@ x-crawl 是 Nodejs 多功能爬虫库。
 
 ## 特征
 
-- 只需简单的配置即可抓取 HTML 、JSON、文件资源等等
-- 使用 puppeteer 爬取 HTML ，并用 JSDOM 库对 HTML 解析，也可自行解析 HTML
-- 支持 异步/同步 方式爬取数据
-- 支持 Promise/Callback 方式获取结果
-- 轮询功能
-- 拟人化的请求间隔时间
-- 使用 TypeScript 编写，提供泛型
+- 只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
+- 内置 puppeteer 爬取 HTML ，并用 JSDOM 库对 HTML 解析。
+- 支持 异步/同步 方式爬取数据。
+- 支持 Promise/Callback 方式获取结果。
+- 轮询功能。
+- 拟人化的请求间隔时间。
+- 使用 TypeScript 编写，提供泛型。
+
+## 使用 puppeter 提供的好处
+
+- 生成页面的屏幕截图和 PDF。
+- 抓取 SPA（单页应用程序）并生成预渲染内容（即“SSR”（服务器端渲染））。
+- 自动化表单提交、UI 测试、键盘输入等。
 
 # 目录
 
@@ -41,14 +47,15 @@ x-crawl 是 Nodejs 多功能爬虫库。
     * [Method](#Method)
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
-    * [FetchBaseConifg](#FetchBaseConifg)
     * [XCrawlBaseConifg](#XCrawlBaseConifg)
+    * [FetchBaseConifgV1](#FetchBaseConifgV1)
+    * [FetchBaseConifgV2](#FetchBaseConifgV2)
     * [FetchHTMLConfig](#FetchHTMLConfig	)
     * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
-    * [FetchPollingConfig](#FetchPollingConfig)
-    * [FetchCommon](#FetchCommon)
-    * [FetchCommonArr](#FetchCommonArr)
+    * [StartPollingConfig](#StartPollingConfig)
+    * [FetchResCommonV1](#FetchResCommonV1)
+    * [FetchResCommonArrV1](#FetchResCommonArrV1)
     * [FileInfo](#FileInfo)
     * [FetchHTML](#FetchHTML)
 - [更多](#更多)
@@ -63,7 +70,7 @@ npm install x-crawl
 
 ## 示例
 
-每隔一天就获取 bilibili 国漫主页的推荐轮播图片为例: 
+每隔一天就获取 bilibili 国漫主页的轮播图片为例: 
 
 ```js
 // 1.导入模块 ES/CJS
@@ -76,14 +83,14 @@ const myXCrawl = xCrawl({
 })
 
 // 3.设置爬取任务
-// 调用 fetchPolling API 开始轮询功能，每隔一天会调用回调函数
-myXCrawl.fetchPolling({ d: 1 }, () => {
+// 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
+myXCrawl.startPolling({ d: 1 }, () => {
   // 调用 fetchHTML API 爬取 HTML
   myXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
     const { jsdom } = res.data // 默认使用了 JSDOM 库解析 HTML
 
     // 获取轮播图片元素
-    const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
+    const imgEls = jsdom.window.document.querySelectorAll('.carousel-wrapper .chief-recom-item img')
 
     // 设置请求配置
     const requestConifg = []
@@ -342,7 +349,6 @@ interface FetchBaseConifgV1 {
 ```ts
 interface FetchBaseConifgV2 {
   url: string
-  header?: AnyObject
   timeout?: number
   proxy?: string
 }
@@ -388,7 +394,7 @@ interface StartPollingConfig {
 interface FetchCommon<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // node: http 类型
+  headers: IncomingHttpHeaders // nodejs: http 类型
   data: T
 }
 ```
@@ -416,8 +422,7 @@ interface FileInfo {
 interface FetchHTML {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   data: {
-    page: Page
-    content: string
+    page: Page // puppeteer 库的 Page 类型
     jsdom: JSDOM
   }
 }

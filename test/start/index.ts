@@ -1,11 +1,11 @@
 import path from 'node:path'
-import XCrawl from '../../src'
+import xCrawl from '../../src'
 
-const testXCrawl = XCrawl({
-  timeout: 10000,
-  intervalTime: { max: 3000, min: 1000 },
-  mode: 'async'
-})
+// const testXCrawl = xCrawl({
+//   timeout: 10000,
+//   intervalTime: { max: 3000, min: 1000 },
+//   mode: 'async'
+// })
 
 // testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
 //   const { jsdom } = res.data
@@ -28,15 +28,3 @@ const testXCrawl = XCrawl({
 //     fileConfig: { storeDir: path.resolve(__dirname, 'upload') }
 //   })
 // })
-
-testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-  console.log(1)
-})
-
-testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-  console.log(2)
-})
-
-testXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-  console.log(3)
-})
