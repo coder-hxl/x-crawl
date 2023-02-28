@@ -47,9 +47,9 @@ x-crawl is a Nodejs multifunctional crawler library.
     * [Method](#Method)
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
-    * [XCrawlBaseConifg](#XCrawlBaseConifg)
-    * [FetchBaseConifgV1](#FetchBaseConifgV1)
-    * [FetchBaseConifgV2](#FetchBaseConifgV2)
+    * [XCrawlBaseConfig](#XCrawlBaseConfig)
+    * [FetchBaseConfigV1](#FetchBaseConfigV1)
+    * [FetchBaseConfigV2](#FetchBaseConfigV2)
     * [FetchHTMLConfig](#FetchHTMLConfig	)
     * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
@@ -101,7 +101,7 @@ Create a crawler instance via call xCrawl. The request queue is maintained by th
 For more detailed types, please see the [Types](#Types) section
 
 ```ts
-function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance
+function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 ```
 
 #### Example
@@ -185,14 +185,14 @@ function fetchData: <T = any>(
 #### Example
 
 ```js
-const requestConifg = [
+const requestConfig = [
   { url: '/xxxx', method: 'GET' },
   { url: '/xxxx', method: 'GET' },
   { url: '/xxxx', method: 'GET' }
 ]
 
 myXCrawl.fetchData({ 
-  requestConifg, // Request configuration, can be RequestConfig | RequestConfig[]
+  requestConfig, // Request configuration, can be RequestConfig | RequestConfig[]
   intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when not using myXCrawl
 }).then(res => {
   console.log(res)
@@ -220,14 +220,14 @@ function fetchFile: (
 #### Example
 
 ```js
-const requestConifg = [
+const requestConfig = [
   { url: '/xxxx' },
   { url: '/xxxx' },
   { url: '/xxxx' }
 ]
 
 myXCrawl.fetchFile({
-  requestConifg,
+  requestConfig,
   fileConfig: {
     storeDir: path.resolve(__dirname, './upload') // storage folder
   }
@@ -299,10 +299,10 @@ type IntervalTime = number | {
 }
 ```
 
-### XCrawlBaseConifg
+### XCrawlBaseConfig
 
 ```ts
-interface XCrawlBaseConifg {
+interface XCrawlBaseConfig {
   baseUrl?: string
   timeout?: number
   intervalTime?: IntervalTime
@@ -311,19 +311,19 @@ interface XCrawlBaseConifg {
 }
 ```
 
-### FetchBaseConifgV1
+### FetchBaseConfigV1
 
 ```ts
-interface FetchBaseConifgV1 {
-  requestConifg: RequestConfig | RequestConfig[]
+interface FetchBaseConfigV1 {
+  requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
-### FetchBaseConifgV2
+### FetchBaseConfigV2
 
 ```ts
-interface FetchBaseConifgV2 {
+interface FetchBaseConfigV2 {
   url: string
   timeout?: number
   proxy?: string
@@ -333,20 +333,20 @@ interface FetchBaseConifgV2 {
 ### FetchHTMLConfig
 
 ```ts
-type FetchHTMLConfig = string | FetchBaseConifgV2
+type FetchHTMLConfig = string | FetchBaseConfigV2
 ```
 
 ### FetchDataConfig
 
 ```ts
-interface FetchDataConfig extends FetchBaseConifgV1 {
+interface FetchDataConfig extends FetchBaseConfigV1 {
 }
 ```
 
 ### FetchFileConfig
 
 ```ts
-interface FetchFileConfig extends FetchBaseConifgV1 {
+interface FetchFileConfig extends FetchBaseConfigV1 {
   fileConfig: {
     storeDir: string // Store folder
     extension?: string // filename extension

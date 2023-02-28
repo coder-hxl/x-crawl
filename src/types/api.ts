@@ -6,22 +6,22 @@ import { RequestConfig } from './request'
 
 export type IntervalTime = number | { max: number; min?: number }
 
-export interface FetchBaseConifgV1 {
-  requestConifg: RequestConfig | RequestConfig[]
+export interface FetchBaseConfigV1 {
+  requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 
-export interface FetchBaseConifgV2 {
+export interface FetchBaseConfigV2 {
   url: string
   timeout?: number
   proxy?: string
 }
 
-export type FetchHTMLConfig = string | FetchBaseConifgV2
+export type FetchHTMLConfig = string | FetchBaseConfigV2
 
-export interface FetchDataConfig extends FetchBaseConifgV1 {}
+export interface FetchDataConfig extends FetchBaseConfigV1 {}
 
-export interface FetchFileConfig extends FetchBaseConifgV1 {
+export interface FetchFileConfig extends FetchBaseConfigV1 {
   fileConfig: {
     storeDir: string
     extension?: string

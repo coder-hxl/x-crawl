@@ -22,7 +22,7 @@ function httpProtocol() {
 
     httpXCrawl
       .fetchData({
-        requestConifg: {
+        requestConfig: {
           url: 'http://localhost:9001/api/home/goodprice'
         }
       })
@@ -63,7 +63,7 @@ function fetchDataAPI() {
 
     myXCrawl
       .fetchData({
-        requestConifg: {
+        requestConfig: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
           data: {
@@ -89,7 +89,7 @@ function fetchFileAPI() {
 
     myXCrawl
       .fetchData({
-        requestConifg: {
+        requestConfig: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
           data: {
@@ -101,13 +101,13 @@ function fetchFileAPI() {
       })
       .then((res) => {
         const roomList = res[0].data.data.list
-        const requestConifg = roomList.map((item: any) => ({
+        const requestConfig = roomList.map((item: any) => ({
           url: item.coverUrl
         }))
 
         myXCrawl
           .fetchFile({
-            requestConifg,
+            requestConfig,
             fileConfig: {
               storeDir: path.resolve(__dirname, './upload')
             }

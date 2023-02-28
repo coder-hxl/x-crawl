@@ -6,24 +6,24 @@ import {
 } from './api'
 
 import {
-  LoaderXCrawlBaseConifg,
-  XCrawlBaseConifg,
+  LoaderXCrawlBaseConfig,
+  XCrawlBaseConfig,
   XCrawlInstance
 } from './types'
 
-function loaderBaseConifg(
-  baseConfig: XCrawlBaseConifg | undefined
-): LoaderXCrawlBaseConifg {
+function loaderBaseConfig(
+  baseConfig: XCrawlBaseConfig | undefined
+): LoaderXCrawlBaseConfig {
   const loaderBaseConfig = baseConfig ? baseConfig : {}
 
   if (!loaderBaseConfig.mode) {
     loaderBaseConfig.mode = 'async'
   }
 
-  return loaderBaseConfig as LoaderXCrawlBaseConifg
+  return loaderBaseConfig as LoaderXCrawlBaseConfig
 }
 
-function createnInstance(baseConfig: LoaderXCrawlBaseConifg): XCrawlInstance {
+function createnInstance(baseConfig: LoaderXCrawlBaseConfig): XCrawlInstance {
   const instance: XCrawlInstance = {
     fetchHTML: createFetchHTML(baseConfig),
     fetchData: createFetchData(baseConfig),
@@ -34,8 +34,8 @@ function createnInstance(baseConfig: LoaderXCrawlBaseConifg): XCrawlInstance {
   return instance
 }
 
-export default function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance {
-  const newBaseConfig = loaderBaseConifg(baseConfig)
+export default function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance {
+  const newBaseConfig = loaderBaseConfig(baseConfig)
 
   const instance = createnInstance(newBaseConfig)
 

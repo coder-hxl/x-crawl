@@ -18,7 +18,7 @@ import {
 } from './utils'
 
 import {
-  FetchBaseConifgV1,
+  FetchBaseConfigV1,
   FetchDataConfig,
   FetchFileConfig,
   FetchHTML,
@@ -29,20 +29,20 @@ import {
   IntervalTime,
   StartPollingConfig
 } from './types/api'
-import { LoaderXCrawlBaseConifg } from './types'
+import { LoaderXCrawlBaseConfig } from './types'
 import { RequestConfig, RequestResItem } from './types/request'
 
-function mergeConfig<T extends FetchBaseConifgV1>(
-  baseConfig: LoaderXCrawlBaseConifg,
+function mergeConfig<T extends FetchBaseConfigV1>(
+  baseConfig: LoaderXCrawlBaseConfig,
   rawConfig: T
 ): T {
   const newConfig = structuredClone(rawConfig)
 
-  // 1.处理 requestConifg
-  const requestConifgArr = isArray(newConfig.requestConifg)
-    ? newConfig.requestConifg
-    : [newConfig.requestConifg]
-  for (const requesttem of requestConifgArr) {
+  // 1.处理 requestConfig
+  const requestConfigArr = isArray(newConfig.requestConfig)
+    ? newConfig.requestConfig
+    : [newConfig.requestConfig]
+  for (const requesttem of requestConfigArr) {
     const { url, timeout, proxy } = requesttem
 
     // 1.1.baseUrl
@@ -71,13 +71,13 @@ function mergeConfig<T extends FetchBaseConifgV1>(
 
 async function useBatchRequestByMode(
   mode: 'async' | 'sync',
-  requestConifg: RequestConfig | RequestConfig[],
+  requestConfig: RequestConfig | RequestConfig[],
   intervalTime: IntervalTime | undefined,
   callback: (requestRestem: RequestResItem) => void
 ) {
-  const requestConfigQueue = isArray(requestConifg)
-    ? requestConifg
-    : [requestConifg]
+  const requestConfigQueue = isArray(requestConfig)
+    ? requestConfig
+    : [requestConfig]
 
   if (mode === 'async') {
     await batchRequest(requestConfigQueue, intervalTime, callback)
@@ -86,7 +86,7 @@ async function useBatchRequestByMode(
   }
 }
 
-export function createFetchHTML(baseConfig: LoaderXCrawlBaseConifg) {
+export function createFetchHTML(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
   let callTotal = 0
@@ -114,14 +114,14 @@ export function createFetchHTML(baseConfig: LoaderXCrawlBaseConifg) {
     const page = await browser!.newPage()
     await page.setViewport({ width: 1280, height: 1024 })
 
-    const { requestConifg } = mergeConfig(baseConfig, {
-      requestConifg: isString(config) ? { url: config } : config
+    const { requestConfig } = mergeConfig(baseConfig, {
+      requestConfig: isString(config) ? { url: config } : config
     })
 
     // 处理代理
-    if (requestConifg.proxy) {
+    if (requestConfig.proxy) {
       await browser!.createIncognitoBrowserContext({
-        proxyServer: requestConifg.proxy
+        proxyServer: requestConfig.proxy
       })
     } else {
       await browser!.createIncognitoBrowserContext({
@@ -129,8 +129,8 @@ export function createFetchHTML(baseConfig: LoaderXCrawlBaseConifg) {
       })
     }
 
-    const httpResponse = await page!.goto(requestConifg.url, {
-      timeout: requestConifg.timeout
+    const httpResponse = await page!.goto(requestConfig.url, {
+      timeout: requestConfig.timeout
     })
 
     const content = await page!.content()
@@ -155,12 +155,12 @@ export function createFetchHTML(baseConfig: LoaderXCrawlBaseConifg) {
   return fetchHTML
 }
 
-export function createFetchData(baseConfig: LoaderXCrawlBaseConifg) {
+export function createFetchData(baseConfig: LoaderXCrawlBaseConfig) {
   async function fetchData<T = any>(
     config: FetchDataConfig,
     callback?: (res: FetchResCommonV1<T>) => void
   ): Promise<FetchResCommonArrV1<T>> {
-    const { requestConifg, intervalTime } = mergeConfig(baseConfig, config)
+    const { requestConfig, intervalTime } = mergeConfig(baseConfig, config)
 
     const container: FetchResCommonArrV1<T> = []
     function handleRestem(requestRestem: RequestResItem) {
@@ -182,7 +182,7 @@ export function createFetchData(baseConfig: LoaderXCrawlBaseConifg) {
 
     await useBatchRequestByMode(
       baseConfig.mode,
-      requestConifg,
+      requestConfig,
       intervalTime,
       handleRestem
     )
@@ -196,12 +196,12 @@ export function createFetchData(baseConfig: LoaderXCrawlBaseConifg) {
   return fetchData
 }
 
-export function createFetchFile(baseConfig: LoaderXCrawlBaseConifg) {
+export function createFetchFile(baseConfig: LoaderXCrawlBaseConfig) {
   async function fetchFile(
     config: FetchFileConfig,
     callback?: (res: FetchResCommonV1<FileInfo>) => void
   ): Promise<FetchResCommonArrV1<FileInfo>> {
-    const { requestConifg, intervalTime, fileConfig } = mergeConfig(
+    const { requestConfig, intervalTime, fileConfig } = mergeConfig(
       baseConfig,
       config
     )
@@ -254,7 +254,7 @@ export function createFetchFile(baseConfig: LoaderXCrawlBaseConifg) {
 
     await useBatchRequestByMode(
       baseConfig.mode,
-      requestConifg,
+      requestConfig,
       intervalTime,
       handleRestem
     )
@@ -265,7 +265,7 @@ export function createFetchFile(baseConfig: LoaderXCrawlBaseConifg) {
     // 打印保存文件的错误
     quickSort(saveFileErrorArr).forEach((item) => log(logError(item.message)))
 
-    const saveFileTotal = isArray(requestConifg) ? requestConifg.length : 1
+    const saveFileTotal = isArray(requestConfig) ? requestConfig.length : 1
     const success = container.length
     const error = saveFileTotal - success
     log(

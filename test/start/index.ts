@@ -15,16 +15,16 @@ import xCrawl from '../../src'
 //       '.timeline-box img'
 //     )
 
-//   let requestConifg: any[] = []
+//   let requestConfig: any[] = []
 
-//   imgEls.forEach((item) => requestConifg.push({ url: `https:${item.src}` }))
+//   imgEls.forEach((item) => requestConfig.push({ url: `https:${item.src}` }))
 
-//   requestConifg = requestConifg.splice(0, 30)
+//   requestConfig = requestConfig.splice(0, 30)
 
-//   console.log(requestConifg)
+//   console.log(requestConfig)
 
 //   testXCrawl.fetchFile({
-//     requestConifg,
+//     requestConfig,
 //     fileConfig: { storeDir: path.resolve(__dirname, 'upload') }
 //   })
 // })

@@ -159,7 +159,7 @@ async function useSleepByBatch(
 }
 
 export async function batchRequest(
-  requestConifgs: RequestConfig[],
+  requestConfigs: RequestConfig[],
   intervalTime: IntervalTime | undefined,
   callback: (requestResItem: RequestResItem) => void
 ) {
@@ -168,7 +168,7 @@ export async function batchRequest(
 
   log(
     `Begin execution, mode: ${logWarn('async')}, total: ${logNumber(
-      requestConifgs.length
+      requestConfigs.length
     )} `
   )
 
@@ -177,7 +177,7 @@ export async function batchRequest(
   let errorTotal = 0
   const requestQueue: Promise<void>[] = []
   const errorMessage: { message: string; valueOf: () => number }[] = []
-  for (const requestConifg of requestConifgs) {
+  for (const requestConfig of requestConfigs) {
     const id = ++index
 
     await useSleepByBatch(
@@ -187,7 +187,7 @@ export async function batchRequest(
       id
     )
 
-    const requesttem = request(requestConifg)
+    const requesttem = request(requestConfig)
       .catch((error: any) => {
         errorTotal++
 
@@ -215,14 +215,14 @@ export async function batchRequest(
   quickSort(errorMessage).forEach((item) => log(logError(item.message)))
 
   log(
-    `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+    `requestsTotal: ${logNumber(requestConfigs.length)}, success: ${logSuccess(
       successTotal
     )}, error: ${logError(errorTotal)}`
   )
 }
 
 export async function syncBatchRequest(
-  requestConifgs: RequestConfig[],
+  requestConfigs: RequestConfig[],
   intervalTime: IntervalTime | undefined,
   callback: (requestResItem: RequestResItem) => void
 ) {
@@ -231,14 +231,14 @@ export async function syncBatchRequest(
 
   log(
     `Begin execution, mode: ${logWarn('sync')}, total: ${logNumber(
-      requestConifgs.length
+      requestConfigs.length
     )} `
   )
 
   let id = 0
   let successTotal = 0
   let errorTotal = 0
-  for (const requestConifg of requestConifgs) {
+  for (const requestConfig of requestConfigs) {
     id++
 
     await useSleepByBatch(
@@ -251,7 +251,7 @@ export async function syncBatchRequest(
     let isRequestSuccess = true
     let requestResItem: RequestResItem | null = null
     try {
-      const requestRes = await request(requestConifg)
+      const requestRes = await request(requestConfig)
       requestResItem = { id, ...requestRes }
       log(logSuccess(`Request ${logNumber(id)} is an success`))
       successTotal++
@@ -269,7 +269,7 @@ export async function syncBatchRequest(
   log(logSuccess('All requests are over!'))
 
   log(
-    `requestsTotal: ${logNumber(requestConifgs.length)}, success: ${logSuccess(
+    `requestsTotal: ${logNumber(requestConfigs.length)}, success: ${logSuccess(
       successTotal
     )}, error: ${logError(errorTotal)}`
   )

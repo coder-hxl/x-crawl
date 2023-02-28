@@ -11,7 +11,7 @@ import {
 } from './api'
 import { MapTypeObject } from './common'
 
-export interface XCrawlBaseConifg {
+export interface XCrawlBaseConfig {
   baseUrl?: string
   timeout?: number
   intervalTime?: IntervalTime
@@ -19,12 +19,12 @@ export interface XCrawlBaseConifg {
   proxy?: string
 }
 
-interface LoaderXCrawlBaseConifgValue {
+interface LoaderXCrawlBaseConfigValue {
   mode: 'async' | 'sync'
 }
 
-export type LoaderXCrawlBaseConifg = XCrawlBaseConifg &
-  MapTypeObject<LoaderXCrawlBaseConifgValue>
+export type LoaderXCrawlBaseConfig = XCrawlBaseConfig &
+  MapTypeObject<LoaderXCrawlBaseConfigValue>
 
 export interface XCrawlInstance {
   fetchHTML: (

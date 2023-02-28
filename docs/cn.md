@@ -47,9 +47,9 @@ x-crawl 是 Nodejs 多功能爬虫库。
     * [Method](#Method)
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
-    * [XCrawlBaseConifg](#XCrawlBaseConifg)
-    * [FetchBaseConifgV1](#FetchBaseConifgV1)
-    * [FetchBaseConifgV2](#FetchBaseConifgV2)
+    * [XCrawlBaseConfig](#XCrawlBaseConfig)
+    * [FetchBaseConfigV1](#FetchBaseConfigV1)
+    * [FetchBaseConfigV2](#FetchBaseConfigV2)
     * [FetchHTMLConfig](#FetchHTMLConfig	)
     * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
@@ -93,11 +93,11 @@ myXCrawl.startPolling({ d: 1 }, () => {
     const imgEls = jsdom.window.document.querySelectorAll('.carousel-wrapper .chief-recom-item img')
 
     // 设置请求配置
-    const requestConifg = []
-    imgEls.forEach((item) => requestConifg.push({ url: `https:${item.src}` }))
+    const requestConfig = []
+    imgEls.forEach((item) => requestConfig.push({ url: `https:${item.src}` }))
 
     // 调用 fetchFile API 爬取图片
-    myXCrawl.fetchFile({ requestConifg, fileConfig: { storeDir: './upload' } })
+    myXCrawl.fetchFile({ requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
@@ -125,7 +125,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
 更详细的类型请看[类型](#类型-6)部分内容
 
 ```ts
-function xCrawl(baseConfig?: XCrawlBaseConifg): XCrawlInstance
+function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 ```
 
 #### 示例
@@ -209,14 +209,14 @@ function fetchData: <T = any>(
 #### 示例
 
 ```js
-const requestConifg = [
+const requestConfig = [
   { url: '/xxxx', method: 'GET' },
   { url: '/xxxx', method: 'GET' },
   { url: '/xxxx', method: 'GET' }
 ]
 
 myXCrawl.fetchData({ 
-  requestConifg, // 请求配置, 可以是 RequestConfig | RequestConfig[]
+  requestConfig, // 请求配置, 可以是 RequestConfig | RequestConfig[]
   intervalTime: { max: 5000, min: 1000 } // 不使用 myXCrawl 时传入的 intervalTime
 }).then(res => {
   console.log(res)
@@ -244,14 +244,14 @@ function fetchFile: (
 #### 示例
 
 ```js
-const requestConifg = [
+const requestConfig = [
   { url: '/xxxx' },
   { url: '/xxxx' },
   { url: '/xxxx' }
 ]
 
 myXCrawl.fetchFile({
-  requestConifg,
+  requestConfig,
   fileConfig: {
     storeDir: path.resolve(__dirname, './upload') // 存放文件夹
   }
@@ -323,10 +323,10 @@ type IntervalTime = number | {
 }
 ```
 
-### XCrawlBaseConifg
+### XCrawlBaseConfig
 
 ```ts
-interface XCrawlBaseConifg {
+interface XCrawlBaseConfig {
   baseUrl?: string
   timeout?: number
   intervalTime?: IntervalTime
@@ -335,19 +335,19 @@ interface XCrawlBaseConifg {
 }
 ```
 
-### FetchBaseConifgV1
+### FetchBaseConfigV1
 
 ```ts
-interface FetchBaseConifgV1 {
-  requestConifg: RequestConfig | RequestConfig[]
+interface FetchBaseConfigV1 {
+  requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
-### FetchBaseConifgV2
+### FetchBaseConfigV2
 
 ```ts
-interface FetchBaseConifgV2 {
+interface FetchBaseConfigV2 {
   url: string
   timeout?: number
   proxy?: string
@@ -357,20 +357,20 @@ interface FetchBaseConifgV2 {
 ### FetchHTMLConfig
 
 ```ts
-type FetchHTMLConfig = string | FetchBaseConifgV2
+type FetchHTMLConfig = string | FetchBaseConfigV2
 ```
 
 ### FetchDataConfig
 
 ```ts
-interface FetchDataConfig extends FetchBaseConifgV1 {
+interface FetchDataConfig extends FetchBaseConfigV1 {
 }
 ```
 
 ### FetchFileConfig
 
 ```ts
-interface FetchFileConfig extends FetchBaseConifgV1 {
+interface FetchFileConfig extends FetchBaseConfigV1 {
   fileConfig: {
     storeDir: string // 存放文件夹
     extension?: string // 文件扩展名
