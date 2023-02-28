@@ -70,25 +70,56 @@ npm install x-crawl
 
 ## Example
 
-Get the title of https://docs.github.com/zh/get-started as an example:
+Example of fetching featured video cover image for youtube homepage every other day:
 
 ```js
-// Import module ES/CJS
+// 1.Import module ES/CJS
 import xCrawl from 'x-crawl'
 
-// Create a crawler instance
-const docsXCrawl = xCrawl({
-  baseUrl: 'https://docs.github.com',
-  timeout: 10000,
-  intervalTime: { max: 2000, min: 1000 }
+// 2.Create a crawler instance
+const myXCrawl = xCrawl({
+  timeout: 10000, // overtime time
+  intervalTime: { max: 3000, min: 2000 } // control request frequency
 })
 
-// Call fetchHTML API to crawl
-docsXCrawl.fetchHTML('/zh/get-started').then((res) => {
-  const { jsdom } = res.data
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
+// 3.Set the crawling task
+// Call the startPolling API to start the polling function, and the callback function will be called every other day
+myXCrawl.startPolling({ d: 1 }, () => {
+    // Call fetchHTML API to crawl HTML
+  myXCrawl.fetchHTML('https://www.youtube.com/').then((res) => {
+    const { jsdom } = res.data // By default, the JSDOM library is used to parse HTML
+
+    // Get the cover image element of the Promoted Video
+    const imgEls = jsdom.window.document.querySelectorAll(
+      '.yt-core-image--fill-parent-width'
+    )
+
+    // set request configuration
+    const requestConfig = []
+    imgEls.forEach((item) => {
+      if (item.src) {
+        requestConfig.push({ url: item.src })
+      }
+    })
+
+    // Call the fetchFile API to crawl pictures
+    myXCrawl.fetchFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+  })
 })
+
 ```
+
+running result:
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler.png" />
+</div>
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
+</div>
+
+**Note:** Do not crawl randomly, here is just to demonstrate how to use XCrawl, and control the request frequency within 3000ms to 2000ms.
 
 ## Core concepts
 

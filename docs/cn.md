@@ -78,8 +78,8 @@ import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
 const myXCrawl = xCrawl({
-  timeout: 10000, // 超时时间
-  intervalTime: { max: 3000, min: 2000 } // 控制请求频率
+  timeout: 10000, // overtime time
+  intervalTime: { max: 3000, min: 2000 } // control request frequency
 })
 
 // 3.设置爬取任务
@@ -105,11 +105,11 @@ myXCrawl.startPolling({ d: 1 }, () => {
 运行效果:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler.png" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler.png" />
 </div>
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/crawler-result.png" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
 
 **注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 3000ms 到 2000ms 内。
