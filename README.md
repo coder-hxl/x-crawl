@@ -14,9 +14,9 @@ x-crawl is a Nodejs multifunctional crawler library.
 - Anthropomorphic request interval.
 - Written in TypeScript, providing generics.
 
-## Relationship with puppeter
+## Relationship with puppeteer 
 
-The fetchHTML API internally uses the [puppeter](https://github.com/puppeteer/puppeteer) library to crawl pages.
+The fetchHTML API internally uses the [puppeteer ](https://github.com/puppeteer/puppeteer) library to crawl pages.
 
 The following can be done:
 

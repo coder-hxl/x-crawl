@@ -14,9 +14,9 @@ x-crawl 是 Nodejs 多功能爬虫库。
 - 拟人化的请求间隔时间。
 - 使用 TypeScript 编写，提供泛型。
 
-## 跟 puppeter 的关系
+## 跟 puppeteer 的关系
 
-fetchHTML API 内部使用 [puppeter](https://github.com/puppeteer/puppeteer) 库来爬取页面。
+fetchHTML API 内部使用 [puppeteer ](https://github.com/puppeteer/puppeteer) 库来爬取页面。
 
 可以完成以下操作:
 
