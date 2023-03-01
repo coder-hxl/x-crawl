@@ -6,15 +6,19 @@ x-crawl 是 Nodejs 多功能爬虫库。
 
 ## 特征
 
-- 只需简单的配置即可抓取 HTML 、JSON、文件资源等等。
-- 内置 puppeteer 爬取 HTML ，并用 JSDOM 库对 HTML 解析。
+- 只需简单的配置即可抓取页面、JSON、文件资源等等。
+- 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析。
 - 支持 异步/同步 方式爬取数据。
 - 支持 Promise/Callback 方式获取结果。
-- 轮询功能。
+- 轮询功能，定点爬取。
 - 拟人化的请求间隔时间。
 - 使用 TypeScript 编写，提供泛型。
 
-## 使用 puppeter 提供的好处
+## 跟 puppeter 的关系
+
+fetchHTML API 内部使用 [puppeter](https://github.com/puppeteer/puppeteer) 库来爬取页面。
+
+可以完成以下操作:
 
 - 生成页面的屏幕截图和 PDF。
 - 抓取 SPA（单页应用程序）并生成预渲染内容（即“SSR”（服务器端渲染））。
@@ -36,6 +40,7 @@ x-crawl 是 Nodejs 多功能爬虫库。
     * [fetchData](#fetchData)
        + [类型](#类型-3)
        + [示例](#示例-3)
+       + [关于 page](#关于-page)
     * [fetchFile](#fetchFile)
        + [类型](#类型-4)
        + [示例](#示例-4)
@@ -166,12 +171,12 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在请求前�
 
 ### fetchHTML
 
-fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取 HTML 。
+fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取页面。
 
 #### 类型
 
 - 查看 [FetchHTMLConfig](#FetchHTMLConfig) 类型
-- 查看 [FetchHTML](#FetchHTML) 类型
+- 查看 [FetchHTML](#FetchHTML-2) 类型
 
 ```ts
 function fetchHTML: (
@@ -188,6 +193,10 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
+
+#### 关于 page 
+
+从 res.data.page 拿到 page 实例，其可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
 ### fetchData
 
@@ -217,7 +226,7 @@ const requestConfig = [
 
 myXCrawl.fetchData({ 
   requestConfig, // 请求配置, 可以是 RequestConfig | RequestConfig[]
-  intervalTime: { max: 5000, min: 1000 } // 不使用 myXCrawl 时传入的 intervalTime
+  intervalTime: { max: 5000, min: 1000 } // 不使用创建 myXCrawl 时传入的 intervalTime
 }).then(res => {
   console.log(res)
 })
@@ -391,7 +400,7 @@ interface StartPollingConfig {
 ### FetchResCommonV1
 
 ```ts
-interface FetchCommon<T> {
+interface FetchResCommonV1<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // nodejs: http 类型
@@ -402,7 +411,7 @@ interface FetchCommon<T> {
 ### FetchResCommonArrV1
 
 ```ts
-type FetchCommonArr<T> = FetchCommon<T>[]
+type FetchResCommonArrV1<T> = FetchResCommonV1<T>[]
 ```
 
 ### FileInfo
@@ -423,7 +432,7 @@ interface FetchHTML {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   data: {
     page: Page // puppeteer 库的 Page 类型
-    jsdom: JSDOM
+    jsdom: JSDOM // jsdom 库的 JSDOM 类型
   }
 }
 ```

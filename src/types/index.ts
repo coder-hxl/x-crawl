@@ -9,7 +9,6 @@ import {
   StartPollingConfig,
   IntervalTime
 } from './api'
-import { MapTypeObject } from './common'
 
 export interface XCrawlBaseConfig {
   baseUrl?: string
@@ -19,12 +18,9 @@ export interface XCrawlBaseConfig {
   proxy?: string
 }
 
-interface LoaderXCrawlBaseConfigValue {
+export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
   mode: 'async' | 'sync'
 }
-
-export type LoaderXCrawlBaseConfig = XCrawlBaseConfig &
-  MapTypeObject<LoaderXCrawlBaseConfigValue>
 
 export interface XCrawlInstance {
   fetchHTML: (

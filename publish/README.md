@@ -4,17 +4,21 @@ English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.
 
 x-crawl is a Nodejs multifunctional crawler library. 
 
-## Feature
+## Features
 
-- Crawl HTML, JSON, file resources, etc. with simple configuration.
-- Built-in puppeteer crawls HTML and uses JSDOM library to parse HTML.
+- Crawl pages, JSON, file resources, etc. with simple configuration.
+- The built-in puppeteer crawls the page, and uses the jsdom library to parse the page.
 - Support asynchronous/synchronous way to crawl data.
-- Support Promise/Callback way to get the result.
-- Polling function.
+- Support Promise/Callback method to get the result.
+- Polling function, fixed-point crawling.
 - Anthropomorphic request interval.
-- Written in TypeScript, provides generics.
+- Written in TypeScript, providing generics.
 
-## Benefits provided by using puppeter
+## Relationship with puppeter
+
+The fetchHTML API internally uses the [puppeter](https://github.com/puppeteer/puppeteer) library to crawl pages.
+
+The following can be done:
 
 - Generate screenshots and PDFs of pages.
 - Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
@@ -33,6 +37,7 @@ x-crawl is a Nodejs multifunctional crawler library.
     * [fetchHTML](#fetchHTML)
        + [Type](#Type-2)
        + [Example](#Example-2)
+       + [About page](#About-page)
     * [fetchData](#fetchData)
        + [Type](#Type-3)
        + [Example](#Example-3)
@@ -173,12 +178,12 @@ The first request is not to trigger the interval.
 
 ### fetchHTML
 
-fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl HTML.
+fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
 
 #### Type
 
 - Look at the [FetchHTMLConfig](#FetchHTMLConfig) type
-- Look at the [FetchHTML](#FetchHTML) type
+- Look at the [FetchHTML](#FetchHTML-2) type
 
 ```ts
 function fetchHTML: (
@@ -195,6 +200,10 @@ myXCrawl.fetchHTML('/xxx').then((res) => {
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
+
+#### About page
+
+Get the page instance from res.data.page, which can do interactive operations such as events. For specific usage, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### fetchData
 
@@ -224,7 +233,7 @@ const requestConfig = [
 
 myXCrawl.fetchData({ 
   requestConfig, // Request configuration, can be RequestConfig | RequestConfig[]
-  intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when not using myXCrawl
+  intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when creating myXCrawl is not used
 }).then(res => {
   console.log(res)
 })
@@ -380,7 +389,7 @@ interface FetchDataConfig extends FetchBaseConfigV1 {
 interface FetchFileConfig extends FetchBaseConfigV1 {
   fileConfig: {
     storeDir: string // Store folder
-    extension?: string // filename extension
+    extension?: string // Filename extension
   }
 }
 ```
@@ -409,7 +418,7 @@ interface FetchCommon<T> {
 ### FetchResCommonArrV1
 
 ```ts
-type FetchCommonArr<T> = FetchCommon<T>[]
+type FetchResCommonArrV1<T> = FetchResCommonV1<T>[]
 ```
 
 ### FileInfo
