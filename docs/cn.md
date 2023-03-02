@@ -16,7 +16,7 @@ x-crawl 是 Nodejs 多功能爬虫库。
 
 ## 跟 puppeteer 的关系
 
-fetchHTML API 内部使用 [puppeteer ](https://github.com/puppeteer/puppeteer) 库来爬取页面。
+fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来爬取页面。
 
 可以完成以下操作:
 
@@ -34,7 +34,7 @@ fetchHTML API 内部使用 [puppeteer ](https://github.com/puppeteer/puppeteer) 
        + [示例](#示例-1)
        + [模式](#模式)
        + [间隔时间](#间隔时间)
-    * [fetchHTML](#fetchHTML)
+    * [fetchPage](#fetchPage)
        + [类型](#类型-2)
        + [示例](#示例-2)
     * [fetchData](#fetchData)
@@ -54,15 +54,14 @@ fetchHTML API 内部使用 [puppeteer ](https://github.com/puppeteer/puppeteer) 
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
     * [FetchBaseConfigV1](#FetchBaseConfigV1)
-    * [FetchBaseConfigV2](#FetchBaseConfigV2)
-    * [FetchHTMLConfig](#FetchHTMLConfig	)
+    * [FetchPageConfig](#FetchPageConfig	)
     * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
     * [FetchResCommonV1](#FetchResCommonV1)
     * [FetchResCommonArrV1](#FetchResCommonArrV1)
     * [FileInfo](#FileInfo)
-    * [FetchHTML](#FetchHTML)
+    * [FetchPage](#FetchPage)
 - [更多](#更多)
 
 ## 安装
@@ -83,16 +82,16 @@ import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
 const myXCrawl = xCrawl({
-  timeout: 10000, // overtime time
-  intervalTime: { max: 3000, min: 2000 } // control request frequency
+  timeout: 10000, // 请求超时时间
+  intervalTime: { max: 3000, min: 2000 } // 控制请求频率
 })
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, () => {
-  // 调用 fetchHTML API 爬取 HTML
-  myXCrawl.fetchHTML('https://www.bilibili.com/guochuang/').then((res) => {
-    const { jsdom } = res.data // 默认使用了 JSDOM 库解析 HTML
+  // 调用 fetchPage API 爬取 Page
+  myXCrawl.fetchPage('https://www.bilibili.com/guochuang/').then((res) => {
+    const { jsdom } = res.data // 默认使用了 JSDOM 库解析 Page
 
     // 获取轮播图片元素
     const imgEls = jsdom.window.document.querySelectorAll('.carousel-wrapper .chief-recom-item img')
@@ -117,7 +116,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
 
-**注意:** 请勿随意爬取，这里只是为了演示如何使用 XCrawl ，并将请求频率控制在 3000ms 到 2000ms 内。
+**注意:** 请勿随意爬取，这里只是为了演示如何使用 x-crawl ，并将请求频率控制在 3000ms 到 2000ms 内。
 
 ## 核心概念
 
@@ -147,9 +146,9 @@ const myXCrawl = xCrawl({
 })
 ```
 
-传入 **baseConfig** 是为了让 **fetchHTML/fetchData/fetchFile** 默认使用这些值。
+传入 **baseConfig** 是为了让 **fetchPage/fetchData/fetchFile** 默认使用这些值。
 
-**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **fetchHTML/fetchData/fetchFile** 示例中的爬虫实例。
+**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **fetchPage/fetchData/fetchFile** 示例中的爬虫实例。
 
 #### 模式
 
@@ -169,26 +168,26 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在请求前�
 
 第一次请求是不会触发间隔时间。
 
-### fetchHTML
+### fetchPage
 
-fetchHTML 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取页面。
+fetchPage 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取页面。
 
 #### 类型
 
-- 查看 [FetchHTMLConfig](#FetchHTMLConfig) 类型
-- 查看 [FetchHTML](#FetchHTML-2) 类型
+- 查看 [FetchPageConfig](#FetchPageConfig) 类型
+- 查看 [FetchPage](#FetchPage-2) 类型
 
 ```ts
-function fetchHTML: (
-  config: FetchHTMLConfig,
-  callback?: (res: FetchHTML) => void
-) => Promise<FetchHTML>
+function fetchPage: (
+  config: FetchPageConfig,
+  callback?: (res: FetchPage) => void
+) => Promise<FetchPage>
 ```
 
 #### 示例
 
 ```js
-myXCrawl.fetchHTML('/xxx').then((res) => {
+myXCrawl.fetchPage('/xxx').then((res) => {
   const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
@@ -289,7 +288,7 @@ function startPolling: (
 ```js
 myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // 每隔一个半小时会执行一次
-  // fetchHTML/fetchData/fetchFile
+  // fetchPage/fetchData/fetchFile
 })
 ```
 
@@ -309,17 +308,24 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
+### RequestBaseConfig
+
+```ts
+interface RequestBaseConfig {
+ url: string
+ timeout?: number
+ proxy?: string
+}
+```
+
 ### RequestConfig
 
 ```ts 
-interface RequestConfig {
-  url: string
+interface RequestConfig extends RequestBaseConfig {
   method?: Method
   headers?: AnyObject
   params?: AnyObject
   data?: any
-  timeout?: number
-  proxy?: string
 }
 ```
 
@@ -353,20 +359,10 @@ interface FetchBaseConfigV1 {
 }
 ```
 
-### FetchBaseConfigV2
+### FetchPageConfig
 
 ```ts
-interface FetchBaseConfigV2 {
-  url: string
-  timeout?: number
-  proxy?: string
-}
-```
-
-### FetchHTMLConfig
-
-```ts
-type FetchHTMLConfig = string | FetchBaseConfigV2
+type FetchPageConfig = string | RequestBaseConfig
 ```
 
 ### FetchDataConfig
@@ -425,10 +421,10 @@ interface FileInfo {
 }
 ```
 
-### FetchHTML
+### FetchPage
 
 ```ts
-interface FetchHTML {
+interface FetchPage {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   data: {
     page: Page // puppeteer 库的 Page 类型

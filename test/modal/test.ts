@@ -35,7 +35,7 @@ function httpsProtocol() {
     const httpsXCrawl = XCrawl({ timeout: 10000 })
 
     httpsXCrawl
-      .fetchHTML('https://docs.github.com/zh')
+      .fetchPage('https://docs.github.com/zh')
       .then(() => resolve(true))
   })
 }
@@ -49,11 +49,11 @@ test('https protocol', async () => {
 })
 
 // API
-function fetchHTMLAPI() {
+function fetchPageAPI() {
   return new Promise((resolve) => {
     const myXCrawl = XCrawl()
 
-    myXCrawl.fetchHTML('https://docs.github.com/zh').then(() => resolve(true))
+    myXCrawl.fetchPage('https://docs.github.com/zh').then(() => resolve(true))
   })
 }
 
@@ -117,8 +117,8 @@ function fetchFileAPI() {
   })
 }
 
-test('fetchHTML API', async () => {
-  await expect(fetchHTMLAPI()).resolves.toBe(true)
+test('fetchPage API', async () => {
+  await expect(fetchPageAPI()).resolves.toBe(true)
 })
 
 test('fetchData API', async () => {

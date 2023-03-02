@@ -18,21 +18,21 @@ import {
 } from './utils'
 
 import {
-  FetchBaseConfigV1,
   FetchDataConfig,
   FetchFileConfig,
-  FetchHTML,
-  FetchHTMLConfig,
+  FetchPage,
+  FetchPageConfig,
   FetchResCommonArrV1,
   FetchResCommonV1,
   FileInfo,
   IntervalTime,
+  MergeConfigRawConfig,
   StartPollingConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
 import { RequestConfig, RequestResItem } from './types/request'
 
-function mergeConfig<T extends FetchBaseConfigV1>(
+function mergeConfig<T extends MergeConfigRawConfig>(
   baseConfig: LoaderXCrawlBaseConfig,
   rawConfig: T
 ): T {
@@ -62,7 +62,10 @@ function mergeConfig<T extends FetchBaseConfigV1>(
   }
 
   // 2.处理 intervalTime
-  if (isUndefined(newConfig.intervalTime)) {
+  if (
+    Object.hasOwn(newConfig, 'intervalTime') &&
+    isUndefined(newConfig.intervalTime)
+  ) {
     newConfig.intervalTime = baseConfig.intervalTime
   }
 
@@ -75,26 +78,26 @@ async function useBatchRequestByMode(
   intervalTime: IntervalTime | undefined,
   callback: (requestRestem: RequestResItem) => void
 ) {
-  const requestConfigQueue = isArray(requestConfig)
+  const requestConfigs = isArray(requestConfig)
     ? requestConfig
     : [requestConfig]
 
   if (mode === 'async') {
-    await batchRequest(requestConfigQueue, intervalTime, callback)
+    await batchRequest(requestConfigs, intervalTime, callback)
   } else {
-    await syncBatchRequest(requestConfigQueue, intervalTime, callback)
+    await syncBatchRequest(requestConfigs, intervalTime, callback)
   }
 }
 
-export function createFetchHTML(baseConfig: LoaderXCrawlBaseConfig) {
+export function createFetchPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
   let callTotal = 0
 
-  async function fetchHTML(
-    config: FetchHTMLConfig,
-    callback?: (res: FetchHTML) => void
-  ): Promise<FetchHTML> {
+  async function fetchPage(
+    config: FetchPageConfig,
+    callback?: (res: FetchPage) => void
+  ): Promise<FetchPage> {
     // 记录调用次数, 目的: 关闭浏览器
     callTotal++
 
@@ -140,7 +143,7 @@ export function createFetchHTML(baseConfig: LoaderXCrawlBaseConfig) {
       browser!.close()
     }
 
-    const res: FetchHTML = {
+    const res: FetchPage = {
       httpResponse,
       data: { page, jsdom: new JSDOM(content) }
     }
@@ -152,7 +155,7 @@ export function createFetchHTML(baseConfig: LoaderXCrawlBaseConfig) {
     return res
   }
 
-  return fetchHTML
+  return fetchPage
 }
 
 export function createFetchData(baseConfig: LoaderXCrawlBaseConfig) {

@@ -16,7 +16,7 @@ x-crawl is a Nodejs multifunctional crawler library.
 
 ## Relationship with puppeteer 
 
-The fetchHTML API internally uses the [puppeteer ](https://github.com/puppeteer/puppeteer) library to crawl pages.
+The fetchPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to crawl pages.
 
 The following can be done:
 
@@ -34,7 +34,7 @@ The following can be done:
        + [Example](#Example-1)
        + [Mode](#Mode)
        + [IntervalTime](#IntervalTime)
-    * [fetchHTML](#fetchHTML)
+    * [fetchPage](#fetchPage)
        + [Type](#Type-2)
        + [Example](#Example-2)
        + [About page](#About-page)
@@ -50,19 +50,19 @@ The following can be done:
 - [Types](#Types)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
+    * [RequestBaseConfig](#RequestBaseConfig)
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
     * [FetchBaseConfigV1](#FetchBaseConfigV1)
-    * [FetchBaseConfigV2](#FetchBaseConfigV2)
-    * [FetchHTMLConfig](#FetchHTMLConfig	)
+    * [FetchPageConfig](#FetchPageConfig	)
     * [FetchDataConfig](#FetchDataConfig) 
     * [FetchFileConfig](#FetchFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
     * [FetchResCommonV1](#FetchResCommonV1)
     * [FetchResCommonArrV1](#FetchResCommonArrV1)
     * [FileInfo](#FileInfo)
-    * [FetchHTML](#FetchHTML)
+    * [FetchPage](#FetchPage)
 - [More](#More)
 
 ## Install
@@ -90,9 +90,9 @@ const myXCrawl = xCrawl({
 // 3.Set the crawling task
 // Call the startPolling API to start the polling function, and the callback function will be called every other day
 myXCrawl.startPolling({ d: 1 }, () => {
-    // Call fetchHTML API to crawl HTML
-  myXCrawl.fetchHTML('https://www.youtube.com/').then((res) => {
-    const { jsdom } = res.data // By default, the JSDOM library is used to parse HTML
+    // Call fetchPage API to crawl Page
+  myXCrawl.fetchPage('https://www.youtube.com/').then((res) => {
+    const { jsdom } = res.data // By default, the JSDOM library is used to parse Page
 
     // Get the cover image element of the Promoted Video
     const imgEls = jsdom.window.document.querySelectorAll(
@@ -124,7 +124,7 @@ running result:
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
 
-**Note:** Do not crawl randomly, here is just to demonstrate how to use XCrawl, and control the request frequency within 3000ms to 2000ms.
+**Note:** Do not crawl randomly, here is just to demonstrate how to use x-crawl, and control the request frequency within 3000ms to 2000ms.
 
 ## Core concepts
 
@@ -154,9 +154,9 @@ const myXCrawl = xCrawl({
 })
 ```
 
-Passing **baseConfig** is for **fetchHTML/fetchData/fetchFile** to use these values by default.
+Passing **baseConfig** is for **fetchPage/fetchData/fetchFile** to use these values by default.
 
-**Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **fetchHTML/fetchData/fetchFile** example.
+**Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **fetchPage/fetchData/fetchFile** example.
 
 #### Mode 
 
@@ -176,26 +176,26 @@ The intervalTime option defaults to undefined . If there is a setting value, it 
 
 The first request is not to trigger the interval.
 
-### fetchHTML
+### fetchPage
 
-fetchHTML is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
+fetchPage is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
 
 #### Type
 
-- Look at the [FetchHTMLConfig](#FetchHTMLConfig) type
-- Look at the [FetchHTML](#FetchHTML-2) type
+- Look at the [FetchPageConfig](#FetchPageConfig) type
+- Look at the [FetchPage](#FetchPage-2) type
 
 ```ts
-function fetchHTML: (
-  config: FetchHTMLConfig,
-  callback?: (res: FetchHTML) => void
-) => Promise<FetchHTML>
+function fetchPage: (
+  config: FetchPageConfig,
+  callback?: (res: FetchPage) => void
+) => Promise<FetchPage>
 ```
 
 #### Example
 
 ```js
-myXCrawl.fetchHTML('/xxx').then((res) => {
+myXCrawl.fetchPage('/xxx').then((res) => {
   const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
@@ -296,7 +296,7 @@ function startPolling(
 ```js
 myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // will be executed every one and a half hours
-  // fetchHTML/fetchData/fetchFile
+  // fetchPage/fetchData/fetchFile
 })
 ```
 
@@ -316,17 +316,24 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
+### RequestBaseConfig
+
+```ts
+interface RequestBaseConfig {
+ url: string
+ timeout?: number
+ proxy?: string
+}
+```
+
 ### RequestConfig
 
 ```ts 
-interface RequestConfig {
-  url: string
+interface RequestConfig extends RequestBaseConfig {
   method?: Method
   headers?: AnyObject
   params?: AnyObject
   data?: any
-  timeout?: number
-  proxy?: string
 }
 ```
 
@@ -360,20 +367,10 @@ interface FetchBaseConfigV1 {
 }
 ```
 
-### FetchBaseConfigV2
+### FetchPageConfig
 
 ```ts
-interface FetchBaseConfigV2 {
-  url: string
-  timeout?: number
-  proxy?: string
-}
-```
-
-### FetchHTMLConfig
-
-```ts
-type FetchHTMLConfig = string | FetchBaseConfigV2
+type FetchPageConfig = string | RequestBaseConfig
 ```
 
 ### FetchDataConfig
@@ -432,10 +429,10 @@ interface FileInfo {
 }
 ```
 
-### FetchHTML
+### FetchPage
 
 ```ts
-interface FetchHTML {
+interface FetchPage {
   httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
   data: {
     page: Page // The type of Page in the puppeteer library

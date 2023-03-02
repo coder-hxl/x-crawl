@@ -2,22 +2,21 @@ import { IncomingHttpHeaders } from 'node:http'
 import { HTTPResponse, Page } from 'puppeteer'
 import { JSDOM } from 'jsdom'
 
-import { RequestConfig } from './request'
+import { RequestBaseConfig, RequestConfig } from './request'
 
 export type IntervalTime = number | { max: number; min?: number }
+
+export type MergeConfigRawConfig = {
+  requestConfig: RequestBaseConfig | RequestBaseConfig[]
+  intervalTime?: IntervalTime
+}
 
 export interface FetchBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 
-export interface FetchBaseConfigV2 {
-  url: string
-  timeout?: number
-  proxy?: string
-}
-
-export type FetchHTMLConfig = string | FetchBaseConfigV2
+export type FetchPageConfig = string | RequestBaseConfig
 
 export interface FetchDataConfig extends FetchBaseConfigV1 {}
 
@@ -50,7 +49,7 @@ export interface FileInfo {
   filePath: string
 }
 
-export interface FetchHTML {
+export interface FetchPage {
   httpResponse: HTTPResponse | null
   data: {
     page: Page

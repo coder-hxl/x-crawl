@@ -167,9 +167,9 @@ export async function batchRequest(
   const isNumberntervalTime = isNumber(intervalTime)
 
   log(
-    `Begin execution, mode: ${logWarn('async')}, total: ${logNumber(
-      requestConfigs.length
-    )} `
+    `${logSuccess('Begin execution:')} mode: ${logWarn(
+      'async'
+    )}, total: ${logNumber(requestConfigs.length)} `
   )
 
   let index = 0
@@ -230,9 +230,9 @@ export async function syncBatchRequest(
   const isNumberntervalTime = isNumber(intervalTime)
 
   log(
-    `Begin execution, mode: ${logWarn('sync')}, total: ${logNumber(
-      requestConfigs.length
-    )} `
+    `${logSuccess('Begin execution:')} mode: ${logWarn(
+      'sync'
+    )}, total: ${logNumber(requestConfigs.length)}`
   )
 
   let id = 0

@@ -3,8 +3,8 @@ import {
   FetchResCommonArrV1,
   FetchDataConfig,
   FetchFileConfig,
-  FetchHTML,
-  FetchHTMLConfig,
+  FetchPage,
+  FetchPageConfig,
   FileInfo,
   StartPollingConfig,
   IntervalTime
@@ -23,10 +23,10 @@ export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
 }
 
 export interface XCrawlInstance {
-  fetchHTML: (
-    config: FetchHTMLConfig,
-    callback?: (res: FetchHTML) => void
-  ) => Promise<FetchHTML>
+  fetchPage: (
+    config: FetchPageConfig,
+    callback?: (res: FetchPage) => void
+  ) => Promise<FetchPage>
 
   fetchData: <T = any>(
     config: FetchDataConfig,
