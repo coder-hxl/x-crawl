@@ -29,6 +29,15 @@ The following can be done:
 - [Install](#Install)
 - [Example](#Example)
 - [Core concepts](#Core-concepts)
+    * [Create application](#Create-application)
+      + [An example of a crawler application](#An-example-of-a-crawler-application)
+      + [Choose crawling mode](#Choose-crawling-mode)
+      + [Set interval time](#Set-interval-time)
+      + [Multiple crawler application instances](#Multiple-crawler-application-instances)
+    * [Crawl page](#Crawl-page)
+    * [Crawl interface](#Crawl-interface)
+    * [Crawl files](#Crawl-files)
+- [API](#API)
     * [x-crawl](#x-crawl-2)
        + [Type](#Type-1)
        + [Example](#Example-1)
@@ -128,6 +137,125 @@ running result:
 
 ## Core concepts
 
+### Create application
+
+#### An example of a crawler application
+
+Create a new **application instance** via [xCrawl()](#xCrawl):
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+   // options
+})
+```
+
+Related **options** can refer to [XCrawlBaseConfig](#XCrawlBaseConfig) .
+
+#### Choose crawling mode
+
+A crawler application instance has two crawling modes: asynchronous/synchronous, and each crawler instance can only choose one of them.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+   mode: 'async'
+})
+```
+
+The mode option defaults to async .
+
+- async: asynchronous request, in batch requests, the next request is made without waiting for the current request to complete
+- sync: synchronous request, in batch requests, you need to wait for this request to complete before making the next request
+
+If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
+
+#### Set interval time
+
+Setting the interval time can prevent too much concurrency and avoid too much pressure on the server.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+   intervalTime: { max: 3000, min: 1000 }
+})
+```
+
+The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
+
+- number: The time that must wait before each request is fixed
+- Object: Randomly select a value from max and min, which is more anthropomorphic
+
+The first request is not to trigger the interval.
+
+#### Multiple crawler application instances
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl1 = xCrawl({
+  // options
+})
+
+const myXCrawl2 = xCrawl({
+  // options
+})
+```
+
+### Crawl page
+
+Fetch a page via [fetchPage()](#fetchPage)
+
+```js
+myXCrawl.fetchPage('https://xxx.com').then(res => {
+   const { jsdom, page } = res.data
+})
+```
+
+### Crawl interface
+
+Crawl interface data through [fetchData()](#fetchData)
+
+```js
+const requestConfig = [
+   { url: 'https://xxx.com/xxxx' },
+   { url: 'https://xxx.com/xxxx' },
+   { url: 'https://xxx.com/xxxx' }
+]
+
+myXCrawl.fetchData({ requestConfig }).then(res => {
+   // deal with
+})
+```
+
+### Crawl files
+
+Fetch file data via [fetchFile()](#fetchFile)
+
+```js
+import path from 'node:path'
+
+const requestConfig = [
+   { url: 'https://xxx.com/xxxx' },
+   { url: 'https://xxx.com/xxxx' },
+   { url: 'https://xxx.com/xxxx' }
+]
+
+myXCrawl. fetchFile({
+   requestConfig,
+   fileConfig: {
+     storeDir: path.resolve(__dirname, './upload') // storage folder
+   }
+}).then(fileInfos => {
+   console. log(fileInfos)
+})
+```
+
+## API
+
 ### x-crawl
 
 Create a crawler instance via call xCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
@@ -226,15 +354,12 @@ function fetchData: <T = any>(
 
 ```js
 const requestConfig = [
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' }
+  { url: '/xxxx' },
+  { url: '/xxxx' },
+  { url: '/xxxx' }
 ]
 
-myXCrawl.fetchData({ 
-  requestConfig, // Request configuration, can be RequestConfig | RequestConfig[]
-  intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when creating myXCrawl is not used
-}).then(res => {
+myXCrawl.fetchData({ requestConfig }).then(res => {
   console.log(res)
 })
 ```

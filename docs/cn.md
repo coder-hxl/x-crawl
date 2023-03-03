@@ -31,7 +31,11 @@ fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 - [安装](#安装)
 - [示例](#示例)
 - [核心概念](#核心概念)
-    * [创建第一个爬虫实例](#创建第一个爬虫实例)
+    * [创建应用](#创建应用)
+      + [一个爬虫应用实例](#一个爬虫应用实例)
+      + [选择爬取模式](#选择爬取模式)
+      + [设置间隔时间](#设置间隔时间)
+      + [多个爬虫应用实例](#多个爬虫应用实例)
     * [爬取页面](#爬取页面)
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
@@ -127,7 +131,11 @@ myXCrawl.startPolling({ d: 1 }, () => {
 
 ## 核心概念
 
-### 创建一个爬虫应用实例
+### 创建应用
+
+#### 一个爬虫应用实例
+
+通过 [xCrawl()](#xCrawl) 创建一个新的 **应用实例:**
 
 ```js
 import xCrawl from 'x-crawl'
@@ -137,48 +145,98 @@ const myXCrawl = xCrawl({
 })
 ```
 
-有关选项内容可参考 [XCrawlBaseConfig](#XCrawlBaseConfig) 。
+相关的 **选项** 可参考 [XCrawlBaseConfig](#XCrawlBaseConfig) 。
+
+#### 选择爬取模式
+
+一个爬虫应用实例有两种爬取模式: 异步/同步，每个爬虫实例只能选择其中一种。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  mode: 'async'
+})
+```
+
+mode 选项默认为 async 。
+
+- async: 异步请求，在批量请求时，无需等当前请求完成，就进行下次请求
+- sync: 同步请求，在批量请求时，需要等这次请求完成，才会进行下次请求
+
+若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
+
+#### 设置间隔时间
+
+设置间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  intervalTime: { max: 3000, min: 1000 }
+})
+```
+
+intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
+
+- number: 固定每次请求前必须等待的时间
+- Object: 在 max 和 min 中随机取一个值，更加拟人化
+
+第一次请求是不会触发间隔时间。
+
+
+#### 多个爬虫应用实例
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl1 = xCrawl({
+  // 选项
+})
+
+const myXCrawl2 = xCrawl({
+  // 选项
+})
+```
 
 ### 爬取页面
 
-可以通过 [fetchPage()](#fetchPage) 爬取接口数据
+通过 [fetchPage()](#fetchPage) 爬取一个页面
 
 ```js
 myXCrawl.fetchPage('https://xxx.com').then(res => {
-  const { jsdom, page } = res
+  const { jsdom, page } = res.data
 })
 ```
 
 ### 爬取接口
 
-可以通过 [fetchData()](#fetchData) 爬取接口数据
+通过 [fetchData()](#fetchData) 爬取接口数据
 
 ```js
 const requestConfig = [
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.fetchData({ 
-  requestConfig,
-  intervalTime: { max: 5000, min: 1000 }
-}).then(res => {
-  console.log(res)
+myXCrawl.fetchData({ requestConfig }).then(res => {
+  // 处理
 })
 ```
 
 ### 爬取文件
 
-可以通过 [fetchFile()](#fetchFile) 爬取文件数据
+通过 [fetchFile()](#fetchFile) 爬取文件数据
 
 ```js
 import path from 'node:path'
 
 const requestConfig = [
-  { url: '/xxxx' },
-  { url: '/xxxx' },
-  { url: '/xxxx' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
 myXCrawl.fetchFile({
@@ -195,7 +253,7 @@ myXCrawl.fetchFile({
 
 ### xCrawl
 
-通过调用 xCrawl 创建一个爬虫实例。请求队列是由实例方法内部自己维护，并非由实例自己维护。
+通过调用 xCrawl 创建一个爬虫实例。请求是由实例方法内部自己维护，并非由实例自己维护。
 
 #### 类型
 
@@ -219,31 +277,11 @@ const myXCrawl = xCrawl({
 })
 ```
 
-传入 **baseConfig** 是为了让 **fetchPage/fetchData/fetchFile** 默认使用这些值。
-
 **注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **fetchPage/fetchData/fetchFile** 示例中的爬虫实例。
 
-#### 模式
+### fetchPage 
 
-mode 选项默认为 async 。
-
-- async: 在批量请求时，无需等当前请求完成，就进行下次请求
-- sync: 在批量请求时，需要等这次请求完成，才会进行下次请求
-
-若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
-
-#### 间隔时间
-
-intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
-
-- number: 固定每次请求前必须等待的时间
-- Object: 在 max 和 min 中随机取一个值，更加拟人化
-
-第一次请求是不会触发间隔时间。
-
-### fetchPage
-
-fetchPage 是 [myXCrawl](https://github.com/coder-hxl/x-crawl/blob/main/document/cn.md#%E7%A4%BA%E4%BE%8B-1) 实例的方法，通常用于爬取页面。
+fetchPage 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取页面。
 
 #### 类型
 
@@ -272,7 +310,7 @@ myXCrawl.fetchPage('/xxx').then((res) => {
 
 ### fetchData
 
-fetch 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+fetch 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
 
@@ -296,17 +334,14 @@ const requestConfig = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetchData({ 
-  requestConfig,
-  intervalTime: { max: 5000, min: 1000 }
-}).then(res => {
+myXCrawl.fetchData({ requestConfig }).then(res => {
   console.log(res)
 })
 ```
 
 ### fetchFile
 
-fetchFile 是 [myXCrawl](#示例-1) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+fetchFile 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
 
