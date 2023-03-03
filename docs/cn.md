@@ -4,7 +4,7 @@
 
 x-crawl 是 Nodejs 多功能爬虫库。
 
-如果对您有帮助，可以点个 Star 支持一下。
+如果对您有帮助，请给[存储库](https://github.com/coder-hxl/x-crawl)点个 Star 支持一下。
 
 ## 特征
 
