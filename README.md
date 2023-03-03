@@ -232,8 +232,8 @@ const requestConfig = [
 ]
 
 myXCrawl.fetchData({ 
-  requestConfig, // Request configuration, can be RequestConfig | RequestConfig[]
-  intervalTime: { max: 5000, min: 1000 } // The intervalTime passed in when creating myXCrawl is not used
+  requestConfig, 
+  intervalTime: { max: 5000, min: 1000 } 
 }).then(res => {
   console.log(res)
 })

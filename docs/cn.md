@@ -4,6 +4,8 @@
 
 x-crawl 是 Nodejs 多功能爬虫库。
 
+如果对您有帮助，可以点个 Star 支持一下。
+
 ## 特征
 
 - 只需简单的配置即可抓取页面、JSON、文件资源等等。
@@ -29,6 +31,11 @@ fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 - [安装](#安装)
 - [示例](#示例)
 - [核心概念](#核心概念)
+    * [创建第一个爬虫实例](#创建第一个爬虫实例)
+    * [爬取页面](#爬取页面)
+    * [爬取接口](#爬取接口)
+    * [爬取文件](#爬取文件)
+- [API](#API)
     * [xCrawl](#xCrawl)
        + [类型](#类型-1)
        + [示例](#示例-1)
@@ -119,6 +126,72 @@ myXCrawl.startPolling({ d: 1 }, () => {
 **注意:** 请勿随意爬取，这里只是为了演示如何使用 x-crawl ，并将请求频率控制在 3000ms 到 2000ms 内。
 
 ## 核心概念
+
+### 创建一个爬虫应用实例
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  // 选项
+})
+```
+
+有关选项内容可参考 [XCrawlBaseConfig](#XCrawlBaseConfig) 。
+
+### 爬取页面
+
+可以通过 [fetchPage()](#fetchPage) 爬取接口数据
+
+```js
+myXCrawl.fetchPage('https://xxx.com').then(res => {
+  const { jsdom, page } = res
+})
+```
+
+### 爬取接口
+
+可以通过 [fetchData()](#fetchData) 爬取接口数据
+
+```js
+const requestConfig = [
+  { url: '/xxxx', method: 'GET' },
+  { url: '/xxxx', method: 'GET' },
+  { url: '/xxxx', method: 'GET' }
+]
+
+myXCrawl.fetchData({ 
+  requestConfig,
+  intervalTime: { max: 5000, min: 1000 }
+}).then(res => {
+  console.log(res)
+})
+```
+
+### 爬取文件
+
+可以通过 [fetchFile()](#fetchFile) 爬取文件数据
+
+```js
+import path from 'node:path'
+
+const requestConfig = [
+  { url: '/xxxx' },
+  { url: '/xxxx' },
+  { url: '/xxxx' }
+]
+
+myXCrawl.fetchFile({
+  requestConfig,
+  fileConfig: {
+    storeDir: path.resolve(__dirname, './upload') // 存放文件夹
+  }
+}).then(fileInfos => {
+  console.log(fileInfos)
+})
+```
+
+## API
 
 ### xCrawl
 
@@ -224,8 +297,8 @@ const requestConfig = [
 ]
 
 myXCrawl.fetchData({ 
-  requestConfig, // 请求配置, 可以是 RequestConfig | RequestConfig[]
-  intervalTime: { max: 5000, min: 1000 } // 不使用创建 myXCrawl 时传入的 intervalTime
+  requestConfig,
+  intervalTime: { max: 5000, min: 1000 }
 }).then(res => {
   console.log(res)
 })
@@ -252,6 +325,8 @@ function fetchFile: (
 #### 示例
 
 ```js
+import path from 'node:path'
+
 const requestConfig = [
   { url: '/xxxx' },
   { url: '/xxxx' },
