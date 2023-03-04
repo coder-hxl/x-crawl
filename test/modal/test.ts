@@ -22,9 +22,7 @@ function httpProtocol() {
 
     httpXCrawl
       .crawlData({
-        requestConfig: {
-          url: 'http://localhost:9001/api/home/goodprice'
-        }
+        requestConfig: 'http://localhost:9001/api/home/goodprice'
       })
       .then(() => resolve(true))
   })
@@ -32,7 +30,10 @@ function httpProtocol() {
 
 function httpsProtocol() {
   return new Promise((resolve) => {
-    const httpsXCrawl = xCrawl({ timeout: 10000 })
+    const httpsXCrawl = xCrawl({
+      timeout: 10000,
+      proxy: 'http://localhost:14892'
+    })
 
     httpsXCrawl
       .crawlPage('https://docs.github.com/zh')
@@ -101,9 +102,9 @@ function crawlFileAPI() {
       })
       .then((res) => {
         const roomList = res[0].data.data.list
-        const requestConfig = roomList.map((item: any) => ({
-          url: item.coverUrl
-        }))
+        const requestConfig: string[] = roomList.map(
+          (item: any) => item.coverUrl
+        )
 
         myXCrawl
           .crawlFile({

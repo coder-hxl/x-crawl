@@ -2,9 +2,9 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a Nodejs multifunctional crawler library. 
+x-crawl is a flexible nodejs crawler library. 
 
-If it helps you, please give the [repository](https://github.com/coder-hxl/x-crawl) a Star to support it.
+If it helps you, please give the [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it.
 
 ## Features
 
@@ -34,11 +34,12 @@ The following can be done:
     * [Create application](#Create-application)
       + [An example of a crawler application](#An-example-of-a-crawler-application)
       + [Choose crawling mode](#Choose-crawling-mode)
-      + [Set interval time](#Set-interval-time)
       + [Multiple crawler application instances](#Multiple-crawler-application-instances)
     * [Crawl page](#Crawl-page)
     * [Crawl interface](#Crawl-interface)
     * [Crawl files](#Crawl-files)
+    * [Request interval time](#Request-interval-time)
+    * [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
 - [API](#API)
     * [x-crawl](#x-crawl-2)
        + [Type](#Type-1)
@@ -61,8 +62,9 @@ The following can be done:
 - [Types](#Types)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
-    * [RequestBaseConfig](#RequestBaseConfig)
+    * [RequestConfigObject](#RequestConfigObject)
     * [RequestConfig](#RequestConfig)
+    * [MergeRequestConfigObject](#MergeRequestConfigObject)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
     * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
@@ -90,6 +92,7 @@ Regular crawling: Get the recommended pictures of the youtube homepage every oth
 
 ```js
 // 1.Import module ES/CJS
+import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
@@ -114,15 +117,17 @@ myXCrawl.startPolling({ d: 1 }, () => {
     const requestConfig = []
     imgEls.forEach((item) => {
       if (item.src) {
-        requestConfig.push({ url: item.src })
+        requestConfig.push(item.src)
       }
     })
 
     // Call the crawlFile API to crawl pictures
-    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+    myXCrawl.crawlFile({
+      requestConfig,
+      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+    })
   })
 })
-
 ```
 
 running result:
@@ -174,25 +179,6 @@ The mode option defaults to async .
 
 If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
 
-#### Set interval time
-
-Setting the interval time can prevent too much concurrency and avoid too much pressure on the server.
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({
-   intervalTime: { max: 3000, min: 1000 }
-})
-```
-
-The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
-
-- number: The time that must wait before each request is fixed
-- Object: Randomly select a value from max and min, which is more anthropomorphic
-
-The first request is not to trigger the interval.
-
 #### Multiple crawler application instances
 
 ```js
@@ -223,9 +209,9 @@ Crawl interface data through [crawlData()](#crawlData)
 
 ```js
 const requestConfig = [
-   { url: 'https://xxx.com/xxxx' },
-   { url: 'https://xxx.com/xxxx' },
-   { url: 'https://xxx.com/xxxx' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
 myXCrawl.crawlData({ requestConfig }).then(res => {
@@ -240,11 +226,7 @@ Crawl file data via [crawlFile()](#crawlFile)
 ```js
 import path from 'node:path'
 
-const requestConfig = [
-   { url: 'https://xxx.com/xxxx' },
-   { url: 'https://xxx.com/xxxx' },
-   { url: 'https://xxx.com/xxxx' }
-]
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
 myXCrawl. crawlFile({
    requestConfig,
@@ -255,6 +237,66 @@ myXCrawl. crawlFile({
    console. log(fileInfos)
 })
 ```
+
+### Request interval time
+
+Setting the requests interval time can prevent too much concurrency and avoid too much pressure on the server.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+   intervalTime: { max: 3000, min: 1000 }
+})
+```
+
+The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
+
+- number: The time that must wait before each request is fixed
+- Object: Randomly select a value from max and min, which is more anthropomorphic
+
+The first request is not to trigger the interval.
+
+### Multiple ways of writing requestConfig options
+
+The writing method of requestConfig is very flexible, there are 5 types in total, which can be:
+
+- string
+- array of strings
+- object
+- array of objects
+- string plus object array
+
+```js
+// requestConfig writing method 1:
+const requestConfig1 = 'https://xxx.com/xxxx'
+
+// requestConfig writing method 2:
+const requestConfig2 = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+
+// requestConfig writing method 3:
+const requestConfig3 = {
+   url: 'https://xxx.com/xxxx',
+   method: 'POST',
+   data: { name: 'coderhxl' }
+}
+
+// requestConfig writing method 4:
+const requestConfig4 = [
+   { url: 'https://xxx.com/xxxx' },
+   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+   { url: 'https://xxx.com/xxxx' }
+]
+
+// requestConfig writing method 5:
+const requestConfig5 = [
+   'https://xxx.com/xxxx',
+   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+   'https://xxx.com/xxxx'
+]
+```
+
+It can be selected according to the actual situation.
 
 ## API
 
@@ -356,9 +398,9 @@ function crawlData: <T = any>(
 
 ```js
 const requestConfig = [
-  { url: '/xxxx' },
-  { url: '/xxxx' },
-  { url: '/xxxx' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
 myXCrawl.crawlData({ requestConfig }).then(res => {
@@ -387,11 +429,7 @@ function crawlFile: (
 #### Example
 
 ```js
-const requestConfig = [
-  { url: '/xxxx' },
-  { url: '/xxxx' },
-  { url: '/xxxx' }
-]
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
 myXCrawl.crawlFile({
   requestConfig,
@@ -443,24 +481,33 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### RequestBaseConfig
+### RequestConfigObject
 
-```ts
-interface RequestBaseConfig {
- url: string
- timeout?: number
- proxy?: string
+```ts 
+interface RequestConfigObject {
+  url: string
+  method?: Method
+  headers?: AnyObject
+  params?: AnyObject
+  data?: any
+  timeout?: number
+  proxy?: string
 }
 ```
 
 ### RequestConfig
 
-```ts 
-interface RequestConfig extends RequestBaseConfig {
-  method?: Method
-  headers?: AnyObject
-  params?: AnyObject
-  data?: any
+```ts
+type RequestConfig = string | RequestConfigObject
+```
+
+### MergeRequestConfigObject
+
+```ts
+interface MergeRequestConfigObject {
+  url: string
+  timeout?: number
+  proxy?: string
 }
 ```
 
@@ -497,7 +544,7 @@ interface CrawlBaseConfigV1 {
 ### CrawlPageConfig
 
 ```ts
-type CrawlPageConfig = string | RequestBaseConfig
+type CrawlPageConfig = string | MergeRequestConfigObject
 ```
 
 ### CrawlDataConfig

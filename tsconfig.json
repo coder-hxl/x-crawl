@@ -10,7 +10,8 @@
     "strict": true,
     "skipLibCheck": true,
     "composite": true,
-    "outDir": "./publish"
+    "outDir": "./publish",
+    "emitDeclarationOnly": false
   },
   "include": ["src/**/*", "test/**/*"]
 }

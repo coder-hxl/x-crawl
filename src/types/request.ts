@@ -23,13 +23,7 @@ export type Method =
   | 'unlink'
   | 'UNLINK'
 
-export interface RequestBaseConfig {
-  url: string
-  timeout?: number
-  proxy?: string
-}
-
-export interface RequestConfig extends RequestBaseConfig {
+export interface RequestConfigObject {
   url: string
   method?: Method
   headers?: AnyObject

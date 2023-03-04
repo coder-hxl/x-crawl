@@ -2,12 +2,36 @@ import { IncomingHttpHeaders } from 'node:http'
 import { HTTPResponse, Page } from 'puppeteer'
 import { JSDOM } from 'jsdom'
 
-import { RequestBaseConfig, RequestConfig } from './request'
+import { RequestConfigObject } from './request'
+import { AnyObject, MapTypeObject } from './common'
 
 export type IntervalTime = number | { max: number; min?: number }
 
+export type RequestConfig = string | RequestConfigObject
+
+export interface MergeRequestConfigObject {
+  url: string
+  timeout?: number
+  proxy?: string
+}
+
+type MergeRequestConfig = string | MergeRequestConfigObject
+
 export type MergeConfigRawConfig = {
-  requestConfig: RequestBaseConfig | RequestBaseConfig[]
+  requestConfig: MergeRequestConfig | MergeRequestConfig[]
+  intervalTime?: IntervalTime
+}
+
+export type MergeConfigV1<T extends AnyObject> = MapTypeObject<
+  T,
+  'requestConfig'
+> & {
+  requestConfig: RequestConfigObject[]
+  intervalTime?: IntervalTime
+}
+
+export type MergeConfigV2 = {
+  requestConfig: MergeRequestConfigObject[]
   intervalTime?: IntervalTime
 }
 
@@ -16,7 +40,7 @@ export interface CrawlBaseConfigV1 {
   intervalTime?: IntervalTime
 }
 
-export type CrawlPageConfig = string | RequestBaseConfig
+export type CrawlPageConfig = string | MergeRequestConfigObject
 
 export interface CrawlDataConfig extends CrawlBaseConfigV1 {}
 

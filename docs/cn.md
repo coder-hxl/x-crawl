@@ -2,9 +2,9 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是 Nodejs 多功能爬虫库。
+x-crawl 是一个灵活的 nodejs 爬虫库。
 
-如果对您有帮助，请给[存储库](https://github.com/coder-hxl/x-crawl)点个 Star 支持一下。
+如果对您有帮助，请给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
 
 ## 特征
 
@@ -34,11 +34,12 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [创建应用](#创建应用)
       + [一个爬虫应用实例](#一个爬虫应用实例)
       + [选择爬取模式](#选择爬取模式)
-      + [设置间隔时间](#设置间隔时间)
       + [多个爬虫应用实例](#多个爬虫应用实例)
     * [爬取页面](#爬取页面)
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
+    * [请求间隔时间](#请求间隔时间)
+    * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
 - [API](#API)
     * [xCrawl](#xCrawl)
        + [类型](#类型-1)
@@ -61,7 +62,9 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 - [类型](#类型-6)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
+    * [RequestConfigObject](#RequestConfigObject)
     * [RequestConfig](#RequestConfig)
+    * [MergeRequestConfigObject](#MergeRequestConfigObject)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
     * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
@@ -89,6 +92,7 @@ npm install x-crawl
 
 ```js
 // 1.导入模块 ES/CJS
+import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
@@ -105,14 +109,17 @@ myXCrawl.startPolling({ d: 1 }, () => {
     const { jsdom } = res.data // 默认使用了 JSDOM 库解析 Page
 
     // 获取轮播图片元素
-    const imgEls = jsdom.window.document.querySelectorAll('.carousel-wrapper .chief-recom-item img')
+    const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
 
     // 设置请求配置
     const requestConfig = []
-    imgEls.forEach((item) => requestConfig.push({ url: `https:${item.src}` }))
+    imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
 
     // 调用 crawlFile API 爬取图片
-    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+    myXCrawl.crawlFile({ 
+      requestConfig, 
+      fileConfig: { storeDir: path.resolve(__dirname, './upload') } 
+    })
   })
 })
 ```
@@ -165,25 +172,6 @@ mode 选项默认为 async 。
 
 若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
 
-#### 设置间隔时间
-
-设置间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({
-  intervalTime: { max: 3000, min: 1000 }
-})
-```
-
-intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
-
-- number: 固定每次请求前必须等待的时间
-- Object: 在 max 和 min 中随机取一个值，更加拟人化
-
-第一次请求是不会触发间隔时间。
-
 
 #### 多个爬虫应用实例
 
@@ -216,7 +204,7 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 ```js
 const requestConfig = [
   { url: 'https://xxx.com/xxxx' },
-  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
   { url: 'https://xxx.com/xxxx' }
 ]
 
@@ -232,11 +220,7 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 ```js
 import path from 'node:path'
 
-const requestConfig = [
-  { url: 'https://xxx.com/xxxx' },
-  { url: 'https://xxx.com/xxxx' },
-  { url: 'https://xxx.com/xxxx' }
-]
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
 myXCrawl.crawlFile({
   requestConfig,
@@ -247,6 +231,66 @@ myXCrawl.crawlFile({
   console.log(fileInfos)
 })
 ```
+
+### 请求间隔时间
+
+设置请求间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  intervalTime: { max: 3000, min: 1000 }
+})
+```
+
+intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
+
+- number: 固定每次请求前必须等待的时间
+- Object: 在 max 和 min 中随机取一个值，更加拟人化
+
+第一次请求是不会触发间隔时间。
+
+### requestConfig 选项的多种写法
+
+requestConfig 的写法非常灵活，一共有5种，可以是:
+
+- 字符串
+- 字符串数组
+- 对象
+- 对象数组
+- 字符串加对象数组
+
+```js
+// requestConfig 写法1:
+const requestConfig1 = 'https://xxx.com/xxxx'
+
+// requestConfig 写法2:
+const requestConfig2 = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+
+// requestConfig 写法3:
+const requestConfig3 = { 
+  url: 'https://xxx.com/xxxx', 
+  method: 'POST', 
+  data: { name: 'coderhxl' } 
+}
+
+// requestConfig 写法4:
+const requestConfig4 = [
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  { url: 'https://xxx.com/xxxx' }
+]
+
+// requestConfig 写法5:
+const requestConfig5 = [
+  'https://xxx.com/xxxx',
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  'https://xxx.com/xxxx'
+]
+```
+
+可以根据实际情况选用即可。
 
 ## API
 
@@ -328,9 +372,9 @@ function crawlData: <T = any>(
 
 ```js
 const requestConfig = [
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' },
-  { url: '/xxxx', method: 'GET' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
 myXCrawl.crawlData({ requestConfig }).then(res => {
@@ -361,11 +405,7 @@ function crawlFile: (
 ```js
 import path from 'node:path'
 
-const requestConfig = [
-  { url: '/xxxx' },
-  { url: '/xxxx' },
-  { url: '/xxxx' }
-]
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
 myXCrawl.crawlFile({
   requestConfig,
@@ -417,24 +457,33 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### RequestBaseConfig
+### RequestConfigObject
 
-```ts
-interface RequestBaseConfig {
- url: string
- timeout?: number
- proxy?: string
+```ts 
+interface RequestConfigObject {
+  url: string
+  method?: Method
+  headers?: AnyObject
+  params?: AnyObject
+  data?: any
+  timeout?: number
+  proxy?: string
 }
 ```
 
 ### RequestConfig
 
-```ts 
-interface RequestConfig extends RequestBaseConfig {
-  method?: Method
-  headers?: AnyObject
-  params?: AnyObject
-  data?: any
+```ts
+type RequestConfig = string | RequestConfigObject
+```
+
+### MergeRequestConfigObject
+
+```ts
+interface MergeRequestConfigObject {
+  url: string
+  timeout?: number
+  proxy?: string
 }
 ```
 
@@ -471,7 +520,7 @@ interface CrawlBaseConfigV1 {
 ### CrawlPageConfig
 
 ```ts
-type CrawlPageConfig = string | RequestBaseConfig
+type CrawlPageConfig = string | MergeRequestConfigObject
 ```
 
 ### CrawlDataConfig

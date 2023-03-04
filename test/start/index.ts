@@ -1,6 +1,8 @@
 import path from 'node:path'
 import xCrawl from 'x-crawl'
 
+import { RequestConfig } from '../../publish/dist'
+
 const testXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
@@ -25,10 +27,13 @@ myXCrawl.startPolling({ d: 1 }, () => {
     )
 
     // 设置请求配置
-    const requestConfig: any[] = []
-    imgEls.forEach((item) => requestConfig.push({ url: `https:${item.src}` }))
+    const requestConfig: RequestConfig[] = []
+    imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
 
     // 调用 crawlFile API 爬取图片
-    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+    myXCrawl.crawlFile({
+      requestConfig,
+      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+    })
   })
 })

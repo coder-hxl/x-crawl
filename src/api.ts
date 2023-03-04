@@ -27,37 +27,48 @@ import {
   FileInfo,
   IntervalTime,
   MergeConfigRawConfig,
+  MergeConfigV1,
+  MergeConfigV2,
   StartPollingConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
-import { RequestConfig, RequestResItem } from './types/request'
+import { RequestResItem, RequestConfigObject } from './types/request'
 
-function mergeConfig<T extends MergeConfigRawConfig>(
+function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   baseConfig: LoaderXCrawlBaseConfig,
   rawConfig: T
-): T {
+): R {
   const newConfig = structuredClone(rawConfig)
 
   // 1.处理 requestConfig
-  const requestConfigArr = isArray(newConfig.requestConfig)
+  const rawRequestConfigArr = isArray(newConfig.requestConfig)
     ? newConfig.requestConfig
     : [newConfig.requestConfig]
-  for (const requesttem of requestConfigArr) {
-    const { url, timeout, proxy } = requesttem
+
+  // item 转成对象
+  const requestConfigArr = (newConfig.requestConfig = rawRequestConfigArr.map(
+    (item) => {
+      if (isString(item)) return { url: item }
+      return item
+    }
+  ))
+
+  for (const requestItem of requestConfigArr) {
+    const { url, timeout, proxy } = requestItem
 
     // 1.1.baseUrl
     if (!isUndefined(baseConfig.baseUrl)) {
-      requesttem.url = baseConfig.baseUrl + url
+      requestItem.url = baseConfig.baseUrl + url
     }
 
     // 1.2.timeout
     if (isUndefined(timeout)) {
-      requesttem.timeout = baseConfig.timeout
+      requestItem.timeout = baseConfig.timeout
     }
 
     // 1.3.porxy
     if (isUndefined(proxy)) {
-      requesttem.proxy = baseConfig.proxy
+      requestItem.proxy = baseConfig.proxy
     }
   }
 
@@ -66,19 +77,15 @@ function mergeConfig<T extends MergeConfigRawConfig>(
     newConfig.intervalTime = baseConfig.intervalTime
   }
 
-  return newConfig
+  return newConfig as any as R
 }
 
 async function useBatchRequestByMode(
   mode: 'async' | 'sync',
-  requestConfig: RequestConfig | RequestConfig[],
+  requestConfigs: RequestConfigObject[],
   intervalTime: IntervalTime | undefined,
   callback: (requestRestem: RequestResItem) => void
 ) {
-  const requestConfigs = isArray(requestConfig)
-    ? requestConfig
-    : [requestConfig]
-
   if (mode === 'async') {
     await batchRequest(requestConfigs, intervalTime, callback)
   } else {
@@ -114,9 +121,14 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     const page = await browser!.newPage()
     await page.setViewport({ width: 1280, height: 1024 })
 
-    const { requestConfig } = mergeConfig(baseConfig, {
-      requestConfig: isString(config) ? { url: config } : config
-    })
+    // 合并 baseConfig 配置
+    const { requestConfig: requestConfigs } = mergeConfig<MergeConfigV2>(
+      baseConfig,
+      {
+        requestConfig: config
+      }
+    )
+    const requestConfig = requestConfigs[0]
 
     // 处理代理
     if (requestConfig.proxy) {
@@ -160,7 +172,9 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
     config: CrawlDataConfig,
     callback?: (res: CrawlResCommonV1<T>) => void
   ): Promise<CrawlResCommonArrV1<T>> {
-    const { requestConfig, intervalTime } = mergeConfig(baseConfig, config)
+    const { requestConfig, intervalTime } = mergeConfig<
+      MergeConfigV1<CrawlDataConfig>
+    >(baseConfig, config)
 
     const container: CrawlResCommonArrV1<T> = []
     function handleRestem(requestRestem: RequestResItem) {
@@ -201,10 +215,9 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     config: CrawlFileConfig,
     callback?: (res: CrawlResCommonV1<FileInfo>) => void
   ): Promise<CrawlResCommonArrV1<FileInfo>> {
-    const { requestConfig, intervalTime, fileConfig } = mergeConfig(
-      baseConfig,
-      config
-    )
+    const { requestConfig, intervalTime, fileConfig } = mergeConfig<
+      MergeConfigV1<CrawlFileConfig>
+    >(baseConfig, config)
 
     const container: CrawlResCommonArrV1<FileInfo> = []
     const saveFileArr: Promise<void>[] = []
