@@ -18,7 +18,7 @@ x-crawl 是 Nodejs 多功能爬虫库。
 
 ## 跟 puppeteer 的关系
 
-fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来爬取页面。
+crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来爬取页面。
 
 可以完成以下操作:
 
@@ -45,14 +45,14 @@ fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
        + [示例](#示例-1)
        + [模式](#模式)
        + [间隔时间](#间隔时间)
-    * [fetchPage](#fetchPage)
+    * [crawlPage](#crawlPage)
        + [类型](#类型-2)
        + [示例](#示例-2)
-    * [fetchData](#fetchData)
+    * [crawlData](#crawlData)
        + [类型](#类型-3)
        + [示例](#示例-3)
        + [关于 page](#关于-page)
-    * [fetchFile](#fetchFile)
+    * [crawlFile](#crawlFile)
        + [类型](#类型-4)
        + [示例](#示例-4)
     * [startPolling](#startPolling)
@@ -64,15 +64,15 @@ fetchPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [FetchBaseConfigV1](#FetchBaseConfigV1)
-    * [FetchPageConfig](#FetchPageConfig	)
-    * [FetchDataConfig](#FetchDataConfig) 
-    * [FetchFileConfig](#FetchFileConfig)
+    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+    * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlDataConfig](#CrawlDataConfig) 
+    * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
-    * [FetchResCommonV1](#FetchResCommonV1)
-    * [FetchResCommonArrV1](#FetchResCommonArrV1)
+    * [CrawlResCommonV1](#CrawlResCommonV1)
+    * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
     * [FileInfo](#FileInfo)
-    * [FetchPage](#FetchPage)
+    * [CrawlPage](#CrawlPage)
 - [更多](#更多)
 
 ## 安装
@@ -100,8 +100,8 @@ const myXCrawl = xCrawl({
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, () => {
-  // 调用 fetchPage API 爬取 Page
-  myXCrawl.fetchPage('https://www.bilibili.com/guochuang/').then((res) => {
+  // 调用 crawlPage API 爬取 Page
+  myXCrawl.crawlPage('https://www.bilibili.com/guochuang/').then((res) => {
     const { jsdom } = res.data // 默认使用了 JSDOM 库解析 Page
 
     // 获取轮播图片元素
@@ -111,8 +111,8 @@ myXCrawl.startPolling({ d: 1 }, () => {
     const requestConfig = []
     imgEls.forEach((item) => requestConfig.push({ url: `https:${item.src}` }))
 
-    // 调用 fetchFile API 爬取图片
-    myXCrawl.fetchFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+    // 调用 crawlFile API 爬取图片
+    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
@@ -201,17 +201,17 @@ const myXCrawl2 = xCrawl({
 
 ### 爬取页面
 
-通过 [fetchPage()](#fetchPage) 爬取一个页面
+通过 [crawlPage()](#crawlPage) 爬取一个页面
 
 ```js
-myXCrawl.fetchPage('https://xxx.com').then(res => {
+myXCrawl.crawlPage('https://xxx.com').then(res => {
   const { jsdom, page } = res.data
 })
 ```
 
 ### 爬取接口
 
-通过 [fetchData()](#fetchData) 爬取接口数据
+通过 [crawlData()](#crawlData) 爬取接口数据
 
 ```js
 const requestConfig = [
@@ -220,14 +220,14 @@ const requestConfig = [
   { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.fetchData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then(res => {
   // 处理
 })
 ```
 
 ### 爬取文件
 
-通过 [fetchFile()](#fetchFile) 爬取文件数据
+通过 [crawlFile()](#crawlFile) 爬取文件数据
 
 ```js
 import path from 'node:path'
@@ -238,7 +238,7 @@ const requestConfig = [
   { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.fetchFile({
+myXCrawl.crawlFile({
   requestConfig,
   fileConfig: {
     storeDir: path.resolve(__dirname, './upload') // 存放文件夹
@@ -276,28 +276,28 @@ const myXCrawl = xCrawl({
 })
 ```
 
-**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **fetchPage/fetchData/fetchFile** 示例中的爬虫实例。
+**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **crawlPage/crawlData/crawlFile** 示例中的爬虫实例。
 
-### fetchPage 
+### crawlPage 
 
-fetchPage 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取页面。
+crawlPage 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取页面。
 
 #### 类型
 
-- 查看 [FetchPageConfig](#FetchPageConfig) 类型
-- 查看 [FetchPage](#FetchPage-2) 类型
+- 查看 [CrawlPageConfig](#CrawlPageConfig) 类型
+- 查看 [CrawlPage](#CrawlPage-2) 类型
 
 ```ts
-function fetchPage: (
-  config: FetchPageConfig,
-  callback?: (res: FetchPage) => void
-) => Promise<FetchPage>
+function crawlPage: (
+  config: CrawlPageConfig,
+  callback?: (res: CrawlPage) => void
+) => Promise<CrawlPage>
 ```
 
 #### 示例
 
 ```js
-myXCrawl.fetchPage('/xxx').then((res) => {
+myXCrawl.crawlPage('/xxx').then((res) => {
   const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
@@ -307,21 +307,21 @@ myXCrawl.fetchPage('/xxx').then((res) => {
 
 从 res.data.page 拿到 page 实例，其可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
-### fetchData
+### crawlData
 
-fetch 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+crawl 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
 
-- 查看 [FetchDataConfig](#FetchDataConfig) 类型
-- 查看 [FetchResCommonV1](#FetchResCommonV1) 类型
-- 查看 [FetchResCommonArrV1](#FetchResCommonArrV1) 类型
+- 查看 [CrawlDataConfig](#CrawlDataConfig) 类型
+- 查看 [CrawlResCommonV1](#CrawlResCommonV1) 类型
+- 查看 [CrawlResCommonArrV1](#CrawlResCommonArrV1) 类型
 
 ```ts
-function fetchData: <T = any>(
-  config: FetchDataConfig,
-  callback?: (res: FetchResCommonV1<T>) => void
-) => Promise<FetchResCommonArrV1<T>>
+function crawlData: <T = any>(
+  config: CrawlDataConfig,
+  callback?: (res: CrawlResCommonV1<T>) => void
+) => Promise<CrawlResCommonArrV1<T>>
 ```
 
 #### 示例
@@ -333,27 +333,27 @@ const requestConfig = [
   { url: '/xxxx', method: 'GET' }
 ]
 
-myXCrawl.fetchData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then(res => {
   console.log(res)
 })
 ```
 
-### fetchFile
+### crawlFile
 
-fetchFile 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+crawlFile 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
 
-- 查看 [FetchFileConfig](#FetchFileConfig) 类型
-- 查看 [FetchResCommonV1](#FetchResCommonV1) 类型
-- 查看 [FetchResCommonArrV1](#FetchResCommonArrV1) 类型
+- 查看 [CrawlFileConfig](#CrawlFileConfig) 类型
+- 查看 [CrawlResCommonV1](#CrawlResCommonV1) 类型
+- 查看 [CrawlResCommonArrV1](#CrawlResCommonArrV1) 类型
 - 查看 [FileInfo](#FileInfo) 类型
 
 ```ts
-function fetchFile: (
-  config: FetchFileConfig,
-  callback?: (res: FetchResCommonV1<FileInfo>) => void
-) => Promise<FetchResCommonArrV1<FileInfo>>
+function crawlFile: (
+  config: CrawlFileConfig,
+  callback?: (res: CrawlResCommonV1<FileInfo>) => void
+) => Promise<CrawlResCommonArrV1<FileInfo>>
 ```
 
 #### 示例
@@ -367,7 +367,7 @@ const requestConfig = [
   { url: '/xxxx' }
 ]
 
-myXCrawl.fetchFile({
+myXCrawl.crawlFile({
   requestConfig,
   fileConfig: {
     storeDir: path.resolve(__dirname, './upload') // 存放文件夹
@@ -379,7 +379,7 @@ myXCrawl.fetchFile({
 
 ### startPolling
 
-fetchPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
+crawlPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
 
 #### 类型
 
@@ -397,7 +397,7 @@ function startPolling: (
 ```js
 myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // 每隔一个半小时会执行一次
-  // fetchPage/fetchData/fetchFile
+  // crawlPage/crawlData/crawlFile
 })
 ```
 
@@ -459,32 +459,32 @@ interface XCrawlBaseConfig {
 }
 ```
 
-### FetchBaseConfigV1
+### CrawlBaseConfigV1
 
 ```ts
-interface FetchBaseConfigV1 {
+interface CrawlBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
-### FetchPageConfig
+### CrawlPageConfig
 
 ```ts
-type FetchPageConfig = string | RequestBaseConfig
+type CrawlPageConfig = string | RequestBaseConfig
 ```
 
-### FetchDataConfig
+### CrawlDataConfig
 
 ```ts
-interface FetchDataConfig extends FetchBaseConfigV1 {
+interface CrawlDataConfig extends CrawlBaseConfigV1 {
 }
 ```
 
-### FetchFileConfig
+### CrawlFileConfig
 
 ```ts
-interface FetchFileConfig extends FetchBaseConfigV1 {
+interface CrawlFileConfig extends CrawlBaseConfigV1 {
   fileConfig: {
     storeDir: string // 存放文件夹
     extension?: string // 文件扩展名
@@ -502,10 +502,10 @@ interface StartPollingConfig {
 }
 ```
 
-### FetchResCommonV1
+### CrawlResCommonV1
 
 ```ts
-interface FetchResCommonV1<T> {
+interface CrawlResCommonV1<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // nodejs: http 类型
@@ -513,10 +513,10 @@ interface FetchResCommonV1<T> {
 }
 ```
 
-### FetchResCommonArrV1
+### CrawlResCommonArrV1
 
 ```ts
-type FetchResCommonArrV1<T> = FetchResCommonV1<T>[]
+type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 ```
 
 ### FileInfo
@@ -530,10 +530,10 @@ interface FileInfo {
 }
 ```
 
-### FetchPage
+### CrawlPage
 
 ```ts
-interface FetchPage {
+interface CrawlPage {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   data: {
     page: Page // puppeteer 库的 Page 类型

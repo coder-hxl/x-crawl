@@ -18,7 +18,7 @@ If it helps you, please give the [repository](https://github.com/coder-hxl/x-cra
 
 ## Relationship with puppeteer 
 
-The fetchPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to crawl pages.
+The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to crawl pages.
 
 The following can be done:
 
@@ -45,17 +45,17 @@ The following can be done:
        + [Example](#Example-1)
        + [Mode](#Mode)
        + [IntervalTime](#IntervalTime)
-    * [fetchPage](#fetchPage)
+    * [crawlPage](#crawlPage)
        + [Type](#Type-2)
        + [Example](#Example-2)
        + [About page](#About-page)
-    * [fetchData](#fetchData)
+    * [crawlData](#crawlData)
        + [Type](#Type-3)
        + [Example](#Example-3)
-    * [fetchFile](#fetchFile)
+    * [crawlFile](#crawlFile)
        + [Type](#Type-4)
        + [Example](#Example-4)
-    * [fetchPolling](#fetchPolling)
+    * [crawlPolling](#crawlPolling)
        + [Type](#Type-5)
        + [Example](#Example-5)
 - [Types](#Types)
@@ -65,15 +65,15 @@ The following can be done:
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [FetchBaseConfigV1](#FetchBaseConfigV1)
-    * [FetchPageConfig](#FetchPageConfig	)
-    * [FetchDataConfig](#FetchDataConfig) 
-    * [FetchFileConfig](#FetchFileConfig)
+    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+    * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlDataConfig](#CrawlDataConfig) 
+    * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
-    * [FetchResCommonV1](#FetchResCommonV1)
-    * [FetchResCommonArrV1](#FetchResCommonArrV1)
+    * [CrawlResCommonV1](#CrawlResCommonV1)
+    * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
     * [FileInfo](#FileInfo)
-    * [FetchPage](#FetchPage)
+    * [CrawlPage](#CrawlPage)
 - [More](#More)
 
 ## Install
@@ -101,8 +101,8 @@ const myXCrawl = xCrawl({
 // 3.Set the crawling task
 // Call the startPolling API to start the polling function, and the callback function will be called every other day
 myXCrawl.startPolling({ d: 1 }, () => {
-    // Call fetchPage API to crawl Page
-  myXCrawl.fetchPage('https://www.youtube.com/').then((res) => {
+    // Call crawlPage API to crawl Page
+  myXCrawl.crawlPage('https://www.youtube.com/').then((res) => {
     const { jsdom } = res.data // By default, the JSDOM library is used to parse Page
 
     // Get the cover image element of the Promoted Video
@@ -118,8 +118,8 @@ myXCrawl.startPolling({ d: 1 }, () => {
       }
     })
 
-    // Call the fetchFile API to crawl pictures
-    myXCrawl.fetchFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+    // Call the crawlFile API to crawl pictures
+    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 
@@ -209,17 +209,17 @@ const myXCrawl2 = xCrawl({
 
 ### Crawl page
 
-Fetch a page via [fetchPage()](#fetchPage)
+Crawl a page via [crawlPage()](#crawlPage)
 
 ```js
-myXCrawl.fetchPage('https://xxx.com').then(res => {
+myXCrawl.crawlPage('https://xxx.com').then(res => {
    const { jsdom, page } = res.data
 })
 ```
 
 ### Crawl interface
 
-Crawl interface data through [fetchData()](#fetchData)
+Crawl interface data through [crawlData()](#crawlData)
 
 ```js
 const requestConfig = [
@@ -228,14 +228,14 @@ const requestConfig = [
    { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.fetchData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then(res => {
    // deal with
 })
 ```
 
 ### Crawl files
 
-Fetch file data via [fetchFile()](#fetchFile)
+Crawl file data via [crawlFile()](#crawlFile)
 
 ```js
 import path from 'node:path'
@@ -246,7 +246,7 @@ const requestConfig = [
    { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl. fetchFile({
+myXCrawl. crawlFile({
    requestConfig,
    fileConfig: {
      storeDir: path.resolve(__dirname, './upload') // storage folder
@@ -284,9 +284,9 @@ const myXCrawl = xCrawl({
 })
 ```
 
-Passing **baseConfig** is for **fetchPage/fetchData/fetchFile** to use these values by default.
+Passing **baseConfig** is for **crawlPage/crawlData/crawlFile** to use these values by default.
 
-**Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **fetchPage/fetchData/fetchFile** example.
+**Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **crawlPage/crawlData/crawlFile** example.
 
 #### Mode 
 
@@ -306,26 +306,26 @@ The intervalTime option defaults to undefined . If there is a setting value, it 
 
 The first request is not to trigger the interval.
 
-### fetchPage
+### crawlPage
 
-fetchPage is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
+crawlPage is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
 
 #### Type
 
-- Look at the [FetchPageConfig](#FetchPageConfig) type
-- Look at the [FetchPage](#FetchPage-2) type
+- Look at the [CrawlPageConfig](#CrawlPageConfig) type
+- Look at the [CrawlPage](#CrawlPage-2) type
 
 ```ts
-function fetchPage: (
-  config: FetchPageConfig,
-  callback?: (res: FetchPage) => void
-) => Promise<FetchPage>
+function crawlPage: (
+  config: CrawlPageConfig,
+  callback?: (res: CrawlPage) => void
+) => Promise<CrawlPage>
 ```
 
 #### Example
 
 ```js
-myXCrawl.fetchPage('/xxx').then((res) => {
+myXCrawl.crawlPage('/xxx').then((res) => {
   const { jsdom } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
@@ -335,21 +335,21 @@ myXCrawl.fetchPage('/xxx').then((res) => {
 
 Get the page instance from res.data.page, which can do interactive operations such as events. For specific usage, refer to [page](https://pptr.dev/api/puppeteer.page).
 
-### fetchData
+### crawlData
 
-fetchData is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
+crawlData is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 #### Type
 
-- Look at the [FetchDataConfig](#FetchDataConfig) type
-- Look at the [FetchResCommonV1](#FetchResCommonV1) type
-- Look at the [FetchResCommonArrV1](#FetchResCommonArrV1) type
+- Look at the [CrawlDataConfig](#CrawlDataConfig) type
+- Look at the [CrawlResCommonV1](#CrawlResCommonV1) type
+- Look at the [CrawlResCommonArrV1](#CrawlResCommonArrV1) type
 
 ```ts
-function fetchData: <T = any>(
-  config: FetchDataConfig,
-  callback?: (res: FetchResCommonV1<T>) => void
-) => Promise<FetchResCommonArrV1<T>>
+function crawlData: <T = any>(
+  config: CrawlDataConfig,
+  callback?: (res: CrawlResCommonV1<T>) => void
+) => Promise<CrawlResCommonArrV1<T>>
 ```
 
 #### Example
@@ -361,27 +361,27 @@ const requestConfig = [
   { url: '/xxxx' }
 ]
 
-myXCrawl.fetchData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then(res => {
   console.log(res)
 })
 ```
 
-### fetchFile
+### crawlFile
 
-fetchFile is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
+crawlFile is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
 
 #### Type
 
-- Look at the [FetchFileConfig](#FetchFileConfig) type
-- Look at the [FetchResCommonV1](#FetchResCommonV1) type
-- Look at the [FetchResCommonArrV1](#FetchResCommonArrV1) type
+- Look at the [CrawlFileConfig](#CrawlFileConfig) type
+- Look at the [CrawlResCommonV1](#CrawlResCommonV1) type
+- Look at the [CrawlResCommonArrV1](#CrawlResCommonArrV1) type
 - Look at the [FileInfo](#FileInfo) type
 
 ```ts
-function fetchFile: (
-  config: FetchFileConfig,
-  callback?: (res: FetchResCommonV1<FileInfo>) => void
-) => Promise<FetchResCommonArrV1<FileInfo>>
+function crawlFile: (
+  config: CrawlFileConfig,
+  callback?: (res: CrawlResCommonV1<FileInfo>) => void
+) => Promise<CrawlResCommonArrV1<FileInfo>>
 ```
 
 #### Example
@@ -393,7 +393,7 @@ const requestConfig = [
   { url: '/xxxx' }
 ]
 
-myXCrawl.fetchFile({
+myXCrawl.crawlFile({
   requestConfig,
   fileConfig: {
     storeDir: path.resolve(__dirname, './upload') // storage folder
@@ -405,7 +405,7 @@ myXCrawl.fetchFile({
 
 ### startPolling
 
-fetchPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
+crawlPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
 
 #### Type
 
@@ -423,7 +423,7 @@ function startPolling(
 ```js
 myXCrawl.startPolling({ h: 1, m: 30 }, () => {
   // will be executed every one and a half hours
-  // fetchPage/fetchData/fetchFile
+  // crawlPage/crawlData/crawlFile
 })
 ```
 
@@ -485,32 +485,32 @@ interface XCrawlBaseConfig {
 }
 ```
 
-### FetchBaseConfigV1
+### CrawlBaseConfigV1
 
 ```ts
-interface FetchBaseConfigV1 {
+interface CrawlBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
-### FetchPageConfig
+### CrawlPageConfig
 
 ```ts
-type FetchPageConfig = string | RequestBaseConfig
+type CrawlPageConfig = string | RequestBaseConfig
 ```
 
-### FetchDataConfig
+### CrawlDataConfig
 
 ```ts
-interface FetchDataConfig extends FetchBaseConfigV1 {
+interface CrawlDataConfig extends CrawlBaseConfigV1 {
 }
 ```
 
-### FetchFileConfig
+### CrawlFileConfig
 
 ```ts
-interface FetchFileConfig extends FetchBaseConfigV1 {
+interface CrawlFileConfig extends CrawlBaseConfigV1 {
   fileConfig: {
     storeDir: string // Store folder
     extension?: string // Filename extension
@@ -528,10 +528,10 @@ interface StartPollingConfig {
 }
 ```
 
-### FetchResCommonV1
+### CrawlResCommonV1
 
 ```ts
-interface FetchCommon<T> {
+interface CrawlCommon<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // nodejs: http type
@@ -539,10 +539,10 @@ interface FetchCommon<T> {
 }
 ```
 
-### FetchResCommonArrV1
+### CrawlResCommonArrV1
 
 ```ts
-type FetchResCommonArrV1<T> = FetchResCommonV1<T>[]
+type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 ```
 
 ### FileInfo
@@ -556,10 +556,10 @@ interface FileInfo {
 }
 ```
 
-### FetchPage
+### CrawlPage
 
 ```ts
-interface FetchPage {
+interface CrawlPage {
   httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
   data: {
     page: Page // The type of Page in the puppeteer library

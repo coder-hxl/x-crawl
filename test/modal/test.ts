@@ -7,21 +7,21 @@ import IXCrawl from '../../src'
 const args = process.argv.slice(3)
 const currentModel = args[0]
 
-let XCrawl: typeof IXCrawl
+let xCrawl: typeof IXCrawl
 if (currentModel === 'dev') {
-  XCrawl = require('../../src').default
+  xCrawl = require('../../src').default
 } else if (currentModel === 'pro') {
-  XCrawl = require('../../publish/dist')
+  xCrawl = require('../../publish/dist')
 }
 
 // Protocol
 
 function httpProtocol() {
   return new Promise((resolve) => {
-    const httpXCrawl = XCrawl()
+    const httpXCrawl = xCrawl()
 
     httpXCrawl
-      .fetchData({
+      .crawlData({
         requestConfig: {
           url: 'http://localhost:9001/api/home/goodprice'
         }
@@ -32,10 +32,10 @@ function httpProtocol() {
 
 function httpsProtocol() {
   return new Promise((resolve) => {
-    const httpsXCrawl = XCrawl({ timeout: 10000 })
+    const httpsXCrawl = xCrawl({ timeout: 10000 })
 
     httpsXCrawl
-      .fetchPage('https://docs.github.com/zh')
+      .crawlPage('https://docs.github.com/zh')
       .then(() => resolve(true))
   })
 }
@@ -49,20 +49,20 @@ test('https protocol', async () => {
 })
 
 // API
-function fetchPageAPI() {
+function crawlPageAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = XCrawl()
+    const myXCrawl = xCrawl()
 
-    myXCrawl.fetchPage('https://docs.github.com/zh').then(() => resolve(true))
+    myXCrawl.crawlPage('https://docs.github.com/zh').then(() => resolve(true))
   })
 }
 
-function fetchDataAPI() {
+function crawlDataAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = XCrawl()
+    const myXCrawl = xCrawl()
 
     myXCrawl
-      .fetchData({
+      .crawlData({
         requestConfig: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
@@ -77,9 +77,9 @@ function fetchDataAPI() {
   })
 }
 
-function fetchFileAPI() {
+function crawlFileAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = XCrawl({
+    const myXCrawl = xCrawl({
       timeout: 10000,
       intervalTime: {
         max: 2000,
@@ -88,7 +88,7 @@ function fetchFileAPI() {
     })
 
     myXCrawl
-      .fetchData({
+      .crawlData({
         requestConfig: {
           url: 'http://localhost:9001/api/area/阳江市',
           method: 'POST',
@@ -106,7 +106,7 @@ function fetchFileAPI() {
         }))
 
         myXCrawl
-          .fetchFile({
+          .crawlFile({
             requestConfig,
             fileConfig: {
               storeDir: path.resolve(__dirname, './upload')
@@ -117,14 +117,14 @@ function fetchFileAPI() {
   })
 }
 
-test('fetchPage API', async () => {
-  await expect(fetchPageAPI()).resolves.toBe(true)
+test('crawlPage API', async () => {
+  await expect(crawlPageAPI()).resolves.toBe(true)
 })
 
-test('fetchData API', async () => {
-  await expect(fetchDataAPI()).resolves.toBe(true)
+test('crawlData API', async () => {
+  await expect(crawlDataAPI()).resolves.toBe(true)
 })
 
-test('fetchFile API', async () => {
-  await expect(fetchFileAPI()).resolves.toBe(true)
+test('crawlFile API', async () => {
+  await expect(crawlFileAPI()).resolves.toBe(true)
 })

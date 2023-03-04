@@ -18,12 +18,12 @@ import {
 } from './utils'
 
 import {
-  FetchDataConfig,
-  FetchFileConfig,
-  FetchPage,
-  FetchPageConfig,
-  FetchResCommonArrV1,
-  FetchResCommonV1,
+  CrawlDataConfig,
+  CrawlFileConfig,
+  CrawlPage,
+  CrawlPageConfig,
+  CrawlResCommonArrV1,
+  CrawlResCommonV1,
   FileInfo,
   IntervalTime,
   MergeConfigRawConfig,
@@ -86,15 +86,15 @@ async function useBatchRequestByMode(
   }
 }
 
-export function createFetchPage(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
   let callTotal = 0
 
-  async function fetchPage(
-    config: FetchPageConfig,
-    callback?: (res: FetchPage) => void
-  ): Promise<FetchPage> {
+  async function crawlPage(
+    config: CrawlPageConfig,
+    callback?: (res: CrawlPage) => void
+  ): Promise<CrawlPage> {
     // 记录调用次数, 目的: 关闭浏览器
     callTotal++
 
@@ -140,7 +140,7 @@ export function createFetchPage(baseConfig: LoaderXCrawlBaseConfig) {
       browser!.close()
     }
 
-    const res: FetchPage = {
+    const res: CrawlPage = {
       httpResponse,
       data: { page, jsdom: new JSDOM(content) }
     }
@@ -152,17 +152,17 @@ export function createFetchPage(baseConfig: LoaderXCrawlBaseConfig) {
     return res
   }
 
-  return fetchPage
+  return crawlPage
 }
 
-export function createFetchData(baseConfig: LoaderXCrawlBaseConfig) {
-  async function fetchData<T = any>(
-    config: FetchDataConfig,
-    callback?: (res: FetchResCommonV1<T>) => void
-  ): Promise<FetchResCommonArrV1<T>> {
+export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
+  async function crawlData<T = any>(
+    config: CrawlDataConfig,
+    callback?: (res: CrawlResCommonV1<T>) => void
+  ): Promise<CrawlResCommonArrV1<T>> {
     const { requestConfig, intervalTime } = mergeConfig(baseConfig, config)
 
-    const container: FetchResCommonArrV1<T> = []
+    const container: CrawlResCommonArrV1<T> = []
     function handleRestem(requestRestem: RequestResItem) {
       const contentType = requestRestem.headers['content-type'] ?? ''
       const rawData = requestRestem.data
@@ -193,20 +193,20 @@ export function createFetchData(baseConfig: LoaderXCrawlBaseConfig) {
     return res
   }
 
-  return fetchData
+  return crawlData
 }
 
-export function createFetchFile(baseConfig: LoaderXCrawlBaseConfig) {
-  async function fetchFile(
-    config: FetchFileConfig,
-    callback?: (res: FetchResCommonV1<FileInfo>) => void
-  ): Promise<FetchResCommonArrV1<FileInfo>> {
+export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
+  async function crawlFile(
+    config: CrawlFileConfig,
+    callback?: (res: CrawlResCommonV1<FileInfo>) => void
+  ): Promise<CrawlResCommonArrV1<FileInfo>> {
     const { requestConfig, intervalTime, fileConfig } = mergeConfig(
       baseConfig,
       config
     )
 
-    const container: FetchResCommonArrV1<FileInfo> = []
+    const container: CrawlResCommonArrV1<FileInfo> = []
     const saveFileArr: Promise<void>[] = []
     const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
 
@@ -282,7 +282,7 @@ export function createFetchFile(baseConfig: LoaderXCrawlBaseConfig) {
     return res
   }
 
-  return fetchFile
+  return crawlFile
 }
 
 export function startPolling(

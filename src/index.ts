@@ -1,7 +1,7 @@
 import {
-  createFetchData,
-  createFetchFile,
-  createFetchPage,
+  createCrawlData,
+  createCrawlFile,
+  createCrawlPage,
   startPolling
 } from './api'
 
@@ -25,9 +25,9 @@ function loaderBaseConfig(
 
 function createnInstance(baseConfig: LoaderXCrawlBaseConfig): XCrawlInstance {
   const instance: XCrawlInstance = {
-    fetchPage: createFetchPage(baseConfig),
-    fetchData: createFetchData(baseConfig),
-    fetchFile: createFetchFile(baseConfig),
+    crawlPage: createCrawlPage(baseConfig),
+    crawlData: createCrawlData(baseConfig),
+    crawlFile: createCrawlFile(baseConfig),
     startPolling
   }
 

@@ -11,16 +11,16 @@ export type MergeConfigRawConfig = {
   intervalTime?: IntervalTime
 }
 
-export interface FetchBaseConfigV1 {
+export interface CrawlBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 
-export type FetchPageConfig = string | RequestBaseConfig
+export type CrawlPageConfig = string | RequestBaseConfig
 
-export interface FetchDataConfig extends FetchBaseConfigV1 {}
+export interface CrawlDataConfig extends CrawlBaseConfigV1 {}
 
-export interface FetchFileConfig extends FetchBaseConfigV1 {
+export interface CrawlFileConfig extends CrawlBaseConfigV1 {
   fileConfig: {
     storeDir: string
     extension?: string
@@ -33,14 +33,14 @@ export interface StartPollingConfig {
   m?: number
 }
 
-export interface FetchResCommonV1<T> {
+export interface CrawlResCommonV1<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders
   data: T
 }
 
-export type FetchResCommonArrV1<T> = FetchResCommonV1<T>[]
+export type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 
 export interface FileInfo {
   fileName: string
@@ -49,7 +49,7 @@ export interface FileInfo {
   filePath: string
 }
 
-export interface FetchPage {
+export interface CrawlPage {
   httpResponse: HTTPResponse | null
   data: {
     page: Page

@@ -1,10 +1,10 @@
 import {
-  FetchResCommonV1,
-  FetchResCommonArrV1,
-  FetchDataConfig,
-  FetchFileConfig,
-  FetchPage,
-  FetchPageConfig,
+  CrawlResCommonV1,
+  CrawlResCommonArrV1,
+  CrawlDataConfig,
+  CrawlFileConfig,
+  CrawlPage,
+  CrawlPageConfig,
   FileInfo,
   StartPollingConfig,
   IntervalTime
@@ -23,20 +23,20 @@ export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
 }
 
 export interface XCrawlInstance {
-  fetchPage: (
-    config: FetchPageConfig,
-    callback?: (res: FetchPage) => void
-  ) => Promise<FetchPage>
+  crawlPage: (
+    config: CrawlPageConfig,
+    callback?: (res: CrawlPage) => void
+  ) => Promise<CrawlPage>
 
-  fetchData: <T = any>(
-    config: FetchDataConfig,
-    callback?: (res: FetchResCommonV1<T>) => void
-  ) => Promise<FetchResCommonArrV1<T>>
+  crawlData: <T = any>(
+    config: CrawlDataConfig,
+    callback?: (res: CrawlResCommonV1<T>) => void
+  ) => Promise<CrawlResCommonArrV1<T>>
 
-  fetchFile: (
-    config: FetchFileConfig,
-    callback?: (res: FetchResCommonV1<FileInfo>) => void
-  ) => Promise<FetchResCommonArrV1<FileInfo>>
+  crawlFile: (
+    config: CrawlFileConfig,
+    callback?: (res: CrawlResCommonV1<FileInfo>) => void
+  ) => Promise<CrawlResCommonArrV1<FileInfo>>
 
   startPolling: (
     config: StartPollingConfig,
