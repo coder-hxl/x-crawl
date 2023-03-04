@@ -62,10 +62,7 @@ function mergeConfig<T extends MergeConfigRawConfig>(
   }
 
   // 2.处理 intervalTime
-  if (
-    Object.hasOwn(newConfig, 'intervalTime') &&
-    isUndefined(newConfig.intervalTime)
-  ) {
+  if (isUndefined(newConfig.intervalTime)) {
     newConfig.intervalTime = baseConfig.intervalTime
   }
 
