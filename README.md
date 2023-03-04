@@ -12,7 +12,7 @@ If it helps you, please give the [repository](https://github.com/coder-hxl/x-cra
 - The built-in puppeteer crawls the page, and uses the jsdom library to parse the page.
 - Support asynchronous/synchronous way to crawl data.
 - Support Promise/Callback method to get the result.
-- Polling function, fixed-point crawling.
+- Polling function, timing crawling.
 - Anthropomorphic request interval.
 - Written in TypeScript, providing generics.
 
@@ -86,7 +86,7 @@ npm install x-crawl
 
 ## Example
 
-Example of fetching featured video cover image for youtube homepage every other day:
+Regular crawling: Get the recommended pictures of the youtube homepage every other day as an example:
 
 ```js
 // 1.Import module ES/CJS
@@ -135,7 +135,7 @@ running result:
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
 
-**Note:** Do not crawl randomly, here is just to demonstrate how to use x-crawl, and control the request frequency within 3000ms to 2000ms.
+**Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
 ## Core concepts
 

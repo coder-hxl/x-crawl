@@ -12,7 +12,7 @@ x-crawl 是 Nodejs 多功能爬虫库。
 - 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析。
 - 支持 异步/同步 方式爬取数据。
 - 支持 Promise/Callback 方式获取结果。
-- 轮询功能，定点爬取。
+- 轮询功能，定时爬取。
 - 拟人化的请求间隔时间。
 - 使用 TypeScript 编写，提供泛型。
 
@@ -85,7 +85,7 @@ npm install x-crawl
 
 ## 示例
 
-每隔一天就获取 bilibili 国漫主页的轮播图片为例: 
+定时爬取: 每隔一天就获取 bilibili 国漫主页的轮播图片为例: 
 
 ```js
 // 1.导入模块 ES/CJS
@@ -126,8 +126,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
-
-**注意:** 请勿随意爬取，这里只是为了演示如何使用 x-crawl ，并将请求频率控制在 3000ms 到 2000ms 内。
+**注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
 
