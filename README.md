@@ -4,7 +4,7 @@ English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.
 
 x-crawl is a flexible nodejs crawler library. 
 
-If it helps you, please give the [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it.
+If it helps you, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star support.
 
 ## Features
 
@@ -14,7 +14,7 @@ If it helps you, please give the [x-crawl repository](https://github.com/coder-h
 - Support Promise/Callback method to get the result.
 - Polling function, timing crawling.
 - Anthropomorphic request interval.
-- Written in TypeScript, providing generics.
+- Written in TypeScript, has type hints, provides generics.
 
 ## Relationship with puppeteer 
 

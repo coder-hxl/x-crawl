@@ -4,7 +4,7 @@
 
 x-crawl 是一个灵活的 nodejs 爬虫库。
 
-如果对您有帮助，请给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
+如果对您有帮助，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
 
 ## 特征
 
@@ -14,7 +14,7 @@ x-crawl 是一个灵活的 nodejs 爬虫库。
 - 支持 Promise/Callback 方式获取结果。
 - 轮询功能，定时爬取。
 - 拟人化的请求间隔时间。
-- 使用 TypeScript 编写，提供泛型。
+- 使用 TypeScript 编写，拥有的类型提示，提供泛型。
 
 ## 跟 puppeteer 的关系
 
@@ -133,6 +133,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
+
 **注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
