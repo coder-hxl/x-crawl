@@ -16,7 +16,11 @@ const myXCrawl = xCrawl({
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
-myXCrawl.startPolling({ d: 1 }, () => {
+myXCrawl.startPolling({ m: 1 }, (count, stopPolling) => {
+  if (count >= 3) {
+    return stopPolling()
+  }
+
   // 调用 crawlPage API 爬取 Page
   myXCrawl.crawlPage('https://www.bilibili.com/guochuang/').then((res) => {
     const { jsdom } = res.data // 默认使用了 JSDOM 库解析 Page
@@ -37,3 +41,4 @@ myXCrawl.startPolling({ d: 1 }, () => {
     })
   })
 })
+const requestConfig: string[] = []

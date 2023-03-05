@@ -1,6 +1,6 @@
 {
   "name": "x-crawl",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible nodejs crawler library.",
   "license": "MIT",

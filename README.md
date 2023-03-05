@@ -18,9 +18,9 @@ If it helps you, please give the [x-crawl repository](https://github.com/coder-h
 
 ## Relationship with puppeteer 
 
-The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to crawl pages.
+The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages.
 
-The following can be done:
+We can do the following:
 
 - Generate screenshots and PDFs of pages.
 - Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
@@ -38,14 +38,14 @@ The following can be done:
     * [Crawl page](#Crawl-page)
     * [Crawl interface](#Crawl-interface)
     * [Crawl files](#Crawl-files)
+    * [Start polling](#Start-polling)
     * [Request interval time](#Request-interval-time)
     * [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
+    * [Multiple ways to get results](#Multiple-ways-to-get-results)
 - [API](#API)
     * [x-crawl](#x-crawl-2)
        + [Type](#Type-1)
        + [Example](#Example-1)
-       + [Mode](#Mode)
-       + [IntervalTime](#IntervalTime)
     * [crawlPage](#crawlPage)
        + [Type](#Type-2)
        + [Example](#Example-2)
@@ -72,6 +72,7 @@ The following can be done:
     * [CrawlDataConfig](#CrawlDataConfig) 
     * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
+    * [XCrawlInstance](#XCrawlInstance)
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
     * [FileInfo](#FileInfo)
@@ -104,7 +105,7 @@ const myXCrawl = xCrawl({
 // 3.Set the crawling task
 // Call the startPolling API to start the polling function, and the callback function will be called every other day
 myXCrawl.startPolling({ d: 1 }, () => {
-    // Call crawlPage API to crawl Page
+  // Call crawlPage API to crawl Page
   myXCrawl.crawlPage('https://www.youtube.com/').then((res) => {
     const { jsdom } = res.data // By default, the JSDOM library is used to parse Page
 
@@ -154,7 +155,7 @@ Create a new **application instance** via [xCrawl()](#xCrawl):
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({
-   // options
+  // options
 })
 ```
 
@@ -168,7 +169,7 @@ A crawler application instance has two crawling modes: asynchronous/synchronous,
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({
-   mode: 'async'
+  mode: 'async'
 })
 ```
 
@@ -198,8 +199,14 @@ const myXCrawl2 = xCrawl({
 Crawl a page via [crawlPage()](#crawlPage)
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000
+})
+
 myXCrawl.crawlPage('https://xxx.com').then(res => {
-   const { jsdom, page } = res.data
+  const { jsdom, page } = res.data
 })
 ```
 
@@ -208,6 +215,13 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 Crawl interface data through [crawlData()](#crawlData)
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
 const requestConfig = [
   { url: 'https://xxx.com/xxxx' },
   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
@@ -225,28 +239,68 @@ Crawl file data via [crawlFile()](#crawlFile)
 
 ```js
 import path from 'node:path'
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
 
 const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
-myXCrawl. crawlFile({
-   requestConfig,
-   fileConfig: {
-     storeDir: path.resolve(__dirname, './upload') // storage folder
-   }
-}).then(fileInfos => {
-   console. log(fileInfos)
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload') // storage folder
+    }
+  })
+  .then((fileInfos) => {
+    console.log(fileInfos)
+  })
+```
+
+### Start polling
+
+Start a polling crawl with [startPolling](#startPolling)
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+  // will be executed every two and a half hours
+  // crawlPage/crawlData/crawlFile
+  myXCrawl.crawlPage('https://xxx.com').then(res => {
+    const { jsdom, page } = res.data
+  })
 })
 ```
+
+The count attribute of the callback function records the current number of polling operations, and stopPolling is a callback function that can be called to terminate subsequent polling operations.
 
 ### Request interval time
 
 Setting the requests interval time can prevent too much concurrency and avoid too much pressure on the server.
 
+It can be set when creating a crawler instance, or you can choose to set it separately for an API. The request interval time is controlled internally by the instance method, not by the instance to control the entire request interval time.
+
 ```js
 import xCrawl from 'x-crawl'
 
+// Unified settings
 const myXCrawl = xCrawl({
-   intervalTime: { max: 3000, min: 1000 }
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+// Set individually (high priority)
+myXCrawl.crawlFile({
+  requestConfig: [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ],
+  intervalTime: { max: 2000, min: 1000 }
 })
 ```
 
@@ -255,7 +309,7 @@ The intervalTime option defaults to undefined . If there is a setting value, it 
 - number: The time that must wait before each request is fixed
 - Object: Randomly select a value from max and min, which is more anthropomorphic
 
-The first request is not to trigger the interval.
+**Note:** The first request will not trigger the interval.
 
 ### Multiple ways of writing requestConfig options
 
@@ -268,6 +322,13 @@ The writing method of requestConfig is very flexible, there are 5 types in total
 - string plus object array
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
 // requestConfig writing method 1:
 const requestConfig1 = 'https://xxx.com/xxxx'
 
@@ -276,24 +337,86 @@ const requestConfig2 = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https:
 
 // requestConfig writing method 3:
 const requestConfig3 = {
-   url: 'https://xxx.com/xxxx',
-   method: 'POST',
-   data: { name: 'coderhxl' }
+  url: 'https://xxx.com/xxxx',
+  method: 'POST',
+  data: { name: 'coderhxl' }
 }
 
 // requestConfig writing method 4:
 const requestConfig4 = [
-   { url: 'https://xxx.com/xxxx' },
-   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
-   { url: 'https://xxx.com/xxxx' }
+  { url: 'https://xxx.com/xxxx' },
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  { url: 'https://xxx.com/xxxx' }
 ]
 
 // requestConfig writing method 5:
 const requestConfig5 = [
-   'https://xxx.com/xxxx',
-   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
-   'https://xxx.com/xxxx'
+  'https://xxx.com/xxxx',
+  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
+  'https://xxx.com/xxxx'
 ]
+
+myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
+  console.log(res)
+})
+```
+
+It can be selected according to the actual situation.
+
+### Multiple ways to get results
+
+There are three ways to get the result: Promise, Callback and Promise + Callback.
+
+- Promise: After all requests end, get the results of all requests
+- Callback: After each request ends, get the result of the current request
+
+These three methods apply to crawlPage, crawlData and crawlFile.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+
+// Method 1: Promise
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+  })
+  .then((fileInfos) => {
+    console.log('Promise: ', fileInfos)
+  })
+
+// Method 2: Callback
+myXCrawl.crawlFile(
+  {
+    requestConfig,
+    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+  },
+  (fileInfo) => {
+    console.log('Callback: ', fileInfo)
+  }
+)
+
+// Method 3: Promise + Callback
+myXCrawl
+  .crawlFile(
+    {
+      requestConfig,
+      fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+    },
+    (fileInfo) => {
+      console.log('Callback: ', fileInfo)
+    }
+  )
+  .then((fileInfos) => {
+    console.log('Promise: ', fileInfos)
+  })
 ```
 
 It can be selected according to the actual situation.
@@ -306,7 +429,8 @@ Create a crawler instance via call xCrawl. The request queue is maintained by th
 
 #### Type
 
-For more detailed types, please see the [Types](#Types) section
+- [XCrawlBaseConfig](#XCrawlBaseConfig)
+- [XCrawlInstance](#XCrawlInstance)
 
 ```ts
 function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
@@ -315,6 +439,9 @@ function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 #### Example
 
 ```js
+import xCrawl from 'x-crawl'
+
+// xCrawl API
 const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
@@ -326,31 +453,11 @@ const myXCrawl = xCrawl({
 })
 ```
 
-Passing **baseConfig** is for **crawlPage/crawlData/crawlFile** to use these values by default.
-
 **Note:** To avoid repeated creation of instances in subsequent examples, **myXCrawl** here will be the crawler instance in the **crawlPage/crawlData/crawlFile** example.
-
-#### Mode 
-
-The mode option defaults to async .
-
-- async: In batch requests, the next request is made without waiting for the current request to complete
-- sync: In batch requests, you need to wait for this request to complete before making the next request
-
-If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
-
-#### IntervalTime 
-
-The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
-
-- number: The time that must wait before each request is fixed
-- Object: Randomly select a value from max and min, which is more anthropomorphic
-
-The first request is not to trigger the interval.
 
 ### crawlPage
 
-crawlPage is the method of the above [myXCrawl](https://github.com/coder-hxl/x-crawl#Example-1) instance, usually used to crawl page.
+crawlPage is the method of the crawler instance, usually used to crawl page.
 
 #### Type
 
@@ -367,19 +474,24 @@ function crawlPage: (
 #### Example
 
 ```js
-myXCrawl.crawlPage('/xxx').then((res) => {
-  const { jsdom } = res.data
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ timeout: 10000 })
+
+// crawlPage API
+myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {
+  const { jsdom, page } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
 #### About page
 
-Get the page instance from res.data.page, which can do interactive operations such as events. For specific usage, refer to [page](https://pptr.dev/api/puppeteer.page).
+The page attribute can be used for interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### crawlData
 
-crawlData is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl APIs to obtain JSON data and so on.
+crawlData is the method of the crawler instance, which is usually used to crawl APIs to obtain JSON data and so on.
 
 #### Type
 
@@ -397,12 +509,20 @@ function crawlData: <T = any>(
 #### Example
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
 const requestConfig = [
   { url: 'https://xxx.com/xxxx' },
   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
   { url: 'https://xxx.com/xxxx' }
 ]
 
+// crawlData API
 myXCrawl.crawlData({ requestConfig }).then(res => {
   console.log(res)
 })
@@ -410,7 +530,7 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 
 ### crawlFile
 
-crawlFile is the method of the above [myXCrawl](#Example-1) instance, which is usually used to crawl files, such as pictures, pdf files, etc.
+crawlFile is the method of the crawler instance, which is usually used to crawl files, such as pictures, pdf files, etc.
 
 #### Type
 
@@ -429,21 +549,30 @@ function crawlFile: (
 #### Example
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
 const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
-myXCrawl.crawlFile({
-  requestConfig,
-  fileConfig: {
-    storeDir: path.resolve(__dirname, './upload') // storage folder
-  }
-}).then(fileInfos => {
-  console.log(fileInfos)
-})
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload') // storage folder
+    }
+  })
+  .then((fileInfos) => {
+    console.log(fileInfos)
+  })
 ```
 
 ### startPolling
 
-crawlPolling is a method of the [myXCrawl](#Example-1) instance, typically used to perform polling operations, such as getting news every once in a while.
+crawlPolling is a method of the crawler instance, typically used to perform polling operations, such as getting news every once in a while.
 
 #### Type
 
@@ -452,15 +581,23 @@ crawlPolling is a method of the [myXCrawl](#Example-1) instance, typically used 
 ```ts
 function startPolling(
   config: StartPollingConfig,
-  callback: (count: number) => void
+  callback: (count: number, stopPolling: () => void) => void
 ): void
 ```
 
 #### Example
 
 ```js
-myXCrawl.startPolling({ h: 1, m: 30 }, () => {
-  // will be executed every one and a half hours
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
+// startPolling API
+myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+  // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
 })
 ```
@@ -572,6 +709,32 @@ interface StartPollingConfig {
   d?: number // day
   h?: number // hour
   m?: number // minute
+}
+```
+
+### XCrawlInstance
+
+```js
+interface XCrawlInstance {
+  crawlPage: (
+    config: CrawlPageConfig,
+    callback?: (res: CrawlPage) => void
+  ) => Promise<CrawlPage>
+
+  crawlData: <T = any>(
+    config: CrawlDataConfig,
+    callback?: (res: CrawlResCommonV1<T>) => void
+  ) => Promise<CrawlResCommonArrV1<T>>
+
+  crawlFile: (
+    config: CrawlFileConfig,
+    callback?: (res: CrawlResCommonV1<FileInfo>) => void
+  ) => Promise<CrawlResCommonArrV1<FileInfo>>
+
+  startPolling: (
+    config: StartPollingConfig,
+    callback: (count: number, stopPolling: () => void) => void
+  ) => void
 }
 ```
 

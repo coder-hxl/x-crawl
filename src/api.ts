@@ -300,7 +300,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
 
 export function startPolling(
   config: StartPollingConfig,
-  callback: (count: number) => void
+  callback: (count: number, stopPolling: () => void) => void
 ) {
   const { d, h, m } = config
 
@@ -310,11 +310,18 @@ export function startPolling(
   const total = day + hour + minute
 
   let count = 0
-  function startCallback() {
-    console.log(logWarn(`Start the ${logWarn.bold(++count)} polling`))
-    callback(count)
-  }
 
   startCallback()
-  setInterval(startCallback, total)
+  const intervalId = setInterval(startCallback, total)
+
+  function startCallback() {
+    console.log(logSuccess(`Start the ${logWarn.bold(++count)} polling`))
+
+    callback(count, stopPolling)
+  }
+
+  function stopPolling() {
+    clearInterval(intervalId)
+    console.log(logSuccess(`Stop the polling`))
+  }
 }

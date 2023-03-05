@@ -40,6 +40,6 @@ export interface XCrawlInstance {
 
   startPolling: (
     config: StartPollingConfig,
-    callback: (count: number) => void
+    callback: (count: number, stopPolling: () => void) => void
   ) => void
 }

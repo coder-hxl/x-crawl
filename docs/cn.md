@@ -18,9 +18,9 @@ x-crawl 是一个灵活的 nodejs 爬虫库。
 
 ## 跟 puppeteer 的关系
 
-crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来爬取页面。
+crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来帮助我们爬取页面。
 
-可以完成以下操作:
+我们可以做以下操作:
 
 - 生成页面的屏幕截图和 PDF。
 - 抓取 SPA（单页应用程序）并生成预渲染内容（即“SSR”（服务器端渲染））。
@@ -38,14 +38,14 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [爬取页面](#爬取页面)
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
+    * [启动轮询](#启动轮询)
     * [请求间隔时间](#请求间隔时间)
     * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
+    * [获取结果的多种方式](#获取结果的多种方式)
 - [API](#API)
     * [xCrawl](#xCrawl)
        + [类型](#类型-1)
        + [示例](#示例-1)
-       + [模式](#模式)
-       + [间隔时间](#间隔时间)
     * [crawlPage](#crawlPage)
        + [类型](#类型-2)
        + [示例](#示例-2)
@@ -192,6 +192,10 @@ const myXCrawl2 = xCrawl({
 通过 [crawlPage()](#crawlPage) 爬取一个页面
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ timeout: 10000 })
+
 myXCrawl.crawlPage('https://xxx.com').then(res => {
   const { jsdom, page } = res.data
 })
@@ -202,6 +206,13 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 通过 [crawlData()](#crawlData) 爬取接口数据
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
 const requestConfig = [
   { url: 'https://xxx.com/xxxx' },
   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
@@ -219,28 +230,68 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 
 ```js
 import path from 'node:path'
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
 
 const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
-myXCrawl.crawlFile({
-  requestConfig,
-  fileConfig: {
-    storeDir: path.resolve(__dirname, './upload') // 存放文件夹
-  }
-}).then(fileInfos => {
-  console.log(fileInfos)
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload') // 存放文件夹
+    }
+  })
+  .then((fileInfos) => {
+    console.log(fileInfos)
+  })
+
+```
+
+### 启动轮询
+
+通过 [startPolling](#startPolling) 启动一个轮询爬取
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000
+})
+
+myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+  // 每隔两个半小时会执行一次
+  // crawlPage/crawlData/crawlFile
+  myXCrawl.crawlPage('https://xxx.com').then(res => {
+    const { jsdom, page } = res.data
+  })
 })
 ```
+
+回调函数的 count 属性记录当前是第几次轮询操作，而 stopPolling 是一个回调函数，调用其可以终止后面的轮询操作。
 
 ### 请求间隔时间
 
 设置请求间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
 
+可以在创建爬虫实例的时候设置，也可选择给某个 API 单独设置。请求的间隔时间是由实例方法内部控制的，并非由实例控制整个请求的间隔时间。
+
 ```js
 import xCrawl from 'x-crawl'
 
+// 统一设置
 const myXCrawl = xCrawl({
   intervalTime: { max: 3000, min: 1000 }
+})
+
+// 单独设置 (优先级高)
+myXCrawl.crawlFile({
+  requestConfig: [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ],
+  intervalTime: { max: 2000, min: 1000 }
 })
 ```
 
@@ -249,7 +300,7 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在请求前�
 - number: 固定每次请求前必须等待的时间
 - Object: 在 max 和 min 中随机取一个值，更加拟人化
 
-第一次请求是不会触发间隔时间。
+**注意:** 第一次请求是不会触发间隔时间。
 
 ### requestConfig 选项的多种写法
 
@@ -262,6 +313,13 @@ requestConfig 的写法非常灵活，一共有5种，可以是:
 - 字符串加对象数组
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
 // requestConfig 写法1:
 const requestConfig1 = 'https://xxx.com/xxxx'
 
@@ -288,6 +346,69 @@ const requestConfig5 = [
   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
   'https://xxx.com/xxxx'
 ]
+
+
+myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
+  console.log(res)
+})
+```
+
+可以根据实际情况选用即可。
+
+### 获取结果的多种方式
+
+获取结果有三种方式:  Promise、Callback 以及 Promise + Callback。
+
+- Promise: 等所有请求结束后，获取所有请求的结果
+- Callback: 每次请求结束后，获取当前请求的结果
+
+这三种方式适用于 crawlPage、crawlData 以及 crawlFile 。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ 
+  timeout: 10000,
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+
+// 方式一: Promise
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+  })
+  .then((fileInfos) => {
+    console.log('Promise: ', fileInfos)
+  })
+
+// 方式二: Callback
+myXCrawl.crawlFile(
+  {
+    requestConfig,
+    fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+  },
+  (fileInfo) => {
+    console.log('Callback: ', fileInfo)
+  }
+)
+
+// 方式三: Promise + Callback
+myXCrawl
+  .crawlFile(
+    {
+      requestConfig,
+      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+    },
+    (fileInfo) => {
+      console.log('Callback: ', fileInfo)
+    }
+  )
+  .then((fileInfos) => {
+    console.log('Promise: ', fileInfos)
+  })
 ```
 
 可以根据实际情况选用即可。
@@ -300,7 +421,8 @@ const requestConfig5 = [
 
 #### 类型
 
-更详细的类型请看[类型](#类型-6)部分内容
+- [XCrawlBaseConfig](#XCrawlBaseConfig)
+- [XCrawlInstance](#XCrawlInstance)
 
 ```ts
 function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
@@ -309,6 +431,9 @@ function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 #### 示例
 
 ```js
+import xCrawl from 'x-crawl'
+
+// xCrawl API
 const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
@@ -320,11 +445,9 @@ const myXCrawl = xCrawl({
 })
 ```
 
-**注意:** 为避免后续示例需要重复创建实例，这里的 **myXCrawl** 将是 **crawlPage/crawlData/crawlFile** 示例中的爬虫实例。
-
 ### crawlPage 
 
-crawlPage 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取页面。
+crawlPage 是爬虫实例的方法，通常用于爬取页面。
 
 #### 类型
 
@@ -341,19 +464,24 @@ function crawlPage: (
 #### 示例
 
 ```js
-myXCrawl.crawlPage('/xxx').then((res) => {
-  const { jsdom } = res.data
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ timeout: 10000 })
+
+// crawlPage API
+myXCrawl.crawlPage('https://xxx.com/xxx').then((res) => {
+  const { jsdom, page } = res.data
   console.log(jsdom.window.document.querySelector('title')?.textContent)
 })
 ```
 
 #### 关于 page 
 
-从 res.data.page 拿到 page 实例，其可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
+page 属性可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
 ### crawlData
 
-crawl 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+crawl 是爬虫实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
 
 #### 类型
 
@@ -371,12 +499,20 @@ function crawlData: <T = any>(
 #### 示例
 
 ```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
 const requestConfig = [
   { url: 'https://xxx.com/xxxx' },
   { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } },
   { url: 'https://xxx.com/xxxx' }
 ]
 
+// crawlData API
 myXCrawl.crawlData({ requestConfig }).then(res => {
   console.log(res)
 })
@@ -384,7 +520,7 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 
 ### crawlFile
 
-crawlFile 是 [myXCrawl](#示例-2) 实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+crawlFile 是爬虫实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
 
 #### 类型
 
@@ -404,22 +540,31 @@ function crawlFile: (
 
 ```js
 import path from 'node:path'
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
 
 const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
 
-myXCrawl.crawlFile({
-  requestConfig,
-  fileConfig: {
-    storeDir: path.resolve(__dirname, './upload') // 存放文件夹
-  }
-}).then(fileInfos => {
-  console.log(fileInfos)
-})
+// crawlFile API
+myXCrawl
+  .crawlFile({
+    requestConfig,
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload') // 存放文件夹
+    }
+  })
+  .then((fileInfos) => {
+    console.log(fileInfos)
+  })
 ```
 
 ### startPolling
 
-crawlPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
+crawlPolling 是爬虫实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
 
 #### 类型
 
@@ -428,15 +573,23 @@ crawlPolling 是 [myXCrawl](#示例-1) 实例的方法，通常用于进行轮�
 ```ts
 function startPolling: (
   config: StartPollingConfig,
-  callback: (count: number) => void
+  callback: (count: number, stopPolling: () => void) => void
 ) => void
 ```
 
 #### 示例
 
 ```js
-myXCrawl.startPolling({ h: 1, m: 30 }, () => {
-  // 每隔一个半小时会执行一次
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  timeout: 10000,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
+// startPolling API
+myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+  // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
 })
 ```
@@ -548,6 +701,32 @@ interface StartPollingConfig {
   d?: number // 日
   h?: number // 小时
   m?: number // 分钟
+}
+```
+
+### XCrawlInstance
+
+```js
+interface XCrawlInstance {
+  crawlPage: (
+    config: CrawlPageConfig,
+    callback?: (res: CrawlPage) => void
+  ) => Promise<CrawlPage>
+
+  crawlData: <T = any>(
+    config: CrawlDataConfig,
+    callback?: (res: CrawlResCommonV1<T>) => void
+  ) => Promise<CrawlResCommonArrV1<T>>
+
+  crawlFile: (
+    config: CrawlFileConfig,
+    callback?: (res: CrawlResCommonV1<FileInfo>) => void
+  ) => Promise<CrawlResCommonArrV1<FileInfo>>
+
+  startPolling: (
+    config: StartPollingConfig,
+    callback: (count: number, stopPolling: () => void) => void
+  ) => void
 }
 ```
 
