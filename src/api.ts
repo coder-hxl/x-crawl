@@ -96,17 +96,15 @@ async function useBatchRequestByMode(
 export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
-  let callTotal = 0
+  let haveCreateBrowser = false
 
   async function crawlPage(
     config: CrawlPageConfig,
     callback?: (res: CrawlPage) => void
   ): Promise<CrawlPage> {
-    // 记录调用次数, 目的: 关闭浏览器
-    callTotal++
-
-    // 只创建一次浏览器
-    if (callTotal === 1) {
+    // 创建浏览器
+    if (!haveCreateBrowser) {
+      haveCreateBrowser = true
       createBrowserState = puppeteer.launch().then((res) => {
         browser = res
       })
@@ -147,14 +145,11 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 
     const content = await page!.content()
 
-    // 关闭浏览器
-    if (--callTotal === 0) {
-      browser!.close()
-    }
-
     const res: CrawlPage = {
       httpResponse,
-      data: { page, jsdom: new JSDOM(content) }
+      browser: browser!,
+      page,
+      jsdom: new JSDOM(content)
     }
 
     if (callback) {

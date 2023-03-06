@@ -1,6 +1,6 @@
 import process from 'node:process'
 import path from 'node:path'
-import { expect, test } from '@jest/globals'
+import { expect, test, jest } from '@jest/globals'
 
 import IXCrawl from '../../src'
 
@@ -13,6 +13,8 @@ if (currentModel === 'dev') {
 } else if (currentModel === 'pro') {
   xCrawl = require('../../publish/dist')
 }
+
+jest.setTimeout(20000)
 
 // Protocol
 
@@ -35,9 +37,12 @@ function httpsProtocol() {
       proxy: 'http://localhost:14892'
     })
 
-    httpsXCrawl
-      .crawlPage('https://docs.github.com/zh')
-      .then(() => resolve(true))
+    httpsXCrawl.crawlPage('https://docs.github.com/zh').then(async (res) => {
+      const { browser } = res
+      await browser.close()
+
+      resolve(true)
+    })
   })
 }
 
@@ -52,9 +57,14 @@ test('https protocol', async () => {
 // API
 function crawlPageAPI() {
   return new Promise((resolve) => {
-    const myXCrawl = xCrawl()
+    const myXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
-    myXCrawl.crawlPage('https://docs.github.com/zh').then(() => resolve(true))
+    myXCrawl.crawlPage('https://docs.github.com/zh').then(async (res) => {
+      const { browser } = res
+      await browser.close()
+
+      resolve(true)
+    })
   })
 }
 

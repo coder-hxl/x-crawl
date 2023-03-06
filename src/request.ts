@@ -187,7 +187,7 @@ export async function batchRequest(
       id
     )
 
-    const requesttem = request(requestConfig)
+    const requestItem = request(requestConfig)
       .catch((error: any) => {
         errorTotal++
 
@@ -203,7 +203,7 @@ export async function batchRequest(
         callback({ id, ...requestRes })
       })
 
-    requestQueue.push(requesttem)
+    requestQueue.push(requestItem)
   }
 
   log(logSuccess('All requests have been sent!'))

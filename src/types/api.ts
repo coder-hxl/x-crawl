@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http'
-import { HTTPResponse, Page } from 'puppeteer'
+import { Browser, HTTPResponse, Page } from 'puppeteer'
 import { JSDOM } from 'jsdom'
 
 import { RequestConfigObject } from './request'
@@ -75,8 +75,7 @@ export interface FileInfo {
 
 export interface CrawlPage {
   httpResponse: HTTPResponse | null
-  data: {
-    page: Page
-    jsdom: JSDOM
-  }
+  browser: Browser
+  page: Page
+  jsdom: JSDOM
 }

@@ -29,19 +29,27 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 # 目录
 
 - [安装](#安装)
+
 - [示例](#示例)
+
 - [核心概念](#核心概念)
     * [创建应用](#创建应用)
       + [一个爬虫应用实例](#一个爬虫应用实例)
       + [选择爬取模式](#选择爬取模式)
       + [多个爬虫应用实例](#多个爬虫应用实例)
     * [爬取页面](#爬取页面)
+    
+      + [jsdom](#jsdom)
+      + [browser](#browser)
+      + [page](#page)
+    
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
     * [启动轮询](#启动轮询)
     * [请求间隔时间](#请求间隔时间)
     * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
     * [获取结果的多种方式](#获取结果的多种方式)
+    
 - [API](#API)
     * [xCrawl](#xCrawl)
        + [类型](#类型-1)
@@ -52,13 +60,13 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [crawlData](#crawlData)
        + [类型](#类型-3)
        + [示例](#示例-3)
-       + [关于 page](#关于-page)
     * [crawlFile](#crawlFile)
        + [类型](#类型-4)
        + [示例](#示例-4)
     * [startPolling](#startPolling)
        + [类型](#类型-5)
        + [示例](#示例-5)
+    
 - [类型](#类型-6)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
@@ -76,6 +84,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
     * [FileInfo](#FileInfo)
     * [CrawlPage](#CrawlPage)
+    
 - [更多](#更多)
 
 ## 安装
@@ -106,7 +115,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ d: 1 }, () => {
   // 调用 crawlPage API 爬取 Page
   myXCrawl.crawlPage('https://www.bilibili.com/guochuang/').then((res) => {
-    const { jsdom } = res.data // 默认使用了 JSDOM 库解析 Page
+    const { browser, jsdom } = res // 默认使用了 JSDOM 库解析 Page
 
     // 获取轮播图片元素
     const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
@@ -120,6 +129,9 @@ myXCrawl.startPolling({ d: 1 }, () => {
       requestConfig, 
       fileConfig: { storeDir: path.resolve(__dirname, './upload') } 
     })
+      
+    // 关闭浏览器
+    browser.close()
   })
 })
 ```
@@ -198,9 +210,26 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({ timeout: 10000 })
 
 myXCrawl.crawlPage('https://xxx.com').then(res => {
-  const { jsdom, page } = res.data
+  const { jsdom, browser, page } = res
+  
+  // 关闭浏览器
+  browser.close()
 })
 ```
+
+#### jsdom
+
+具体使用参考 [jsdom](https://github.com/jsdom/jsdom) 。
+
+#### browser
+
+**调用 close 的目的：**browser 会一直保持运行，造成文件不会终止。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。当您修改 browser 对象的属性时，会对该爬虫实例的 crawlPage 内部的 browser 和返回的 page 以及 browser 造成影响，因为 browser 在爬虫实例的 crawlPage API 内是共享的。
+
+具体使用参考 [browser](https://pptr.dev/api/puppeteer.browser) 。
+
+#### page
+
+page 属性可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
 ### 爬取接口
 
@@ -268,7 +297,9 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
   // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
   myXCrawl.crawlPage('https://xxx.com').then(res => {
-    const { jsdom, page } = res.data
+    const { jsdom, browser, page } = res
+    
+    browser.close()
   })
 })
 ```
@@ -471,14 +502,13 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 
 // crawlPage API
 myXCrawl.crawlPage('https://xxx.com/xxx').then((res) => {
-  const { jsdom, page } = res.data
+  const { jsdom, browser, page } = res
   console.log(jsdom.window.document.querySelector('title')?.textContent)
+  
+  // 关闭浏览器
+  browser.close()
 })
 ```
-
-#### 关于 page 
-
-page 属性可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
 ### crawlData
 
@@ -764,10 +794,9 @@ interface FileInfo {
 ```ts
 interface CrawlPage {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
-  data: {
-    page: Page // puppeteer 库的 Page 类型
-    jsdom: JSDOM // jsdom 库的 JSDOM 类型
-  }
+  browser: Browser // puppeteer 库的 Browser 类型
+  page: Page // puppeteer 库的 Page 类型
+  jsdom: JSDOM // jsdom 库的 JSDOM 类型
 }
 ```
 

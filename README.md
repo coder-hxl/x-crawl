@@ -36,6 +36,9 @@ We can do the following:
       + [Choose crawling mode](#Choose-crawling-mode)
       + [Multiple crawler application instances](#Multiple-crawler-application-instances)
     * [Crawl page](#Crawl-page)
+      + [jsdom](#jsdom)
+      + [browser](#browser)
+      + [page](#page)
     * [Crawl interface](#Crawl-interface)
     * [Crawl files](#Crawl-files)
     * [Start polling](#Start-polling)
@@ -49,7 +52,6 @@ We can do the following:
     * [crawlPage](#crawlPage)
        + [Type](#Type-2)
        + [Example](#Example-2)
-       + [About page](#About-page)
     * [crawlData](#crawlData)
        + [Type](#Type-3)
        + [Example](#Example-3)
@@ -107,7 +109,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ d: 1 }, () => {
   // Call crawlPage API to crawl Page
   myXCrawl.crawlPage('https://www.youtube.com/').then((res) => {
-    const { jsdom } = res.data // By default, the JSDOM library is used to parse Page
+    const { browser, jsdom } = res // By default, the JSDOM library is used to parse Page
 
     // Get the cover image element of the Promoted Video
     const imgEls = jsdom.window.document.querySelectorAll(
@@ -127,6 +129,9 @@ myXCrawl.startPolling({ d: 1 }, () => {
       requestConfig,
       fileConfig: { storeDir: path.resolve(__dirname, './upload') }
     })
+      
+    // Close the browser
+    browser.close()
   })
 })
 ```
@@ -206,9 +211,26 @@ const myXCrawl = xCrawl({
 })
 
 myXCrawl.crawlPage('https://xxx.com').then(res => {
-  const { jsdom, page } = res.data
+  const { jsdom, browser, page } = res
+  
+  // Close the browser
+  browser.close()
 })
 ```
+
+#### jsdom
+
+Refer to [jsdom](https://github.com/jsdom/jsdom) for specific usage.
+
+#### browser
+
+**Purpose of calling close: **browser will keep running, so the file will not be terminated. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. When you modify the properties of the browser object, it will affect the browser inside the crawlPage of the crawler instance, the returned page, and the browser, because the browser is shared within the crawlPage API of the crawler instance.
+
+Refer to [browser](https://pptr.dev/api/puppeteer.browser) for specific usage.
+
+#### page
+
+The page attribute can be used for interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### Crawl interface
 
@@ -276,7 +298,10 @@ myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
   myXCrawl.crawlPage('https://xxx.com').then(res => {
-    const { jsdom, page } = res.data
+    const { jsdom, browser, page } = res
+    
+    // Close the browser
+    browser.close()
   })
 })
 ```
@@ -480,14 +505,13 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 
 // crawlPage API
 myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {
-  const { jsdom, page } = res.data
+  const { jsdom, browser, page } = res
   console.log(jsdom.window.document.querySelector('title')?.textContent)
+    
+  // Close the browser
+  browser.close()
 })
 ```
-
-#### About page
-
-The page attribute can be used for interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### crawlData
 
@@ -771,10 +795,9 @@ interface FileInfo {
 ```ts
 interface CrawlPage {
   httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
-  data: {
-    page: Page // The type of Page in the puppeteer library
-    jsdom: JSDOM // The type of JSDOM in the jsdom library
-  }
+  browser // The type of Browser in the puppeteer library
+  page: Page // The type of Page in the puppeteer library
+  jsdom: JSDOM // The type of JSDOM in the jsdom library
 }
 ```
 
