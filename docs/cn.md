@@ -2,9 +2,9 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。用来批量爬取数据、网络请求以及下载文件资源。支持采用异步或同步的方式爬取数据。因跑在 nodejs 上，所以会对 JS/TS 的开发者做爬虫友好。
+x-crawl 是一个灵活的 nodejs 爬虫库。用来批量爬取数据、网络请求以及下载文件资源。支持采用异步或同步的方式爬取数据。因跑在 nodejs 上，所以对 JS/TS 开发者友好。
 
-如果对您有帮助，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
+如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
 
 ## 特征
 
@@ -304,7 +304,10 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 })
 ```
 
-回调函数的 count 属性记录当前是第几次轮询操作，而 stopPolling 是一个回调函数，调用其可以终止后面的轮询操作。
+回调函数参数：
+
+- count 属性记录当前是第几次轮询操作。
+- stopPolling 是一个回调函数，调用其可以终止后面的轮询操作。
 
 ### 请求间隔时间
 

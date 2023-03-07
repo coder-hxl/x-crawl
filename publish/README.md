@@ -2,9 +2,9 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. It is used to batch crawl data, network requests and download file resources. Support crawling data asynchronously or synchronously. Because it runs on nodejs, it will be crawler-friendly for JS/TS developers.
+x-crawl is a flexible nodejs crawler library. It is used to batch crawl data, network requests and download file resources. Support crawling data asynchronously or synchronously. Since it runs on nodejs, it is friendly to JS/TS developers.
 
-If it helps you, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star support.
+If you feel good, you can support [x-crawl repository](https://github.com/coder-hxl/x-crawl) with a Star.
 
 ## Features
 
@@ -306,7 +306,10 @@ myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 })
 ```
 
-The count attribute of the callback function records the current number of polling operations, and stopPolling is a callback function that can be called to terminate subsequent polling operations.
+Callback function parameters:
+
+- The count attribute records the current number of polling operations.
+- stopPolling is a callback function, calling it can terminate subsequent polling operations.
 
 ### Request interval time
 
