@@ -2,19 +2,19 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. 
+x-crawl is a flexible nodejs crawler library. It is used to batch crawl data, network requests and download file resources. Support crawling data asynchronously or synchronously. Because it runs on nodejs, it will be crawler-friendly for JS/TS developers.
 
 If it helps you, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star support.
 
 ## Features
 
-- Crawl pages, JSON, file resources, etc. with simple configuration.
-- The built-in puppeteer crawls the page, and uses the jsdom library to parse the page.
 - Support asynchronous/synchronous way to crawl data.
 - Support Promise/Callback method to get the result.
-- Polling function, timing crawling.
 - Anthropomorphic request interval.
-- Written in TypeScript, has type hints, provides generics.
+- Crawl pages, JSON, file resources, etc. with simple configuration.
+- Polling function, timing crawling.
+- The built-in puppeteer crawls the page and uses the jsdom library to parse the page.
+- Written in TypeScript, has type hints, and provides generics.
 
 ## Relationship with puppeteer 
 

@@ -2,19 +2,19 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。
+x-crawl 是一个灵活的 nodejs 爬虫库。用来批量爬取数据、网络请求以及下载文件资源。支持采用异步或同步的方式爬取数据。因跑在 nodejs 上，所以会对 JS/TS 的开发者做爬虫友好。
 
 如果对您有帮助，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
 
 ## 特征
 
-- 只需简单的配置即可抓取页面、JSON、文件资源等等。
-- 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析。
 - 支持 异步/同步 方式爬取数据。
 - 支持 Promise/Callback 方式获取结果。
-- 轮询功能，定时爬取。
 - 拟人化的请求间隔时间。
-- 使用 TypeScript 编写，拥有的类型提示，提供泛型。
+- 只需简单的配置即可抓取页面、JSON、文件资源等等。
+- 轮询功能，定时爬取。
+- 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析。
+- 使用 TypeScript 编写，拥有类型提示，提供泛型。
 
 ## 跟 puppeteer 的关系
 
