@@ -101,7 +101,6 @@ npm install x-crawl
 
 ```js
 // 1.导入模块 ES/CJS
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
@@ -125,13 +124,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
     imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
 
     // 调用 crawlFile API 爬取图片
-    myXCrawl.crawlFile({ 
-      requestConfig, 
-      fileConfig: { storeDir: path.resolve(__dirname, './upload') } 
-    })
-      
-    // 关闭浏览器
-    browser.close()
+    myXCrawl.crawlFile({  requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
@@ -259,7 +252,6 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 通过 [crawlFile()](#crawlFile) 爬取文件数据
 
 ```js
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ 
@@ -273,7 +265,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // 存放文件夹
+      storeDir: './upload' // 存放文件夹
     }
   })
   .then((fileInfos) => {
@@ -298,8 +290,6 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
   // crawlPage/crawlData/crawlFile
   myXCrawl.crawlPage('https://xxx.com').then(res => {
     const { jsdom, browser, page } = res
-    
-    browser.close()
   })
 })
 ```
@@ -413,7 +403,7 @@ const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https:/
 myXCrawl
   .crawlFile({
     requestConfig,
-    fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   })
   .then((fileInfos) => {
     console.log('Promise: ', fileInfos)
@@ -423,7 +413,7 @@ myXCrawl
 myXCrawl.crawlFile(
   {
     requestConfig,
-    fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   },
   (fileInfo) => {
     console.log('Callback: ', fileInfo)
@@ -435,7 +425,7 @@ myXCrawl
   .crawlFile(
     {
       requestConfig,
-      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
+      fileConfig: { storeDir: './upload' }
     },
     (fileInfo) => {
       console.log('Callback: ', fileInfo)
@@ -573,7 +563,6 @@ function crawlFile: (
 #### 示例
 
 ```js
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({
@@ -588,7 +577,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // 存放文件夹
+      storeDir: './upload' // 存放文件夹
     }
   })
   .then((fileInfos) => {

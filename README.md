@@ -95,7 +95,6 @@ Regular crawling: Get the recommended pictures of the youtube homepage every oth
 
 ```js
 // 1.Import module ES/CJS
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
@@ -125,13 +124,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
     })
 
     // Call the crawlFile API to crawl pictures
-    myXCrawl.crawlFile({
-      requestConfig,
-      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
-    })
-      
-    // Close the browser
-    browser.close()
+    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
@@ -260,7 +253,6 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 Crawl file data via [crawlFile()](#crawlFile)
 
 ```js
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ 
@@ -274,7 +266,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // storage folder
+      storeDir: './upload' // storage folder
     }
   })
   .then((fileInfos) => {
@@ -299,9 +291,7 @@ myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
   // crawlPage/crawlData/crawlFile
   myXCrawl.crawlPage('https://xxx.com').then(res => {
     const { jsdom, browser, page } = res
-    
-    // Close the browser
-    browser.close()
+ 
   })
 })
 ```
@@ -414,7 +404,7 @@ const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https:/
 myXCrawl
   .crawlFile({
     requestConfig,
-    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   })
   .then((fileInfos) => {
     console.log('Promise: ', fileInfos)
@@ -424,7 +414,7 @@ myXCrawl
 myXCrawl.crawlFile(
   {
     requestConfig,
-    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   },
   (fileInfo) => {
     console.log('Callback: ', fileInfo)
@@ -436,7 +426,7 @@ myXCrawl
   .crawlFile(
     {
       requestConfig,
-      fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+      fileConfig: { storeDir: './upload' }
     },
     (fileInfo) => {
       console.log('Callback: ', fileInfo)
@@ -589,7 +579,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // storage folder
+      storeDir: './upload' // storage folder
     }
   })
   .then((fileInfos) => {
