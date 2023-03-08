@@ -2,19 +2,20 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. It is used to batch crawl data, network requests and download file resources. Support crawling data asynchronously or synchronously. Since it runs on nodejs, it is friendly to JS/TS developers.
+X-Crawl is a flexible Nodejs reptile bank. Used to crawl pages, batch network requests, and download file resources in batches. There are 5 kinds of RequestConfig writing, 3 ways to obtain results, and crawl data asynchronous or synchronized mode. Run on Nodejs and be friendly to JS/TS developers.
 
 If you feel good, you can support [x-crawl repository](https://github.com/coder-hxl/x-crawl) with a Star.
 
 ## Features
 
-- Support asynchronous/synchronous way to crawl data.
-- Support Promise/Callback method to get the result.
-- Anthropomorphic request interval.
-- Crawl pages, JSON, file resources, etc. with simple configuration.
-- Polling function, timing crawling.
-- The built-in puppeteer crawls the page and uses the jsdom library to parse the page.
-- Written in TypeScript, has type hints, and provides generics.
+- Cules data for asynchronous/synchronous ways.
+- In three ways to obtain the results of the three ways of supporting Promise, Callback, and Promise + Callback.
+- RquestConfig has 5 ways of writing.
+- The anthropomorphic request interval time.
+- In a simple configuration, you can capture pages, JSON, file resources, and so on.
+- The rotation function, crawl regularly.
+- The built -in Puppeteer crawl the page and uses the JSDOM library to analyze the page, or it can also be parsed by itself.
+- Chopening with TypeScript, possessing type prompts, and providing generic types.
 
 ## Relationship with puppeteer 
 
@@ -95,7 +96,6 @@ Regular crawling: Get the recommended pictures of the youtube homepage every oth
 
 ```js
 // 1.Import module ES/CJS
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
@@ -125,13 +125,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
     })
 
     // Call the crawlFile API to crawl pictures
-    myXCrawl.crawlFile({
-      requestConfig,
-      fileConfig: { storeDir: path.resolve(__dirname, './upload') }
-    })
-      
-    // Close the browser
-    browser.close()
+    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
   })
 })
 ```
@@ -260,7 +254,6 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 Crawl file data via [crawlFile()](#crawlFile)
 
 ```js
-import path from 'node:path'
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ 
@@ -274,7 +267,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // storage folder
+      storeDir: './upload' // storage folder
     }
   })
   .then((fileInfos) => {
@@ -299,9 +292,7 @@ myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
   // crawlPage/crawlData/crawlFile
   myXCrawl.crawlPage('https://xxx.com').then(res => {
     const { jsdom, browser, page } = res
-    
-    // Close the browser
-    browser.close()
+ 
   })
 })
 ```
@@ -414,7 +405,7 @@ const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https:/
 myXCrawl
   .crawlFile({
     requestConfig,
-    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   })
   .then((fileInfos) => {
     console.log('Promise: ', fileInfos)
@@ -424,7 +415,7 @@ myXCrawl
 myXCrawl.crawlFile(
   {
     requestConfig,
-    fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+    fileConfig: { storeDir: './upload' }
   },
   (fileInfo) => {
     console.log('Callback: ', fileInfo)
@@ -436,7 +427,7 @@ myXCrawl
   .crawlFile(
     {
       requestConfig,
-      fileConfig: { storeDir: path. resolve(__dirname, './upload') }
+      fileConfig: { storeDir: './upload' }
     },
     (fileInfo) => {
       console.log('Callback: ', fileInfo)
@@ -589,7 +580,7 @@ myXCrawl
   .crawlFile({
     requestConfig,
     fileConfig: {
-      storeDir: path.resolve(__dirname, './upload') // storage folder
+      storeDir: './upload' // storage folder
     }
   })
   .then((fileInfos) => {
