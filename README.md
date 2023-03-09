@@ -2,7 +2,7 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-X-Crawl is a flexible Nodejs reptile bank. Used to crawl pages, batch network requests, and download file resources in batches. There are 5 kinds of RequestConfig writing, 3 ways to obtain results, and crawl data asynchronous or synchronized mode. Run on Nodejs and be friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. Used to crawl pages, batch network requests, and batch download file resources. Crawl data in asynchronous or synchronous mode, 3 ways to get results, and 5 ways to write requestConfig. Runs on nodejs, friendly to JS/TS developers.
 
 If you feel good, you can support [x-crawl repository](https://github.com/coder-hxl/x-crawl) with a Star.
 
@@ -37,9 +37,9 @@ We can do the following:
       + [Choose crawling mode](#Choose-crawling-mode)
       + [Multiple crawler application instances](#Multiple-crawler-application-instances)
     * [Crawl page](#Crawl-page)
-      + [jsdom](#jsdom)
-      + [browser](#browser)
-      + [page](#page)
+      + [jsdom instance](#jsdom-instance)
+      + [browser instance](#browser-instance)
+      + [page instance](#page-instance)
     * [Crawl interface](#Crawl-interface)
     * [Crawl files](#Crawl-files)
     * [Start polling](#Start-polling)
@@ -212,19 +212,39 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 })
 ```
 
-#### jsdom
+#### jsdom instance
 
 Refer to [jsdom](https://github.com/jsdom/jsdom) for specific usage.
 
-#### browser
+#### browser instance
 
-**Purpose of calling close: **browser will keep running, so the file will not be terminated. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. When you modify the properties of the browser object, it will affect the browser inside the crawlPage of the crawler instance, the returned page, and the browser, because the browser is shared within the crawlPage API of the crawler instance.
+The browser instance is a headless browser without a UI shell. What he does is to bring **all modern network platform functions** provided by the browser rendering engine to the code.
+
+**Purpose of calling close:** The browser instance will always be running internally, causing the file not to be terminated. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. When you modify the properties of a browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
 
 Refer to [browser](https://pptr.dev/api/puppeteer.browser) for specific usage.
 
-#### page
+#### page instance
 
-The page attribute can be used for interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
+**Take Screenshot**
+
+```js
+import xCrawl from 'x-crawl'
+
+const testXCrawl = xCrawl({ timeout: 10000 })
+
+testXCrawl
+   .crawlPage('https://xxx.com')
+   .then(async (res) => {
+     const { page } = res
+
+     await page.screenshot({ path: './upload/page.png' })
+
+     console.log('Screen capture is complete')
+   })
+```
+
+The page instance can also perform interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### Crawl interface
 
