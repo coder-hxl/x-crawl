@@ -2,7 +2,7 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。用来爬取页面、批量网络请求以及批量下载文件资源。异步或同步模式爬取数据，3 种获取结果的写法，有 5 种 requestConfig 的写法。跑在 nodejs 上，对 JS/TS 开发者友好。
+x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面并控制页面、批量网络请求以及批量下载文件资源等操作。支持 异步/同步 模式爬取数据。跑在 nodejs 上，用法灵活和简单，对 JS/TS 开发者友好。
 
 如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
 
@@ -11,8 +11,8 @@ x-crawl 是一个灵活的 nodejs 爬虫库。用来爬取页面、批量网络�
 - 支持 异步/同步 方式爬取数据。
 - 支持 Promise、Callback 以及 Promise + Callback 这 3 种方式获取结果。
 - requestConfig 拥有 5 种写法。
-- 拟人化的请求间隔时间。
-- 只需简单的配置即可抓取页面、JSON、文件资源等等。
+- 灵活的请求间隔时间。
+- 只需简单的配置即可抓取页面、批量网络请求以及批量下载文件资源等操作。
 - 轮询功能，定时爬取。
 - 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析，也可自行解析。
 - 使用 TypeScript 编写，拥有类型提示，提供泛型。
@@ -30,9 +30,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 # 目录
 
 - [安装](#安装)
-
 - [示例](#示例)
-
 - [核心概念](#核心概念)
     * [创建应用](#创建应用)
       + [一个爬虫应用实例](#一个爬虫应用实例)
@@ -41,14 +39,13 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [爬取页面](#爬取页面)
       + [jsdom 实例](#jsdom-实例)
       + [browser 实例](#browser-实例)
-      + [page-实例](#page-实例)
+      + [page 实例](#page-实例)
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
     * [启动轮询](#启动轮询)
     * [请求间隔时间](#请求间隔时间)
     * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
     * [获取结果的多种方式](#获取结果的多种方式)
-    
 - [API](#API)
     * [xCrawl](#xCrawl)
        + [类型](#类型-1)
@@ -65,7 +62,6 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [startPolling](#startPolling)
        + [类型](#类型-5)
        + [示例](#示例-5)
-    
 - [类型](#类型-6)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
@@ -82,8 +78,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
     * [FileInfo](#FileInfo)
-    * [CrawlPage](#CrawlPage)
-    
+    * [CrawlPage](#CrawlPage) 
 - [更多](#更多)
 
 ## 安装
@@ -113,7 +108,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ d: 1 }, () => {
   // 调用 crawlPage API 爬取 Page
   myXCrawl.crawlPage('https://www.bilibili.com/guochuang/').then((res) => {
-    const { browser, jsdom } = res // 默认使用了 JSDOM 库解析 Page
+    const { jsdom } = res // 默认使用了 JSDOM 库解析 Page
 
     // 获取轮播图片元素
     const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
@@ -211,37 +206,63 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 
 #### jsdom 实例
 
-具体使用参考 [jsdom](https://github.com/jsdom/jsdom) 。
+它是 [JSDOM](https://github.com/jsdom/jsdom) 的实例对象，具体使用可以参考 [jsdom](https://github.com/jsdom/jsdom) 。
+
+**注意：**jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用  page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
 
 #### browser 实例
 
+它是  [Browser](https://pptr.dev/api/puppeteer.browser) 的实例对象，具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
+
 browser 实例他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。
 
-**调用 close 的目的：** browser 实例内部会一直处于运行，造成文件不会终止。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。当您修改 browser 实例的属性时，会对该爬虫实例 crawlPage API 内部的 browser 实例和返回结果的 page 实例以及 browser 实例造成影响，因为 browser 实例在同一个爬虫实例的 crawlPage API 内是共享的。
-
-具体使用参考 [browser](https://pptr.dev/api/puppeteer.browser) 。
+**注意：** browser 实例内部会一直产生事件循环，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为当您修改 browser 实例的属性时，会对该爬虫实例 crawlPage API 内部的 browser 实例和返回结果的 page 实例以及 browser 实例造成影响，因为 browser 实例在同一个爬虫实例的 crawlPage API 内是共享的。
 
 #### page 实例
+
+它是 [Page](https://pptr.dev/api/puppeteer.page) 的实例对象，实例还可以做事件之类的交互操作，具体使用可以参考 [page](https://pptr.dev/api/puppeteer.page) 。
+
+**自行解析页面**
+
+以使用 jsdom 库为例：
+
+```js
+import xCrawl from 'x-crawl'
+import { JSDOM } from 'jsdom'
+
+const myXCrawl = xCrawl({ timeout: 10000 })
+
+myXCrawl.crawlPage('https://www.xxx.com').then(async (res) => {
+  const { page } = res
+
+  // 获取最新的页面内容  
+  const content = await page.content()
+
+  // 使用 jsdom 库自行解析
+  const jsdom = new JSDOM(content)
+  
+  console.log(jsdom.window.document.querySelector('title').textContent)
+})
+```
 
 **获取屏幕截图**
 
 ```js
 import xCrawl from 'x-crawl'
 
-const testXCrawl = xCrawl({ timeout: 10000 })
+const myXCrawl = xCrawl({ timeout: 10000 })
 
-testXCrawl
+myXCrawl
   .crawlPage('https://xxx.com')
   .then(async (res) => {
     const { page } = res
 
+    // 获取页面渲染后的截图
     await page.screenshot({ path: './upload/page.png' })
 
     console.log('获取屏幕截图完毕')
   })
 ```
-
-page 实例还可以做事件之类的交互操作，具体使用参考 [page](https://pptr.dev/api/puppeteer.page) 。
 
 ### 爬取接口
 

@@ -2,7 +2,7 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. Used to crawl pages, batch network requests, and batch download file resources. Crawl data in asynchronous or synchronous mode, 3 ways to get results, and 5 ways to write requestConfig. Runs on nodejs, friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. You can crawl pages and control operations such as pages, batch network requests, and batch downloads of file resources. Support asynchronous/synchronous mode crawling data. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
 
 If you feel good, you can support [x-crawl repository](https://github.com/coder-hxl/x-crawl) with a Star.
 
@@ -11,8 +11,8 @@ If you feel good, you can support [x-crawl repository](https://github.com/coder-
 - Cules data for asynchronous/synchronous ways.
 - In three ways to obtain the results of the three ways of supporting Promise, Callback, and Promise + Callback.
 - RquestConfig has 5 ways of writing.
-- The anthropomorphic request interval time.
-- In a simple configuration, you can capture pages, JSON, file resources, and so on.
+- Flexible request interval.
+- Operations such as crawling pages, batch network requests, and batch downloading of file resources can be performed with simple configuration.
 - The rotation function, crawl regularly.
 - The built -in Puppeteer crawl the page and uses the JSDOM library to analyze the page, or it can also be parsed by itself.
 - Chopening with TypeScript, possessing type prompts, and providing generic types.
@@ -214,37 +214,63 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 
 #### jsdom instance
 
-Refer to [jsdom](https://github.com/jsdom/jsdom) for specific usage.
+It is an instance object of [JSDOM](https://github.com/jsdom/jsdom), please refer to [jsdom](https://github.com/jsdom/jsdom) for specific usage.
+
+**Note:** The jsdom instance only parses the content of [page instance](#page-instance), if you use page instance for event operation, you may need to parse the latest by yourself For details, please refer to the self-parsing page of [page instance](#page-instance).
 
 #### browser instance
 
+It is an instance object of [Browser](https://pptr.dev/api/puppeteer.browser). For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
+
 The browser instance is a headless browser without a UI shell. What he does is to bring **all modern network platform functions** provided by the browser rendering engine to the code.
 
-**Purpose of calling close:** The browser instance will always be running internally, causing the file not to be terminated. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. When you modify the properties of a browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
-
-Refer to [browser](https://pptr.dev/api/puppeteer.browser) for specific usage.
+**Note:** An event loop will always be generated inside the browser instance, causing the file not to be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because when you modify the properties of the browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
 
 #### page instance
+
+It is an instance object of [Page](https://pptr.dev/api/puppeteer.page). The instance can also perform interactive operations such as events. For specific usage, please refer to [page](https://pptr.dev /api/puppeteer. page).
+
+**Parse the page by yourself**
+
+Take the jsdom library as an example:
+
+```js
+import xCrawl from 'x-crawl'
+import { JSDOM } from 'jsdom'
+
+const myXCrawl = xCrawl({ timeout: 10000 })
+
+myXCrawl.crawlPage('https://www.xxx.com').then(async (res) => {
+  const { page } = res
+
+  // Get the latest page content
+  const content = await page.content()
+  
+  // Use the jsdom library to parse it yourself
+  const jsdom = new JSDOM(content)
+  
+  console.log(jsdom.window.document.querySelector('title').textContent)
+})
+```
 
 **Take Screenshot**
 
 ```js
 import xCrawl from 'x-crawl'
 
-const testXCrawl = xCrawl({ timeout: 10000 })
+const myXCrawl = xCrawl({ timeout: 10000 })
 
-testXCrawl
+myXCrawl
    .crawlPage('https://xxx.com')
    .then(async (res) => {
      const { page } = res
 
+     // Get a screenshot of the rendered page
      await page.screenshot({ path: './upload/page.png' })
 
      console.log('Screen capture is complete')
    })
 ```
-
-The page instance can also perform interactive operations such as events. For details, refer to [page](https://pptr.dev/api/puppeteer.page).
 
 ### Crawl interface
 
