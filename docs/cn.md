@@ -208,7 +208,7 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 
 它是 [JSDOM](https://github.com/jsdom/jsdom) 的实例对象，具体使用可以参考 [jsdom](https://github.com/jsdom/jsdom) 。
 
-**注意：**jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用  page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
+**注意：** jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用  page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
 
 #### browser 实例
 
