@@ -1,27 +1,26 @@
-# x-crawl
+# x-crawl [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
 x-crawl is a flexible nodejs crawler library. You can crawl pages and control operations such as pages, batch network requests, and batch downloads of file resources. Support asynchronous/synchronous mode crawling data. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
 
-If you feel good, you can support [x-crawl repository](https://github.com/coder-hxl/x-crawl) with a Star.
+If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it, your Star will be the motivation for my update.
 
 ## Features
 
-- Cules data for asynchronous/synchronous ways.
-- In three ways to obtain the results of the three ways of supporting Promise, Callback, and Promise + Callback.
-- RquestConfig has 5 ways of writing.
-- Flexible request interval.
-- Operations such as crawling pages, batch network requests, and batch downloading of file resources can be performed with simple configuration.
-- The rotation function, crawl regularly.
-- The built -in Puppeteer crawl the page and uses the JSDOM library to analyze the page, or it can also be parsed by itself.
-- Chopening with TypeScript, possessing type prompts, and providing generic types.
+- Support asynchronous/synchronous way to crawl data.
+- The writing method is very flexible and supports multiple ways to write request configuration and obtain crawling results.
+- Flexible crawling interval, up to you to use/avoid high concurrent crawling.
+- With simple configuration, operations such as crawling pages, batch network requests, and batch download of file resources can be performed.
+- Possess polling function to crawl data regularly.
+- The built-in puppeteer crawls the page, and uses the jsdom library to analyze the content of the page, and also supports self-analysis.
+- Written in TypeScript, has types, provides generics.
 
 ## Relationship with puppeteer 
 
 The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages.
 
-We can do the following:
+The return value of the crawlPage API will be able to do the following:
 
 - Generate screenshots and PDFs of pages.
 - Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
@@ -43,7 +42,7 @@ We can do the following:
     * [Crawl interface](#Crawl-interface)
     * [Crawl files](#Crawl-files)
     * [Start polling](#Start-polling)
-    * [Request interval time](#Request-interval-time)
+    * [Crawl interval](#Crawl-interval)
     * [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
     * [Multiple ways to get results](#Multiple-ways-to-get-results)
 - [API](#API)
@@ -101,7 +100,7 @@ import xCrawl from 'x-crawl'
 // 2.Create a crawler instance
 const myXCrawl = xCrawl({
   timeout: 10000, // overtime time
-  intervalTime: { max: 3000, min: 2000 } // control request frequency
+  intervalTime: { max: 3000, min: 2000 } // crawl interval
 })
 
 // 3.Set the crawling task
@@ -195,7 +194,7 @@ const myXCrawl2 = xCrawl({
 
 ### Crawl page
 
-Crawl a page via [crawlPage()](#crawlPage)
+Crawl a page via [crawlPage()](#crawlPage) .
 
 ```js
 import xCrawl from 'x-crawl'
@@ -274,7 +273,7 @@ myXCrawl
 
 ### Crawl interface
 
-Crawl interface data through [crawlData()](#crawlData)
+Crawl interface data through [crawlData()](#crawlData) .
 
 ```js
 import xCrawl from 'x-crawl'
@@ -297,7 +296,7 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 
 ### Crawl files
 
-Crawl file data via [crawlFile()](#crawlFile)
+Crawl file data via [crawlFile()](#crawlFile) .
 
 ```js
 import xCrawl from 'x-crawl'
@@ -323,7 +322,7 @@ myXCrawl
 
 ### Start polling
 
-Start a polling crawl with [startPolling](#startPolling)
+Start a polling crawl with [startPolling()](#startPolling) .
 
 ```js
 import xCrawl from 'x-crawl'
@@ -348,11 +347,11 @@ Callback function parameters:
 - The count attribute records the current number of polling operations.
 - stopPolling is a callback function, calling it can terminate subsequent polling operations.
 
-### Request interval time
+### Crawl interval
 
 Setting the requests interval time can prevent too much concurrency and avoid too much pressure on the server.
 
-It can be set when creating a crawler instance, or you can choose to set it separately for an API. The request interval time is controlled internally by the instance method, not by the instance to control the entire request interval time.
+It can be set when creating a crawler instance, or you can choose to set it separately for an API. The crawl interval is controlled internally by the instance method, not by the instance to control the entire crawl interval.
 
 ```js
 import xCrawl from 'x-crawl'
@@ -510,7 +509,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
-  // The interval between requests, multiple requests are valid
+  // Crawling interval time, batch crawling is only valid
   intervalTime: {
     max: 2000,
     min: 1000

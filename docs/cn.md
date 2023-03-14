@@ -1,27 +1,26 @@
-# x-crawl
+# x-crawl [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
 x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面并控制页面、批量网络请求以及批量下载文件资源等操作。支持 异步/同步 模式爬取数据。跑在 nodejs 上，用法灵活和简单，对 JS/TS 开发者友好。
 
-如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下。
+如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，您的 Star 将是我更新的动力。
 
 ## 特征
 
 - 支持 异步/同步 方式爬取数据。
-- 支持 Promise、Callback 以及 Promise + Callback 这 3 种方式获取结果。
-- requestConfig 拥有 5 种写法。
-- 灵活的请求间隔时间。
-- 只需简单的配置即可抓取页面、批量网络请求以及批量下载文件资源等操作。
-- 轮询功能，定时爬取。
-- 内置 puppeteer 爬取页面 ，并用采用 jsdom 库对页面解析，也可自行解析。
-- 使用 TypeScript 编写，拥有类型提示，提供泛型。
+- 写法非常灵活，支持多种方式写请求配置和获取爬取结果。
+- 灵活的爬取间隔时间，由你决定 使用/避免 高并发爬取。
+- 简单的配置即可抓取页面、批量网络请求以及批量下载文件资源等操作。
+- 拥有轮询功能，定时爬取数据。
+- 内置 puppeteer 爬取页面，并用采用 jsdom 库对页面内容解析，也支持自行解析。
+- 使用 TypeScript 编写，拥有类型，提供泛型。
 
 ## 跟 puppeteer 的关系
 
 crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来帮助我们爬取页面。
 
-我们可以做以下操作:
+crawlPage API 的返回值将可以做以下操作:
 
 - 生成页面的屏幕截图和 PDF。
 - 抓取 SPA（单页应用程序）并生成预渲染内容（即“SSR”（服务器端渲染））。
@@ -43,7 +42,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [爬取接口](#爬取接口)
     * [爬取文件](#爬取文件)
     * [启动轮询](#启动轮询)
-    * [请求间隔时间](#请求间隔时间)
+    * [爬取间隔时间](#爬取间隔时间)
     * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
     * [获取结果的多种方式](#获取结果的多种方式)
 - [API](#API)
@@ -100,7 +99,7 @@ import xCrawl from 'x-crawl'
 // 2.创建一个爬虫实例
 const myXCrawl = xCrawl({
   timeout: 10000, // 请求超时时间
-  intervalTime: { max: 3000, min: 2000 } // 控制请求频率
+  intervalTime: { max: 3000, min: 2000 } // 爬取间隔时间
 })
 
 // 3.设置爬取任务
@@ -189,7 +188,7 @@ const myXCrawl2 = xCrawl({
 
 ### 爬取页面
 
-通过 [crawlPage()](#crawlPage) 爬取一个页面
+通过 [crawlPage()](#crawlPage) 爬取一个页面。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -266,7 +265,7 @@ myXCrawl
 
 ### 爬取接口
 
-通过 [crawlData()](#crawlData) 爬取接口数据
+通过 [crawlData()](#crawlData) 爬取接口数据。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -289,7 +288,7 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 
 ### 爬取文件
 
-通过 [crawlFile()](#crawlFile) 爬取文件数据
+通过 [crawlFile()](#crawlFile) 爬取文件数据。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -316,7 +315,7 @@ myXCrawl
 
 ### 启动轮询
 
-通过 [startPolling](#startPolling) 启动一个轮询爬取
+通过 [startPolling()](#startPolling) 启动一个轮询爬取。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -339,11 +338,11 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 - count 属性记录当前是第几次轮询操作。
 - stopPolling 是一个回调函数，调用其可以终止后面的轮询操作。
 
-### 请求间隔时间
+### 爬取间隔时间
 
-设置请求间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
+设置爬取间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
 
-可以在创建爬虫实例的时候设置，也可选择给某个 API 单独设置。请求的间隔时间是由实例方法内部控制的，并非由实例控制整个请求的间隔时间。
+可以在创建爬虫实例的时候设置，也可选择给某个 API 单独设置。爬取间隔时间是由实例方法内部控制的，并非由实例控制整个爬取间隔时间。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -502,7 +501,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({
   baseUrl: 'https://xxx.com',
   timeout: 10000,
-  // 请求的间隔时间, 多个请求才有效
+  // 爬取间隔时间, 批量爬取才有效
   intervalTime: {
     max: 2000,
     min: 1000
