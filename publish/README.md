@@ -14,6 +14,7 @@ If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl
 - With simple configuration, operations such as crawling pages, batch network requests, and batch download of file resources can be performed.
 - Possess polling function to crawl data regularly.
 - The built-in puppeteer crawls the page, and uses the jsdom library to analyze the content of the page, and also supports self-analysis.
+- Capture and record the success and failure of batch crawling, and highlight the reminders.
 - Written in TypeScript, has types, provides generics.
 
 ## Relationship with puppeteer 

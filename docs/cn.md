@@ -14,6 +14,7 @@ x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面并控制页面�
 - 简单的配置即可抓取页面、批量网络请求以及批量下载文件资源等操作。
 - 拥有轮询功能，定时爬取数据。
 - 内置 puppeteer 爬取页面，并用采用 jsdom 库对页面内容解析，也支持自行解析。
+- 对批量爬取的成功和失败进行捕获记录，并进行高亮的提醒。
 - 使用 TypeScript 编写，拥有类型，提供泛型。
 
 ## 跟 puppeteer 的关系
@@ -131,7 +132,6 @@ myXCrawl.startPolling({ d: 1 }, () => {
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
-
 **注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
