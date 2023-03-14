@@ -132,6 +132,7 @@ myXCrawl.startPolling({ d: 1 }, () => {
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
 </div>
+
 **注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
