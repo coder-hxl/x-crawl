@@ -17,7 +17,7 @@ import {
 } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { RequestConfigObject, RequestResItem, Request } from './types/request'
+import { RequestConfigObjectV2, RequestResItem, Request } from './types/request'
 import { IntervalTime } from './types/api'
 
 function parseParams(urlSearch: string, params?: AnyObject): string {
@@ -36,7 +36,7 @@ function parseParams(urlSearch: string, params?: AnyObject): string {
 }
 
 function parseHeaders(
-  rawConfig: RequestConfigObject,
+  rawConfig: RequestConfigObjectV2,
   config: RequestOptions & MapTypeEmptyObject<URL>
 ) {
   const rawHeaders = rawConfig.headers ?? {}
@@ -55,7 +55,7 @@ function parseHeaders(
 }
 
 function handleRequestConfig(
-  rawConfig: RequestConfigObject
+  rawConfig: RequestConfigObjectV2
 ): RequestOptions & MapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
@@ -85,7 +85,7 @@ function handleRequestConfig(
   return config
 }
 
-export function request(config: RequestConfigObject) {
+export function request(config: RequestConfigObjectV2) {
   return new Promise<Request>((resolve, reject) => {
     const isDataUndefine = isUndefined(config.data)
     config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
@@ -159,7 +159,7 @@ async function useSleepByBatch(
 }
 
 export async function batchRequest(
-  requestConfigs: RequestConfigObject[],
+  requestConfigs: RequestConfigObjectV2[],
   intervalTime: IntervalTime | undefined,
   callback: (requestResItem: RequestResItem) => void
 ) {
@@ -222,7 +222,7 @@ export async function batchRequest(
 }
 
 export async function syncBatchRequest(
-  requestConfigs: RequestConfigObject[],
+  requestConfigs: RequestConfigObjectV2[],
   intervalTime: IntervalTime | undefined,
   callback: (requestResItem: RequestResItem) => void
 ) {

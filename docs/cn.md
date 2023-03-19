@@ -9,12 +9,12 @@ x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面并控制页面�
 ## 特征
 
 - 支持 异步/同步 方式爬取数据。
-- 写法非常灵活，支持多种方式写请求配置和获取爬取结果。
+- 灵活的写法，支持多种方式写请求配置和获取爬取结果。
 - 灵活的爬取间隔时间，由你决定 使用/避免 高并发爬取。
 - 简单的配置即可抓取页面、批量网络请求以及批量下载文件资源等操作。
 - 拥有轮询功能，定时爬取数据。
 - 内置 puppeteer 爬取页面，并用采用 jsdom 库对页面内容解析，也支持自行解析。
-- 对批量爬取的成功和失败进行捕获记录，并进行高亮的提醒。
+- 对爬取的成功和失败进行捕获记录，并进行高亮的提醒。
 - 使用 TypeScript 编写，拥有类型，提供泛型。
 
 ## 跟 puppeteer 的关系
@@ -65,20 +65,20 @@ crawlPage API 的返回值将可以做以下操作:
 - [类型](#类型-6)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
-    * [RequestConfigObject](#RequestConfigObject)
+    * [RequestConfigObjectV1](#RequestConfigObjectV1)
+    * [RequestConfigObjectV2](#RequestConfigObjectV2)
     * [RequestConfig](#RequestConfig)
-    * [MergeRequestConfigObject](#MergeRequestConfigObject)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlDataConfig](#CrawlDataConfig) 
     * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
+    * [CrawlPage](#CrawlPage-2) 
     * [FileInfo](#FileInfo)
-    * [CrawlPage](#CrawlPage) 
 - [更多](#更多)
 
 ## 安装
@@ -673,10 +673,21 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### RequestConfigObject
+### RequestConfigObjectV1
 
 ```ts 
-interface RequestConfigObject {
+interface RequestConfigObjectV1 {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+}
+```
+
+### RequestConfigObjectV2
+
+```ts 
+interface RequestConfigObjectV2 {
   url: string
   method?: Method
   headers?: AnyObject
@@ -690,17 +701,7 @@ interface RequestConfigObject {
 ### RequestConfig
 
 ```ts
-type RequestConfig = string | RequestConfigObject
-```
-
-### MergeRequestConfigObject
-
-```ts
-interface MergeRequestConfigObject {
-  url: string
-  timeout?: number
-  proxy?: string
-}
+type RequestConfig = string | RequestConfigObjectV2
 ```
 
 ### IntervalTime
@@ -724,6 +725,12 @@ interface XCrawlBaseConfig {
 }
 ```
 
+### CrawlPageConfig
+
+```ts
+type CrawlPageConfig = string | RequestConfigObjectV1
+```
+
 ### CrawlBaseConfigV1
 
 ```ts
@@ -731,12 +738,6 @@ interface CrawlBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
-```
-
-### CrawlPageConfig
-
-```ts
-type CrawlPageConfig = string | MergeRequestConfigObject
 ```
 
 ### CrawlDataConfig
@@ -810,17 +811,6 @@ interface CrawlResCommonV1<T> {
 type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 ```
 
-### FileInfo
-
-```ts
-interface FileInfo {
-  fileName: string
-  mimeType: string
-  size: number
-  filePath: string
-}
-```
-
 ### CrawlPage
 
 ```ts
@@ -829,6 +819,17 @@ interface CrawlPage {
   browser: Browser // puppeteer 库的 Browser 类型
   page: Page // puppeteer 库的 Page 类型
   jsdom: JSDOM // jsdom 库的 JSDOM 类型
+}
+```
+
+### FileInfo
+
+```ts
+interface FileInfo {
+  fileName: string
+  mimeType: string
+  size: number
+  filePath: string
 }
 ```
 

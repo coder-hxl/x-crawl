@@ -23,7 +23,14 @@ export type Method =
   | 'unlink'
   | 'UNLINK'
 
-export interface RequestConfigObject {
+export interface RequestConfigObjectV1 {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+}
+
+export interface RequestConfigObjectV2 {
   url: string
   method?: Method
   headers?: AnyObject

@@ -32,7 +32,7 @@ import {
   StartPollingConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
-import { RequestResItem, RequestConfigObject } from './types/request'
+import { RequestResItem, RequestConfigObjectV2 } from './types/request'
 
 function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   baseConfig: LoaderXCrawlBaseConfig,
@@ -82,7 +82,7 @@ function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
 
 async function useBatchRequestByMode(
   mode: 'async' | 'sync',
-  requestConfigs: RequestConfigObject[],
+  requestConfigs: RequestConfigObjectV2[],
   intervalTime: IntervalTime | undefined,
   callback: (requestRestem: RequestResItem) => void
 ) {
@@ -120,7 +120,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     await page.setViewport({ width: 1280, height: 1024 })
 
     // 合并 baseConfig 配置
-    const { requestConfig: requestConfigs } = mergeConfig<MergeConfigV2>(
+    const { requestConfig: requestConfigs } = mergeConfig<MergeConfigV1>(
       baseConfig,
       {
         requestConfig: config
@@ -139,9 +139,18 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       })
     }
 
-    const httpResponse = await page!.goto(requestConfig.url, {
-      timeout: requestConfig.timeout
-    })
+    if (requestConfig.headers) {
+      await page.setExtraHTTPHeaders(Headers as any as Record<string, string>)
+    }
+
+    let httpResponse = null
+    try {
+      httpResponse = await page!.goto(requestConfig.url, {
+        timeout: requestConfig.timeout
+      })
+    } catch (error: any) {
+      console.log(`error: ${logError(error.message)}`)
+    }
 
     const content = await page!.content()
 
@@ -168,7 +177,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
     callback?: (res: CrawlResCommonV1<T>) => void
   ): Promise<CrawlResCommonArrV1<T>> {
     const { requestConfig, intervalTime } = mergeConfig<
-      MergeConfigV1<CrawlDataConfig>
+      MergeConfigV2<CrawlDataConfig>
     >(baseConfig, config)
 
     const container: CrawlResCommonArrV1<T> = []
@@ -211,7 +220,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     callback?: (res: CrawlResCommonV1<FileInfo>) => void
   ): Promise<CrawlResCommonArrV1<FileInfo>> {
     const { requestConfig, intervalTime, fileConfig } = mergeConfig<
-      MergeConfigV1<CrawlFileConfig>
+      MergeConfigV2<CrawlFileConfig>
     >(baseConfig, config)
 
     const container: CrawlResCommonArrV1<FileInfo> = []

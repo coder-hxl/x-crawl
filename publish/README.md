@@ -9,12 +9,12 @@ If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl
 ## Features
 
 - Support asynchronous/synchronous way to crawl data.
-- The writing method is very flexible and supports multiple ways to write request configuration and obtain crawling results.
+- Flexible writing, support a variety of ways to write request configuration and obtain crawl results.
 - Flexible crawling interval, up to you to use/avoid high concurrent crawling.
 - With simple configuration, operations such as crawling pages, batch network requests, and batch download of file resources can be performed.
 - Possess polling function to crawl data regularly.
 - The built-in puppeteer crawls the page, and uses the jsdom library to analyze the content of the page, and also supports self-analysis.
-- Capture and record the success and failure of batch crawling, and highlight the reminders.
+- Capture the success and failure of the climb and highlight the reminder.
 - Written in TypeScript, has types, provides generics.
 
 ## Relationship with puppeteer 
@@ -65,21 +65,20 @@ The return value of the crawlPage API will be able to do the following:
 - [Types](#Types)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
-    * [RequestConfigObject](#RequestConfigObject)
+    * [RequestConfigObjectV1](#RequestConfigObjectV1)
+    * [RequestConfigObjectV2](#RequestConfigObjectV2)
     * [RequestConfig](#RequestConfig)
-    * [MergeRequestConfigObject](#MergeRequestConfigObject)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlDataConfig](#CrawlDataConfig) 
     * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
-    * [XCrawlInstance](#XCrawlInstance)
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
+    * [CrawlPage](#CrawlPage-2) 
     * [FileInfo](#FileInfo)
-    * [CrawlPage](#CrawlPage)
 - [More](#More)
 
 ## Install
@@ -682,10 +681,21 @@ interface AnyObject extends Object {
 type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
 ```
 
-### RequestConfigObject
+### RequestConfigObjectV1
 
 ```ts 
-interface RequestConfigObject {
+interface RequestConfigObjectV1 {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+}
+```
+
+### RequestConfigObjectV2
+
+```ts 
+interface RequestConfigObjectV2 {
   url: string
   method?: Method
   headers?: AnyObject
@@ -699,17 +709,7 @@ interface RequestConfigObject {
 ### RequestConfig
 
 ```ts
-type RequestConfig = string | RequestConfigObject
-```
-
-### MergeRequestConfigObject
-
-```ts
-interface MergeRequestConfigObject {
-  url: string
-  timeout?: number
-  proxy?: string
-}
+type RequestConfig = string | RequestConfigObjectV2
 ```
 
 ### IntervalTime
@@ -733,6 +733,12 @@ interface XCrawlBaseConfig {
 }
 ```
 
+### CrawlPageConfig
+
+```ts
+type CrawlPageConfig = string | RequestConfigObjectV1
+```
+
 ### CrawlBaseConfigV1
 
 ```ts
@@ -740,12 +746,6 @@ interface CrawlBaseConfigV1 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
-```
-
-### CrawlPageConfig
-
-```ts
-type CrawlPageConfig = string | MergeRequestConfigObject
 ```
 
 ### CrawlDataConfig
@@ -805,7 +805,7 @@ interface XCrawlInstance {
 ### CrawlResCommonV1
 
 ```ts
-interface CrawlCommon<T> {
+interface CrawlResCommonV1<T> {
   id: number
   statusCode: number | undefined
   headers: IncomingHttpHeaders // nodejs: http type
@@ -819,6 +819,17 @@ interface CrawlCommon<T> {
 type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 ```
 
+### CrawlPage
+
+```ts
+interface CrawlPage {
+  httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
+  browser: Browser // The Browser type of the puppeteer library
+  page: Page // The Page type of the puppeteer library
+  jsdom: JSDOM // jsdom type of the JSDOM library
+}
+```
+
 ### FileInfo
 
 ```ts
@@ -827,17 +838,6 @@ interface FileInfo {
   mimeType: string
   size: number
   filePath: string
-}
-```
-
-### CrawlPage
-
-```ts
-interface CrawlPage {
-  httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
-  browser // The type of Browser in the puppeteer library
-  page: Page // The type of Page in the puppeteer library
-  jsdom: JSDOM // The type of JSDOM in the jsdom library
 }
 ```
 
