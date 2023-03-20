@@ -28,7 +28,7 @@
     "@jest/globals": "^29.3.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-run": "^3.0.1",
-    "@rollup/plugin-terser": "^0.3.0",
+    "@rollup/plugin-terser": "^0.4.0",
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
