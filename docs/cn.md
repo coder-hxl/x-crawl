@@ -4,7 +4,7 @@
 
 x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面并控制页面、批量网络请求以及批量下载文件资源等操作。支持 异步/同步 模式爬取数据。跑在 nodejs 上，用法灵活和简单，对 JS/TS 开发者友好。
 
-如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，您的 Star 将是我更新的动力。
+> 如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，您的 Star 将是我更新的动力。
 
 ## 特征
 
