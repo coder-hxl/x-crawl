@@ -7,7 +7,7 @@ specifiers:
   '@rollup/plugin-babel': ^6.0.3
   '@rollup/plugin-run': ^3.0.1
   '@rollup/plugin-terser': ^0.4.0
-  '@types/jsdom': ^20.0.1
+  '@types/jsdom': ^21.0.0
   '@types/node': ^18.11.18
   '@typescript-eslint/eslint-plugin': ^5.48.2
   '@typescript-eslint/parser': ^5.48.2
@@ -38,7 +38,7 @@ devDependencies:
   '@rollup/plugin-babel': 6.0.3_j5gl3ppangg6ywsqfpneorhloy
   '@rollup/plugin-run': 3.0.1_rollup@3.10.1
   '@rollup/plugin-terser': 0.4.0_rollup@3.10.1
-  '@types/jsdom': 20.0.1
+  '@types/jsdom': 21.1.0
   '@types/node': 18.11.18
   '@typescript-eslint/eslint-plugin': 5.48.2_xcchhpd3ezyqg4jn72wfkiwhri
   '@typescript-eslint/parser': 5.48.2_pydb3hde2stcjsf742jarbqbry
@@ -1718,8 +1718,8 @@ packages:
       '@types/istanbul-lib-report': 3.0.0
     dev: true
 
-  /@types/jsdom/20.0.1:
-    resolution: {integrity: sha512-d0r18sZPmMQr1eG35u12FZfhIXNrnsPU/g5wvRKCUf/tOGilKKwYMYGqh33BNR6ba+2gkHw1EUiHoN3mn7E5IQ==}
+  /@types/jsdom/21.1.0:
+    resolution: {integrity: sha512-leWreJOdnuIxq9Y70tBVm/bvTuh31DSlF/r4l7Cfi4uhVQqLHD0Q4v301GMisEMwwbMgF7ZKxuZ+Jbd4NcdmRw==}
     dependencies:
       '@types/node': 18.11.18
       '@types/tough-cookie': 4.0.2
