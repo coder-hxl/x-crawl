@@ -2,30 +2,24 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. You can crawl pages and control operations such as pages, batch network requests, and batch downloads of file resources. Support asynchronous/synchronous mode crawling data. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. It can crawl pages, control pages, batch network requests, batch download file resources, polling and crawling, etc. Support asynchronous/synchronous mode crawling data. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
 
 > If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it, your Star will be the motivation for my update.
 
 ## Features
 
 - Support asynchronous/synchronous way to crawl data.
-- Flexible writing, support a variety of ways to write request configuration and obtain crawl results.
-- Flexible crawling interval, up to you to use/avoid high concurrent crawling.
-- With simple configuration, operations such as crawling pages, batch network requests, and batch download of file resources can be performed.
-- Possess polling function to crawl data regularly.
-- The built-in puppeteer crawls the page, and uses the jsdom library to analyze the content of the page, and also supports self-analysis.
-- Capture the success and failure of the climb and highlight the reminder.
+- Flexible writing, supporting multiple ways to write request configuration and obtain crawling results.
+- Flexible crawling interval, no interval/fixed interval/random interval, it is up to you to use/avoid high concurrent crawling.
+- Simple configuration can crawl pages, batch network requests, batch download file resources, polling and crawling, etc.
+- Crawl SPA (single-page application) to generate pre-rendered content (ie "SSR" (server-side rendering)), and use jsdom library to parse the content, and also supports self-parsing.
+- Form submissions, keystrokes, event actions, screenshots of generated pages, etc.
+- Capture and record the success and failure of crawling, and highlight the reminders.
 - Written in TypeScript, has types, provides generics.
 
-## Relationship with puppeteer 
+## Relationship with puppeteer
 
-The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages.
-
-The return value of the crawlPage API will be able to do the following:
-
-- Generate screenshots and PDFs of pages.
-- Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
-- Automate form submission, UI testing, keyboard input, etc.
+The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages and expose Brower instances and Page instances, making it more flexible.
 
 # Table of Contents
 
@@ -91,7 +85,7 @@ npm install x-crawl
 
 ## Example
 
-Regular crawling: Get the recommended pictures of the youtube homepage every other day as an example:
+Timing capture: Take the automatic capture of the cover image of Airbnb Plus listings every day as an example:
 
 ```js
 // 1.Import module ES/CJS
@@ -105,23 +99,18 @@ const myXCrawl = xCrawl({
 
 // 3.Set the crawling task
 // Call the startPolling API to start the polling function, and the callback function will be called every other day
-myXCrawl.startPolling({ d: 1 }, () => {
-  // Call crawlPage API to crawl Page
-  myXCrawl.crawlPage('https://www.youtube.com/').then((res) => {
-    const { browser, jsdom } = res // By default, the JSDOM library is used to parse Page
+myXCrawl.startPolling({ d: 1 }, (count, stopPolling) => {
+  myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes').then((res) => {
+    const { jsdom } = res // By default, the JSDOM library is used to parse Page
 
-    // Get the cover image element of the Promoted Video
-    const imgEls = jsdom.window.document.querySelectorAll(
-      '.yt-core-image--fill-parent-width'
-    )
+    // Get the cover image elements for Plus listings
+    const imgEls = jsdom.window.document
+      .querySelector('.a1stauiv')
+      ?.querySelectorAll('picture img')
 
     // set request configuration
-    const requestConfig = []
-    imgEls.forEach((item) => {
-      if (item.src) {
-        requestConfig.push(item.src)
-      }
-    })
+    const requestConfig: string[] = []
+    imgEls?.forEach((item) => requestConfig.push(item.src))
 
     // Call the crawlFile API to crawl pictures
     myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
