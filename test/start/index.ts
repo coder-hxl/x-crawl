@@ -16,4 +16,8 @@ testXCrawl
     })
 
     console.log('完成')
+
+    await testXCrawl.crawlPage(
+      'https://www.npmjs.com/package/x-crawl?activeTab=versions'
+    )
   })
