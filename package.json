@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "x-crawl",
-  "version": "3.2.10",
+  "version": "3.2.11",
   "author": "coderHXL",
   "description": "x-crawl is a flexible nodejs crawler library.",
   "license": "MIT",

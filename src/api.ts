@@ -149,10 +149,13 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
         timeout: requestConfig.timeout
       })
     } catch (error: any) {
-      console.log(`error: ${logError(error.message)}`)
+      console.log(logError(`Error: ${error.message}`))
     }
 
-    const content = await page!.content()
+    let content = ''
+    try {
+      content = await page!.content()
+    } catch {}
 
     const res: CrawlPage = {
       httpResponse,

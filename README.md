@@ -136,7 +136,7 @@ running result:
 
 #### An example of a crawler application
 
-Create a new **application instance** via [xCrawl()](#xCrawl):
+Create a new **application instance** via [xCrawl()](#x-crawl-2):
 
 ```js
 import xCrawl from 'x-crawl'
