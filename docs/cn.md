@@ -42,21 +42,21 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [获取结果的多种方式](#获取结果的多种方式)
 - [API](#API)
     * [xCrawl](#xCrawl)
-       + [类型](#类型-1)
+       + [类型](#类型)
        + [示例](#示例-1)
     * [crawlPage](#crawlPage)
-       + [类型](#类型-2)
+       + [类型](#类型-1)
        + [示例](#示例-2)
     * [crawlData](#crawlData)
-       + [类型](#类型-3)
+       + [类型](#类型-2)
        + [示例](#示例-3)
     * [crawlFile](#crawlFile)
-       + [类型](#类型-4)
+       + [类型](#类型-3)
        + [示例](#示例-4)
     * [startPolling](#startPolling)
-       + [类型](#类型-5)
+       + [类型](#类型-4)
        + [示例](#示例-5)
-- [类型](#类型-6)
+- [类型](#类型-5)
     * [AnyObject](#AnyObject)
     * [Method](#Method)
     * [RequestConfigObjectV1](#RequestConfigObjectV1)
@@ -64,14 +64,14 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlPageConfig](#CrawlPageConfig)
     * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlDataConfig](#CrawlDataConfig) 
     * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
-    * [CrawlPage](#CrawlPage-2) 
+    * [CrawlPage](#CrawlPage-1) 
     * [FileInfo](#FileInfo)
 - [更多](#更多)
 
@@ -85,7 +85,7 @@ npm install x-crawl
 
 ## 示例
 
-定时爬取: 每隔一天就获取 bilibili 国漫主页的轮播图片为例: 
+每天自动获取 bilibili 国漫主页的轮播图片为例: 
 
 ```js
 // 1.导入模块 ES/CJS
@@ -99,21 +99,19 @@ const myXCrawl = xCrawl({
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
-myXCrawl.startPolling({ d: 1 }, () => {
+myXCrawl.startPolling({ d: 1 }, async () => {
   // 调用 crawlPage API 爬取 Page
-  myXCrawl.crawlPage('https://www.bilibili.com/guochuang/').then((res) => {
-    const { jsdom } = res // 默认使用了 JSDOM 库解析 Page
+  const { jsdom } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
 
-    // 获取轮播图片元素
-    const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
+  // 获取轮播图片元素
+  const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
 
-    // 设置请求配置
-    const requestConfig = []
-    imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
+  // 设置请求配置
+  const requestConfig = []
+  imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
 
-    // 调用 crawlFile API 爬取图片
-    myXCrawl.crawlFile({  requestConfig, fileConfig: { storeDir: './upload' } })
-  })
+  // 调用 crawlFile API 爬取图片
+  myXCrawl.crawlFile({  requestConfig, fileConfig: { storeDir: './upload' } })
 })
 ```
 
@@ -319,12 +317,10 @@ const myXCrawl = xCrawl({
   timeout: 10000
 })
 
-myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
-  myXCrawl.crawlPage('https://xxx.com').then(res => {
-    const { jsdom, browser, page } = res
-  })
+  const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
 })
 ```
 
@@ -511,7 +507,7 @@ crawlPage 是爬虫实例的方法，通常用于爬取页面。
 #### 类型
 
 - 查看 [CrawlPageConfig](#CrawlPageConfig) 类型
-- 查看 [CrawlPage](#CrawlPage-2) 类型
+- 查看 [CrawlPage](#CrawlPage-1) 类型
 
 ```ts
 function crawlPage: (

@@ -41,20 +41,20 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     * [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
     * [Multiple ways to get results](#Multiple-ways-to-get-results)
 - [API](#API)
-    * [x-crawl](#x-crawl-2)
-       + [Type](#Type-1)
+    * [xCrawl](#xCrawl)
+       + [Type](#Type)
        + [Example](#Example-1)
     * [crawlPage](#crawlPage)
-       + [Type](#Type-2)
+       + [Type](#Type-1)
        + [Example](#Example-2)
     * [crawlData](#crawlData)
-       + [Type](#Type-3)
+       + [Type](#Type-2)
        + [Example](#Example-3)
     * [crawlFile](#crawlFile)
-       + [Type](#Type-4)
+       + [Type](#Type-3)
        + [Example](#Example-4)
     * [crawlPolling](#crawlPolling)
-       + [Type](#Type-5)
+       + [Type](#Type-4)
        + [Example](#Example-5)
 - [Types](#Types)
     * [AnyObject](#AnyObject)
@@ -64,14 +64,14 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     * [RequestConfig](#RequestConfig)
     * [IntervalTime](#IntervalTime)
     * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlPageConfig](#CrawlPageConfig	)
+    * [CrawlPageConfig](#CrawlPageConfig)
     * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
     * [CrawlDataConfig](#CrawlDataConfig) 
     * [CrawlFileConfig](#CrawlFileConfig)
     * [StartPollingConfig](#StartPollingConfig)
     * [CrawlResCommonV1](#CrawlResCommonV1)
     * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
-    * [CrawlPage](#CrawlPage-2) 
+    * [CrawlPage](#CrawlPage-1) 
     * [FileInfo](#FileInfo)
 - [More](#More)
 
@@ -98,23 +98,25 @@ const myXCrawl = xCrawl({
 })
 
 // 3.Set the crawling task
-// Call the startPolling API to start the polling function, and the callback function will be called every other day
-myXCrawl.startPolling({ d: 1 }, (count, stopPolling) => {
-  myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes').then((res) => {
-    const { jsdom } = res // By default, the JSDOM library is used to parse Page
+/* 
+  Call the startPolling API to start the polling function, 
+  and the callback function will be called every other day
+*/
+myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
+  // Call crawlPage API to crawl Page
+  const { jsdom } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
 
-    // Get the cover image elements for Plus listings
-    const imgEls = jsdom.window.document
-      .querySelector('.a1stauiv')
-      ?.querySelectorAll('picture img')
+  // Get the cover image elements for Plus listings
+  const imgEls = jsdom.window.document
+    .querySelector('.a1stauiv')
+    ?.querySelectorAll('picture img')
 
-    // set request configuration
-    const requestConfig: string[] = []
-    imgEls?.forEach((item) => requestConfig.push(item.src))
+  // set request configuration
+  const requestConfig: string[] = []
+  imgEls?.forEach((item) => requestConfig.push(item.src))
 
-    // Call the crawlFile API to crawl pictures
-    myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
-  })
+  // Call the crawlFile API to crawl pictures
+  myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
 })
 ```
 
@@ -136,7 +138,7 @@ running result:
 
 #### An example of a crawler application
 
-Create a new **application instance** via [xCrawl()](#x-crawl-2):
+Create a new **application instance** via [xCrawl()](#xCrawl):
 
 ```js
 import xCrawl from 'x-crawl'
@@ -321,13 +323,10 @@ const myXCrawl = xCrawl({
   intervalTime: { max: 3000, min: 1000 }
 })
 
-myXCrawl. startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
+myXCrawl. startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
-  myXCrawl.crawlPage('https://xxx.com').then(res => {
-    const { jsdom, browser, page } = res
- 
-  })
+  const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
 })
 ```
 
@@ -476,7 +475,7 @@ It can be selected according to the actual situation.
 
 ## API
 
-### x-crawl
+### xCrawl
 
 Create a crawler instance via call xCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
 
@@ -515,7 +514,7 @@ crawlPage is the method of the crawler instance, usually used to crawl page.
 #### Type
 
 - Look at the [CrawlPageConfig](#CrawlPageConfig) type
-- Look at the [CrawlPage](#CrawlPage-2) type
+- Look at the [CrawlPage](#CrawlPage-1) type
 
 ```ts
 function crawlPage: (
