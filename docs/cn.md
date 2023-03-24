@@ -26,66 +26,66 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 - [安装](#安装)
 - [示例](#示例)
 - [核心概念](#核心概念)
-    * [创建应用](#创建应用)
-      + [一个爬虫应用实例](#一个爬虫应用实例)
-      + [选择爬取模式](#选择爬取模式)
-      + [多个爬虫应用实例](#多个爬虫应用实例)
-    * [爬取页面](#爬取页面)
-      + [jsdom 实例](#jsdom-实例)
-      + [browser 实例](#browser-实例)
-      + [page 实例](#page-实例)
-    * [爬取接口](#爬取接口)
-    * [爬取文件](#爬取文件)
-    * [启动轮询](#启动轮询)
-    * [爬取间隔时间](#爬取间隔时间)
-    * [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
-    * [获取结果的多种方式](#获取结果的多种方式)
+  - [创建应用](#创建应用)
+    - [一个爬虫应用实例](#一个爬虫应用实例)
+    - [选择爬取模式](#选择爬取模式)
+    - [多个爬虫应用实例](#多个爬虫应用实例)
+  - [爬取页面](#爬取页面)
+    - [jsdom 实例](#jsdom-实例)
+    - [browser 实例](#browser-实例)
+    - [page 实例](#page-实例)
+  - [爬取接口](#爬取接口)
+  - [爬取文件](#爬取文件)
+  - [启动轮询](#启动轮询)
+  - [爬取间隔时间](#爬取间隔时间)
+  - [requestConfig 选项的多种写法](#requestConfig-选项的多种写法)
+  - [获取结果的多种方式](#获取结果的多种方式)
 - [API](#API)
-    * [xCrawl](#xCrawl)
-       + [类型](#类型)
-       + [示例](#示例-1)
-    * [crawlPage](#crawlPage)
-       + [类型](#类型-1)
-       + [示例](#示例-2)
-    * [crawlData](#crawlData)
-       + [类型](#类型-2)
-       + [示例](#示例-3)
-    * [crawlFile](#crawlFile)
-       + [类型](#类型-3)
-       + [示例](#示例-4)
-    * [startPolling](#startPolling)
-       + [类型](#类型-4)
-       + [示例](#示例-5)
+  - [xCrawl](#xCrawl)
+    - [类型](#类型)
+    - [示例](#示例-1)
+  - [crawlPage](#crawlPage)
+    - [类型](#类型-1)
+    - [示例](#示例-2)
+  - [crawlData](#crawlData)
+    - [类型](#类型-2)
+    - [示例](#示例-3)
+  - [crawlFile](#crawlFile)
+    - [类型](#类型-3)
+    - [示例](#示例-4)
+  - [startPolling](#startPolling)
+    - [类型](#类型-4)
+    - [示例](#示例-5)
 - [类型](#类型-5)
-    * [AnyObject](#AnyObject)
-    * [Method](#Method)
-    * [RequestConfigObjectV1](#RequestConfigObjectV1)
-    * [RequestConfigObjectV2](#RequestConfigObjectV2)
-    * [RequestConfig](#RequestConfig)
-    * [IntervalTime](#IntervalTime)
-    * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlPageConfig](#CrawlPageConfig)
-    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
-    * [CrawlDataConfig](#CrawlDataConfig) 
-    * [CrawlFileConfig](#CrawlFileConfig)
-    * [StartPollingConfig](#StartPollingConfig)
-    * [CrawlResCommonV1](#CrawlResCommonV1)
-    * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
-    * [CrawlPage](#CrawlPage-1) 
-    * [FileInfo](#FileInfo)
+  - [AnyObject](#AnyObject)
+  - [Method](#Method)
+  - [RequestConfigObjectV1](#RequestConfigObjectV1)
+  - [RequestConfigObjectV2](#RequestConfigObjectV2)
+  - [RequestConfig](#RequestConfig)
+  - [IntervalTime](#IntervalTime)
+  - [XCrawlBaseConfig](#XCrawlBaseConfig)
+  - [CrawlPageConfig](#CrawlPageConfig)
+  - [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+  - [CrawlDataConfig](#CrawlDataConfig)
+  - [CrawlFileConfig](#CrawlFileConfig)
+  - [StartPollingConfig](#StartPollingConfig)
+  - [CrawlResCommonV1](#CrawlResCommonV1)
+  - [CrawlResCommonArrV1](#CrawlResCommonArrV1)
+  - [CrawlPage](#CrawlPage-1)
+  - [FileInfo](#FileInfo)
 - [更多](#更多)
 
 ## 安装
 
-以 NPM 为例: 
+以 NPM 为例:
 
 ```shell
 npm install x-crawl
-````
+```
 
 ## 示例
 
-每天自动获取 bilibili 国漫主页的轮播图片为例: 
+每天自动获取 bilibili 国漫主页的轮播图片为例:
 
 ```js
 // 1.导入模块 ES/CJS
@@ -111,7 +111,7 @@ myXCrawl.startPolling({ d: 1 }, async () => {
   imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
 
   // 调用 crawlFile API 爬取图片
-  myXCrawl.crawlFile({  requestConfig, fileConfig: { storeDir: './upload' } })
+  myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
 })
 ```
 
@@ -164,7 +164,6 @@ mode 选项默认为 async 。
 
 若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
 
-
 #### 多个爬虫应用实例
 
 ```js
@@ -188,9 +187,9 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ timeout: 10000 })
 
-myXCrawl.crawlPage('https://xxx.com').then(res => {
+myXCrawl.crawlPage('https://xxx.com').then((res) => {
   const { jsdom, browser, page } = res
-  
+
   // 关闭浏览器
   browser.close()
 })
@@ -200,11 +199,11 @@ myXCrawl.crawlPage('https://xxx.com').then(res => {
 
 它是 [JSDOM](https://github.com/jsdom/jsdom) 的实例对象，具体使用可以参考 [jsdom](https://github.com/jsdom/jsdom) 。
 
-**注意：** jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用  page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
+**注意：** jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用 page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
 
 #### browser 实例
 
-它是  [Browser](https://pptr.dev/api/puppeteer.browser) 的实例对象，具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
+它是 [Browser](https://pptr.dev/api/puppeteer.browser) 的实例对象，具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
 
 browser 实例他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。
 
@@ -227,12 +226,12 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 myXCrawl.crawlPage('https://www.xxx.com').then(async (res) => {
   const { page } = res
 
-  // 获取最新的页面内容  
+  // 获取最新的页面内容
   const content = await page.content()
 
   // 使用 jsdom 库自行解析
   const jsdom = new JSDOM(content)
-  
+
   console.log(jsdom.window.document.querySelector('title').textContent)
 })
 ```
@@ -244,16 +243,14 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ timeout: 10000 })
 
-myXCrawl
-  .crawlPage('https://xxx.com')
-  .then(async (res) => {
-    const { page } = res
+myXCrawl.crawlPage('https://xxx.com').then(async (res) => {
+  const { page } = res
 
-    // 获取页面渲染后的截图
-    await page.screenshot({ path: './upload/page.png' })
+  // 获取页面渲染后的截图
+  await page.screenshot({ path: './upload/page.png' })
 
-    console.log('获取屏幕截图完毕')
-  })
+  console.log('获取屏幕截图完毕')
+})
 ```
 
 ### 爬取接口
@@ -263,7 +260,7 @@ myXCrawl
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
@@ -274,7 +271,7 @@ const requestConfig = [
   { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.crawlData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then((res) => {
   // 处理
 })
 ```
@@ -286,12 +283,12 @@ myXCrawl.crawlData({ requestConfig }).then(res => {
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 myXCrawl
   .crawlFile({
@@ -303,7 +300,6 @@ myXCrawl
   .then((fileInfos) => {
     console.log(fileInfos)
   })
-
 ```
 
 ### 启动轮询
@@ -313,7 +309,7 @@ myXCrawl
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000
 })
 
@@ -345,7 +341,7 @@ const myXCrawl = xCrawl({
 
 // 单独设置 (优先级高)
 myXCrawl.crawlFile({
-  requestConfig: [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ],
+  requestConfig: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
   intervalTime: { max: 2000, min: 1000 }
 })
 ```
@@ -359,7 +355,7 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在请求前�
 
 ### requestConfig 选项的多种写法
 
-requestConfig 的写法非常灵活，一共有5种，可以是:
+requestConfig 的写法非常灵活，一共有 5 种，可以是:
 
 - 字符串
 - 字符串数组
@@ -370,7 +366,7 @@ requestConfig 的写法非常灵活，一共有5种，可以是:
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
@@ -379,13 +375,13 @@ const myXCrawl = xCrawl({
 const requestConfig1 = 'https://xxx.com/xxxx'
 
 // requestConfig 写法2:
-const requestConfig2 = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig2 = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 // requestConfig 写法3:
-const requestConfig3 = { 
-  url: 'https://xxx.com/xxxx', 
-  method: 'POST', 
-  data: { name: 'coderhxl' } 
+const requestConfig3 = {
+  url: 'https://xxx.com/xxxx',
+  method: 'POST',
+  data: { name: 'coderhxl' }
 }
 
 // requestConfig 写法4:
@@ -402,8 +398,7 @@ const requestConfig5 = [
   'https://xxx.com/xxxx'
 ]
 
-
-myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
+myXCrawl.crawlData({ requestConfig: requestConfig5 }).then((res) => {
   console.log(res)
 })
 ```
@@ -412,7 +407,7 @@ myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
 
 ### 获取结果的多种方式
 
-获取结果有三种方式:  Promise、Callback 以及 Promise + Callback。
+获取结果有三种方式: Promise、Callback 以及 Promise + Callback。
 
 - Promise: 等所有请求结束后，获取所有请求的结果
 - Callback: 每次请求结束后，获取当前请求的结果
@@ -422,12 +417,12 @@ myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 // 方式一: Promise
 myXCrawl
@@ -500,7 +495,7 @@ const myXCrawl = xCrawl({
 })
 ```
 
-### crawlPage 
+### crawlPage
 
 crawlPage 是爬虫实例的方法，通常用于爬取页面。
 
@@ -527,7 +522,7 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 myXCrawl.crawlPage('https://xxx.com/xxx').then((res) => {
   const { jsdom, browser, page } = res
   console.log(jsdom.window.document.querySelector('title')?.textContent)
-  
+
   // 关闭浏览器
   browser.close()
 })
@@ -567,7 +562,7 @@ const requestConfig = [
 ]
 
 // crawlData API
-myXCrawl.crawlData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then((res) => {
   console.log(res)
 })
 ```
@@ -600,7 +595,7 @@ const myXCrawl = xCrawl({
   intervalTime: { max: 2000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 // crawlFile API
 myXCrawl
@@ -660,12 +655,32 @@ interface AnyObject extends Object {
 ### Method
 
 ```ts
-type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+type Method =
+  | 'get'
+  | 'GET'
+  | 'delete'
+  | 'DELETE'
+  | 'head'
+  | 'HEAD'
+  | 'options'
+  | 'OPTONS'
+  | 'post'
+  | 'POST'
+  | 'put'
+  | 'PUT'
+  | 'patch'
+  | 'PATCH'
+  | 'purge'
+  | 'PURGE'
+  | 'link'
+  | 'LINK'
+  | 'unlink'
+  | 'UNLINK'
 ```
 
 ### RequestConfigObjectV1
 
-```ts 
+```ts
 interface RequestConfigObjectV1 {
   url: string
   headers?: AnyObject
@@ -676,7 +691,7 @@ interface RequestConfigObjectV1 {
 
 ### RequestConfigObjectV2
 
-```ts 
+```ts
 interface RequestConfigObjectV2 {
   url: string
   method?: Method
@@ -697,10 +712,12 @@ type RequestConfig = string | RequestConfigObjectV2
 ### IntervalTime
 
 ```ts
-type IntervalTime = number | {
-  max: number
-  min?: number
-}
+type IntervalTime =
+  | number
+  | {
+      max: number
+      min?: number
+    }
 ```
 
 ### XCrawlBaseConfig
@@ -733,8 +750,7 @@ interface CrawlBaseConfigV1 {
 ### CrawlDataConfig
 
 ```ts
-interface CrawlDataConfig extends CrawlBaseConfigV1 {
-}
+interface CrawlDataConfig extends CrawlBaseConfigV1 {}
 ```
 
 ### CrawlFileConfig

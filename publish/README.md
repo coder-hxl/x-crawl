@@ -26,53 +26,53 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
 - [Install](#Install)
 - [Example](#Example)
 - [Core concepts](#Core-concepts)
-    * [Create application](#Create-application)
-      + [An example of a crawler application](#An-example-of-a-crawler-application)
-      + [Choose crawling mode](#Choose-crawling-mode)
-      + [Multiple crawler application instances](#Multiple-crawler-application-instances)
-    * [Crawl page](#Crawl-page)
-      + [jsdom instance](#jsdom-instance)
-      + [browser instance](#browser-instance)
-      + [page instance](#page-instance)
-    * [Crawl interface](#Crawl-interface)
-    * [Crawl files](#Crawl-files)
-    * [Start polling](#Start-polling)
-    * [Crawl interval](#Crawl-interval)
-    * [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
-    * [Multiple ways to get results](#Multiple-ways-to-get-results)
+  - [Create application](#Create-application)
+    - [An example of a crawler application](#An-example-of-a-crawler-application)
+    - [Choose crawling mode](#Choose-crawling-mode)
+    - [Multiple crawler application instances](#Multiple-crawler-application-instances)
+  - [Crawl page](#Crawl-page)
+    - [jsdom instance](#jsdom-instance)
+    - [browser instance](#browser-instance)
+    - [page instance](#page-instance)
+  - [Crawl interface](#Crawl-interface)
+  - [Crawl files](#Crawl-files)
+  - [Start polling](#Start-polling)
+  - [Crawl interval](#Crawl-interval)
+  - [Multiple ways of writing requestConfig options](#Multiple-ways-of-writing-requestConfig-options)
+  - [Multiple ways to get results](#Multiple-ways-to-get-results)
 - [API](#API)
-    * [xCrawl](#xCrawl)
-       + [Type](#Type)
-       + [Example](#Example-1)
-    * [crawlPage](#crawlPage)
-       + [Type](#Type-1)
-       + [Example](#Example-2)
-    * [crawlData](#crawlData)
-       + [Type](#Type-2)
-       + [Example](#Example-3)
-    * [crawlFile](#crawlFile)
-       + [Type](#Type-3)
-       + [Example](#Example-4)
-    * [crawlPolling](#crawlPolling)
-       + [Type](#Type-4)
-       + [Example](#Example-5)
+  - [xCrawl](#xCrawl)
+    - [Type](#Type)
+    - [Example](#Example-1)
+  - [crawlPage](#crawlPage)
+    - [Type](#Type-1)
+    - [Example](#Example-2)
+  - [crawlData](#crawlData)
+    - [Type](#Type-2)
+    - [Example](#Example-3)
+  - [crawlFile](#crawlFile)
+    - [Type](#Type-3)
+    - [Example](#Example-4)
+  - [crawlPolling](#crawlPolling)
+    - [Type](#Type-4)
+    - [Example](#Example-5)
 - [Types](#Types)
-    * [AnyObject](#AnyObject)
-    * [Method](#Method)
-    * [RequestConfigObjectV1](#RequestConfigObjectV1)
-    * [RequestConfigObjectV2](#RequestConfigObjectV2)
-    * [RequestConfig](#RequestConfig)
-    * [IntervalTime](#IntervalTime)
-    * [XCrawlBaseConfig](#XCrawlBaseConfig)
-    * [CrawlPageConfig](#CrawlPageConfig)
-    * [CrawlBaseConfigV1](#CrawlBaseConfigV1)
-    * [CrawlDataConfig](#CrawlDataConfig) 
-    * [CrawlFileConfig](#CrawlFileConfig)
-    * [StartPollingConfig](#StartPollingConfig)
-    * [CrawlResCommonV1](#CrawlResCommonV1)
-    * [CrawlResCommonArrV1](#CrawlResCommonArrV1)
-    * [CrawlPage](#CrawlPage-1) 
-    * [FileInfo](#FileInfo)
+  - [AnyObject](#AnyObject)
+  - [Method](#Method)
+  - [RequestConfigObjectV1](#RequestConfigObjectV1)
+  - [RequestConfigObjectV2](#RequestConfigObjectV2)
+  - [RequestConfig](#RequestConfig)
+  - [IntervalTime](#IntervalTime)
+  - [XCrawlBaseConfig](#XCrawlBaseConfig)
+  - [CrawlPageConfig](#CrawlPageConfig)
+  - [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+  - [CrawlDataConfig](#CrawlDataConfig)
+  - [CrawlFileConfig](#CrawlFileConfig)
+  - [StartPollingConfig](#StartPollingConfig)
+  - [CrawlResCommonV1](#CrawlResCommonV1)
+  - [CrawlResCommonArrV1](#CrawlResCommonArrV1)
+  - [CrawlPage](#CrawlPage-1)
+  - [FileInfo](#FileInfo)
 - [More](#More)
 
 ## Install
@@ -107,9 +107,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   const { jsdom } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
 
   // Get the cover image elements for Plus listings
-  const imgEls = jsdom.window.document
-    .querySelector('.a1stauiv')
-    ?.querySelectorAll('picture img')
+  const imgEls = jsdom.window.document.querySelector('.a1stauiv')?.querySelectorAll('picture img')
 
   // set request configuration
   const requestConfig: string[] = []
@@ -190,13 +188,13 @@ Crawl a page via [crawlPage()](#crawlPage) .
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000
 })
 
-myXCrawl.crawlPage('https://xxx.com').then(res => {
+myXCrawl.crawlPage('https://xxx.com').then((res) => {
   const { jsdom, browser, page } = res
-  
+
   // Close the browser
   browser.close()
 })
@@ -235,10 +233,10 @@ myXCrawl.crawlPage('https://www.xxx.com').then(async (res) => {
 
   // Get the latest page content
   const content = await page.content()
-  
+
   // Use the jsdom library to parse it yourself
   const jsdom = new JSDOM(content)
-  
+
   console.log(jsdom.window.document.querySelector('title').textContent)
 })
 ```
@@ -250,16 +248,14 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ timeout: 10000 })
 
-myXCrawl
-   .crawlPage('https://xxx.com')
-   .then(async (res) => {
-     const { page } = res
+myXCrawl.crawlPage('https://xxx.com').then(async (res) => {
+  const { page } = res
 
-     // Get a screenshot of the rendered page
-     await page.screenshot({ path: './upload/page.png' })
+  // Get a screenshot of the rendered page
+  await page.screenshot({ path: './upload/page.png' })
 
-     console.log('Screen capture is complete')
-   })
+  console.log('Screen capture is complete')
+})
 ```
 
 ### Crawl interface
@@ -269,7 +265,7 @@ Crawl interface data through [crawlData()](#crawlData) .
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
@@ -280,8 +276,8 @@ const requestConfig = [
   { url: 'https://xxx.com/xxxx' }
 ]
 
-myXCrawl.crawlData({ requestConfig }).then(res => {
-   // deal with
+myXCrawl.crawlData({ requestConfig }).then((res) => {
+  // deal with
 })
 ```
 
@@ -292,12 +288,12 @@ Crawl file data via [crawlFile()](#crawlFile) .
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 myXCrawl
   .crawlFile({
@@ -318,12 +314,12 @@ Start a polling crawl with [startPolling()](#startPolling) .
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
 
-myXCrawl. startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
+myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
   const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
@@ -351,7 +347,7 @@ const myXCrawl = xCrawl({
 
 // Set individually (high priority)
 myXCrawl.crawlFile({
-  requestConfig: [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ],
+  requestConfig: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
   intervalTime: { max: 2000, min: 1000 }
 })
 ```
@@ -376,7 +372,7 @@ The writing method of requestConfig is very flexible, there are 5 types in total
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({ 
+const myXCrawl = xCrawl({
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
@@ -385,7 +381,7 @@ const myXCrawl = xCrawl({
 const requestConfig1 = 'https://xxx.com/xxxx'
 
 // requestConfig writing method 2:
-const requestConfig2 = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig2 = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 // requestConfig writing method 3:
 const requestConfig3 = {
@@ -408,7 +404,7 @@ const requestConfig5 = [
   'https://xxx.com/xxxx'
 ]
 
-myXCrawl.crawlData({ requestConfig: requestConfig5 }).then(res => {
+myXCrawl.crawlData({ requestConfig: requestConfig5 }).then((res) => {
   console.log(res)
 })
 ```
@@ -432,7 +428,7 @@ const myXCrawl = xCrawl({
   intervalTime: { max: 3000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 // Method 1: Promise
 myXCrawl
@@ -534,7 +530,7 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {
   const { jsdom, browser, page } = res
   console.log(jsdom.window.document.querySelector('title')?.textContent)
-    
+
   // Close the browser
   browser.close()
 })
@@ -574,7 +570,7 @@ const requestConfig = [
 ]
 
 // crawlData API
-myXCrawl.crawlData({ requestConfig }).then(res => {
+myXCrawl.crawlData({ requestConfig }).then((res) => {
   console.log(res)
 })
 ```
@@ -607,7 +603,7 @@ const myXCrawl = xCrawl({
   intervalTime: { max: 2000, min: 1000 }
 })
 
-const requestConfig = [ 'https://xxx.com/xxxx', 'https://xxx.com/xxxx' ]
+const requestConfig = ['https://xxx.com/xxxx', 'https://xxx.com/xxxx']
 
 myXCrawl
   .crawlFile({
@@ -666,12 +662,32 @@ interface AnyObject extends Object {
 ### Method
 
 ```ts
-type Method = 'get' | 'GET' | 'delete' | 'DELETE' | 'head' | 'HEAD' | 'options' | 'OPTONS' | 'post' | 'POST' | 'put' | 'PUT' | 'patch' | 'PATCH' | 'purge' | 'PURGE' | 'link' | 'LINK' | 'unlink' | 'UNLINK'
+type Method =
+  | 'get'
+  | 'GET'
+  | 'delete'
+  | 'DELETE'
+  | 'head'
+  | 'HEAD'
+  | 'options'
+  | 'OPTONS'
+  | 'post'
+  | 'POST'
+  | 'put'
+  | 'PUT'
+  | 'patch'
+  | 'PATCH'
+  | 'purge'
+  | 'PURGE'
+  | 'link'
+  | 'LINK'
+  | 'unlink'
+  | 'UNLINK'
 ```
 
 ### RequestConfigObjectV1
 
-```ts 
+```ts
 interface RequestConfigObjectV1 {
   url: string
   headers?: AnyObject
@@ -682,7 +698,7 @@ interface RequestConfigObjectV1 {
 
 ### RequestConfigObjectV2
 
-```ts 
+```ts
 interface RequestConfigObjectV2 {
   url: string
   method?: Method
@@ -703,10 +719,12 @@ type RequestConfig = string | RequestConfigObjectV2
 ### IntervalTime
 
 ```ts
-type IntervalTime = number | {
-  max: number
-  min?: number
-}
+type IntervalTime =
+  | number
+  | {
+      max: number
+      min?: number
+    }
 ```
 
 ### XCrawlBaseConfig
@@ -739,8 +757,7 @@ interface CrawlBaseConfigV1 {
 ### CrawlDataConfig
 
 ```ts
-interface CrawlDataConfig extends CrawlBaseConfigV1 {
-}
+interface CrawlDataConfig extends CrawlBaseConfigV1 {}
 ```
 
 ### CrawlFileConfig
