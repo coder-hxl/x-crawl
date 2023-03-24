@@ -104,7 +104,7 @@ const myXCrawl = xCrawl({
 */
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // Call crawlPage API to crawl Page
-  const { jsdom } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
+  const { jsdom, page } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
 
   // Get the cover image elements for Plus listings
   const imgEls = jsdom.window.document.querySelector('.a1stauiv')?.querySelectorAll('picture img')
@@ -115,6 +115,9 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 
   // Call the crawlFile API to crawl pictures
   myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+
+  // Close page
+  page.close()
 })
 ```
 
@@ -217,6 +220,8 @@ The browser instance is a headless browser without a UI shell. What he does is t
 #### page instance
 
 It is an instance object of [Page](https://pptr.dev/api/puppeteer.page). The instance can also perform interactive operations such as events. For specific usage, please refer to [page](https://pptr.dev /api/puppeteer. page).
+
+The browser instance will retain a reference to the page instance. If it is no longer used in the future, the page instance needs to be closed by itself, otherwise it will cause a memory leak.
 
 **Parse the page by yourself**
 
@@ -323,8 +328,11 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
   const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
+  page.close()
 })
 ```
+
+**Using crawlPage in polling Note:** Calling page.close() is to prevent the browser instance from retaining references to the page instance. If it is no longer used in the future, you need to close the page instance yourself, otherwise it will cause memory leaks.
 
 Callback function parameters:
 

@@ -99,9 +99,9 @@ const myXCrawl = xCrawl({
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
-myXCrawl.startPolling({ d: 1 }, async () => {
+myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // 调用 crawlPage API 爬取 Page
-  const { jsdom } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
+  const { jsdom, page } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
 
   // 获取轮播图片元素
   const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
@@ -112,6 +112,9 @@ myXCrawl.startPolling({ d: 1 }, async () => {
 
   // 调用 crawlFile API 爬取图片
   myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })
+
+  // 关闭页面
+  page.close()
 })
 ```
 
@@ -212,6 +215,8 @@ browser 实例他是个无头浏览器，并无 UI 外壳，他做的是将浏�
 #### page 实例
 
 它是 [Page](https://pptr.dev/api/puppeteer.page) 的实例对象，实例还可以做事件之类的交互操作，具体使用可以参考 [page](https://pptr.dev/api/puppeteer.page) 。
+
+browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
 **自行解析页面**
 
@@ -317,8 +322,11 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
   const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
+  page.close()
 })
 ```
+
+**在轮询中使用 crawlPage 注意：** 调用 page.close() 是为了防止 browser 实例内部还保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
 回调函数参数：
 
