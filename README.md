@@ -64,11 +64,13 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
   - [RequestConfig](#RequestConfig)
   - [IntervalTime](#IntervalTime)
   - [XCrawlBaseConfig](#XCrawlBaseConfig)
-  - [CrawlPageConfig](#CrawlPageConfig)
   - [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+  - [CrawlBaseConfigV2](#CrawlBaseConfigV2)
+  - [CrawlPageConfig](#CrawlPageConfig)
   - [CrawlDataConfig](#CrawlDataConfig)
   - [CrawlFileConfig](#CrawlFileConfig)
   - [StartPollingConfig](#StartPollingConfig)
+  - [XCrawlInstance](#XCrawlInstance)
   - [CrawlResCommonV1](#CrawlResCommonV1)
   - [CrawlResCommonArrV1](#CrawlResCommonArrV1)
   - [CrawlPage](#CrawlPage-1)
@@ -747,34 +749,42 @@ interface XCrawlBaseConfig {
 }
 ```
 
-### CrawlPageConfig
-
-```ts
-type CrawlPageConfig = string | RequestConfigObjectV1
-```
-
 ### CrawlBaseConfigV1
 
 ```ts
-interface CrawlBaseConfigV1 {
+interface CrawlBaseConfigV1 extends RequestConfigObjectV1 {
+  cookies?: string | Protocol.Network.CookieParam | Protocol.Network.CookieParam[] // The Protocol is from the puppeteer library
+}
+```
+
+### CrawlBaseConfigV2
+
+```ts
+interface CrawlBaseConfigV2 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
+### CrawlPageConfig
+
+```ts
+type CrawlPageConfig = string | CrawlBaseConfigV1
+```
+
 ### CrawlDataConfig
 
 ```ts
-interface CrawlDataConfig extends CrawlBaseConfigV1 {}
+interface CrawlDataConfig extends CrawlBaseConfigV2 {}
 ```
 
 ### CrawlFileConfig
 
 ```ts
-interface CrawlFileConfig extends CrawlBaseConfigV1 {
+interface CrawlFileConfig extends CrawlBaseConfigV2 {
   fileConfig: {
     storeDir: string // Store folder
-    extension?: string // Filename extension
+    extension?: string // filename extension
   }
 }
 ```
@@ -821,7 +831,7 @@ interface XCrawlInstance {
 interface CrawlResCommonV1<T> {
   id: number
   statusCode: number | undefined
-  headers: IncomingHttpHeaders // nodejs: http type
+  headers: IncomingHttpHeaders // The http is from the nodejs library
   data: T
 }
 ```
@@ -836,10 +846,10 @@ type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 
 ```ts
 interface CrawlPage {
-  httpResponse: HTTPResponse | null // The type of HTTPResponse in the puppeteer library
-  browser: Browser // The Browser type of the puppeteer library
-  page: Page // The Page type of the puppeteer library
-  jsdom: JSDOM // jsdom type of the JSDOM library
+  httpResponse: HTTPResponse | null // The HTTPResponse is from the puppeteer library
+  browser: Browser // The Browser is from the puppeteer library
+  page: Page // The Page is from the puppeteer library
+  jsdom: JSDOM // The JSDOM is from the jsdom library
 }
 ```
 

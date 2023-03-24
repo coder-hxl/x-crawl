@@ -7,7 +7,10 @@ const testXCrawl = xCrawl({
 })
 
 testXCrawl
-  .crawlPage('https://www.npmjs.com/package/x-crawl?activeTab=versions')
+  .crawlPage({
+    url: 'https://github.com/coder-hxl/x-crawl',
+    cookies: `xxx`
+  })
   .then(async (res) => {
     const { page } = res
 
@@ -16,8 +19,4 @@ testXCrawl
     })
 
     console.log('完成')
-
-    await testXCrawl.crawlPage(
-      'https://www.npmjs.com/package/x-crawl?activeTab=versions'
-    )
   })

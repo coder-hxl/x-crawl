@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { JSDOM } from 'jsdom'
-import puppeteer, { Browser } from 'puppeteer'
+import puppeteer, { Browser, Protocol } from 'puppeteer'
 
 import { batchRequest, syncBatchRequest } from './request'
 import { quickSort } from './sort'
@@ -18,6 +18,7 @@ import {
 } from './utils'
 
 import {
+  Cookies,
   CrawlDataConfig,
   CrawlFileConfig,
   CrawlPage,
@@ -93,6 +94,36 @@ async function useBatchRequestByMode(
   }
 }
 
+function parseCrawlPageCookies(
+  url: string,
+  cookies: Cookies
+): Protocol.Network.CookieParam[] {
+  const cookiesArr: Protocol.Network.CookieParam[] = []
+
+  if (typeof cookies === 'string') {
+    cookies.split('; ').forEach((item) => {
+      const cookie = item.split('=')
+      cookiesArr.push({ name: cookie[0], value: cookie[1], url })
+    })
+  } else if (Array.isArray(cookies)) {
+    cookies.forEach((cookie) => {
+      if (!cookie.url) {
+        cookie.url = url
+      }
+
+      cookiesArr.push(cookie)
+    })
+  } else if (typeof cookies === 'object' && cookies) {
+    if (!cookies.url) {
+      cookies.url = url
+    }
+
+    cookiesArr.push(cookies)
+  }
+
+  return cookiesArr
+}
+
 export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserState: Promise<void> | null = null
@@ -141,6 +172,12 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 
     if (requestConfig.headers) {
       await page.setExtraHTTPHeaders(Headers as any as Record<string, string>)
+    }
+
+    if (requestConfig.cookies) {
+      await page.setCookie(
+        ...parseCrawlPageCookies(requestConfig.url, requestConfig.cookies)
+      )
     }
 
     let httpResponse = null

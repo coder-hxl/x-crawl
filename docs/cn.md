@@ -64,11 +64,13 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
   - [RequestConfig](#RequestConfig)
   - [IntervalTime](#IntervalTime)
   - [XCrawlBaseConfig](#XCrawlBaseConfig)
-  - [CrawlPageConfig](#CrawlPageConfig)
   - [CrawlBaseConfigV1](#CrawlBaseConfigV1)
+  - [CrawlBaseConfigV2](#CrawlBaseConfigV2)
+  - [CrawlPageConfig](#CrawlPageConfig)
   - [CrawlDataConfig](#CrawlDataConfig)
   - [CrawlFileConfig](#CrawlFileConfig)
   - [StartPollingConfig](#StartPollingConfig)
+  - [XCrawlInstance](#XCrawlInstance)
   - [CrawlResCommonV1](#CrawlResCommonV1)
   - [CrawlResCommonArrV1](#CrawlResCommonArrV1)
   - [CrawlPage](#CrawlPage-1)
@@ -740,31 +742,39 @@ interface XCrawlBaseConfig {
 }
 ```
 
-### CrawlPageConfig
-
-```ts
-type CrawlPageConfig = string | RequestConfigObjectV1
-```
-
 ### CrawlBaseConfigV1
 
 ```ts
-interface CrawlBaseConfigV1 {
+interface CrawlBaseConfigV1 extends RequestConfigObjectV1 {
+  cookies?: string | Protocol.Network.CookieParam | Protocol.Network.CookieParam[] // Protocol 来自 puppeteer 库
+}
+```
+
+### CrawlBaseConfigV2
+
+```ts
+interface CrawlBaseConfigV2 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 ```
 
+### CrawlPageConfig
+
+```ts
+type CrawlPageConfig = string | CrawlBaseConfigV1
+```
+
 ### CrawlDataConfig
 
 ```ts
-interface CrawlDataConfig extends CrawlBaseConfigV1 {}
+interface CrawlDataConfig extends CrawlBaseConfigV2 {}
 ```
 
 ### CrawlFileConfig
 
 ```ts
-interface CrawlFileConfig extends CrawlBaseConfigV1 {
+interface CrawlFileConfig extends CrawlBaseConfigV2 {
   fileConfig: {
     storeDir: string // 存放文件夹
     extension?: string // 文件扩展名

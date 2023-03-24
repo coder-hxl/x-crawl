@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http'
-import { Browser, HTTPResponse, Page } from 'puppeteer'
+import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 import { JSDOM } from 'jsdom'
 
 import { RequestConfigObjectV1, RequestConfigObjectV2 } from './request'
@@ -23,7 +23,7 @@ export type MergeConfigRawConfig = {
 }
 
 export type MergeConfigV1 = {
-  requestConfig: RequestConfigObjectV1[]
+  requestConfig: CrawlBaseConfigV1[]
   intervalTime?: IntervalTime
 }
 
@@ -36,16 +36,25 @@ export type MergeConfigV2<T extends AnyObject> = MapTypeObject<
 }
 
 /* API Config */
-export type CrawlPageConfig = string | RequestConfigObjectV1
+export type Cookies =
+  | string
+  | Protocol.Network.CookieParam
+  | Protocol.Network.CookieParam[]
 
-export interface CrawlBaseConfigV1 {
+export interface CrawlBaseConfigV1 extends RequestConfigObjectV1 {
+  cookies?: Cookies
+}
+
+export interface CrawlBaseConfigV2 {
   requestConfig: RequestConfig | RequestConfig[]
   intervalTime?: IntervalTime
 }
 
-export interface CrawlDataConfig extends CrawlBaseConfigV1 {}
+export type CrawlPageConfig = string | CrawlBaseConfigV1
 
-export interface CrawlFileConfig extends CrawlBaseConfigV1 {
+export interface CrawlDataConfig extends CrawlBaseConfigV2 {}
+
+export interface CrawlFileConfig extends CrawlBaseConfigV2 {
   fileConfig: {
     storeDir: string
     extension?: string
