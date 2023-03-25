@@ -45,7 +45,3 @@ export interface Request {
   headers: IncomingHttpHeaders
   data: Buffer
 }
-
-export interface RequestResItem extends Request {
-  id: number
-}

@@ -1,6 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http'
 import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
-import { JSDOM } from 'jsdom'
 
 import { RequestConfigObjectV1, RequestConfigObjectV2 } from './request'
 import { AnyObject, MapTypeObject } from './common'
@@ -50,7 +49,11 @@ export interface CrawlBaseConfigV2 {
   intervalTime?: IntervalTime
 }
 
-export type CrawlPageConfig = string | CrawlBaseConfigV1
+export type CrawlPageConfig =
+  | string
+  | string[]
+  | CrawlBaseConfigV1
+  | CrawlBaseConfigV1[]
 
 export interface CrawlDataConfig extends CrawlBaseConfigV2 {}
 
@@ -78,10 +81,10 @@ export interface CrawlResCommonV1<T> {
 export type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
 
 export interface CrawlPage {
+  id: number
   httpResponse: HTTPResponse | null
   browser: Browser
   page: Page
-  jsdom: JSDOM
 }
 
 export interface FileInfo {

@@ -103,14 +103,12 @@ const myXCrawl = xCrawl({
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // 调用 crawlPage API 爬取 Page
-  const { jsdom, page } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
+  const { page } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
 
-  // 获取轮播图片元素
-  const imgEls = jsdom.window.document.querySelectorAll('.chief-recom-item img')
-
-  // 设置请求配置
-  const requestConfig = []
-  imgEls.forEach((item) => requestConfig.push(`https:${item.src}`))
+  // 获取轮播图片元素的 URL ，设置请求配置
+  const requestConfig = await page.$$eval('.chief-recom-item img', (imgEls) =>
+    imgEls.map((item) => item.src)
+  )
 
   // 调用 crawlFile API 爬取图片
   myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })

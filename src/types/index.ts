@@ -7,7 +7,8 @@ import {
   CrawlPageConfig,
   FileInfo,
   StartPollingConfig,
-  IntervalTime
+  IntervalTime,
+  CrawlBaseConfigV1
 } from './api'
 
 export interface XCrawlBaseConfig {
@@ -23,10 +24,12 @@ export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
 }
 
 export interface XCrawlInstance {
-  crawlPage: (
-    config: CrawlPageConfig,
+  crawlPage: <T extends CrawlPageConfig = CrawlPageConfig>(
+    config: T,
     callback?: (res: CrawlPage) => void
-  ) => Promise<CrawlPage>
+  ) => Promise<
+    T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage
+  >
 
   crawlData: <T = any>(
     config: CrawlDataConfig,

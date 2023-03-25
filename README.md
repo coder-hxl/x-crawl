@@ -106,14 +106,12 @@ const myXCrawl = xCrawl({
 */
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // Call crawlPage API to crawl Page
-  const { jsdom, page } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
-
-  // Get the cover image elements for Plus listings
-  const imgEls = jsdom.window.document.querySelector('.a1stauiv')?.querySelectorAll('picture img')
+  const { page } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
 
   // set request configuration
-  const requestConfig: string[] = []
-  imgEls?.forEach((item) => requestConfig.push(item.src))
+  const requestConfig = await page.$$eval('picture img', (img) => {
+    return img.map((item) => item.src)
+  })
 
   // Call the crawlFile API to crawl pictures
   myXCrawl.crawlFile({ requestConfig, fileConfig: { storeDir: './upload' } })

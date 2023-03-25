@@ -1,10 +1,10 @@
 import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { JSDOM } from 'jsdom'
 import puppeteer, { Browser, Protocol } from 'puppeteer'
 
-import { batchRequest, syncBatchRequest } from './request'
+import { useBatchCrawlHandleByMode } from './batchCrawlHandle'
+import { request } from './request'
 import { quickSort } from './sort'
 import {
   isArray,
@@ -19,6 +19,7 @@ import {
 
 import {
   Cookies,
+  CrawlBaseConfigV1,
   CrawlDataConfig,
   CrawlFileConfig,
   CrawlPage,
@@ -26,14 +27,12 @@ import {
   CrawlResCommonArrV1,
   CrawlResCommonV1,
   FileInfo,
-  IntervalTime,
   MergeConfigRawConfig,
   MergeConfigV1,
   MergeConfigV2,
   StartPollingConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
-import { RequestResItem, RequestConfigObjectV2 } from './types/request'
 
 function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   baseConfig: LoaderXCrawlBaseConfig,
@@ -45,16 +44,8 @@ function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   const rawRequestConfigArr = isArray(newConfig.requestConfig)
     ? newConfig.requestConfig
     : [newConfig.requestConfig]
-
-  // item 转成对象
-  const requestConfigArr = (newConfig.requestConfig = rawRequestConfigArr.map(
-    (item) => {
-      if (isString(item)) return { url: item }
-      return item
-    }
-  ))
-
-  for (const requestItem of requestConfigArr) {
+  newConfig.requestConfig = rawRequestConfigArr.map((item) => {
+    const requestItem = isString(item) ? { url: item } : item
     const { url, timeout, proxy } = requestItem
 
     // 1.1.baseUrl
@@ -71,7 +62,9 @@ function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
     if (isUndefined(proxy)) {
       requestItem.proxy = baseConfig.proxy
     }
-  }
+
+    return requestItem
+  })
 
   // 2.处理 intervalTime
   if (isUndefined(newConfig.intervalTime)) {
@@ -79,19 +72,6 @@ function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   }
 
   return newConfig as any as R
-}
-
-async function useBatchRequestByMode(
-  mode: 'async' | 'sync',
-  requestConfigs: RequestConfigObjectV2[],
-  intervalTime: IntervalTime | undefined,
-  callback: (requestRestem: RequestResItem) => void
-) {
-  if (mode === 'async') {
-    await batchRequest(requestConfigs, intervalTime, callback)
-  } else {
-    await syncBatchRequest(requestConfigs, intervalTime, callback)
-  }
 }
 
 function parseCrawlPageCookies(
@@ -129,10 +109,12 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let createBrowserState: Promise<void> | null = null
   let haveCreateBrowser = false
 
-  async function crawlPage(
-    config: CrawlPageConfig,
+  async function crawlPage<T extends CrawlPageConfig = CrawlPageConfig>(
+    config: T,
     callback?: (res: CrawlPage) => void
-  ): Promise<CrawlPage> {
+  ): Promise<
+    T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage
+  > {
     // 创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
@@ -147,22 +129,49 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       createBrowserState = null
     }
 
-    const page = await browser!.newPage()
-    await page.setViewport({ width: 1280, height: 1024 })
-
     // 合并 baseConfig 配置
-    const { requestConfig: requestConfigs } = mergeConfig<MergeConfigV1>(
+    const { requestConfig, intervalTime } = mergeConfig<MergeConfigV1>(
       baseConfig,
       {
         requestConfig: config
       }
     )
-    const requestConfig = requestConfigs[0]
+
+    const container: CrawlPage[] = []
+    await useBatchCrawlHandleByMode(
+      'page',
+      baseConfig.mode,
+      requestConfig,
+      intervalTime,
+      crawlPageHandle,
+      (handleResItem) => {
+        if (callback) {
+          callback(handleResItem)
+        }
+
+        container.push(handleResItem)
+      }
+    )
+
+    const res = isArray(config)
+      ? quickSort(
+          container.map((item) => ({ ...item, valueOf: () => item.id }))
+        )
+      : container[0]
+
+    return res as T extends string[] | CrawlBaseConfigV1[]
+      ? CrawlPage[]
+      : CrawlPage
+  }
+
+  async function crawlPageHandle(handleConfig: CrawlBaseConfigV1) {
+    const page = await browser!.newPage()
+    await page.setViewport({ width: 1280, height: 1024 })
 
     // 处理代理
-    if (requestConfig.proxy) {
+    if (handleConfig.proxy) {
       await browser!.createIncognitoBrowserContext({
-        proxyServer: requestConfig.proxy
+        proxyServer: handleConfig.proxy
       })
     } else {
       await browser!.createIncognitoBrowserContext({
@@ -170,39 +179,31 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       })
     }
 
-    if (requestConfig.headers) {
-      await page.setExtraHTTPHeaders(Headers as any as Record<string, string>)
+    if (handleConfig.headers) {
+      await page.setExtraHTTPHeaders(
+        handleConfig.headers as any as Record<string, string>
+      )
     }
 
-    if (requestConfig.cookies) {
+    if (handleConfig.cookies) {
       await page.setCookie(
-        ...parseCrawlPageCookies(requestConfig.url, requestConfig.cookies)
+        ...parseCrawlPageCookies(handleConfig.url, handleConfig.cookies)
       )
     }
 
     let httpResponse = null
     try {
-      httpResponse = await page!.goto(requestConfig.url, {
-        timeout: requestConfig.timeout
+      httpResponse = await page!.goto(handleConfig.url, {
+        timeout: handleConfig.timeout
       })
     } catch (error: any) {
       console.log(logError(`Error: ${error.message}`))
     }
 
-    let content = ''
-    try {
-      content = await page!.content()
-    } catch {}
-
-    const res: CrawlPage = {
+    const res = {
       httpResponse,
       browser: browser!,
-      page,
-      jsdom: new JSDOM(content)
-    }
-
-    if (callback) {
-      callback(res)
+      page
     }
 
     return res
@@ -221,28 +222,28 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
     >(baseConfig, config)
 
     const container: CrawlResCommonArrV1<T> = []
-    function handleRestem(requestRestem: RequestResItem) {
-      const contentType = requestRestem.headers['content-type'] ?? ''
-      const rawData = requestRestem.data
-
-      const data = contentType.includes('text')
-        ? rawData.toString()
-        : JSON.parse(rawData.toString())
-
-      const itemRes = { ...requestRestem, data }
-
-      if (callback) {
-        callback(itemRes)
-      }
-
-      container.push(itemRes)
-    }
-
-    await useBatchRequestByMode(
+    await useBatchCrawlHandleByMode(
+      'data',
       baseConfig.mode,
       requestConfig,
       intervalTime,
-      handleRestem
+      request,
+      (handleResItem) => {
+        const contentType = handleResItem.headers['content-type'] ?? ''
+        const rawData = handleResItem.data
+
+        const data = contentType.includes('text')
+          ? rawData.toString()
+          : JSON.parse(rawData.toString())
+
+        const itemRes = { ...handleResItem, data }
+
+        if (callback) {
+          callback(itemRes)
+        }
+
+        container.push(itemRes)
+      }
     )
 
     const res = quickSort(
@@ -262,58 +263,56 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     const { requestConfig, intervalTime, fileConfig } = mergeConfig<
       MergeConfigV2<CrawlFileConfig>
     >(baseConfig, config)
-
-    const container: CrawlResCommonArrV1<FileInfo> = []
-    const saveFileArr: Promise<void>[] = []
-    const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
-
     if (!fs.existsSync(fileConfig.storeDir)) {
       fs.mkdirSync(fileConfig.storeDir)
     }
 
-    function handleRestem(requestRestem: RequestResItem) {
-      const { id, headers, data } = requestRestem
-
-      const mimeType = headers['content-type'] ?? ''
-      const fileExtension = fileConfig.extension ?? mimeType.split('/').pop()
-      const fileName = new Date().getTime().toString()
-      const filePath = path.resolve(
-        fileConfig.storeDir,
-        `${fileName}.${fileExtension}`
-      )
-
-      const saveFiletem = writeFile(filePath, data)
-        .catch((err) => {
-          const message = `File save error at id ${id}: ${err.message}`
-          const valueOf = () => id
-
-          saveFileErrorArr.push({ message, valueOf })
-
-          return true
-        })
-        .then((isError) => {
-          if (isError) return
-
-          const res = {
-            ...requestRestem,
-            data: { fileName, mimeType, size: data.length, filePath }
-          }
-
-          if (callback) {
-            callback(res)
-          }
-
-          container.push(res)
-        })
-
-      saveFileArr.push(saveFiletem)
-    }
-
-    await useBatchRequestByMode(
+    const container: CrawlResCommonArrV1<FileInfo> = []
+    const saveFileArr: Promise<void>[] = []
+    const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
+    await useBatchCrawlHandleByMode(
+      'file',
       baseConfig.mode,
       requestConfig,
       intervalTime,
-      handleRestem
+      request,
+      (handleResItem) => {
+        const { id, headers, data } = handleResItem
+
+        const mimeType = headers['content-type'] ?? ''
+        const fileExtension = fileConfig.extension ?? mimeType.split('/').pop()
+        const fileName = new Date().getTime().toString()
+        const filePath = path.resolve(
+          fileConfig.storeDir,
+          `${fileName}.${fileExtension}`
+        )
+
+        const saveFiletem = writeFile(filePath, data)
+          .catch((err) => {
+            const message = `File save error at id ${id}: ${err.message}`
+            const valueOf = () => id
+
+            saveFileErrorArr.push({ message, valueOf })
+
+            return true
+          })
+          .then((isError) => {
+            if (isError) return
+
+            const res = {
+              ...handleResItem,
+              data: { fileName, mimeType, size: data.length, filePath }
+            }
+
+            if (callback) {
+              callback(res)
+            }
+
+            container.push(res)
+          })
+
+        saveFileArr.push(saveFiletem)
+      }
     )
 
     // 等待保存文件任务完成
@@ -326,7 +325,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     const success = container.length
     const error = saveFileTotal - success
     log(
-      `saveFileTotal: ${logNumber(saveFileTotal)}, success: ${logSuccess(
+      `Total saved files: ${logNumber(saveFileTotal)}, success: ${logSuccess(
         success
       )}, error: ${logError(error)}`
     )
