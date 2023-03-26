@@ -106,7 +106,7 @@ function parseCrawlPageCookies(
 
 export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
-  let createBrowserState: Promise<void> | null = null
+  let createBrowserPending: Promise<void> | null = null
   let haveCreateBrowser = false
 
   async function crawlPage<T extends CrawlPageConfig = CrawlPageConfig>(
@@ -118,15 +118,16 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     // 创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
-      createBrowserState = puppeteer.launch().then((res) => {
+      createBrowserPending = puppeteer.launch().then((res) => {
         browser = res
       })
     }
 
     // 等待浏览器创建完毕
-    if (createBrowserState) {
-      await Promise.all([createBrowserState])
-      createBrowserState = null
+    if (createBrowserPending) {
+      await createBrowserPending
+      // 防止对 createBrowserPending 重复赋值
+      if (createBrowserPending) createBrowserPending = null
     }
 
     // 合并 baseConfig 配置
@@ -168,7 +169,6 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     const page = await browser!.newPage()
     await page.setViewport({ width: 1280, height: 1024 })
 
-    // 处理代理
     if (handleConfig.proxy) {
       await browser!.createIncognitoBrowserContext({
         proxyServer: handleConfig.proxy
@@ -191,22 +191,11 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       )
     }
 
-    let httpResponse = null
-    try {
-      httpResponse = await page!.goto(handleConfig.url, {
-        timeout: handleConfig.timeout
-      })
-    } catch (error: any) {
-      console.log(logError(`Error: ${error.message}`))
-    }
+    const httpResponse = await page.goto(handleConfig.url, {
+      timeout: handleConfig.timeout
+    })
 
-    const res = {
-      httpResponse,
-      browser: browser!,
-      page
-    }
-
-    return res
+    return { httpResponse, browser: browser!, page }
   }
 
   return crawlPage

@@ -2,24 +2,24 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。可以爬取页面、控制页面、批量网络请求、批量下载文件资源、轮询爬取等。支持 异步/同步 模式爬取数据。跑在 nodejs 上，用法灵活和简单，对 JS/TS 开发者友好。
+x-crawl 是一个灵活的 nodejs 爬虫库。可批量爬取页面、批量网络请求、批量下载文件资源、轮询爬取等。支持 异步/同步 模式爬取。跑在 nodejs 上，用法灵活和简单，对 JS/TS 开发者友好。
 
 > 如果感觉不错，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，您的 Star 将是我更新的动力。
 
 ## 特征
 
-- 支持 异步/同步 方式爬取数据。
-- 灵活的写法，支持多种方式写请求配置和获取爬取结果。
-- 灵活的爬取间隔时间，无间隔/固定间隔/随机间隔，由你决定 使用/避免 高并发爬取。
-- 简单的配置即可抓取页面、批量网络请求、批量下载文件资源、轮询爬取等。
-- 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染）），并采用 jsdom 库对内容解析，也支持自行解析。
-- 表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
-- 对爬取的成功和失败进行捕获记录，并进行高亮的提醒。
-- 使用 TypeScript 编写，拥有类型，提供泛型。
+- **🔥 异步/同步** - 支持 异步/同步 模式批量爬取。
+- **⚙️ 多种功能** - 可批量爬取页面、批量网络请求、批量下载文件资源、轮询爬取等。
+- **🖋️ 写法灵活** - 多种爬取配置、获取爬取结果的写法。
+- **⏱️ 间隔爬取** - 无间隔/固定间隔/随机间隔，可以 使用/避免 高并发爬取。
+- **☁️ 爬取 SPA** - 批量爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
+- **⚒️ 控制页面** - 无头浏览器可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
+- **🧾 捕获记录** - 对爬取的结果进行捕获记录，并进行高亮的提醒。
+- **🦾TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 跟 puppeteer 的关系
 
-crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来帮助我们爬取页面，并将 Brower 实例和 Page 实例暴露出来，更加灵活。
+crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来帮助我们爬取页面，并将 Brower 实例和 Page 实例暴露出来。
 
 # 目录
 
@@ -31,7 +31,6 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [选择爬取模式](#选择爬取模式)
     - [多个爬虫应用实例](#多个爬虫应用实例)
   - [爬取页面](#爬取页面)
-    - [jsdom 实例](#jsdom-实例)
     - [browser 实例](#browser-实例)
     - [page 实例](#page-实例)
   - [爬取接口](#爬取接口)
@@ -105,7 +104,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // 调用 crawlPage API 爬取 Page
   const { page } = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
 
-  // 获取轮播图片元素的 URL ，设置请求配置
+  // 设置请求配置，获取轮播图片的 URL
   const requestConfig = await page.$$eval('.chief-recom-item img', (imgEls) =>
     imgEls.map((item) => item.src)
   )
@@ -191,18 +190,12 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({ timeout: 10000 })
 
 myXCrawl.crawlPage('https://xxx.com').then((res) => {
-  const { jsdom, browser, page } = res
+  const { browser, page } = res
 
   // 关闭浏览器
   browser.close()
 })
 ```
-
-#### jsdom 实例
-
-它是 [JSDOM](https://github.com/jsdom/jsdom) 的实例对象，具体使用可以参考 [jsdom](https://github.com/jsdom/jsdom) 。
-
-**注意：** jsdom 实例只是对 [page 实例](#page-实例) 的 content 进行了解析，如果您使用 page 实例进行了事件操作的话，可能需要自行解析最新的页面内容，具体操作可查看 [page 实例](#page-实例) 的自行解析页面。
 
 #### browser 实例
 
@@ -321,7 +314,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
-  const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
+  const { browser, page } = await myXCrawl.crawlPage('https://xxx.com')
   page.close()
 })
 ```
@@ -513,10 +506,10 @@ crawlPage 是爬虫实例的方法，通常用于爬取页面。
 - 查看 [CrawlPage](#CrawlPage-1) 类型
 
 ```ts
-function crawlPage: (
-  config: CrawlPageConfig,
-  callback?: (res: CrawlPage) => void
-) => Promise<CrawlPage>
+function crawlPage<T extends CrawlPageConfig = CrawlPageConfig>(
+  config: T,
+  callback?: ((res: CrawlPage) => void) | undefined
+): Promise<T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage>
 ```
 
 #### 示例
@@ -528,8 +521,7 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 
 // crawlPage API
 myXCrawl.crawlPage('https://xxx.com/xxx').then((res) => {
-  const { jsdom, browser, page } = res
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
+  const { browser, page } = res
 
   // 关闭浏览器
   browser.close()
@@ -760,7 +752,7 @@ interface CrawlBaseConfigV2 {
 ### CrawlPageConfig
 
 ```ts
-type CrawlPageConfig = string | CrawlBaseConfigV1
+type CrawlPageConfig = string | string[] | CrawlBaseConfigV1 | CrawlBaseConfigV1[]
 ```
 
 ### CrawlDataConfig
@@ -794,10 +786,12 @@ interface StartPollingConfig {
 
 ```js
 interface XCrawlInstance {
-  crawlPage: (
-    config: CrawlPageConfig,
+  crawlPage: <T extends CrawlPageConfig = CrawlPageConfig>(
+    config: T,
     callback?: (res: CrawlPage) => void
-  ) => Promise<CrawlPage>
+  ) => Promise<
+    T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage
+  >
 
   crawlData: <T = any>(
     config: CrawlDataConfig,
@@ -840,7 +834,6 @@ interface CrawlPage {
   httpResponse: HTTPResponse | null // puppeteer 库的 HTTPResponse 类型
   browser: Browser // puppeteer 库的 Browser 类型
   page: Page // puppeteer 库的 Page 类型
-  jsdom: JSDOM // jsdom 库的 JSDOM 类型
 }
 ```
 

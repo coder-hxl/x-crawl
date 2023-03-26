@@ -54,7 +54,6 @@ export type CrawlPageConfig =
   | string[]
   | CrawlBaseConfigV1
   | CrawlBaseConfigV1[]
-
 export interface CrawlDataConfig extends CrawlBaseConfigV2 {}
 
 export interface CrawlFileConfig extends CrawlBaseConfigV2 {

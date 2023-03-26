@@ -2,24 +2,24 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. It can crawl pages, control pages, batch network requests, batch download file resources, polling and crawling, etc. Support asynchronous/synchronous mode crawling data. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, network requests in batches, download file resources in batches, polling and crawling, etc. Supports asynchronous/synchronous mode crawling. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
 
 > If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it, your Star will be the motivation for my update.
 
 ## Features
 
-- Support asynchronous/synchronous way to crawl data.
-- Flexible writing, supporting multiple ways to write request configuration and obtain crawling results.
-- Flexible crawling interval, no interval/fixed interval/random interval, it is up to you to use/avoid high concurrent crawling.
-- Simple configuration can crawl pages, batch network requests, batch download file resources, polling and crawling, etc.
-- Crawl SPA (single-page application) to generate pre-rendered content (ie "SSR" (server-side rendering)), and use jsdom library to parse the content, and also supports self-parsing.
-- Form submissions, keystrokes, event actions, screenshots of generated pages, etc.
-- Capture and record the success and failure of crawling, and highlight the reminders.
-- Written in TypeScript, has types, provides generics.
+- **🔥 Asynchronous/Synchronous** - Support asynchronous/synchronous mode batch crawling.
+- **⚙️ Multiple functions** - Batch crawling of pages, batch network requests, batch download of file resources, polling crawling, etc.
+- **🖋️ Flexible writing style** - Multiple crawling configurations and ways to get crawling results.
+- **⏱️ Interval crawling** - no interval/fixed interval/random interval, you can use/avoid high concurrent crawling.
+- **☁️ Crawl SPA** - Batch crawl SPA (Single Page Application) to generate pre-rendered content (ie "SSR" (Server Side Rendering)).
+- **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
+- **🧾 Capture Record** - Capture and record the crawled results, and highlight the reminders.
+- **🦾TypeScript** - Own types, implement complete types through generics.
 
 ## Relationship with puppeteer
 
-The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages and expose Brower instances and Page instances, making it more flexible.
+The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages and expose Brower instances and Page instances.
 
 # Table of Contents
 
@@ -31,7 +31,6 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     - [Choose crawling mode](#Choose-crawling-mode)
     - [Multiple crawler application instances](#Multiple-crawler-application-instances)
   - [Crawl page](#Crawl-page)
-    - [jsdom instance](#jsdom-instance)
     - [browser instance](#browser-instance)
     - [page instance](#page-instance)
   - [Crawl interface](#Crawl-interface)
@@ -130,7 +129,6 @@ running result:
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
-
 **Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
 ## Core concepts
@@ -196,18 +194,12 @@ const myXCrawl = xCrawl({
 })
 
 myXCrawl.crawlPage('https://xxx.com').then((res) => {
-  const { jsdom, browser, page } = res
+  const { browser, page } = res
 
   // Close the browser
   browser.close()
 })
 ```
-
-#### jsdom instance
-
-It is an instance object of [JSDOM](https://github.com/jsdom/jsdom), please refer to [jsdom](https://github.com/jsdom/jsdom) for specific usage.
-
-**Note:** The jsdom instance only parses the content of [page instance](#page-instance), if you use page instance for event operation, you may need to parse the latest by yourself For details, please refer to the self-parsing page of [page instance](#page-instance).
 
 #### browser instance
 
@@ -327,7 +319,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
-  const { jsdom, browser, page } = await myXCrawl.crawlPage('https://xxx.com')
+  const { browser, page } = await myXCrawl.crawlPage('https://xxx.com')
   page.close()
 })
 ```
@@ -521,10 +513,10 @@ crawlPage is the method of the crawler instance, usually used to crawl page.
 - Look at the [CrawlPage](#CrawlPage-1) type
 
 ```ts
-function crawlPage: (
-  config: CrawlPageConfig,
-  callback?: (res: CrawlPage) => void
-) => Promise<CrawlPage>
+function crawlPage<T extends CrawlPageConfig = CrawlPageConfig>(
+  config: T,
+  callback?: ((res: CrawlPage) => void) | undefined
+): Promise<T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage>
 ```
 
 #### Example
@@ -536,8 +528,7 @@ const myXCrawl = xCrawl({ timeout: 10000 })
 
 // crawlPage API
 myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {
-  const { jsdom, browser, page } = res
-  console.log(jsdom.window.document.querySelector('title')?.textContent)
+  const { browser, page } = res
 
   // Close the browser
   browser.close()
@@ -801,10 +792,12 @@ interface StartPollingConfig {
 
 ```js
 interface XCrawlInstance {
-  crawlPage: (
-    config: CrawlPageConfig,
+  crawlPage: <T extends CrawlPageConfig = CrawlPageConfig>(
+    config: T,
     callback?: (res: CrawlPage) => void
-  ) => Promise<CrawlPage>
+  ) => Promise<
+    T extends string[] | CrawlBaseConfigV1[] ? CrawlPage[] : CrawlPage
+  >
 
   crawlData: <T = any>(
     config: CrawlDataConfig,
@@ -847,7 +840,6 @@ interface CrawlPage {
   httpResponse: HTTPResponse | null // The HTTPResponse is from the puppeteer library
   browser: Browser // The Browser is from the puppeteer library
   page: Page // The Page is from the puppeteer library
-  jsdom: JSDOM // The JSDOM is from the jsdom library
 }
 ```
 
