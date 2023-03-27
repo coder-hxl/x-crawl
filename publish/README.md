@@ -99,8 +99,8 @@ const myXCrawl = xCrawl({
 })
 
 // 3.Set the crawling task
-/* 
-  Call the startPolling API to start the polling function, 
+/*
+  Call the startPolling API to start the polling function,
   and the callback function will be called every other day
 */
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
@@ -108,8 +108,9 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   const { page } = await myXCrawl.crawlPage('https://zh.airbnb.com/s/*/plus_homes')
 
   // set request configuration
-  const requestConfig = await page.$$eval('picture img', (img) => {
-    return img.map((item) => item.src)
+  const plusBoxHandle = await page.$('.a1stauiv')
+  const requestConfig = await plusBoxHandle!.$$eval('picture img', (imgEls) => {
+    return imgEls.map((item) => item.src)
   })
 
   // Call the crawlFile API to crawl pictures
