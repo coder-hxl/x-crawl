@@ -1,27 +1,16 @@
-import { quickSort } from './sort'
-import {
-  isNumber,
-  isUndefined,
-  log,
-  logError,
-  logNumber,
-  logSuccess,
-  logWarn,
-  random,
-  sleep
-} from './utils'
+import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
-import { IntervalTime } from './types/api'
-import { AnyObject } from './types/common'
+import type { IntervalTime } from './types/api'
+import type { LoadConfigs } from './controller'
 
 async function useSleepByBatch(
   isHaventervalTime: boolean,
-  isNumberntervalTime: boolean,
+  isNumberIntervalTime: boolean,
   intervalTime: any,
   id: number
 ) {
   if (isHaventervalTime && id > 1) {
-    const timeout: number = isNumberntervalTime
+    const timeout: number = isNumberIntervalTime
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
@@ -37,152 +26,72 @@ async function useSleepByBatch(
   }
 }
 
-type BatchHandleResItem<V> = V & { id: number }
-
-async function asyncBatchCrawlHandle<T, V extends AnyObject>(
-  name: string,
-  handleConfigs: T[],
+export async function asyncBatchCrawl<T, V>(
+  loadConfigs: LoadConfigs<T, V>,
   intervalTime: IntervalTime | undefined,
-  handleFn: (handleConfig: T) => Promise<any>,
-  callback: (handleResItem: BatchHandleResItem<V>) => void
+  crawlSingleFn: (crawlConfig: T) => Promise<any>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
-  const isNumberntervalTime = isNumber(intervalTime)
+  const isNumberIntervalTime = isNumber(intervalTime)
 
-  log(
-    `${logSuccess(`Start crawling:`)} name: ${logWarn(name)}, mode: ${logWarn(
-      'async'
-    )}, total: ${logNumber(handleConfigs.length)} `
-  )
-
-  let index = 0
-  let successTotal = 0
-  let errorTotal = 0
-  const requestQueue: Promise<void>[] = []
-  const errorMessage: { message: string; valueOf: () => number }[] = []
-  for (const handleConfig of handleConfigs) {
-    const id = ++index
+  const crawlQueue: Promise<any>[] = []
+  for (const loadConfig of loadConfigs) {
+    const { id } = loadConfig
 
     await useSleepByBatch(
       isHaventervalTime,
-      isNumberntervalTime,
+      isNumberIntervalTime,
       intervalTime,
       id
     )
 
-    const handleItem = handleFn(handleConfig)
-      .catch((error: any) => {
-        errorTotal++
+    loadConfig.retryCount++
 
-        const message = `Crawl ${id} is an error: ${error.message}`
-        const valueOf = () => id
-
-        errorMessage.push({ message, valueOf })
+    const crawlSingle = crawlSingleFn(loadConfig.crawlConfig)
+      .catch((error) => {
+        loadConfig.errorQueue.push(error)
+        return false
       })
-      .then((handleResItem) => {
-        if (!handleResItem) return
+      .then((res) => {
+        if (res === false) return
 
-        successTotal++
-        callback({ id, ...handleResItem })
+        loadConfig.isSuccess = true
+        loadConfig.data = res
       })
 
-    requestQueue.push(handleItem)
+    crawlQueue.push(crawlSingle)
   }
 
-  log(logSuccess('All crawls ended!'))
-
-  // 等待所有请求结束
-  await Promise.all(requestQueue)
-
-  // 排序后打印错误消息
-  quickSort(errorMessage).forEach((item) => log(logError(item.message)))
-
-  log(
-    `Total crawls: ${logNumber(handleConfigs.length)}, success: ${logSuccess(
-      successTotal
-    )}, error: ${logError(errorTotal)}`
-  )
+  // 等待所有爬取结束
+  await Promise.all(crawlQueue)
 }
 
-async function syncBatchCrawlHandle<T, V extends AnyObject>(
-  name: string,
-  handleConfigs: T[],
+export async function syncBatchCrawl<T, V>(
+  loadConfigs: LoadConfigs<T, V>,
   intervalTime: IntervalTime | undefined,
-  handleFn: (handleConfig: T) => Promise<any>,
-  callback: (handleResItem: BatchHandleResItem<V>) => void
+  crawlSingleFn: (crawlConfig: T) => Promise<any>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
-  const isNumberntervalTime = isNumber(intervalTime)
+  const isNumberIntervalTime = isNumber(intervalTime)
 
-  log(
-    `${logSuccess(`Start crawling:`)} name: ${logWarn(name)}, mode: ${logWarn(
-      'sync'
-    )}, total: ${logNumber(handleConfigs.length)}`
-  )
-
-  let id = 0
-  let successTotal = 0
-  let errorTotal = 0
-  for (const handleConfig of handleConfigs) {
-    id++
+  for (const loadConfig of loadConfigs) {
+    const { id } = loadConfig
 
     await useSleepByBatch(
       isHaventervalTime,
-      isNumberntervalTime,
+      isNumberIntervalTime,
       intervalTime,
       id
     )
 
-    let isRequestSuccess = true
-    let handleResItem: BatchHandleResItem<V> | null = null
+    loadConfig.retryCount++
+
     try {
-      const requestRes = await handleFn(handleConfig)
-      handleResItem = { id, ...requestRes }
-      log(logSuccess(`Crawl ${logNumber(id)} is an success`))
-      successTotal++
+      const crawlSingleRes = await crawlSingleFn(loadConfig.crawlConfig)
+      loadConfig.isSuccess = true
+      loadConfig.data = crawlSingleRes
     } catch (error: any) {
-      isRequestSuccess = false
-      log(logError(`Crawl ${id} is an error: ${error.message}`))
-      errorTotal++
+      loadConfig.errorQueue.push(error)
     }
-
-    if (isRequestSuccess && handleResItem) {
-      callback(handleResItem)
-    }
-  }
-
-  log(logSuccess('All crawls ended!'))
-
-  log(
-    `Total crawls: ${logNumber(handleConfigs.length)}, success: ${logSuccess(
-      successTotal
-    )}, error: ${logError(errorTotal)}`
-  )
-}
-
-export async function useBatchCrawlHandleByMode<T, V extends AnyObject>(
-  name: string,
-  mode: 'async' | 'sync',
-  handleConfigs: T[],
-  intervalTime: IntervalTime | undefined,
-  handleFn: (handleConfig: T) => Promise<V>,
-  callback: (handleResItem: BatchHandleResItem<V>) => void
-) {
-  if (mode === 'async') {
-    await asyncBatchCrawlHandle(
-      name,
-      handleConfigs,
-      intervalTime,
-      handleFn,
-      callback
-    )
-  } else {
-    await syncBatchCrawlHandle(
-      name,
-      handleConfigs,
-      intervalTime,
-      handleFn,
-      callback
-    )
   }
 }

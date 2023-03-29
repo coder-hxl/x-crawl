@@ -8,10 +8,11 @@ x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, net
 
 ## Features
 
-- **🔥 Asynchronous/Synchronous** - Support asynchronous/synchronous mode batch crawling.
+- **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
 - **⚙️ Multiple functions** - Batch crawling of pages, batch network requests, batch download of file resources, polling crawling, etc.
 - **🖋️ Flexible writing style** - Multiple crawling configurations and ways to get crawling results.
 - **⏱️ Interval crawling** - no interval/fixed interval/random interval, you can use/avoid high concurrent crawling.
+- **🚀 Crawl Repost** - Under development.
 - **☁️ Crawl SPA** - Batch crawl SPA (Single Page Application) to generate pre-rendered content (ie "SSR" (Server Side Rendering)).
 - **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
 - **🧾 Capture Record** - Capture and record the crawled results, and highlight the reminders.
@@ -130,6 +131,7 @@ running result:
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
+
 **Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
 ## Core concepts
@@ -857,4 +859,4 @@ interface FileInfo {
 
 ## More
 
-If you have any **questions** or **needs** , please submit **Issues in** https://github.com/coder-hxl/x-crawl/issues .
+If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.

@@ -17,10 +17,12 @@ export interface XCrawlBaseConfig {
   intervalTime?: IntervalTime
   mode?: 'async' | 'sync'
   proxy?: string
+  maxRetry?: number
 }
 
 export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
   mode: 'async' | 'sync'
+  maxRetry: number
 }
 
 export interface XCrawlInstance {

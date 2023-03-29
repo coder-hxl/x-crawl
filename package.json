@@ -18,7 +18,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "https-proxy-agent": "^5.0.1",
-    "puppeteer": "^19.7.2",
+    "puppeteer": "19.8.0",
     "x-crawl": "link:"
   },
   "devDependencies": {

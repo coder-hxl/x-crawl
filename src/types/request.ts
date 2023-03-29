@@ -28,6 +28,7 @@ export interface RequestConfigObjectV1 {
   headers?: AnyObject
   timeout?: number
   proxy?: string
+  maxRetry?: number
 }
 
 export interface RequestConfigObjectV2 {
@@ -38,6 +39,7 @@ export interface RequestConfigObjectV2 {
   data?: any
   timeout?: number
   proxy?: string
+  maxRetry: number
 }
 
 export interface Request {

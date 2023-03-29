@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import puppeteer, { Browser, Protocol } from 'puppeteer'
 
-import { useBatchCrawlHandleByMode } from './batchCrawlHandle'
+import { LoadConfig, LoadConfigs, controller } from './controller'
 import { request } from './request'
 import { quickSort } from './sort'
 import {
@@ -33,6 +33,7 @@ import {
   StartPollingConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
+import { Request, RequestConfigObjectV2 } from './types/request'
 
 function mergeConfig<R, T extends MergeConfigRawConfig = MergeConfigRawConfig>(
   baseConfig: LoaderXCrawlBaseConfig,
@@ -191,9 +192,14 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       )
     }
 
-    const httpResponse = await page.goto(handleConfig.url, {
-      timeout: handleConfig.timeout
-    })
+    let httpResponse = null
+    try {
+      httpResponse = await page.goto(handleConfig.url, {
+        timeout: handleConfig.timeout
+      })
+    } catch (error) {
+      await page.close()
+    }
 
     return { httpResponse, browser: browser!, page }
   }
@@ -204,41 +210,37 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
   async function crawlData<T = any>(
     config: CrawlDataConfig,
-    callback?: (res: CrawlResCommonV1<T>) => void
-  ): Promise<CrawlResCommonArrV1<T>> {
+    callback?: (res: LoadConfig<RequestConfigObjectV2, T>) => void
+  ): Promise<LoadConfigs<RequestConfigObjectV2, T>> {
     const { requestConfig, intervalTime } = mergeConfig<
       MergeConfigV2<CrawlDataConfig>
     >(baseConfig, config)
 
-    const container: CrawlResCommonArrV1<T> = []
-    await useBatchCrawlHandleByMode(
-      'data',
+    const controllerRes = await controller(
       baseConfig.mode,
       requestConfig,
       intervalTime,
-      request,
-      (handleResItem) => {
-        const contentType = handleResItem.headers['content-type'] ?? ''
-        const rawData = handleResItem.data
+      request
+    )
+
+    for (const item of controllerRes) {
+      if (item.isSuccess) {
+        const contentType = item.data!.headers['content-type'] ?? ''
+        const rawData = item!.data!
 
         const data = contentType.includes('text')
           ? rawData.toString()
           : JSON.parse(rawData.toString())
 
-        const itemRes = { ...handleResItem, data }
-
-        if (callback) {
-          callback(itemRes)
-        }
-
-        container.push(itemRes)
+        item.data = data
       }
-    )
 
-    const res = quickSort(
-      container.map((item) => ({ ...item, valueOf: () => item.id }))
-    )
-    return res
+      if (callback) {
+        callback(item)
+      }
+    }
+
+    return controllerRes
   }
 
   return crawlData
