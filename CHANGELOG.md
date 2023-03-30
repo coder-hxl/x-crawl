@@ -1,3 +1,9 @@
+# [v4.0.1](https://github.com/coder-hxl/x-crawl/compare/v4.0.0...v4.0.1) (2023-03-30)
+
+### 🐞 Bug Fixes
+
+- The page is not closed when there is an error in the crawlPage API
+
 # [v4.0.0](https://github.com/coder-hxl/x-crawl/compare/v3.3.0...v4.0.0) (2023-03-27)
 
 ### 🚨 Breaking Changes

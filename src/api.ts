@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import puppeteer, { Browser, Protocol } from 'puppeteer'
+import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
 import { useBatchCrawlHandleByMode } from './batchCrawlHandle'
 import { request } from './request'
@@ -166,34 +166,42 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   }
 
   async function crawlPageHandle(handleConfig: CrawlBaseConfigV1) {
-    const page = await browser!.newPage()
-    await page.setViewport({ width: 1280, height: 1024 })
+    let page: Page | null = null
+    let httpResponse: HTTPResponse | null = null
 
-    if (handleConfig.proxy) {
-      await browser!.createIncognitoBrowserContext({
-        proxyServer: handleConfig.proxy
+    try {
+      page = await browser!.newPage()
+      await page.setViewport({ width: 1280, height: 1024 })
+
+      if (handleConfig.proxy) {
+        await browser!.createIncognitoBrowserContext({
+          proxyServer: handleConfig.proxy
+        })
+      } else {
+        await browser!.createIncognitoBrowserContext({
+          proxyServer: undefined
+        })
+      }
+
+      if (handleConfig.headers) {
+        await page.setExtraHTTPHeaders(
+          handleConfig.headers as any as Record<string, string>
+        )
+      }
+
+      if (handleConfig.cookies) {
+        await page.setCookie(
+          ...parseCrawlPageCookies(handleConfig.url, handleConfig.cookies)
+        )
+      }
+
+      httpResponse = await page.goto(handleConfig.url, {
+        timeout: handleConfig.timeout
       })
-    } else {
-      await browser!.createIncognitoBrowserContext({
-        proxyServer: undefined
-      })
+    } catch (error) {
+      await page?.close()
+      throw error
     }
-
-    if (handleConfig.headers) {
-      await page.setExtraHTTPHeaders(
-        handleConfig.headers as any as Record<string, string>
-      )
-    }
-
-    if (handleConfig.cookies) {
-      await page.setCookie(
-        ...parseCrawlPageCookies(handleConfig.url, handleConfig.cookies)
-      )
-    }
-
-    const httpResponse = await page.goto(handleConfig.url, {
-      timeout: handleConfig.timeout
-    })
 
     return { httpResponse, browser: browser!, page }
   }
