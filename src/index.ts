@@ -20,10 +20,6 @@ function loaderBaseConfig(
     loaderBaseConfig.mode = 'async'
   }
 
-  if (!loaderBaseConfig.maxRetry) {
-    loaderBaseConfig.maxRetry = 0
-  }
-
   return loaderBaseConfig as LoaderXCrawlBaseConfig
 }
 

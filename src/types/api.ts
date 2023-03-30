@@ -1,62 +1,61 @@
 import { IncomingHttpHeaders } from 'node:http'
 import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { RequestConfigObjectV1, RequestConfigObjectV2 } from './request'
+import { RequestConfig } from './request'
 import { AnyObject, MapTypeObject } from './common'
 
-export type IntervalTime = number | { max: number; min?: number }
+/* Merge Config */
 
-export type RequestConfig = string | RequestConfigObjectV2
-
-type MergeRequestConfig =
-  | string
-  | {
-      url: string
-      timeout?: number
-      proxy?: string
-    }
-
-export type MergeConfigRawConfig = {
-  requestConfig: MergeRequestConfig | MergeRequestConfig[]
-  intervalTime?: IntervalTime
+export interface MergeCrawlPageConfig
+  extends MapTypeObject<CrawlPageConfigObject, 'requestConfig'> {
+  requestConfig: RequestPageConfig[]
 }
 
-export type MergeConfigV1 = {
-  requestConfig: CrawlBaseConfigV1[]
-  intervalTime?: IntervalTime
-}
-
-export type MergeConfigV2<T extends AnyObject> = MapTypeObject<
-  T,
-  'requestConfig'
-> & {
-  requestConfig: RequestConfigObjectV2[]
-  intervalTime?: IntervalTime
-}
+export type MergeCrawlRequestConfig<T extends CrawlRequestCommonConfig> =
+  MapTypeObject<T, 'requestConfig'> & {
+    requestConfig: RequestConfig[]
+  }
 
 /* API Config */
-export type Cookies =
+export type IntervalTime = number | { max: number; min?: number }
+
+export type RequestPageCookies =
   | string
   | Protocol.Network.CookieParam
   | Protocol.Network.CookieParam[]
 
-export interface CrawlBaseConfigV1 extends RequestConfigObjectV1 {
-  cookies?: Cookies
+export interface RequestPageConfig {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+  cookies?: RequestPageCookies
+  maxRetry?: number
 }
 
-export interface CrawlBaseConfigV2 {
-  requestConfig: RequestConfig | RequestConfig[]
+export interface CrawlPageConfigObject {
+  requestConfig: string | string[] | RequestPageConfig | RequestPageConfig[]
+  cookies?: RequestPageCookies
   intervalTime?: IntervalTime
+  maxRetry?: number
 }
 
 export type CrawlPageConfig =
   | string
   | string[]
-  | CrawlBaseConfigV1
-  | CrawlBaseConfigV1[]
-export interface CrawlDataConfig extends CrawlBaseConfigV2 {}
+  | RequestPageConfig
+  | RequestPageConfig[]
+  | CrawlPageConfigObject
 
-export interface CrawlFileConfig extends CrawlBaseConfigV2 {
+export interface CrawlRequestCommonConfig {
+  requestConfig: string | string[] | RequestConfig | RequestConfig[]
+  intervalTime?: IntervalTime
+  maxRetry?: number
+}
+
+export interface CrawlDataConfig extends CrawlRequestCommonConfig {}
+
+export interface CrawlFileConfig extends CrawlRequestCommonConfig {
   fileConfig: {
     storeDir: string
     extension?: string
@@ -70,23 +69,32 @@ export interface StartPollingConfig {
 }
 
 /* API Result */
-export interface CrawlResCommonV1<T> {
+export interface CrawlCommonRes {
   id: number
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders
-  data: T
+  isSuccess: boolean
+  maxRetry: number
+  retryCount: number
+  errorQueue: Error[]
 }
 
-export type CrawlResCommonArrV1<T> = CrawlResCommonV1<T>[]
+export interface CrawlPageRes extends CrawlCommonRes {
+  data: {
+    response: HTTPResponse | null
+    browser: Browser
+    page: Page
+  }
+}
 
-export interface CrawlPage {
-  id: number
-  httpResponse: HTTPResponse | null
-  browser: Browser
-  page: Page
+export interface CrawlRequestCommonRes<T> extends CrawlCommonRes {
+  data: {
+    statusCode: number | undefined
+    headers: IncomingHttpHeaders
+    data: T
+  } | null
 }
 
 export interface FileInfo {
+  isSuccess: boolean
   fileName: string
   mimeType: string
   size: number

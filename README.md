@@ -2,20 +2,21 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, network requests in batches, download file resources in batches, polling and crawling, etc. Supports asynchronous/synchronous mode crawling. Running on nodejs, the usage is flexible and simple, friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, network requests in batches, download file resources in batches, polling and crawling, etc. Flexible and simple to use, friendly to JS/TS developers.
 
-> If you feel good, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it, your Star will be the motivation for my update.
+> If you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a Star to support it, which is its recognition.
 
 ## Features
 
 - **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
 - **⚙️ Multiple functions** - Batch crawling of pages, batch network requests, batch download of file resources, polling crawling, etc.
-- **🖋️ Flexible writing style** - Multiple crawling configurations and ways to get crawling results.
 - **⏱️ Interval crawling** - no interval/fixed interval/random interval, you can use/avoid high concurrent crawling.
-- **🚀 Crawl Repost** - Under development.
+- **🔄 Crawl retry** - under development.
+- **🚀 Priority Queue** - under development.
 - **☁️ Crawl SPA** - Batch crawl SPA (Single Page Application) to generate pre-rendered content (ie "SSR" (Server Side Rendering)).
 - **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
-- **🧾 Capture Record** - Capture and record the crawled results, and highlight the reminders.
+- **🧾 Capture Record** - Capture and record the crawled results, and highlight them on the console.
+- **🖋️ Flexible writing style** - It is very flexible to adapt to various crawling configurations and obtain crawling results.
 - **🦾TypeScript** - Own types, implement complete types through generics.
 
 ## Relationship with puppeteer

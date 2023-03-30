@@ -1,41 +1,39 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { IntervalTime } from './types/api'
 
-export interface LoadConfig<T, V> {
+export interface LoaderConfig<T, V> {
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
   errorQueue: Error[]
-  crawlConfig: T & { maxRetry: number }
-  data: V | null
+  requestConfig: T
+  res: V | null
 }
 
-export type LoadConfigs<T, V> = LoadConfig<T, V>[]
-
-export async function controller<T extends { maxRetry: number }, V>(
+export async function controller<T extends { maxRetry?: number }, V>(
   mode: 'async' | 'sync',
-  crawlConfigs: T[],
+  requestConfigs: T[],
   intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (crawlConfig: T) => Promise<V>
-): Promise<LoadConfigs<T, V>> {
+  crawlSingleFn: (loaderConfig: LoaderConfig<T, V>) => Promise<V>
+): Promise<LoaderConfig<T, V>[]> {
   // 装载配置
-  const loadConfigs: LoadConfigs<T, V> = crawlConfigs.map(
-    (crawlConfig, index) => ({
+  const loaderConfigs: LoaderConfig<T, V>[] = requestConfigs.map(
+    (requestConfig, index) => ({
       id: index,
       isSuccess: false,
-      maxRetry: crawlConfig.maxRetry,
+      maxRetry: requestConfig.maxRetry ?? 0,
       retryCount: -1,
       errorQueue: [],
-      crawlConfig,
-      data: null
+      requestConfig,
+      res: null
     })
   )
 
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
-  let crawlQueue: LoadConfigs<T, V> = loadConfigs
+  let crawlQueue: LoaderConfig<T, V>[] = loaderConfigs
   while (crawlQueue.length) {
     await batchCrawl(crawlQueue, intervalTime, crawlSingleFn)
 
@@ -44,5 +42,5 @@ export async function controller<T extends { maxRetry: number }, V>(
     )
   }
 
-  return loadConfigs
+  return loaderConfigs
 }
