@@ -7,18 +7,21 @@ const testXCrawl = xCrawl({
 })
 
 testXCrawl
-  .crawlPage([
-    'https://github.com/coder-hxl',
-    'https://github.com/coder-hxl/x-crawl'
-  ])
-  .then(async (res) => {
-    res.forEach(async (item) => {
-      const { page } = item
-
-      await page.screenshot({
-        path: path.resolve(__dirname, `./upload/page${item.id}.jpg`)
-      })
-
-      console.log(item.id, '完成')
-    })
+  .crawlData({
+    requestConfig: {
+      url: 'http://localhost:9001/api/area/阳江市',
+      method: 'POST',
+      data: {
+        type: 'goodPrice',
+        offset: 0,
+        size: 20
+      }
+    }
+  })
+  .then((res) => {
+    if (res.data?.statusCode === 200) {
+      return true
+    } else {
+      return false
+    }
   })

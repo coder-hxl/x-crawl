@@ -1,46 +1,55 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { IntervalTime } from './types/api'
 
-export interface LoaderConfig<T, V> {
+export interface ControllerConfig<T, V> {
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
   errorQueue: Error[]
   requestConfig: T
-  res: V | null
+  crawlSingleRes: V | null
 }
 
-export async function controller<T extends { maxRetry?: number }, V>(
+export async function controller<T extends { maxRetry?: number }, V, C>(
   mode: 'async' | 'sync',
   requestConfigs: T[],
   intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (loaderConfig: LoaderConfig<T, V>) => Promise<V>
-): Promise<LoaderConfig<T, V>[]> {
-  // 装载配置
-  const loaderConfigs: LoaderConfig<T, V>[] = requestConfigs.map(
+  crawlSingleFnExtraConfig: C,
+  crawlSingleFn: (
+    controllerConfig: ControllerConfig<T, V>,
+    crawlSingleFnExtraConfig: C
+  ) => Promise<V>
+): Promise<ControllerConfig<T, V>[]> {
+  // 通过映射生成新的配置数组
+  const controllerConfigs: ControllerConfig<T, V>[] = requestConfigs.map(
     (requestConfig, index) => ({
-      id: index,
+      id: index + 1,
       isSuccess: false,
       maxRetry: requestConfig.maxRetry ?? 0,
       retryCount: -1,
       errorQueue: [],
       requestConfig,
-      res: null
+      crawlSingleRes: null
     })
   )
 
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
-  let crawlQueue: LoaderConfig<T, V>[] = loaderConfigs
+  let crawlQueue: ControllerConfig<T, V>[] = controllerConfigs
   while (crawlQueue.length) {
-    await batchCrawl(crawlQueue, intervalTime, crawlSingleFn)
+    await batchCrawl(
+      crawlQueue,
+      intervalTime,
+      crawlSingleFnExtraConfig,
+      crawlSingleFn
+    )
 
-    crawlQueue = crawlQueue.filter((config) =>
-      !config.isSuccess && config.retryCount <= config.maxRetry ? true : false
+    crawlQueue = crawlQueue.filter(
+      (config) => !config.isSuccess && config.retryCount <= config.maxRetry
     )
   }
 
-  return loaderConfigs
+  return controllerConfigs
 }

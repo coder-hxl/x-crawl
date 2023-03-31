@@ -11,7 +11,7 @@ export interface MergeCrawlPageConfig
   requestConfig: RequestPageConfig[]
 }
 
-export type MergeCrawlRequestConfig<T extends CrawlRequestCommonConfig> =
+export type MergeCrawlRequestConfig<T extends CrawlRequestCommonConfig<any>> =
   MapTypeObject<T, 'requestConfig'> & {
     requestConfig: RequestConfig[]
   }
@@ -34,7 +34,7 @@ export interface RequestPageConfig {
 }
 
 export interface CrawlPageConfigObject {
-  requestConfig: string | string[] | RequestPageConfig | RequestPageConfig[]
+  requestConfig: string[] | RequestPageConfig[]
   cookies?: RequestPageCookies
   intervalTime?: IntervalTime
   maxRetry?: number
@@ -47,15 +47,23 @@ export type CrawlPageConfig =
   | RequestPageConfig[]
   | CrawlPageConfigObject
 
-export interface CrawlRequestCommonConfig {
-  requestConfig: string | string[] | RequestConfig | RequestConfig[]
+export type CrawlRequestConfig =
+  | string
+  | string[]
+  | RequestConfig
+  | RequestConfig[]
+
+export interface CrawlRequestCommonConfig<R extends CrawlRequestConfig> {
+  requestConfig: R
   intervalTime?: IntervalTime
   maxRetry?: number
 }
 
-export interface CrawlDataConfig extends CrawlRequestCommonConfig {}
+export interface CrawlDataConfig<R extends CrawlRequestConfig>
+  extends CrawlRequestCommonConfig<R> {}
 
-export interface CrawlFileConfig extends CrawlRequestCommonConfig {
+export interface CrawlFileConfig<R extends CrawlRequestConfig>
+  extends CrawlRequestCommonConfig<R> {
   fileConfig: {
     storeDir: string
     extension?: string
@@ -79,8 +87,8 @@ export interface CrawlCommonRes {
 
 export interface CrawlPageRes extends CrawlCommonRes {
   data: {
-    response: HTTPResponse | null
     browser: Browser
+    response: HTTPResponse | null
     page: Page
   }
 }

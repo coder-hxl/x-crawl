@@ -22,7 +22,7 @@ async function crawlPageAPI() {
   const myXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
   const res = await myXCrawl.crawlPage('https://docs.github.com/zh')
-  const { browser } = res
+  const { browser } = res.data
   browser.close()
 
   return true
@@ -43,7 +43,7 @@ async function crawlDataAPI() {
     }
   })
 
-  if (res[0].statusCode === 200) {
+  if (res.data?.statusCode === 200) {
     return true
   } else {
     return false

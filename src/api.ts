@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import puppeteer, { Browser, Page, Protocol } from 'puppeteer'
+import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { LoaderConfig, controller } from './controller'
+import { ControllerConfig, controller } from './controller'
 import { request } from './request'
 import {
   isArray,
@@ -27,7 +27,8 @@ import {
   RequestPageCookies,
   MergeCrawlPageConfig,
   RequestPageConfig,
-  CrawlPageConfigObject
+  CrawlPageConfigObject,
+  CrawlRequestConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
 import { RequestConfig } from './types/request'
@@ -72,7 +73,6 @@ function mergePageConfig<T extends CrawlPageConfig>(
 
     rawRequestConfigArr.push(...transformRes)
   }
-
   newConfig.requestConfig = rawRequestConfigArr.map((item) => {
     const { url, timeout, proxy, maxRetry, cookies } = item
 
@@ -120,7 +120,7 @@ function mergePageConfig<T extends CrawlPageConfig>(
   return newConfig
 }
 
-function mergeRequestConfig<T extends CrawlRequestCommonConfig>(
+function mergeRequestConfig<T extends CrawlRequestCommonConfig<any>>(
   baseConfig: LoaderXCrawlBaseConfig,
   rawConfig: T
 ): MergeCrawlRequestConfig<T> {
@@ -173,9 +173,9 @@ function mergeRequestConfig<T extends CrawlRequestCommonConfig>(
 }
 
 async function crawlRequestSingle(
-  loaderConfig: LoaderConfig<RequestConfig, any>
+  controllerConfig: ControllerConfig<RequestConfig, any>
 ) {
-  const { requestConfig } = loaderConfig
+  const { requestConfig } = controllerConfig
 
   return await request(requestConfig)
 }
@@ -214,12 +214,22 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   let browser: Browser | null = null
   let createBrowserPending: Promise<void> | null = null
   let haveCreateBrowser = false
-  const pages: { id: number; page: Page }[] = []
+
+  let cIdCount = 0
+  // 收集报错的 page : 因为 page 不管有没有失败都需要提供出去
+  // 通过 爬取cId 找到对应爬取, 再通过 爬取id 找到 page
+  const errorPageContainer = new Map<number, Map<number, Page>>()
 
   async function crawlPage<T extends CrawlPageConfig>(
     config: T,
     callback?: (res: CrawlPageRes) => void
-  ): Promise<T extends any[] ? CrawlPageRes[] : CrawlPageRes> {
+  ): Promise<
+    T extends string[] | RequestPageConfig[] | CrawlPageConfigObject
+      ? CrawlPageRes[]
+      : CrawlPageRes
+  > {
+    const cId = ++cIdCount
+
     //  创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
@@ -245,11 +255,32 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       baseConfig.mode,
       requestConfigs,
       intervalTime,
+      cId,
       crawlPageSingle
     )
 
     const crawlResArr: CrawlPageRes[] = controllerRes.map((item) => {
-      const { id, isSuccess, maxRetry, retryCount, errorQueue, res } = item
+      const {
+        id,
+        isSuccess,
+        maxRetry,
+        retryCount,
+        errorQueue,
+        crawlSingleRes
+      } = item
+
+      let data: {
+        browser: Browser
+        response: HTTPResponse | null
+        page: Page
+      } | null = null
+
+      if (isSuccess && crawlSingleRes) {
+        data = { browser: browser!, ...crawlSingleRes }
+      } else {
+        const page = errorPageContainer.get(cId)!.get(id)!
+        data = { browser: browser!, response: null, page }
+      }
 
       const crawlRes: CrawlPageRes = {
         id,
@@ -257,14 +288,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
         maxRetry,
         retryCount,
         errorQueue,
-        data: null as any
-      }
-
-      if (isSuccess && res) {
-        crawlRes.data = { browser: browser!, ...res }
-      } else {
-        const page = pages.filter((item) => item.id === id)[0].page
-        crawlRes.data = { browser: browser!, response: null, page }
+        data
       }
 
       if (callback) {
@@ -274,48 +298,72 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       return crawlRes
     })
 
-    const res = isArray(config) ? crawlResArr : crawlResArr[0]
+    // 避免内存泄露 (这次爬取报错的 page 已经处理完毕, 后续不会再利用)
+    errorPageContainer.delete(cId)
 
-    return res as T extends any[] ? CrawlPageRes[] : CrawlPageRes
+    const crawlRes =
+      isArray(config) ||
+      (isObject(config) && Object.hasOwn(config, 'requestConfig'))
+        ? crawlResArr
+        : crawlResArr[0]
+
+    return crawlRes as T extends
+      | string[]
+      | RequestPageConfig[]
+      | CrawlPageConfigObject
+      ? CrawlPageRes[]
+      : CrawlPageRes
   }
 
   async function crawlPageSingle(
-    loaderConfig: LoaderConfig<RequestPageConfig, any>
+    controllerConfig: ControllerConfig<RequestPageConfig, any>,
+    cid: number
   ) {
-    const { id, requestConfig } = loaderConfig
-
+    const { id, requestConfig } = controllerConfig
     const page = await browser!.newPage()
     await page.setViewport({ width: 1280, height: 1024 })
 
-    if (requestConfig.proxy) {
-      await browser!.createIncognitoBrowserContext({
-        proxyServer: requestConfig.proxy
-      })
-    } else {
-      await browser!.createIncognitoBrowserContext({
-        proxyServer: undefined
-      })
-    }
-
-    if (requestConfig.headers) {
-      await page.setExtraHTTPHeaders(
-        requestConfig.headers as any as Record<string, string>
-      )
-    }
-
-    if (requestConfig.cookies) {
-      await page.setCookie(
-        ...parseCrawlPageCookies(requestConfig.url, requestConfig.cookies)
-      )
-    }
-
-    let response = null
+    let response: HTTPResponse | null = null
     try {
+      if (requestConfig.proxy) {
+        await browser!.createIncognitoBrowserContext({
+          proxyServer: requestConfig.proxy
+        })
+      } else {
+        await browser!.createIncognitoBrowserContext({
+          proxyServer: undefined
+        })
+      }
+
+      if (requestConfig.headers) {
+        await page.setExtraHTTPHeaders(
+          requestConfig.headers as any as Record<string, string>
+        )
+      }
+
+      if (requestConfig.cookies) {
+        await page.setCookie(
+          ...parseCrawlPageCookies(requestConfig.url, requestConfig.cookies)
+        )
+      }
+
       response = await page.goto(requestConfig.url, {
         timeout: requestConfig.timeout
       })
     } catch (error) {
-      pages.push({ id, page })
+      // 收集报错的 page
+      let container = errorPageContainer.get(cid!)
+      if (!container) {
+        container = new Map()
+        errorPageContainer.set(cid!, container)
+      }
+
+      if (!container.get(id)) {
+        container.set(id, page)
+      }
+
+      // 让外面收集错误
+      throw error
     }
 
     return { response, page }
@@ -325,10 +373,15 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 }
 
 export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
-  async function crawlData<T = any>(
-    config: CrawlDataConfig,
+  async function crawlData<
+    T = any,
+    R extends CrawlRequestConfig = CrawlRequestConfig
+  >(
+    config: CrawlDataConfig<R>,
     callback?: (res: CrawlRequestCommonRes<T>) => void
-  ): Promise<CrawlRequestCommonRes<T>[]> {
+  ): Promise<
+    R extends any[] ? CrawlRequestCommonRes<T>[] : CrawlRequestCommonRes<T>
+  > {
     const { requestConfig: requestConfigs, intervalTime } = mergeRequestConfig(
       baseConfig,
       config
@@ -338,12 +391,20 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
       baseConfig.mode,
       requestConfigs,
       intervalTime,
+      undefined,
       crawlRequestSingle
     )
 
     const crawlResArr: CrawlRequestCommonRes<T>[] = controllerRes.map(
       (item) => {
-        const { id, isSuccess, maxRetry, retryCount, errorQueue, res } = item
+        const {
+          id,
+          isSuccess,
+          maxRetry,
+          retryCount,
+          errorQueue,
+          crawlSingleRes
+        } = item
 
         const crawlRes: CrawlRequestCommonRes<T> = {
           id,
@@ -354,14 +415,14 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
           data: null
         }
 
-        if (isSuccess && res) {
-          const contentType = res.headers['content-type'] ?? ''
+        if (isSuccess && crawlSingleRes) {
+          const contentType = crawlSingleRes.headers['content-type'] ?? ''
 
           const data: T = contentType.includes('text')
-            ? res.toString()
-            : JSON.parse(res.toString())
+            ? crawlSingleRes.data.toString()
+            : JSON.parse(crawlSingleRes.data.toString())
 
-          crawlRes.data = { ...res, data }
+          crawlRes.data = { ...crawlSingleRes, data }
         }
 
         if (callback) {
@@ -372,17 +433,27 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
       }
     )
 
-    return crawlResArr
+    const crawlRes = isArray(config.requestConfig)
+      ? crawlResArr
+      : crawlResArr[0]
+
+    return crawlRes as R extends any[]
+      ? CrawlRequestCommonRes<T>[]
+      : CrawlRequestCommonRes<T>
   }
 
   return crawlData
 }
 
 export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
-  async function crawlFile(
-    config: CrawlFileConfig,
+  async function crawlFile<R extends CrawlRequestConfig = CrawlRequestConfig>(
+    config: CrawlFileConfig<R>,
     callback?: (res: CrawlRequestCommonRes<FileInfo>) => void
-  ): Promise<CrawlRequestCommonRes<FileInfo>[]> {
+  ): Promise<
+    R extends any[]
+      ? CrawlRequestCommonRes<FileInfo>[]
+      : CrawlRequestCommonRes<FileInfo>
+  > {
     const {
       requestConfig: requestConfigs,
       intervalTime,
@@ -397,15 +468,23 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
       baseConfig.mode,
       requestConfigs,
       intervalTime,
+      undefined,
       crawlRequestSingle
     )
 
-    const saveFileArr: Promise<void>[] = []
+    const saveFileQueue: Promise<void>[] = []
     const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
 
     const crawlResArr: CrawlRequestCommonRes<FileInfo>[] = controllerRes.map(
       (item) => {
-        const { id, isSuccess, maxRetry, retryCount, errorQueue, res } = item
+        const {
+          id,
+          isSuccess,
+          maxRetry,
+          retryCount,
+          errorQueue,
+          crawlSingleRes
+        } = item
 
         const crawlRes: CrawlRequestCommonRes<FileInfo> = {
           id,
@@ -416,8 +495,8 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
           data: null
         }
 
-        if (isSuccess && res) {
-          const mimeType = res.headers['content-type'] ?? ''
+        if (isSuccess && crawlSingleRes) {
+          const mimeType = crawlSingleRes.headers['content-type'] ?? ''
           const fileExtension =
             fileConfig.extension ?? mimeType.split('/').pop()
           const fileName = new Date().getTime().toString()
@@ -426,7 +505,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
             `${fileName}.${fileExtension}`
           )
 
-          const saveFiletem = writeFile(filePath, res.data)
+          const saveFileItem = writeFile(filePath, crawlSingleRes.data)
             .catch((err) => {
               const message = `File save error at id ${id}: ${err.message}`
               const valueOf = () => id
@@ -436,18 +515,18 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
               return true
             })
             .then((isError) => {
-              const size = res.data.length
+              const size = crawlSingleRes.data.length
               const isSuccess = !isError
               const fileInfo = { isSuccess, fileName, mimeType, size, filePath }
 
-              crawlRes.data = { ...res, data: fileInfo }
+              crawlRes.data = { ...crawlSingleRes, data: fileInfo }
 
               if (callback) {
                 callback(crawlRes)
               }
             })
 
-          saveFileArr.push(saveFiletem)
+          saveFileQueue.push(saveFileItem)
         } else {
           if (callback) {
             callback(crawlRes)
@@ -459,9 +538,15 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     )
 
     // 等待保存文件完成
-    await Promise.all(saveFileArr)
+    await Promise.all(saveFileQueue)
 
-    return crawlResArr
+    const crawlRes = isArray(config.requestConfig)
+      ? crawlResArr
+      : crawlResArr[0]
+
+    return crawlRes as R extends any[]
+      ? CrawlRequestCommonRes<FileInfo>[]
+      : CrawlRequestCommonRes<FileInfo>
   }
 
   return crawlFile

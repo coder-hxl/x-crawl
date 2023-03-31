@@ -1,7 +1,7 @@
 import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
 import type { IntervalTime } from './types/api'
-import type { LoaderConfig } from './controller'
+import type { ControllerConfig } from './controller'
 
 async function useSleepByBatch(
   isHaventervalTime: boolean,
@@ -15,7 +15,7 @@ async function useSleepByBatch(
       : random(intervalTime.max, intervalTime.min)
 
     log(
-      `Crawl ${logNumber(id)} needs to sleep for ${logNumber(
+      `Id: ${logNumber(id)} - Crawl needs to sleep for ${logNumber(
         timeout + 'ms'
       )} milliseconds before sending`
     )
@@ -26,17 +26,21 @@ async function useSleepByBatch(
   }
 }
 
-export async function asyncBatchCrawl<T, V>(
-  loaderConfigs: LoaderConfig<T, V>[],
+export async function asyncBatchCrawl<T, V, C>(
+  controllerConfigs: ControllerConfig<T, V>[],
   intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (loaderConfig: LoaderConfig<T, V>) => Promise<any>
+  crawlSingleFnExtraConfig: C,
+  crawlSingleFn: (
+    controllerConfig: ControllerConfig<T, V>,
+    crawlSingleFnExtraConfig: C
+  ) => Promise<V>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
   const crawlQueue: Promise<any>[] = []
-  for (const loaderConfig of loaderConfigs) {
-    const { id } = loaderConfig
+  for (const controllerConfig of controllerConfigs) {
+    const { id } = controllerConfig
 
     await useSleepByBatch(
       isHaventervalTime,
@@ -45,18 +49,21 @@ export async function asyncBatchCrawl<T, V>(
       id
     )
 
-    loaderConfig.retryCount++
+    controllerConfig.retryCount++
 
-    const crawlSingle = crawlSingleFn(loaderConfig)
+    const crawlSingle = crawlSingleFn(
+      controllerConfig,
+      crawlSingleFnExtraConfig
+    )
       .catch((error) => {
-        loaderConfig.errorQueue.push(error)
+        controllerConfig.errorQueue.push(error)
         return false
       })
-      .then((res) => {
-        if (res === false) return
+      .then((crawlSingleRes) => {
+        if (crawlSingleRes === false) return
 
-        loaderConfig.isSuccess = true
-        loaderConfig.res = res
+        controllerConfig.isSuccess = true
+        controllerConfig.crawlSingleRes = crawlSingleRes as V
       })
 
     crawlQueue.push(crawlSingle)
@@ -66,16 +73,20 @@ export async function asyncBatchCrawl<T, V>(
   await Promise.all(crawlQueue)
 }
 
-export async function syncBatchCrawl<T, V>(
-  loaderConfigs: LoaderConfig<T, V>[],
+export async function syncBatchCrawl<T, V, C>(
+  controllerConfigs: ControllerConfig<T, V>[],
   intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (loaderConfig: LoaderConfig<T, V>) => Promise<any>
+  crawlSingleFnExtraConfig: C,
+  crawlSingleFn: (
+    controllerConfig: ControllerConfig<T, V>,
+    crawlSingleFnExtraConfig: C
+  ) => Promise<V>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  for (const loaderConfig of loaderConfigs) {
-    const { id } = loaderConfig
+  for (const controllerConfig of controllerConfigs) {
+    const { id } = controllerConfig
 
     await useSleepByBatch(
       isHaventervalTime,
@@ -84,14 +95,16 @@ export async function syncBatchCrawl<T, V>(
       id
     )
 
-    loaderConfig.retryCount++
+    controllerConfig.retryCount++
 
     try {
-      const crawlSingleRes = await crawlSingleFn(loaderConfig)
-      loaderConfig.isSuccess = true
-      loaderConfig.res = crawlSingleRes
+      controllerConfig.crawlSingleRes = await crawlSingleFn(
+        controllerConfig,
+        crawlSingleFnExtraConfig
+      )
+      controllerConfig.isSuccess = true
     } catch (error: any) {
-      loaderConfig.errorQueue.push(error)
+      controllerConfig.errorQueue.push(error)
     }
   }
 }
