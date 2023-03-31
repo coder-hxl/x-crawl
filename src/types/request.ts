@@ -1,5 +1,5 @@
-import { IncomingHttpHeaders } from 'node:http'
 import { AnyObject } from './common'
+import { Protocol } from 'puppeteer'
 
 export type Method =
   | 'get'
@@ -23,7 +23,21 @@ export type Method =
   | 'unlink'
   | 'UNLINK'
 
-export interface RequestConfig {
+export type PageRequestConfigCookies =
+  | string
+  | Protocol.Network.CookieParam
+  | Protocol.Network.CookieParam[]
+
+export interface PageRequestConfig {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+  cookies?: PageRequestConfigCookies
+  maxRetry?: number
+}
+
+export interface DataRequestConfig {
   url: string
   method?: Method
   headers?: AnyObject
@@ -34,8 +48,10 @@ export interface RequestConfig {
   maxRetry?: number
 }
 
-export interface Request {
-  statusCode: number | undefined
-  headers: IncomingHttpHeaders
-  data: Buffer
+export interface FileRequestConfig {
+  url: string
+  headers?: AnyObject
+  timeout?: number
+  proxy?: string
+  maxRetry?: number
 }

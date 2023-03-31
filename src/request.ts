@@ -1,4 +1,9 @@
-import http, { RequestOptions, IncomingMessage, ClientRequest } from 'node:http'
+import http, {
+  RequestOptions,
+  IncomingMessage,
+  ClientRequest,
+  IncomingHttpHeaders
+} from 'node:http'
 import https from 'node:https'
 import Url, { URL } from 'node:url'
 import HttpsProxyAgent from 'https-proxy-agent'
@@ -6,7 +11,14 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import { isUndefined } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { Request, RequestConfig } from './types/request'
+import { DataRequestConfig, FileRequestConfig } from './types/request'
+
+/* Type */
+export interface Request {
+  statusCode: number | undefined
+  headers: IncomingHttpHeaders
+  data: Buffer
+}
 
 function parseParams(urlSearch: string, params?: AnyObject): string {
   let res = urlSearch ? `${urlSearch}` : '?'
@@ -24,7 +36,7 @@ function parseParams(urlSearch: string, params?: AnyObject): string {
 }
 
 function parseHeaders(
-  rawConfig: RequestConfig,
+  rawConfig: DataRequestConfig & FileRequestConfig,
   config: RequestOptions & MapTypeEmptyObject<URL>
 ) {
   const rawHeaders = rawConfig.headers ?? {}
@@ -43,7 +55,7 @@ function parseHeaders(
 }
 
 function handleRequestConfig(
-  rawConfig: RequestConfig
+  rawConfig: DataRequestConfig & FileRequestConfig
 ): RequestOptions & MapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
@@ -73,7 +85,7 @@ function handleRequestConfig(
   return config
 }
 
-export function request(config: RequestConfig) {
+export function request(config: DataRequestConfig & FileRequestConfig) {
   return new Promise<Request>((resolve, reject) => {
     const isDataUndefine = isUndefined(config.data)
     config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data

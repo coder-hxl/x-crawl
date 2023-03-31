@@ -25,29 +25,23 @@ async function crawlPageAPI() {
   const { browser } = res.data
   browser.close()
 
-  return true
+  return res.isSuccess
 }
 
 async function crawlDataAPI() {
   const myXCrawl = xCrawl()
 
   const res = await myXCrawl.crawlData({
-    requestConfig: {
-      url: 'http://localhost:9001/api/area/阳江市',
-      method: 'POST',
-      data: {
-        type: 'goodPrice',
-        offset: 0,
-        size: 20
-      }
+    url: 'http://localhost:9001/api/area/阳江市',
+    method: 'POST',
+    data: {
+      type: 'goodPrice',
+      offset: 0,
+      size: 20
     }
   })
 
-  if (res.data?.statusCode === 200) {
-    return true
-  } else {
-    return false
-  }
+  return res.isSuccess
 }
 
 async function crawlFileAPI() {
@@ -62,14 +56,18 @@ async function crawlFileAPI() {
     'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
   ]
 
-  await myXCrawl.crawlFile({
+  const res = await myXCrawl.crawlFile({
     requestConfig,
     fileConfig: {
       storeDir: path.resolve(__dirname, './upload')
     }
   })
 
-  return true
+  const isSuccess = res.reduce(
+    (prev, item) => prev && prev === item.isSuccess,
+    true
+  )
+  return isSuccess
 }
 
 function startPollingAPI() {

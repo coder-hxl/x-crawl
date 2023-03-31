@@ -1,41 +1,51 @@
 import { IncomingHttpHeaders } from 'node:http'
-import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
+import { Browser, HTTPResponse, Page } from 'puppeteer'
 
-import { RequestConfig } from './request'
-import { AnyObject, MapTypeObject } from './common'
+import { MapTypeObject } from './common'
+import {
+  DataRequestConfig,
+  FileRequestConfig,
+  PageRequestConfig,
+  PageRequestConfigCookies
+} from './request'
 
 /* Merge Config */
-
 export interface MergeCrawlPageConfig
-  extends MapTypeObject<CrawlPageConfigObject, 'requestConfig'> {
-  requestConfig: RequestPageConfig[]
+  extends MapTypeObject<CrawlPageConfigObject, 'requestConfigs'> {
+  requestConfigs: PageRequestConfig[]
 }
 
-export type MergeCrawlRequestConfig<T extends CrawlRequestCommonConfig<any>> =
-  MapTypeObject<T, 'requestConfig'> & {
-    requestConfig: RequestConfig[]
-  }
+export interface MergeCrawlDataConfig
+  extends MapTypeObject<CrawlDataConfigObject, 'requestConfigs'> {
+  requestConfigs: DataRequestConfig[]
+}
+
+export interface MergeCrawlFileConfig
+  extends MapTypeObject<
+    CrawlFileConfig<CrawlFileRequestConfig>,
+    'requestConfig'
+  > {
+  requestConfigs: FileRequestConfig[]
+}
 
 /* API Config */
 export type IntervalTime = number | { max: number; min?: number }
 
-export type RequestPageCookies =
+export type CrawlFileRequestConfig =
   | string
-  | Protocol.Network.CookieParam
-  | Protocol.Network.CookieParam[]
+  | string[]
+  | FileRequestConfig
+  | FileRequestConfig[]
 
-export interface RequestPageConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  cookies?: RequestPageCookies
+export interface CrawlPageConfigObject {
+  requestConfigs: string[] | PageRequestConfig[]
+  cookies?: PageRequestConfigCookies
+  intervalTime?: IntervalTime
   maxRetry?: number
 }
 
-export interface CrawlPageConfigObject {
-  requestConfig: string[] | RequestPageConfig[]
-  cookies?: RequestPageCookies
+export interface CrawlDataConfigObject {
+  requestConfigs: string[] | DataRequestConfig[]
   intervalTime?: IntervalTime
   maxRetry?: number
 }
@@ -43,27 +53,21 @@ export interface CrawlPageConfigObject {
 export type CrawlPageConfig =
   | string
   | string[]
-  | RequestPageConfig
-  | RequestPageConfig[]
+  | PageRequestConfig
+  | PageRequestConfig[]
   | CrawlPageConfigObject
 
-export type CrawlRequestConfig =
+export type CrawlDataConfig =
   | string
   | string[]
-  | RequestConfig
-  | RequestConfig[]
+  | DataRequestConfig
+  | DataRequestConfig[]
+  | CrawlDataConfigObject
 
-export interface CrawlRequestCommonConfig<R extends CrawlRequestConfig> {
+export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
   requestConfig: R
   intervalTime?: IntervalTime
   maxRetry?: number
-}
-
-export interface CrawlDataConfig<R extends CrawlRequestConfig>
-  extends CrawlRequestCommonConfig<R> {}
-
-export interface CrawlFileConfig<R extends CrawlRequestConfig>
-  extends CrawlRequestCommonConfig<R> {
   fileConfig: {
     storeDir: string
     extension?: string
@@ -85,7 +89,7 @@ export interface CrawlCommonRes {
   errorQueue: Error[]
 }
 
-export interface CrawlPageRes extends CrawlCommonRes {
+export interface CrawlPageSingleRes extends CrawlCommonRes {
   data: {
     browser: Browser
     response: HTTPResponse | null
@@ -93,18 +97,44 @@ export interface CrawlPageRes extends CrawlCommonRes {
   }
 }
 
-export interface CrawlRequestCommonRes<T> extends CrawlCommonRes {
+export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders
-    data: T
+    data: D
   } | null
 }
 
-export interface FileInfo {
-  isSuccess: boolean
-  fileName: string
-  mimeType: string
-  size: number
-  filePath: string
+export interface CrawlFileSingleRes extends CrawlCommonRes {
+  data: {
+    statusCode: number | undefined
+    headers: IncomingHttpHeaders
+    data: {
+      isSuccess: boolean
+      fileName: string
+      mimeType: string
+      size: number
+      filePath: string
+    }
+  } | null
 }
+
+export type CrawlPageRes<R extends CrawlPageConfig> = R extends
+  | string[]
+  | PageRequestConfig[]
+  | CrawlPageConfigObject
+  ? CrawlPageSingleRes[]
+  : CrawlPageSingleRes
+
+export type CrawlDataRes<D, R extends CrawlDataConfig> = R extends
+  | string[]
+  | DataRequestConfig[]
+  | CrawlDataConfigObject
+  ? CrawlDataSingleRes<D>[]
+  : CrawlDataSingleRes<D>
+
+export type CrawlFileRes<R extends CrawlFileRequestConfig> = R extends
+  | string[]
+  | PageRequestConfig[]
+  ? CrawlFileSingleRes[]
+  : CrawlFileSingleRes
