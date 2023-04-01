@@ -1,5 +1,6 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { IntervalTime } from './types/api'
+import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
 export interface ControllerConfig<T, V> {
   id: number
@@ -12,6 +13,7 @@ export interface ControllerConfig<T, V> {
 }
 
 export async function controller<T extends { maxRetry?: number }, V, C>(
+  name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
   requestConfigs: T[],
   intervalTime: IntervalTime | undefined,
@@ -34,6 +36,12 @@ export async function controller<T extends { maxRetry?: number }, V, C>(
     })
   )
 
+  log(
+    `${logSuccess(`Start crawling`)} - name: ${logWarn(name)}, mode: ${logWarn(
+      mode
+    )}, total: ${logNumber(controllerConfigs.length)} `
+  )
+
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
@@ -52,7 +60,37 @@ export async function controller<T extends { maxRetry?: number }, V, C>(
         !config.isSuccess &&
         config.retryCount < config.maxRetry
     )
+
+    if (crawlQueue.length) {
+      const retriedIds = crawlQueue.map((item) => item.id)
+      log(logWarn(`Ids to retry: [ ${retriedIds.join(' - ')} ]`))
+    }
   }
+
+  // 统计结果
+  const succssIds: number[] = []
+  const errorIds: number[] = []
+  controllerConfigs.forEach((item) => {
+    if (item.isSuccess) {
+      succssIds.push(item.id)
+    } else {
+      errorIds.push(item.id)
+    }
+  })
+
+  log('Crawl the final result:')
+  log(
+    logSuccess(
+      `  Success - total: ${succssIds.length}, ids: [ ${succssIds.join(
+        ' - '
+      )} ]`
+    )
+  )
+  log(
+    logError(
+      `    Error - total: ${errorIds.length}, ids: [ ${errorIds.join(' - ')} ]`
+    )
+  )
 
   return controllerConfigs
 }

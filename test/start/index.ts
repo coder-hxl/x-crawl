@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { Browser } from 'puppeteer'
 import xCrawl from 'x-crawl'
 
 const testXCrawl = xCrawl({
@@ -7,19 +8,24 @@ const testXCrawl = xCrawl({
 })
 
 testXCrawl
-  .crawlData({
-    url: 'http://localhost:9001/api/area/阳江市',
-    method: 'POST',
-    data: {
-      type: 'goodPrice',
-      offset: 0,
-      size: 20
-    }
+  .crawlPage({
+    requestConfigs: [
+      'https://www.google.com/search?q=1',
+      'https://www.google.com/search?q=2',
+      'https://www.google.com/search?q=2'
+    ],
+    maxRetry: 2
   })
   .then((res) => {
-    if (res.data?.statusCode === 200) {
-      return true
-    } else {
-      return false
-    }
+    let browser: Browser | null = null
+
+    res.forEach((item) => {
+      if (!browser) browser = item.data.browser
+
+      console.log(item.isSuccess, item.retryCount)
+
+      console.log(item.errorQueue.map((item) => item.message))
+    })
+
+    browser!.close()
   })

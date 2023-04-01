@@ -22,7 +22,7 @@ async function useSleepByBatch(
 
     await sleep(timeout)
   } else {
-    log(`Crawl ${logNumber(id)} does not need to sleep, send immediately`)
+    log(`Id: ${logNumber(id)} - Crawl does not need to sleep, send immediately`)
   }
 }
 

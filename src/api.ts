@@ -5,7 +5,15 @@ import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
 import { ControllerConfig, controller } from './controller'
 import { request } from './request'
-import { isArray, isObject, isUndefined, logSuccess, logWarn } from './utils'
+import {
+  isArray,
+  isObject,
+  isUndefined,
+  log,
+  logError,
+  logSuccess,
+  logWarn
+} from './utils'
 
 import {
   DataRequestConfig,
@@ -30,6 +38,7 @@ import {
   CrawlDataConfigObject
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
+import { quickSort } from './sort'
 
 async function crawlRequestSingle(
   controllerConfig: ControllerConfig<DataRequestConfig & FileRequestConfig, any>
@@ -538,6 +547,35 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
 
     // 等待保存文件完成
     await Promise.all(saveFileQueue)
+
+    // 打印保存错误
+    quickSort(saveFileErrorArr).forEach((item) => log(logError(item.message)))
+
+    // 统计保存
+    const succssIds: number[] = []
+    const errorIds: number[] = []
+    crawlResArr.forEach((item) => {
+      if (item.data?.data.isSuccess) {
+        succssIds.push(item.id)
+      } else {
+        errorIds.push(item.id)
+      }
+    })
+    log('Save file final result:')
+    log(
+      logSuccess(
+        `  Success - total: ${succssIds.length}, ids: [ ${succssIds.join(
+          ' - '
+        )} ]`
+      )
+    )
+    log(
+      logError(
+        `    Error - total: ${errorIds.length}, ids: [ ${errorIds.join(
+          ' - '
+        )} ]`
+      )
+    )
 
     const crawlRes = isArray(config.requestConfig)
       ? crawlResArr
