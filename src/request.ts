@@ -11,7 +11,7 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import { isUndefined } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { DataRequestConfig, FileRequestConfig } from './types/request'
+import { DataRequestConfig, FileRequestConfig } from './types/api'
 
 /* Type */
 export interface Request {
