@@ -47,7 +47,10 @@ export async function controller<T extends { maxRetry?: number }, V, C>(
     )
 
     crawlQueue = crawlQueue.filter(
-      (config) => !config.isSuccess && config.retryCount <= config.maxRetry
+      (config) =>
+        config.maxRetry &&
+        !config.isSuccess &&
+        config.retryCount < config.maxRetry
     )
   }
 
