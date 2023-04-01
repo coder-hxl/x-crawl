@@ -137,7 +137,6 @@ function loaderPageConfig(
   rawConfig: CrawlPageConfig
 ): LoaderCrawlPageConfig {
   const loaderConfig: LoaderCrawlPageConfig = { requestConfigs: [] }
-  const { requestConfigs } = loaderConfig
 
   // requestConfig 统一转成 PageRequestConfig 类型
   if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
@@ -152,21 +151,21 @@ function loaderPageConfig(
 
     const transformRes = transformRequestConfig(requestConfigs)
 
-    requestConfigs.push(...transformRes)
+    loaderConfig.requestConfigs.push(...transformRes)
   } else {
     // string | PageRequestConfig | (string | PageRequestConfig)[] 处理
     const transformRes = transformRequestConfig(
       rawConfig as string | PageRequestConfig | (string | PageRequestConfig)[]
     )
 
-    requestConfigs.push(...transformRes)
+    loaderConfig.requestConfigs.push(...transformRes)
   }
 
   // 装载公共配置
   loaderCommonConfig(baseConfig, loaderConfig)
 
   // 装载单独的配置
-  requestConfigs.forEach((requestConfig) => {
+  loaderConfig.requestConfigs.forEach((requestConfig) => {
     const { cookies } = requestConfig
 
     // cookies
@@ -184,7 +183,6 @@ function loaderDataConfig(
   rawConfig: CrawlDataConfig
 ): LoaderCrawlDataConfig {
   const loaderConfig: LoaderCrawlDataConfig = { requestConfigs: [] }
-  const { requestConfigs } = loaderConfig
 
   // requestConfig 统一转成 PageRequestConfig 类型
   if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
@@ -198,14 +196,14 @@ function loaderDataConfig(
 
     const transformRes = transformRequestConfig(requestConfigs)
 
-    requestConfigs.push(...transformRes)
+    loaderConfig.requestConfigs.push(...transformRes)
   } else {
     // string | DataRequestConfig | (string | DataRequestConfig)[] 处理
     const transformRes = transformRequestConfig(
       rawConfig as string | DataRequestConfig | (string | DataRequestConfig)[]
     )
 
-    requestConfigs.push(...transformRes)
+    loaderConfig.requestConfigs.push(...transformRes)
   }
 
   // 装载公共配置
@@ -270,6 +268,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     )
 
     const controllerRes = await controller(
+      'page',
       baseConfig.mode,
       requestConfigs,
       intervalTime,
@@ -396,6 +395,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
     )
 
     const controllerRes = await controller(
+      'data',
       baseConfig.mode,
       requestConfigs,
       intervalTime,
@@ -466,6 +466,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     }
 
     const controllerRes = await controller(
+      'file',
       baseConfig.mode,
       requestConfigs,
       intervalTime,
