@@ -227,6 +227,8 @@ function loaderFileConfig(
 ): LoaderCrawlFileConfig {
   const loaderConfig: LoaderCrawlFileConfig = {
     requestConfigs: [],
+    intervalTime: rawConfig.intervalTime,
+    maxRetry: rawConfig.maxRetry,
     fileConfig: rawConfig.fileConfig
   }
 
