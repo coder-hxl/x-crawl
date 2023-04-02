@@ -24,6 +24,8 @@ export interface XCrawlBaseConfig {
 
 export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
   mode: 'async' | 'sync'
+  timeout: number
+  maxRetry: number
 }
 
 export interface XCrawlInstance {

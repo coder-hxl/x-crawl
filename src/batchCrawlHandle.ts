@@ -49,7 +49,7 @@ export async function asyncBatchCrawl<T, V, C>(
       id
     )
 
-    controllerConfig.retryCount++
+    controllerConfig.crawlCount++
 
     const crawlSingle = crawlSingleFn(
       controllerConfig,
@@ -95,7 +95,7 @@ export async function syncBatchCrawl<T, V, C>(
       id
     )
 
-    controllerConfig.retryCount++
+    controllerConfig.crawlCount++
 
     try {
       controllerConfig.crawlSingleRes = await crawlSingleFn(

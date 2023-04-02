@@ -10,6 +10,7 @@ import {
   XCrawlBaseConfig,
   XCrawlInstance
 } from './types'
+import { isUndefined } from './utils'
 
 function loaderBaseConfig(
   baseConfig: XCrawlBaseConfig | undefined
@@ -18,6 +19,14 @@ function loaderBaseConfig(
 
   if (!loaderBaseConfig.mode) {
     loaderBaseConfig.mode = 'async'
+  }
+
+  if (isUndefined(baseConfig?.timeout)) {
+    loaderBaseConfig.timeout = 10000
+  }
+
+  if (isUndefined(baseConfig?.maxRetry)) {
+    loaderBaseConfig.maxRetry = 0
   }
 
   return loaderBaseConfig as LoaderXCrawlBaseConfig

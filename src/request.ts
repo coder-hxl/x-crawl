@@ -11,7 +11,7 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import { isUndefined } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { DataRequestConfig, FileRequestConfig } from './types/api'
+import { LoaderDataRequestConfig, LoaderFileRequestConfig } from './types/api'
 
 /* Type */
 export interface Request {
@@ -36,7 +36,7 @@ function parseParams(urlSearch: string, params?: AnyObject): string {
 }
 
 function parseHeaders(
-  rawConfig: DataRequestConfig & FileRequestConfig,
+  rawConfig: LoaderDataRequestConfig & LoaderFileRequestConfig,
   config: RequestOptions & MapTypeEmptyObject<URL>
 ) {
   const rawHeaders = rawConfig.headers ?? {}
@@ -55,7 +55,7 @@ function parseHeaders(
 }
 
 function handleRequestConfig(
-  rawConfig: DataRequestConfig & FileRequestConfig
+  rawConfig: LoaderDataRequestConfig & LoaderFileRequestConfig
 ): RequestOptions & MapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
@@ -85,7 +85,9 @@ function handleRequestConfig(
   return config
 }
 
-export function request(config: DataRequestConfig & FileRequestConfig) {
+export function request(
+  config: LoaderDataRequestConfig & LoaderFileRequestConfig
+) {
   return new Promise<Request>((resolve, reject) => {
     const isDataUndefine = isUndefined(config.data)
     config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data

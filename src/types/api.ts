@@ -4,14 +4,25 @@ import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 import { AnyObject, MapTypeObject } from './common'
 
 /* Loader Config */
+type LoaderHasConfig = {
+  timeout: number
+  maxRetry: number
+}
+
+export type LoaderPageRequestConfig = PageRequestConfig & LoaderHasConfig
+
+export type LoaderDataRequestConfig = DataRequestConfig & LoaderHasConfig
+
+export type LoaderFileRequestConfig = FileRequestConfig & LoaderHasConfig
+
 export interface LoaderCrawlPageConfig
   extends MapTypeObject<CrawlPageConfigObject, 'requestConfigs'> {
-  requestConfigs: PageRequestConfig[]
+  requestConfigs: LoaderPageRequestConfig[]
 }
 
 export interface LoaderCrawlDataConfig
   extends MapTypeObject<CrawlDataConfigObject, 'requestConfigs'> {
-  requestConfigs: DataRequestConfig[]
+  requestConfigs: LoaderDataRequestConfig[]
 }
 
 export interface LoaderCrawlFileConfig
@@ -19,7 +30,7 @@ export interface LoaderCrawlFileConfig
     CrawlFileConfig<CrawlFileRequestConfig>,
     'requestConfig'
   > {
-  requestConfigs: FileRequestConfig[]
+  requestConfigs: LoaderFileRequestConfig[]
 }
 
 /* API Config */
@@ -85,10 +96,11 @@ export interface FileRequestConfig {
 export type CrawlFileRequestConfig =
   | string
   | FileRequestConfig
-  | (string | PageRequestConfig)[]
+  | (string | FileRequestConfig)[]
 
 export interface CrawlPageConfigObject {
   requestConfigs: (string | PageRequestConfig)[]
+  timeout?: number
   cookies?: PageRequestConfigCookies
   intervalTime?: IntervalTime
   maxRetry?: number
@@ -96,6 +108,7 @@ export interface CrawlPageConfigObject {
 
 export interface CrawlDataConfigObject {
   requestConfigs: (string | DataRequestConfig)[]
+  timeout?: number
   intervalTime?: IntervalTime
   maxRetry?: number
 }
@@ -114,6 +127,7 @@ export type CrawlDataConfig =
 
 export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
   requestConfig: R
+  timeout?: number
   intervalTime?: IntervalTime
   maxRetry?: number
   fileConfig: {
@@ -133,6 +147,7 @@ export interface CrawlCommonRes {
   id: number
   isSuccess: boolean
   maxRetry: number
+  crawlCount: number
   retryCount: number
   errorQueue: Error[]
 }

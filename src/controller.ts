@@ -5,14 +5,14 @@ import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 export interface ControllerConfig<T, V> {
   id: number
   isSuccess: boolean
+  crawlCount: number
   maxRetry: number
-  retryCount: number
   errorQueue: Error[]
   requestConfig: T
   crawlSingleRes: V | null
 }
 
-export async function controller<T extends { maxRetry?: number }, V, C>(
+export async function controller<T extends { maxRetry: number }, V, C>(
   name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
   requestConfigs: T[],
@@ -28,8 +28,8 @@ export async function controller<T extends { maxRetry?: number }, V, C>(
     (requestConfig, index) => ({
       id: index + 1,
       isSuccess: false,
-      maxRetry: requestConfig.maxRetry ?? 0,
-      retryCount: -1,
+      maxRetry: requestConfig.maxRetry,
+      crawlCount: 0,
       errorQueue: [],
       requestConfig,
       crawlSingleRes: null
@@ -58,7 +58,7 @@ export async function controller<T extends { maxRetry?: number }, V, C>(
       (config) =>
         config.maxRetry &&
         !config.isSuccess &&
-        config.retryCount < config.maxRetry
+        config.crawlCount <= config.maxRetry
     )
 
     if (crawlQueue.length) {
