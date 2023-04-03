@@ -128,8 +128,13 @@ function loaderCommonConfig(
     }
 
     // 1.3.porxy
-    if (isUndefined(proxy) && !isUndefined(baseConfig.proxy)) {
-      proxy = baseConfig.proxy
+    // requestConfig > loaderConfig > baseConfig
+    if (isUndefined(proxy)) {
+      if (!isUndefined(loaderConfig.proxy)) {
+        proxy = loaderConfig.proxy
+      } else if (!isUndefined(baseConfig.proxy)) {
+        proxy = baseConfig.proxy
+      }
     }
 
     // 1.4.maxRetry
@@ -169,10 +174,11 @@ function loaderPageConfig(
   // requestConfig 统一转成 PageRequestConfig 类型
   if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
     // CrawlPageConfigObject 处理
-    const { requestConfigs, timeout, cookies, intervalTime, maxRetry } =
+    const { requestConfigs, proxy, timeout, cookies, intervalTime, maxRetry } =
       rawConfig as CrawlPageConfigObject
 
     // 给 loaderConfig 装载 API Config
+    loaderConfig.proxy = proxy
     loaderConfig.cookies = cookies
     loaderConfig.intervalTime = intervalTime
     loaderConfig.maxRetry = maxRetry
@@ -215,10 +221,11 @@ function loaderDataConfig(
   const requestObjecs: DataRequestConfig[] = []
   if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
     // CrawlDataConfigObject 处理
-    const { requestConfigs, timeout, intervalTime, maxRetry } =
+    const { requestConfigs, proxy, timeout, intervalTime, maxRetry } =
       rawConfig as CrawlDataConfigObject
 
     // 给 loaderConfig 装载 API Config
+    loaderConfig.proxy = proxy
     loaderConfig.intervalTime = intervalTime
     loaderConfig.maxRetry = maxRetry
     loaderConfig.timeout = timeout
@@ -245,6 +252,7 @@ function loaderFileConfig(
 ): LoaderCrawlFileConfig {
   const loaderConfig: LoaderCrawlFileConfig = {
     requestConfigs: [],
+    proxy: rawConfig.proxy,
     timeout: rawConfig.timeout,
     intervalTime: rawConfig.intervalTime,
     maxRetry: rawConfig.maxRetry,

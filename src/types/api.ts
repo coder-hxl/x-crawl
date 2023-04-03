@@ -107,6 +107,7 @@ export type CrawlFileRequestConfig =
 
 export interface CrawlPageConfigObject {
   requestConfigs: (string | PageRequestConfig)[]
+  proxy?: string
   timeout?: number
   cookies?: PageRequestConfigCookies
   intervalTime?: IntervalTime
@@ -115,6 +116,7 @@ export interface CrawlPageConfigObject {
 
 export interface CrawlDataConfigObject {
   requestConfigs: (string | DataRequestConfig)[]
+  proxy?: string
   timeout?: number
   intervalTime?: IntervalTime
   maxRetry?: number
@@ -134,6 +136,7 @@ export type CrawlDataConfig =
 
 export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
   requestConfig: R
+  proxy?: string
   timeout?: number
   intervalTime?: IntervalTime
   maxRetry?: number

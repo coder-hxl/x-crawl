@@ -91,13 +91,11 @@ async function loaderBaseConfig() {
 
 // 2.2.Loader API Config
 async function loaderAPIConfig() {
-  const testXCrawl = xCrawl({
-    baseUrl: 'https://github.com',
-    proxy: 'http://localhost:14892'
-  })
+  const testXCrawl = xCrawl({ baseUrl: 'https://github.com' })
 
   const res = await testXCrawl.crawlPage({
     requestConfigs: ['/coder-hxl', '/coder-hxl/x-crawl'],
+    proxy: 'http://localhost:14892',
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0

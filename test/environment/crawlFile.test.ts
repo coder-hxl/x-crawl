@@ -88,12 +88,12 @@ async function loaderBaseConfig() {
 async function loaderAPIConfig() {
   const testXCrawl = xCrawl({
     baseUrl:
-      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
-    proxy: 'http://localhost:14892'
+      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area'
   })
 
   const res = await testXCrawl.crawlFile({
     requestConfig: ['/4401.jpg', '/4403.jpg'],
+    proxy: 'http://localhost:14892',
     timeout: 10000,
     fileConfig: { storeDir },
     intervalTime: { max: 1000 },

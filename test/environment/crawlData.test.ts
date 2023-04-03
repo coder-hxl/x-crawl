@@ -84,12 +84,12 @@ async function loaderBaseConfig() {
 // 2.2.Loader API Config
 async function loaderAPIConfig() {
   const testXCrawl = xCrawl({
-    baseUrl: 'http://localhost:9001/api',
-    proxy: 'http://localhost:14892'
+    baseUrl: 'http://localhost:9001/api'
   })
 
   const res = await testXCrawl.crawlData({
     requestConfigs: ['/room/193581217', '/room/193581217'],
+    proxy: 'http://localhost:14892',
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
