@@ -103,6 +103,40 @@ async function loaderAPIConfig() {
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
+/* 3.Store Config */
+async function storeConfig() {
+  const testXCrawl = xCrawl({
+    baseUrl:
+      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
+    proxy: 'http://localhost:14892'
+  })
+
+  const record: string[] = []
+  const res = await testXCrawl.crawlFile({
+    requestConfig: [
+      { url: '/4401.jpg', fileName: '4401' },
+      { url: '/4403.jpg', fileName: '4403' }
+    ],
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload'),
+      extension: '.jpg',
+      beforeSave(info) {
+        record.push(info.fileName)
+      }
+    }
+  })
+
+  let isSuccess = true
+  res.forEach((item) => {
+    if (isSuccess) {
+      const hasName = record.includes(item.data?.data.fileName ?? '')
+      isSuccess = item.isSuccess && hasName
+    }
+  })
+
+  return isSuccess
+}
+
 /* 1.Written */
 test('crawlFile - writtenString', async () => {
   console.log(
@@ -146,4 +180,12 @@ test('crawlFile - loaderAPIConfig', async () => {
     )
   )
   await expect(loaderAPIConfig()).resolves.toBe(true)
+})
+
+/* 2.Store Config */
+test('crawlFile - loaderAPIConfig', async () => {
+  console.log(
+    chalk.bgGreen('================ crawlFile - storeConfig ================')
+  )
+  await expect(storeConfig()).resolves.toBe(true)
 })

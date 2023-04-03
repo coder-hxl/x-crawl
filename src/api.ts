@@ -13,7 +13,8 @@ import {
   log,
   logError,
   logSuccess,
-  logWarn
+  logWarn,
+  mkdirDirSync
 } from './utils'
 
 import {
@@ -146,7 +147,7 @@ function loaderCommonConfig(
       priority = 0
     }
 
-    return { url, timeout, proxy, maxRetry, priority }
+    return { ...requestConfig, url, timeout, proxy, maxRetry, priority }
   })
 
   // 2.intervalTime
@@ -257,6 +258,23 @@ function loaderFileConfig(
 
   // 装载公共配置到 loaderConfig
   loaderCommonConfig(baseConfig, requestObjecs, loaderConfig)
+
+  // 装载单独的配置
+  loaderConfig.requestConfigs.forEach((requestConfig) => {
+    if (
+      isUndefined(requestConfig.storeDir) &&
+      !isUndefined(rawConfig.fileConfig?.storeDir)
+    ) {
+      requestConfig.storeDir = rawConfig.fileConfig!.storeDir
+    }
+
+    if (
+      isUndefined(requestConfig.extension) &&
+      !isUndefined(rawConfig.fileConfig?.extension)
+    ) {
+      requestConfig.extension = rawConfig.fileConfig!.extension
+    }
+  })
 
   return loaderConfig
 }
@@ -494,10 +512,6 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
       config
     )
 
-    if (!fs.existsSync(fileConfig.storeDir)) {
-      fs.mkdirSync(fileConfig.storeDir)
-    }
-
     const controllerRes = await controller(
       'file',
       baseConfig.mode,
@@ -517,7 +531,8 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
         maxRetry,
         crawlCount,
         errorQueue,
-        crawlSingleRes
+        crawlSingleRes,
+        requestConfig
       } = item
 
       const crawlRes: CrawlFileSingleRes = {
@@ -532,14 +547,47 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
 
       if (isSuccess && crawlSingleRes) {
         const mimeType = crawlSingleRes.headers['content-type'] ?? ''
-        const fileExtension = fileConfig.extension ?? mimeType.split('/').pop()
-        const fileName = new Date().getTime().toString()
-        const filePath = path.resolve(
-          fileConfig.storeDir,
-          `${fileName}.${fileExtension}`
-        )
+        let fileName = ''
+        let fileExtension = ''
 
-        const saveFileItem = writeFile(filePath, crawlSingleRes.data)
+        if (!isUndefined(requestConfig.fileName)) {
+          fileName = requestConfig.fileName
+        } else {
+          fileName = new Date().getTime().toString()
+        }
+
+        if (!isUndefined(requestConfig.extension)) {
+          fileExtension = requestConfig.extension
+        } else {
+          fileExtension = '.' + mimeType.split('/').pop()
+        }
+
+        if (
+          !isUndefined(requestConfig.storeDir) &&
+          !fs.existsSync(requestConfig.storeDir)
+        ) {
+          mkdirDirSync(requestConfig.storeDir)
+        }
+
+        const storePath = requestConfig.storeDir ?? __dirname
+        const filePath = path.resolve(storePath, fileName + fileExtension)
+
+        // 在保存前的回调
+        let data = crawlSingleRes.data
+        if (fileConfig?.beforeSave) {
+          const newData = fileConfig.beforeSave({
+            id,
+            fileName,
+            filePath,
+            data
+          })
+
+          if (newData) {
+            data = newData
+          }
+        }
+
+        const saveFileItem = writeFile(filePath, data)
           .catch((err) => {
             const message = `File save error at id ${id}: ${err.message}`
             const valueOf = () => id
@@ -551,9 +599,18 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
           .then((isError) => {
             const size = crawlSingleRes.data.length
             const isSuccess = !isError
-            const fileInfo = { isSuccess, fileName, mimeType, size, filePath }
 
-            crawlRes.data = { ...crawlSingleRes, data: fileInfo }
+            crawlRes.data = {
+              ...crawlSingleRes,
+              data: {
+                isSuccess,
+                fileName,
+                fileExtension,
+                mimeType,
+                size,
+                filePath
+              }
+            }
 
             if (callback) {
               callback(crawlRes)

@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import chalk from 'chalk'
 
 export function sleep(timeout: number) {
@@ -12,6 +14,20 @@ export function random(max: number, min = 0) {
   }
 
   return res
+}
+
+export function mkdirDirSync(dir: string) {
+  const dirSplit = path.resolve(dir).split(path.sep)
+
+  dirSplit.reduce((prev, item, index) => {
+    const currentDir = index !== 0 ? path.join(prev, item) : item
+
+    if (!fs.existsSync(currentDir)) {
+      fs.mkdirSync(currentDir)
+    }
+
+    return currentDir
+  }, '')
 }
 
 export const log = console.log

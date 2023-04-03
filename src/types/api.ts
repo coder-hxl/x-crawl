@@ -94,6 +94,9 @@ export interface FileRequestConfig {
   proxy?: string
   maxRetry?: number
   priority?: number
+  storeDir?: string
+  fileName?: string
+  extension?: string
 }
 
 // CrawlConfig
@@ -134,9 +137,15 @@ export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
   timeout?: number
   intervalTime?: IntervalTime
   maxRetry?: number
-  fileConfig: {
-    storeDir: string
+  fileConfig?: {
+    storeDir?: string
     extension?: string
+    beforeSave?: (info: {
+      id: number
+      fileName: string
+      filePath: string
+      data: Buffer
+    }) => Buffer | void
   }
 }
 
@@ -179,6 +188,7 @@ export interface CrawlFileSingleRes extends CrawlCommonRes {
     data: {
       isSuccess: boolean
       fileName: string
+      fileExtension: string
       mimeType: string
       size: number
       filePath: string
