@@ -5,6 +5,7 @@ import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
 import { ControllerConfig, controller } from './controller'
 import { request } from './request'
+import { quickSort } from './sort'
 import {
   isArray,
   isObject,
@@ -41,7 +42,6 @@ import {
   LoaderFileRequestConfig
 } from './types/api'
 import { LoaderXCrawlBaseConfig } from './types'
-import { quickSort } from './sort'
 
 async function crawlRequestSingle(
   controllerConfig: ControllerConfig<
@@ -109,7 +109,7 @@ function loaderCommonConfig(
 ) {
   // 1.requestConfigs
   loaderConfig.requestConfigs = requestObjecs.map((requestConfig) => {
-    let { url, timeout, proxy, maxRetry } = requestConfig
+    let { url, timeout, proxy, maxRetry, priority } = requestConfig
 
     // 1.1.baseUrl
     if (!isUndefined(baseConfig.baseUrl)) {
@@ -141,7 +141,12 @@ function loaderCommonConfig(
       }
     }
 
-    return { url, timeout, proxy, maxRetry }
+    // 1.5.priority
+    if (isUndefined(priority)) {
+      priority = 0
+    }
+
+    return { url, timeout, proxy, maxRetry, priority }
   })
 
   // 2.intervalTime

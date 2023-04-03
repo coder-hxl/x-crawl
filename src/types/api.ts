@@ -7,6 +7,7 @@ import { AnyObject, MapTypeObject } from './common'
 type LoaderHasConfig = {
   timeout: number
   maxRetry: number
+  priority: number
 }
 
 export type LoaderPageRequestConfig = PageRequestConfig & LoaderHasConfig
@@ -71,6 +72,7 @@ export interface PageRequestConfig {
   proxy?: string
   cookies?: PageRequestConfigCookies
   maxRetry?: number
+  priority?: number
 }
 
 export interface DataRequestConfig {
@@ -82,6 +84,7 @@ export interface DataRequestConfig {
   timeout?: number
   proxy?: string
   maxRetry?: number
+  priority?: number
 }
 
 export interface FileRequestConfig {
@@ -90,6 +93,7 @@ export interface FileRequestConfig {
   timeout?: number
   proxy?: string
   maxRetry?: number
+  priority?: number
 }
 
 // CrawlConfig

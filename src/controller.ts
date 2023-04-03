@@ -1,8 +1,20 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
-import { IntervalTime } from './types/api'
+import { priorityQueueMergeSort } from './sort'
+import {
+  IntervalTime,
+  LoaderDataRequestConfig,
+  LoaderFileRequestConfig,
+  LoaderPageRequestConfig
+} from './types/api'
 import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
-export interface ControllerConfig<T, V> {
+export interface ControllerConfig<
+  T extends
+    | LoaderPageRequestConfig
+    | LoaderDataRequestConfig
+    | LoaderFileRequestConfig,
+  V
+> {
   id: number
   isSuccess: boolean
   crawlCount: number
@@ -12,7 +24,14 @@ export interface ControllerConfig<T, V> {
   crawlSingleRes: V | null
 }
 
-export async function controller<T extends { maxRetry: number }, V, C>(
+export async function controller<
+  T extends
+    | LoaderPageRequestConfig
+    | LoaderDataRequestConfig
+    | LoaderFileRequestConfig,
+  V,
+  C
+>(
   name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
   requestConfigs: T[],
@@ -23,8 +42,21 @@ export async function controller<T extends { maxRetry: number }, V, C>(
     crawlSingleFnExtraConfig: C
   ) => Promise<V>
 ): Promise<ControllerConfig<T, V>[]> {
+  // 是否使用优先爬取
+  const isPriorityCrawl = !requestConfigs.every(
+    (item) => item.priority === requestConfigs[0].priority
+  )
+  const targetRequestConfigs = isPriorityCrawl
+    ? priorityQueueMergeSort(
+        requestConfigs.map((item) => ({
+          ...item,
+          valueOf: () => item.priority
+        }))
+      )
+    : requestConfigs
+
   // 通过映射生成新的配置数组
-  const controllerConfigs: ControllerConfig<T, V>[] = requestConfigs.map(
+  const controllerConfigs: ControllerConfig<T, V>[] = targetRequestConfigs.map(
     (requestConfig, index) => ({
       id: index + 1,
       isSuccess: false,

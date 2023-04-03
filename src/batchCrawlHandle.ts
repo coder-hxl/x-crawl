@@ -1,6 +1,11 @@
 import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
-import type { IntervalTime } from './types/api'
+import type {
+  IntervalTime,
+  LoaderDataRequestConfig,
+  LoaderFileRequestConfig,
+  LoaderPageRequestConfig
+} from './types/api'
 import type { ControllerConfig } from './controller'
 
 async function useSleepByBatch(
@@ -26,7 +31,14 @@ async function useSleepByBatch(
   }
 }
 
-export async function asyncBatchCrawl<T, V, C>(
+export async function asyncBatchCrawl<
+  T extends
+    | LoaderPageRequestConfig
+    | LoaderDataRequestConfig
+    | LoaderFileRequestConfig,
+  V,
+  C
+>(
   controllerConfigs: ControllerConfig<T, V>[],
   intervalTime: IntervalTime | undefined,
   crawlSingleFnExtraConfig: C,
@@ -73,7 +85,14 @@ export async function asyncBatchCrawl<T, V, C>(
   await Promise.all(crawlQueue)
 }
 
-export async function syncBatchCrawl<T, V, C>(
+export async function syncBatchCrawl<
+  T extends
+    | LoaderPageRequestConfig
+    | LoaderDataRequestConfig
+    | LoaderFileRequestConfig,
+  V,
+  C
+>(
   controllerConfigs: ControllerConfig<T, V>[],
   intervalTime: IntervalTime | undefined,
   crawlSingleFnExtraConfig: C,
