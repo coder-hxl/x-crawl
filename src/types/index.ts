@@ -34,7 +34,7 @@ export interface XCrawlInstance {
     callback?: ((res: CrawlPageSingleRes) => void) | undefined
   ) => Promise<CrawlPageRes<T>>
 
-  crawlData: <D, T extends CrawlDataConfig>(
+  crawlData: <D = any, T extends CrawlDataConfig = CrawlDataConfig>(
     config: T,
     callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
   ) => Promise<CrawlDataRes<D, T>>

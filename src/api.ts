@@ -417,7 +417,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 }
 
 export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
-  async function crawlData<D, T extends CrawlDataConfig>(
+  async function crawlData<D = any, T extends CrawlDataConfig = any>(
     config: T,
     callback?: (res: CrawlDataSingleRes<D>) => void
   ): Promise<CrawlDataRes<D, T>> {
