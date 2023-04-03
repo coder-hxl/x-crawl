@@ -1,31 +1,22 @@
 import path from 'node:path'
-import { Browser } from 'puppeteer'
 import xCrawl from 'x-crawl'
 
 const testXCrawl = xCrawl({
+  baseUrl: 'http://localhost:9001/api',
   timeout: 10000,
   intervalTime: { max: 3000, min: 1000 }
 })
 
 testXCrawl
-  .crawlPage({
+  .crawlData({
     requestConfigs: [
-      'https://www.google.com/search?q=1',
-      'https://www.google.com/search?q=2',
-      'https://www.google.com/search?q=2'
-    ],
-    maxRetry: 2
+      { url: '/room/597664', priority: 3 },
+      { url: '/room/92507', priority: 8 },
+      { url: '/room/193581217', priority: 3 }
+    ]
   })
   .then((res) => {
-    let browser: Browser | null = null
-
     res.forEach((item) => {
-      if (!browser) browser = item.data.browser
-
-      console.log(item.isSuccess, item.retryCount)
-
-      console.log(item.errorQueue.map((item) => item.message))
+      console.log(item.data?.data.data.id)
     })
-
-    browser!.close()
   })

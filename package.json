@@ -11,8 +11,11 @@
     "build-dts": "tsc && prettier --write ./publish/src",
     "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
     "start": "rollup --config script/start.mjs",
-    "test-dev": "jest test/modal/test.ts dev --detectOpenHandles",
-    "test-pro": "jest test/modal/test.ts pro --detectOpenHandles",
+    "test-dev": "jest test/environment/test.ts dev --detectOpenHandles",
+    "test-pro": "jest test/environment/test.ts pro --detectOpenHandles",
+    "test-crawlPage": "jest test/environment/crawlPage.test.ts dev --detectOpenHandles",
+    "test-crawlData": "jest test/environment/crawlData.test.ts dev --detectOpenHandles",
+    "test-crawlFile": "jest test/environment/crawlFile.test.ts dev --detectOpenHandles",
     "prettier": "prettier --write ."
   },
   "dependencies": {
