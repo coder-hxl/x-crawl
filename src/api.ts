@@ -555,20 +555,11 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
 
       if (isSuccess && crawlSingleRes) {
         const mimeType = crawlSingleRes.headers['content-type'] ?? ''
-        let fileName = ''
-        let fileExtension = ''
 
-        if (!isUndefined(requestConfig.fileName)) {
-          fileName = requestConfig.fileName
-        } else {
-          fileName = new Date().getTime().toString()
-        }
-
-        if (!isUndefined(requestConfig.extension)) {
-          fileExtension = requestConfig.extension
-        } else {
-          fileExtension = '.' + mimeType.split('/').pop()
-        }
+        const fileName =
+          requestConfig.fileName ?? `${id}-${new Date().getTime()}`
+        const fileExtension =
+          requestConfig.extension ?? `.${mimeType.split('/').pop()}`
 
         if (
           !isUndefined(requestConfig.storeDir) &&
