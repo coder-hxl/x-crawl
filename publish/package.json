@@ -1,12 +1,13 @@
 {
   "name": "x-crawl",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible nodejs crawler library.",
   "license": "MIT",
   "keywords": [
     "nodejs",
     "typescript",
+    "javascript",
     "crawl",
     "crawler",
     "spider",
@@ -29,7 +30,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "https-proxy-agent": "^5.0.1",
-    "puppeteer": "^19.7.2"
+    "puppeteer": "19.8.0"
   },
   "devDependencies": {}
 }
