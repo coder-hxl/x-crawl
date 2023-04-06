@@ -8,7 +8,6 @@ import {
   CrawlPageSingleRes,
   CrawlDataRes,
   CrawlDataSingleRes,
-  CrawlFileRequestConfig,
   CrawlFileSingleRes,
   CrawlFileRes
 } from './api'
@@ -39,10 +38,10 @@ export interface XCrawlInstance {
     callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
   ) => Promise<CrawlDataRes<D, T>>
 
-  crawlFile: <R extends CrawlFileRequestConfig>(
-    config: CrawlFileConfig<R>,
+  crawlFile: <T extends CrawlFileConfig>(
+    config: T,
     callback?: ((res: CrawlFileSingleRes) => void) | undefined
-  ) => Promise<CrawlFileRes<R>>
+  ) => Promise<CrawlFileRes<T>>
 
   startPolling: (
     config: StartPollingConfig,

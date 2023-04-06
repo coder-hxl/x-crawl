@@ -27,10 +27,7 @@ export interface LoaderCrawlDataConfig
 }
 
 export interface LoaderCrawlFileConfig
-  extends MapTypeObject<
-    CrawlFileConfig<CrawlFileRequestConfig>,
-    'requestConfig'
-  > {
+  extends MapTypeObject<CrawlFileConfigObject, 'requestConfigs'> {
   requestConfigs: LoaderFileRequestConfig[]
 }
 
@@ -100,11 +97,6 @@ export interface FileRequestConfig {
 }
 
 // CrawlConfig
-export type CrawlFileRequestConfig =
-  | string
-  | FileRequestConfig
-  | (string | FileRequestConfig)[]
-
 export interface CrawlPageConfigObject {
   requestConfigs: (string | PageRequestConfig)[]
   proxy?: string
@@ -122,20 +114,8 @@ export interface CrawlDataConfigObject {
   maxRetry?: number
 }
 
-export type CrawlPageConfig =
-  | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-
-export type CrawlDataConfig =
-  | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-
-export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
-  requestConfig: R
+export interface CrawlFileConfigObject {
+  requestConfigs: (string | FileRequestConfig)[]
   proxy?: string
   timeout?: number
   intervalTime?: IntervalTime
@@ -151,6 +131,23 @@ export interface CrawlFileConfig<R extends CrawlFileRequestConfig> {
     }) => Buffer | void
   }
 }
+
+export type CrawlPageConfig =
+  | string
+  | PageRequestConfig
+  | (string | PageRequestConfig)[]
+  | CrawlPageConfigObject
+
+export type CrawlDataConfig =
+  | string
+  | DataRequestConfig
+  | (string | DataRequestConfig)[]
+  | CrawlDataConfigObject
+
+export type CrawlFileConfig =
+  | FileRequestConfig
+  | FileRequestConfig[]
+  | CrawlFileConfigObject
 
 export interface StartPollingConfig {
   d?: number
@@ -211,7 +208,8 @@ export type CrawlDataRes<D, R extends CrawlDataConfig> = R extends
   ? CrawlDataSingleRes<D>[]
   : CrawlDataSingleRes<D>
 
-export type CrawlFileRes<R extends CrawlFileRequestConfig> = R extends
-  | (string | PageRequestConfig)[]
+export type CrawlFileRes<R extends CrawlFileConfig> = R extends
+  | FileRequestConfig[]
+  | CrawlFileConfigObject
   ? CrawlFileSingleRes[]
   : CrawlFileSingleRes
