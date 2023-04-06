@@ -13,5 +13,5 @@
     "outDir": "./publish",
     "emitDeclarationOnly": false
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "test/**/*", "publish/dist/index.d.ts"]
 }

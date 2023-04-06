@@ -1,12 +1,13 @@
 {
   "name": "x-crawl",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible nodejs crawler library.",
   "license": "MIT",
   "keywords": [
     "nodejs",
     "typescript",
+    "javascript",
     "crawl",
     "crawler",
     "spider",

@@ -1,11 +1,11 @@
-import path from 'node:path'
-import xCrawl from 'x-crawl'
+// import path from 'node:path'
+// import xCrawl from 'x-crawl'
 
-const testXCrawl = xCrawl({
-  timeout: 10000,
-  intervalTime: { max: 3000, min: 1000 },
-  proxy: 'http://localhost:14892'
-})
+// const testXCrawl = xCrawl({
+//   timeout: 10000,
+//   intervalTime: { max: 3000, min: 1000 },
+//   proxy: 'http://localhost:14892'
+// })
 
 // testXCrawl
 //   .crawlData({
@@ -21,31 +21,30 @@ const testXCrawl = xCrawl({
 //     })
 //   })
 
-testXCrawl
-  .crawlFile({
-    requestConfig: [
-      {
-        url: 'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg',
-        fileName: '4403',
-        extension: '.jpg'
-      },
-      {
-        url: 'http://127.0.0.1:5500/assets/cn/crawler.png',
-        fileName: 'crawler',
-        storeDir: path.resolve(__dirname, './upload/2/1')
-      }
-    ],
-    fileConfig: {
-      storeDir: path.resolve(__dirname, './upload'),
-      beforeSave(info) {
-        console.log(info.fileName, info.filePath)
-      }
-    }
-  })
-  .then((res) => {
-    res.forEach((item) => {
-      console.log(item.id)
+// 1.导入模块 ES/CJS
+import xCrawl from 'x-crawl'
 
-      item.errorQueue.forEach((item) => console.log(item.message))
-    })
+// 2.创建一个爬虫实例
+const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 2000 } })
+
+// 3.设置爬取任务
+// 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
+myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
+  // 调用 crawlPage API 爬取 Page
+  const res = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
+  const { page } = res.data
+
+  // 设置请求配置，获取轮播图片的 URL
+  const requestConfigs = await page.$$eval('.chief-recom-item img', (imgEls) =>
+    imgEls.map((item) => item.src)
+  )
+
+  // 调用 crawlFile API 爬取图片
+  await myXCrawl.crawlFile({
+    requestConfigs,
+    fileConfig: { storeDir: './upload' }
   })
+
+  // 关闭页面
+  page.close()
+})

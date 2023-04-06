@@ -5,17 +5,26 @@
   "author": "coderHXL",
   "description": "x-crawl is a flexible nodejs crawler library.",
   "license": "MIT",
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "javascript",
+    "crawl",
+    "crawler",
+    "spider",
+    "flexible"
+  ],
   "main": "src/index.ts",
   "scripts": {
     "build": "rollup --config rollup.config.mjs",
     "build-dts": "tsc && prettier --write ./publish/src",
     "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
     "start": "rollup --config script/start.mjs",
-    "test-dev": "jest test/environment/test.ts dev --detectOpenHandles",
-    "test-pro": "jest test/environment/test.ts pro --detectOpenHandles",
-    "test-crawlPage": "jest test/environment/crawlPage.test.ts dev --detectOpenHandles",
-    "test-crawlData": "jest test/environment/crawlData.test.ts dev --detectOpenHandles",
-    "test-crawlFile": "jest test/environment/crawlFile.test.ts dev --detectOpenHandles",
+    "test-dev": "jest test/environment/test.ts dev",
+    "test-pro": "jest test/environment/test.ts pro",
+    "test-crawlPage": "jest test/environment/crawlPage.test.ts dev",
+    "test-crawlData": "jest test/environment/crawlData.test.ts dev",
+    "test-crawlFile": "jest test/environment/crawlFile.test.ts dev",
     "prettier": "prettier --write ."
   },
   "dependencies": {
