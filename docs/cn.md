@@ -101,32 +101,50 @@ npm install x-crawl
 
 ## 示例
 
-每天自动获取 bilibili 国漫主页的轮播图片为例:
+每天自动获取 bilibili 首页、国漫、电影这三个页面的轮播图片为例:
 
 ```js
 // 1.导入模块 ES/CJS
 import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
-const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 2000 } })
+const myXCrawl = xCrawl({
+  maxRetry: 3,
+  intervalTime: { max: 3000, min: 2000 }
+})
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
-  // 调用 crawlPage API 爬取 Page
-  const res = await myXCrawl.crawlPage('https://www.bilibili.com/guochuang/')
-  const { page } = res.data
+  // 调用 crawlPage API 爬取 首页、国漫、电影 这三个页面
+  const res = await myXCrawl.crawlPage([
+    'https://www.bilibili.com',
+    'https://www.bilibili.com/guochuang',
+    'https://www.bilibili.com/movie'
+  ])
 
-  // 设置请求配置，获取轮播图片的 URL
-  const requestConfigs = await page.$$eval('.chief-recom-item img', (imgEls) =>
-    imgEls.map((item) => item.src)
-  )
+  // 存放图片 URL
+  const imgUrls: string[] = []
+  const elSelectorMap = ['.carousel-inner img', '.chief-recom-item img', '.bg-item img']
+  for (const item of res) {
+    const { id } = item
+    const { page } = item.data
+
+    // 获取页面轮播图片元素的 URL
+    const urls = await page.$$eval(elSelectorMap[id - 1], (imgEls) =>
+      imgEls.map((item) => item.src)
+    )
+    imgUrls.push(...urls)
+
+    // 关闭页面
+    page.close()
+  }
 
   // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({ requestConfigs, fileConfig: { storeDir: './upload' } })
-
-  // 关闭页面
-  page.close()
+  await myXCrawl.crawlFile({
+    requestConfigs: imgUrls,
+    fileConfig: { storeDir: './upload' }
+  })
 })
 ```
 
