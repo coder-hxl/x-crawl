@@ -126,7 +126,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   ])
 
   // 存放图片 URL
-  const imgUrls: string[] = []
+  const imgUrls = []
   const elSelectorMap = ['.carousel-inner img', '.chief-recom-item img', '.bg-item img']
   for (const item of res) {
     const { id } = item

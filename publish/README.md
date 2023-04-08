@@ -127,7 +127,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   ])
 
   // Store the image URL
-  const imgUrls: string[] = []
+  const imgUrls = []
   const elSelectorMap = ['.c14whb16', '.a1stauiv']
   for (const item of res) {
     const { id } = item
@@ -567,7 +567,7 @@ myXCrawl.crawlPage({
 
 The res you get will be an array of objects.
 
-More information about the results can be found at [About results](# About-results), which can be selected according to the actual situation.
+More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
 ### crawlData
 
@@ -695,7 +695,7 @@ myXCrawl.crawlData({
 
 The res you get will be an array of objects.
 
-More information about the results can be found at [About results](# About-results), which can be selected according to the actual situation.
+More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
 ### crawlFile
 
@@ -813,7 +813,7 @@ myXCrawl.crawlFile({
 
 The res you get will be an array of objects.
 
-More information about the results can be found at [About results](# About-results), which can be selected according to the actual situation.
+More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
 ### startPolling
 
