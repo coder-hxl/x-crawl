@@ -26,11 +26,8 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
 # Table of Contents
 
 - [Install](#Install)
-
 - [Example](#Example)
-
 - [Core concepts](#Core-concepts)
-
   - [Create application](#Create-application)
     - [An example of a crawler application](#An-example-of-a-crawler-application)
     - [Choose crawling mode](#Choose-crawling-mode)
@@ -47,9 +44,7 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
   - [Priority queue](#Priority-queue)
   - [About results](#About-results)
   - [TypeScript](#TypeScript)
-
 - [API](#API)
-
   - [xCrawl](#xCrawl)
     - [Type](#Type)
     - [Example](#Example-1)
@@ -68,9 +63,7 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
   - [crawlPolling](#crawlPolling)
     - [Type](#Type-4)
     - [Example](#Example-5)
-
 - [Types](#Types)
-
   - [API Config](#API-Config)
     - [API Config Other](#API-Config-Other)
       - [IntervalTime](#IntervalTime)
@@ -100,7 +93,6 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     - [CrawlFileRes](#CrawlFileRes)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
-
 - [More](#More)
 
 ## Install

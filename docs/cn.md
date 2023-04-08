@@ -26,11 +26,8 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 # 目录
 
 - [安装](#安装)
-
 - [示例](#示例)
-
 - [核心概念](#核心概念)
-
   - [创建应用](#创建应用)
     - [一个爬虫应用实例](#一个爬虫应用实例)
     - [选择爬取模式](#选择爬取模式)
@@ -47,9 +44,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
   - [优先队列](#优先队列)
   - [关于结果](#关于结果)
   - [TypeScript](#TypeScript)
-
 - [API](#API)
-
   - [xCrawl](#xCrawl)
     - [类型](#类型)
     - [示例](#示例-1)
@@ -69,9 +64,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [类型](#类型-4)
     - [示例](#示例-5)
     - [类型](#类型-5)
-
 - [API Config](#API-Config)
-
   - [API Config Other](#API-Config-Other)
     - [IntervalTime](#IntervalTime)
     - [Method](#Method)
@@ -100,7 +93,6 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [CrawlFileRes](#CrawlFileRes)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
-
 - [更多](#更多)
 
 ## 安装
