@@ -1,40 +1,41 @@
+// 1.Import module ES/CJS
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({
-  maxRetry: 3,
-  intervalTime: { max: 3000, min: 2000 }
-})
+// 2.Create a crawler instance
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 
+// 3.Set the crawling task
+/*
+  Call the startPolling API to start the polling function,
+  and the callback function will be called every other day
+*/
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
-  // 调用 crawlPage API 爬取 Page
+  // Call crawlPage API to crawl Page
   const res = await myXCrawl.crawlPage([
-    'https://www.bilibili.com',
-    'https://www.bilibili.com/guochuang',
-    'https://www.bilibili.com/movie'
+    'https://zh.airbnb.com/s/hawaii/experiences',
+    'https://zh.airbnb.com/s/hawaii/plus_homes'
   ])
 
-  // 获取每个页面轮播图片的 URL
+  // Store the image URL
   const imgUrls: string[] = []
-  const elSelectorMap = [
-    '.carousel-inner img',
-    '.chief-recom-item img',
-    '.bg-item img'
-  ]
+  const elSelectorMap = ['.c14whb16', '.a1stauiv']
   for (const item of res) {
     const { id } = item
     const { page } = item.data
 
-    const urls = await page.$$eval(elSelectorMap[id - 1] as 'img', (imgEls) =>
-      imgEls.map((item) => item.src)
-    )
+    // Gets the URL of the page's wheel image element
+    const boxHandle = await page.$(elSelectorMap[id - 1])
+    const urls = await boxHandle!.$$eval('picture img', (imgEls) => {
+      return imgEls.map((item) => item.src)
+    })
     imgUrls.push(...urls)
 
-    // 关闭页面
+    // Close page
     page.close()
   }
 
-  // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({
+  // Call the crawlFile API to crawl pictures
+  myXCrawl.crawlFile({
     requestConfigs: imgUrls,
     fileConfig: { storeDir: './upload' }
   })

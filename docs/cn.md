@@ -26,8 +26,11 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 # 目录
 
 - [安装](#安装)
+
 - [示例](#示例)
+
 - [核心概念](#核心概念)
+
   - [创建应用](#创建应用)
     - [一个爬虫应用实例](#一个爬虫应用实例)
     - [选择爬取模式](#选择爬取模式)
@@ -43,7 +46,10 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
   - [失败重试](#失败重试)
   - [优先队列](#优先队列)
   - [关于结果](#关于结果)
+  - [TypeScript](#TypeScript)
+
 - [API](#API)
+
   - [xCrawl](#xCrawl)
     - [类型](#类型)
     - [示例](#示例-1)
@@ -62,18 +68,23 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
   - [startPolling](#startPolling)
     - [类型](#类型-4)
     - [示例](#示例-5)
-- [类型](#类型-5)
-  - [API Config](#API-Config)
+    - [类型](#类型-5)
+
+- [API Config](#API-Config)
+
+  - [API Config Other](#API-Config-Other)
     - [IntervalTime](#IntervalTime)
     - [Method](#Method)
     - [PageRequestConfigCookies](#PageRequestConfigCookies)
+  - [API Config Request](#API-Config-Request)
     - [PageRequestConfig](#PageRequestConfig)
     - [DataRequestConfig](#DataRequestConfig)
     - [FileRequestConfig](#FileRequestConfig)
+  - [API Config Crawl](#API-Config-Crawl)
+    - [XCrawlBaseConfig](#XCrawlBaseConfig)
     - [CrawlPageConfigObject](#CrawlPageConfigObject)
     - [CrawlDataConfigObject](#CrawlDataConfigObject)
     - [CrawlFileConfigObject](#CrawlFileConfigObject)
-    - [XCrawlBaseConfig](#XCrawlBaseConfig)
     - [CrawlPageConfig](#CrawlPageConfig)
     - [CrawlDataConfig](#CrawlDataConfig)
     - [CrawlFileConfig](#CrawlFileConfig)
@@ -89,6 +100,7 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [CrawlFileRes](#CrawlFileRes)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
+
 - [更多](#更多)
 
 ## 安装
@@ -108,10 +120,7 @@ npm install x-crawl
 import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
-const myXCrawl = xCrawl({
-  maxRetry: 3,
-  intervalTime: { max: 3000, min: 2000 }
-})
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
@@ -330,11 +339,11 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
 
 一些通用的配置可以在三个地方设置：
 
-- 爬虫应用实例
-- 爬虫 API
-- 请求配置
+- 爬虫应用实例（全局）
+- 爬虫 API （局部）
+- 请求配置（单独）
 
-优先级为：request config > API config > base config
+优先级为：request config > API config > application config
 
 ### 间隔时间
 
@@ -364,14 +373,12 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在请求前�
 
 ### 失败重试
 
-失败重试可以在超时之类时会进行重新请求。
+失败重试在超时之类的错误发生时，将会等待这一轮请求结束后重新请求。
 
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({
-  intervalTime: { max: 3000, min: 1000 }
-})
+const myXCrawl = xCrawl()
 
 myXCrawl.crawlData({ url: 'https://xxx.com/xxxx', maxRetry: 1 }).then((res) => {})
 ```
@@ -385,9 +392,7 @@ maxRetry 属性决定要重试几次。
 ```js
 import xCrawl from 'x-crawl'
 
-const myXCrawl = xCrawl({
-  intervalTime: { max: 3000, min: 1000 }
-})
+const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData([
@@ -403,6 +408,16 @@ priority 属性的值越大就在当前爬取队列中越优先。
 ### 关于结果
 
 对于结果，每个请求的结果将统一使用对象包裹着，该对象提供了关于这次请求结果的信息，比如：id、结果、是否成功、最大重试、重试次数、收集到错误信息等。自动根据你选用的配置方式决定返回值是否包裹在一个数组中，并且在 TS 中类型完美适配。
+
+每个对象的 id 是根据你配置里的请求顺序决定的，如果有使用优先级，则会根据优先级排序。
+
+相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlData 配置](#配置-1)、[crawlFile 配置](#配置-2) 。
+
+### TypeScript
+
+像 TypeScript 这样的类型系统可以在编译时通过静态分析检测出很多常见错误。这减少了运行时错误，也让我们在重构大型项目的时候更有信心。通过 IDE 中基于类型的自动补全，TypeScript 还改善了开发体验和效率。
+
+x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持。自带类型声明文件，开箱即用。
 
 ## API
 
@@ -486,6 +501,8 @@ const myXCrawl = xCrawl()
 myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {})
 ```
 
+拿到的 res 将是一个对象。
+
 **2.PageRequestConfig**
 
 PageRequestConfig 的更多配置选项可以查看 [PageRequestConfig](#PageRequestConfig) 。
@@ -506,6 +523,8 @@ myXCrawl
   .then((res) => {})
 ```
 
+拿到的 res 将是一个对象。
+
 **3.(string | PageRequestConfig)[]**
 
 PageRequestConfig 的更多配置选项可以查看 [PageRequestConfig](#PageRequestConfig) 。
@@ -521,6 +540,8 @@ myXCrawl
   .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
   .then((res) => {})
 ```
+
+拿到的 res 将是一个数组，里面是对象。
 
 **4.CrawlPageConfigObject**
 
@@ -544,7 +565,9 @@ myXCrawl.crawlPage({
 }).then((res) => {})
 ```
 
-可以根据实际情况选用即可。
+拿到的 res 将是一个数组，里面是对象。
+
+关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
 ### crawlData
 
@@ -607,6 +630,8 @@ const myXCrawl = xCrawl()
 myXCrawl.crawlData('https://xxx.com/xxxx').then((res) => {})
 ```
 
+拿到的 res 将是一个对象。
+
 **2.DataRequestConfig**
 
 DataRequestConfig 的更多配置选项可以查看 [DataRequestConfig](#DataRequestConfig) 。
@@ -627,6 +652,8 @@ myXCrawl
   .then((res) => {})
 ```
 
+拿到的 res 将是一个对象。
+
 **3.(string | DataRequestConfig)[]**
 
 DataRequestConfig 的更多配置选项可以查看 [DataRequestConfig](#DataRequestConfig) 。
@@ -642,6 +669,8 @@ myXCrawl
   .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
   .then((res) => {})
 ```
+
+拿到的 res 将是一个数组，里面是对象。
 
 **4.CrawlDataConfigObject**
 
@@ -665,7 +694,9 @@ myXCrawl.crawlData({
 }).then((res) => {})
 ```
 
-可以根据实际情况选用即可。
+拿到的 res 将是一个数组，里面是对象。
+
+关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
 ### crawlFile
 
@@ -735,6 +766,8 @@ myXCrawl
   .then((res) => {})
 ```
 
+拿到的 res 将是一个对象。
+
 **2.FileRequestConfig[]**
 
 FileRequestConfig 的更多配置选项可以查看 [FileRequestConfig](#FileRequestConfig) 。
@@ -753,6 +786,8 @@ myXCrawl
   ])
   .then((res) => {})
 ```
+
+拿到的 res 将是一个数组，里面是对象。
 
 **3.CrawlFileConfigObject**
 
@@ -776,7 +811,9 @@ myXCrawl.crawlFile({
 }).then((res) => {})
 ```
 
-可以根据实际情况选用即可。
+拿到的 res 将是一个数组，里面是对象。
+
+关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
 ### startPolling
 
@@ -814,13 +851,15 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 
 ### API Config
 
-#### IntervalTime
+#### API Config Other
+
+##### IntervalTime
 
 ```ts
 export type IntervalTime = number | { max: number; min?: number }
 ```
 
-#### Method
+##### Method
 
 ```ts
 export type Method =
@@ -846,7 +885,7 @@ export type Method =
   | 'UNLINK'
 ```
 
-#### PageRequestConfigCookies
+##### PageRequestConfigCookies
 
 ```ts
 export type PageRequestConfigCookies =
@@ -855,7 +894,9 @@ export type PageRequestConfigCookies =
   | Protocol.Network.CookieParam[]
 ```
 
-#### PageRequestConfig
+#### API Config Request
+
+##### PageRequestConfig
 
 ```ts
 export interface PageRequestConfig {
@@ -869,7 +910,7 @@ export interface PageRequestConfig {
 }
 ```
 
-#### DataRequestConfig
+##### DataRequestConfig
 
 ```ts
 export interface DataRequestConfig {
@@ -885,7 +926,7 @@ export interface DataRequestConfig {
 }
 ```
 
-#### FileRequestConfig
+##### FileRequestConfig
 
 ```ts
 export interface FileRequestConfig {
@@ -901,7 +942,22 @@ export interface FileRequestConfig {
 }
 ```
 
-#### CrawlPageConfigObject
+#### API Config Crawl
+
+##### XCrawlBaseConfig
+
+```ts
+export interface XCrawlBaseConfig {
+  baseUrl?: string
+  timeout?: number
+  intervalTime?: IntervalTime
+  mode?: 'async' | 'sync'
+  proxy?: string
+  maxRetry?: number
+}
+```
+
+##### CrawlPageConfigObject
 
 ```ts
 export interface CrawlPageConfigObject {
@@ -914,7 +970,7 @@ export interface CrawlPageConfigObject {
 }
 ```
 
-#### CrawlDataConfigObject
+##### CrawlDataConfigObject
 
 ```ts
 export interface CrawlDataConfigObject {
@@ -926,7 +982,7 @@ export interface CrawlDataConfigObject {
 }
 ```
 
-#### CrawlFileConfigObject
+##### CrawlFileConfigObject
 
 ```ts
 export interface CrawlFileConfigObject {
@@ -948,20 +1004,7 @@ export interface CrawlFileConfigObject {
 }
 ```
 
-#### XCrawlBaseConfig
-
-```ts
-export interface XCrawlBaseConfig {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  mode?: 'async' | 'sync'
-  proxy?: string
-  maxRetry?: number
-}
-```
-
-#### CrawlPageConfig
+##### CrawlPageConfig
 
 ```ts
 export type CrawlPageConfig =
@@ -971,7 +1014,7 @@ export type CrawlPageConfig =
   | CrawlPageConfigObject
 ```
 
-#### CrawlDataConfig
+##### CrawlDataConfig
 
 ```ts
 export type CrawlDataConfig =
@@ -981,13 +1024,13 @@ export type CrawlDataConfig =
   | CrawlDataConfigObject
 ```
 
-#### CrawlFileConfig
+##### CrawlFileConfig
 
 ```ts
 export type CrawlFileConfig = FileRequestConfig | FileRequestConfig[] | CrawlFileConfigObject
 ```
 
-#### StartPollingConfig
+##### StartPollingConfig
 
 ```js
 export interface StartPollingConfig {
