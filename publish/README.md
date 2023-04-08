@@ -17,7 +17,7 @@ x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, net
 - **☁️ Crawl SPA** - Batch crawl SPA (Single Page Application) to generate pre-rendered content (ie "SSR" (Server Side Rendering)).
 - **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
 - **🧾 Capture Record** - Capture and record the crawled results, and highlight them on the console.
-- **🦾TypeScript** - Own types, implement complete types through generics.
+- **🦾 TypeScript** - Own types, implement complete types through generics.
 
 ## Relationship with puppeteer
 
@@ -112,7 +112,7 @@ Take some pictures of Airbnb hawaii experience and Plus listings automatically e
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
-const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 2000 } })
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 
 // 3.Set the crawling task
 /*
