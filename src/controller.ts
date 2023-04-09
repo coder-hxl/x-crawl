@@ -77,6 +77,7 @@ export async function controller<
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
+  let i = 0
   let crawlQueue: ControllerConfig<T, V>[] = controllerConfigs
   while (crawlQueue.length) {
     await batchCrawl(
@@ -95,7 +96,9 @@ export async function controller<
 
     if (crawlQueue.length) {
       const retriedIds = crawlQueue.map((item) => item.id)
-      log(logWarn(`Ids to retry: [ ${retriedIds.join(' - ')} ]`))
+      log(
+        logWarn(`Retry: ${++i} - Ids to retry: [ ${retriedIds.join(' - ')} ]`)
+      )
     }
   }
 
