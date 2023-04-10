@@ -1,3 +1,15 @@
+# [v5.0.2](https://github.com/coder-hxl/x-crawl/compare/v5.0.1...v5.0.2) (2023-04-10)
+
+### 🚀 Features
+
+- When a retry is added, the number of retry batches is displayed in print.
+
+---
+
+### 🚀 Features
+
+- 新增重试时，重试批次数将显示在打印中。
+
 # [v5.0.1](https://github.com/coder-hxl/x-crawl/compare/v5.0.0...v5.0.1) (2023-04-08)
 
 ### 🚀 Features
