@@ -128,7 +128,7 @@ export interface CrawlFileConfigObject {
       fileName: string
       filePath: string
       data: Buffer
-    }) => Buffer | void
+    }) => Promise<Buffer>
   }
 }
 

@@ -1,42 +1,24 @@
-// 1.Import module ES/CJS
 import xCrawl from 'x-crawl'
+import sharp from 'sharp'
+import path from 'path'
 
-// 2.Create a crawler instance
-const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
+const testXCrawl = xCrawl()
 
-// 3.Set the crawling task
-/*
-  Call the startPolling API to start the polling function,
-  and the callback function will be called every other day
-*/
-myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
-  // Call crawlPage API to crawl Page
-  const res = await myXCrawl.crawlPage([
-    'https://zh.airbnb.com/s/hawaii/experiences',
-    'https://zh.airbnb.com/s/hawaii/plus_homes'
-  ])
-
-  // Store the image URL
-  const imgUrls: string[] = []
-  const elSelectorMap = ['.c14whb16', '.a1stauiv']
-  for (const item of res) {
-    const { id } = item
-    const { page } = item.data
-
-    // Gets the URL of the page's wheel image element
-    const boxHandle = await page.$(elSelectorMap[id - 1])
-    const urls = await boxHandle!.$$eval('picture img', (imgEls) => {
-      return imgEls.map((item) => item.src)
-    })
-    imgUrls.push(...urls)
-
-    // Close page
-    page.close()
-  }
-
-  // Call the crawlFile API to crawl pictures
-  myXCrawl.crawlFile({
-    requestConfigs: imgUrls,
-    fileConfig: { storeDir: './upload' }
+testXCrawl
+  .crawlFile({
+    requestConfigs: [
+      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg'
+    ],
+    proxy: 'http://localhost:14892',
+    fileConfig: {
+      storeDir: path.resolve(__dirname, './upload'),
+      beforeSave(info) {
+        return sharp(info.data).resize(200).toBuffer()
+      }
+    }
   })
-})
+  .then(async (res) => {
+    res.forEach((item) => {
+      console.log(item.data?.data.isSuccess)
+    })
+  })

@@ -37,6 +37,8 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [page 实例](#page-实例)
   - [爬取接口](#爬取接口)
   - [爬取文件](#爬取文件)
+    - [生命周期](#生命周期)
+      - [beforeSave](#beforeSave)
   - [启动轮询](#启动轮询)
   - [配置优先级](#配置优先级)
   - [间隔时间](#间隔时间)
@@ -222,7 +224,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com').then((res) => {
+myXCrawl.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // 关闭浏览器
@@ -251,7 +253,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com').then(async (res) => {
+myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
   const { browser, page } = res.data
 
   // 获取页面渲染后的截图
@@ -273,9 +275,9 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 const requestConfigs = [
-  'https://xxx.com/xxxx',
-  'https://xxx.com/xxxx',
-  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } }
+  'https://www.example.com/api-1',
+  'https://www.example.com/api-2',
+  { url: 'https://www.example.com/api-3', method: 'POST', data: { name: 'coderhxl' } }
 ]
 
 myXCrawl.crawlData({ requestConfigs }).then((res) => {
@@ -294,12 +296,48 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
     fileConfig: {
       storeDir: './upload' // 存放文件夹
     }
   })
   .then((res) => {})
+```
+
+#### 生命周期
+
+crawlFile API 拥有一个声明周期函数:
+
+- beforeSave: 在保存文件前执行
+
+##### beforeSave
+
+在 beforeSave 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer 。
+
+**调整图片大小**
+
+使用 sharp 库对需要爬取的图片进行调整大小操作:
+
+```js
+import xCrawl from 'x-crawl'
+import sharp from 'sharp'
+
+const testXCrawl = xCrawl()
+
+testXCrawl
+  .crawlFile({
+    requestConfigs: ['https://www.example.com/file-1.jpg', 'https://www.example.com/file-2.jpg'],
+    fileConfig: {
+      beforeSave(info) {
+        return sharp(info.data).resize(200).toBuffer()
+      }
+    }
+  })
+  .then((res) => {
+    res.forEach((item) => {
+      console.log(item.data?.data.isSuccess)
+    })
+  })
 ```
 
 ### 启动轮询
@@ -316,7 +354,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // 每隔两个半小时会执行一次
   // crawlPage/crawlData/crawlFile
-  const res = await myXCrawl.crawlPage('https://xxx.com')
+  const res = await myXCrawl.crawlPage('https://www.example.com')
   res.data.page.close()
 })
 ```
@@ -351,7 +389,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -373,7 +411,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({ url: 'https://xxx.com/xxxx', maxRetry: 1 }).then((res) => {})
+myXCrawl.crawlData({ url: 'https://www.example.com/api', maxRetry: 1 }).then((res) => {})
 ```
 
 maxRetry 属性决定要重试几次。
@@ -389,9 +427,9 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData([
-    { url: 'https://xxx.com/xxxx', priority: 1 },
-    { url: 'https://xxx.com/xxxx', priority: 10 },
-    { url: 'https://xxx.com/xxxx', priority: 8 }
+    { url: 'https://www.example.com/api-1', priority: 1 },
+    { url: 'https://www.example.com/api-2', priority: 10 },
+    { url: 'https://www.example.com/api-3', priority: 8 }
   ])
   .then((res) => {})
 ```
@@ -434,7 +472,7 @@ import xCrawl from 'x-crawl'
 
 // xCrawl API
 const myXCrawl = xCrawl({
-  baseUrl: 'https://xxx.com',
+  baseUrl: 'https://www.example.com',
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
 })
@@ -465,7 +503,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 // crawlPage API
-myXCrawl.crawlPage('https://xxx.com/xxx').then((res) => {
+myXCrawl.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // 关闭浏览器
@@ -491,7 +529,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {})
+myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 ```
 
 拿到的 res 将是一个对象。
@@ -509,7 +547,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlPage({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com',
     proxy: 'xxx',
     maxRetry: 1
   })
@@ -530,7 +568,10 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
+  .crawlPage([
+    'https://www.example.com/page-1',
+    { url: 'https://www.example.com/page-2', maxRetry: 2 }
+  ])
   .then((res) => {})
 ```
 
@@ -542,20 +583,22 @@ CrawlPageConfigObject 的更多配置选项可以查看 [CrawlPageConfigObject](
 
 如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage({
-  requestConfigs: [
-    'https://xxx.com/xxxx',
-    { url: 'https://xxx.com/xxxx', maxRetry: 6 }
-  ],
-  intervalTime: { max: 3000, min: 1000 },
-  cookies: 'xxx',
-  maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlPage({
+    requestConfigs: [
+      'https://www.example.com/page-1',
+      { url: 'https://www.example.com/page-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 拿到的 res 将是一个数组，里面是对象。
@@ -592,7 +635,7 @@ const myXCrawl = xCrawl({
 // crawlData API
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -620,7 +663,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData('https://xxx.com/xxxx').then((res) => {})
+myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 ```
 
 拿到的 res 将是一个对象。
@@ -638,7 +681,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com/api',
     proxy: 'xxx',
     maxRetry: 1
   })
@@ -659,7 +702,10 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
+  .crawlPage([
+    'https://www.example.com/api-1',
+    { url: 'https://www.example.com/api-2', maxRetry: 2 }
+  ])
   .then((res) => {})
 ```
 
@@ -671,20 +717,22 @@ CrawlPageConfigObject 的更多配置选项可以查看 [CrawlPageConfigObject](
 
 如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({
-  requestConfigs: [
-    'https://xxx.com/xxxx',
-    { url: 'https://xxx.com/xxxx', maxRetry: 6 }
-  ],
-  intervalTime: { max: 3000, min: 1000 },
-  cookies: 'xxx',
-  maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlData({
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      { url: 'https://www.example.com/api-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 拿到的 res 将是一个数组，里面是对象。
@@ -721,7 +769,7 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
     storeDir: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
@@ -750,7 +798,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com/file',
     proxy: 'xxx',
     maxRetry: 1,
     storeDir: './upload',
@@ -774,8 +822,8 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile([
-    { url: 'https://xxx.com/xxxx', storeDir: './upload' },
-    { url: 'https://xxx.com/xxxx', storeDir: './upload', maxRetry: 2 }
+    { url: 'https://www.example.com/file-1', storeDir: './upload' },
+    { url: 'https://www.example.com/file-2', storeDir: './upload', maxRetry: 2 }
   ])
   .then((res) => {})
 ```
@@ -788,20 +836,22 @@ CrawlFileConfigObject 的更多配置选项可以查看 [CrawlFileConfigObject](
 
 如果你想爬取多个数据，并且请求配置（storeDir、proxy、重试等等）不想重复写，需要间隔时间等等的话，可以试试这种写法：
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlFile({
-  requestConfigs: [
-    'https://xxx.com/xxxx',
-    { url: 'https://xxx.com/xxxx', storeDir: './upload/xxx' }
-  ],
-  storeDir: './upload',
-  intervalTime: { max: 3000, min: 1000 },
-  maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlFile({
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      { url: 'https://www.example.com/file-2', storeDir: './upload/file2' }
+    ],
+    storeDir: './upload',
+    intervalTime: { max: 3000, min: 1000 },
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 拿到的 res 将是一个数组，里面是对象。
@@ -992,7 +1042,7 @@ export interface CrawlFileConfigObject {
       fileName: string
       filePath: string
       data: Buffer
-    }) => Buffer | void
+    }) => Promise<Buffer>
   }
 }
 ```

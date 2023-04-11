@@ -37,6 +37,8 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     - [page instance](#page-instance)
   - [Crawl interface](#Crawl-interface)
   - [Crawl files](#Crawl-files)
+    - [life cycle](#life-cycle)
+      - [beforeSave](#beforeSave)
   - [Start polling](#Start-polling)
   - [Config priority](#Config-Priority)
   - [Interval time](#Interval-time)
@@ -135,7 +137,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 
     // Gets the URL of the page's wheel image element
     const boxHandle = await page.$(elSelectorMap[id - 1])
-    const urls = await boxHandle!.$$eval('picture img', (imgEls) => {
+    const urls = await boxHandle.$$eval('picture img', (imgEls) => {
       return imgEls.map((item) => item.src)
     })
     imgUrls.push(...urls)
@@ -224,7 +226,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com').then((res) => {
+myXCrawl.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // Close the browser
@@ -253,7 +255,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com').then(async (res) => {
+myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
   const { browser, page } = res.data
 
   // Get a screenshot of the rendered page
@@ -275,9 +277,9 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 const requestConfigs = [
-  'https://xxx.com/xxxx',
-  'https://xxx.com/xxxx',
-  { url: 'https://xxx.com/xxxx', method: 'POST', data: { name: 'coderhxl' } }
+  'https://www.example.com/api-1',
+  'https://www.example.com/api-2',
+  { url: 'https://www.example.com/api-3', method: 'POST', data: { name: 'coderhxl' } }
 ]
 
 myXCrawl.crawlData({ requestConfigs }).then((res) => {
@@ -296,13 +298,49 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
     fileConfig: {
       storeDir: './upload' // storage folder
     }
   })
   .then((res) => {
     console.log(res)
+  })
+```
+
+#### life cycle
+
+The crawlFile API has a lifetime function:
+
+- beforeSave: executed before saving the file
+
+##### beforeSave
+
+In the beforeSave function you can get a file of type Buffer, which you can process and return a Promise and resolve as a Buffer.
+
+**Resize picture**
+
+Use the sharp library to resize the images to be crawled:
+
+```js
+import xCrawl from 'x-crawl'
+import sharp from 'sharp'
+
+const testXCrawl = xCrawl()
+
+testXCrawl
+  .crawlFile({
+    requestConfigs: ['https://www.example.com/file-1.jpg', 'https://www.example.com/file-2.jpg'],
+    fileConfig: {
+      beforeSave(info) {
+        return sharp(info.data).resize(200).toBuffer()
+      }
+    }
+  })
+  .then((res) => {
+    res.forEach((item) => {
+      console.log(item.data?.data.isSuccess)
+    })
   })
 ```
 
@@ -321,7 +359,7 @@ const myXCrawl = xCrawl({
 myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
   // will be executed every two and a half hours
   // crawlPage/crawlData/crawlFile
-  const res = await myXCrawl.crawlPage('https://xxx.com')
+  const res = await myXCrawl.crawlPage('https://www.example.com')
   res.data.page.close()
 })
 ```
@@ -356,7 +394,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -378,7 +416,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({ url: 'https://xxx.com/xxxx', maxRetry: 1 }).then((res) => {})
+myXCrawl.crawlData({ url: 'https://www.example.com/api', maxRetry: 1 }).then((res) => {})
 ```
 
 The maxRetry attribute determines how many times to retry.
@@ -394,9 +432,9 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData([
-    { url: 'https://xxx.com/xxxx', priority: 1 },
-    { url: 'https://xxx.com/xxxx', priority: 10 },
-    { url: 'https://xxx.com/xxxx', priority: 8 }
+    { url: 'https://www.example.com/api-1', priority: 1 },
+    { url: 'https://www.example.com/api-2', priority: 10 },
+    { url: 'https://www.example.com/api-3', priority: 8 }
   ])
   .then((res) => {})
 ```
@@ -439,7 +477,7 @@ import xCrawl from 'x-crawl'
 
 // xCrawl API
 const myXCrawl = xCrawl({
-  baseUrl: 'https://xxx.com',
+  baseUrl: 'https://www.example.com',
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
 })
@@ -472,7 +510,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 // crawlPage API
-myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {
+myXCrawl.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // Close the browser
@@ -498,7 +536,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage('https://xxx.com/xxxx').then((res) => {})
+myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 ```
 
 The res you get will be an object.
@@ -516,7 +554,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlPage({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com',
     proxy: 'xxx',
     maxRetry: 1
   })
@@ -537,7 +575,10 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
+  .crawlPage([
+    'https://www.example.com/page-1',
+    { url: 'https://www.example.com/page-2', maxRetry: 2 }
+  ])
   .then((res) => {})
 ```
 
@@ -549,20 +590,22 @@ For more configuration options of CrawlPageConfigObject, please refer to [CrawlP
 
 If you want to crawl multiple pages, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this way of writing:
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlPage({
-   requestConfigs: [
-     'https://xxx.com/xxxx',
-     { url: 'https://xxx.com/xxxx', maxRetry: 6 }
-   ],
-   intervalTime: { max: 3000, min: 1000 },
-   cookies: 'xxx',
-   maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlPage({
+    requestConfigs: [
+      'https://www.example.com/page-1',
+      { url: 'https://www.example.com/page-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 The res you get will be an array of objects.
@@ -598,7 +641,7 @@ const myXCrawl = xCrawl({
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -626,7 +669,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData('https://xxx.com/xxxx').then((res) => {})
+myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 ```
 
 The res you get will be an object.
@@ -644,7 +687,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com/api',
     proxy: 'xxx',
     maxRetry: 1
   })
@@ -665,7 +708,10 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlPage(['https://xxx.com/xxxx', { url: 'https://xxx.com/xxxx', maxRetry: 2 }])
+  .crawlData([
+    'https://www.example.com/api-1',
+    { url: 'https://www.example.com/api-2', maxRetry: 2 }
+  ])
   .then((res) => {})
 ```
 
@@ -677,20 +723,22 @@ For more configuration options of CrawlPageConfigObject, please refer to [CrawlP
 
 If you want to crawl multiple data, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this writing method:
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({
-   requestConfigs: [
-     'https://xxx.com/xxxx',
-     { url: 'https://xxx.com/xxxx', maxRetry: 6 }
-   ],
-   intervalTime: { max: 3000, min: 1000 },
-   cookies: 'xxx',
-   maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlData({
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      { url: 'https://www.example.com/api-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 The res you get will be an array of objects.
@@ -727,7 +775,7 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://xxx.com/xxxx', 'https://xxx.com/xxxx'],
+    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
     storeDir: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
@@ -757,7 +805,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile({
-    url: 'https://xxx.com/xxxx',
+    url: 'https://www.example.com/file',
     proxy: 'xxx',
     maxRetry: 1,
     storeDir: './upload',
@@ -781,8 +829,8 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile([
-    { url: 'https://xxx.com/xxxx', storeDir: './upload' },
-    { url: 'https://xxx.com/xxxx', storeDir: './upload', maxRetry: 2 }
+    { url: 'https://www.example.com/file-1', storeDir: './upload' },
+    { url: 'https://www.example.com/file-2', storeDir: './upload', maxRetry: 2 }
   ])
   .then((res) => {})
 ```
@@ -795,20 +843,22 @@ For more configuration options of CrawlFileConfigObject, please refer to [CrawlF
 
 If you want to crawl multiple data, and the request configuration (storeDir, proxy, retry, etc.) does not want to be written repeatedly, and you need interval time, etc., you can try this way of writing:
 
-```
+```js
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlFile({
-   requestConfigs: [
-     'https://xxx.com/xxxx',
-     { url: 'https://xxx.com/xxxx', storeDir: './upload/xxx' }
-   ],
-   storeDir: './upload',
-   intervalTime: { max: 3000, min: 1000 },
-   maxRetry: 1
-}).then((res) => {})
+myXCrawl
+  .crawlFile({
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      { url: 'https://www.example.com/file-2', storeDir: './upload/xxx' }
+    ],
+    storeDir: './upload',
+    intervalTime: { max: 3000, min: 1000 },
+    maxRetry: 1
+  })
+  .then((res) => {})
 ```
 
 The res you get will be an array of objects.
@@ -999,7 +1049,7 @@ export interface CrawlFileConfigObject {
       fileName: string
       filePath: string
       data: Buffer
-    }) => Buffer | void
+    }) => Promise<Buffer>
   }
 }
 ```
@@ -1167,3 +1217,5 @@ export interface AnyObject extends Object {
 ## More
 
 If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.
+
+[#life-cycle]:

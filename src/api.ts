@@ -595,49 +595,47 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
         const filePath = path.resolve(storePath, fileName + fileExtension)
 
         // 在保存前的回调
-        let data = crawlSingleRes.data
+        const data = crawlSingleRes.data
+        let dataPromise = Promise.resolve(data)
         if (fileConfig?.beforeSave) {
-          const newData = fileConfig.beforeSave({
+          dataPromise = fileConfig.beforeSave({
             id,
             fileName,
             filePath,
             data
           })
-
-          if (newData) {
-            data = newData
-          }
         }
 
-        const saveFileItem = writeFile(filePath, data)
-          .catch((err) => {
+        const saveFileItem = dataPromise.then(async (newData) => {
+          let isSuccess = true
+          try {
+            await writeFile(filePath, newData)
+          } catch (err: any) {
+            isSuccess = false
+
             const message = `File save error at id ${id}: ${err.message}`
             const valueOf = () => id
 
             saveFileErrorArr.push({ message, valueOf })
+          }
 
-            return true
-          })
-          .then((isError) => {
-            const size = crawlSingleRes.data.length
-            const isSuccess = !isError
-
-            crawlRes.data = {
-              ...crawlSingleRes,
-              data: {
-                isSuccess,
-                fileName,
-                fileExtension,
-                mimeType,
-                size,
-                filePath
-              }
+          const size = newData.length
+          crawlRes.data = {
+            ...crawlSingleRes,
+            data: {
+              isSuccess,
+              fileName,
+              fileExtension,
+              mimeType,
+              size,
+              filePath
             }
+          }
 
-            if (callback) {
-              callback(crawlRes)
-            }
-          })
+          if (callback) {
+            callback(crawlRes)
+          }
+        })
 
         saveFileQueue.push(saveFileItem)
       } else {
