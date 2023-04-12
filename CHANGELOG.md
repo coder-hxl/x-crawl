@@ -1,3 +1,25 @@
+# [v5.1.0](https://github.com/coder-hxl/x-crawl/compare/v5.0.2...v5.1.0) (2023-04-12)
+
+### 🚀 Features
+
+- The beforeSave lifecycle function of crawlFile needs to return a Promise and resolve is a Buffer .
+- The description, characteristics and type of the document change.
+
+### 🐞 Bug Fixes
+
+- Incorrect type hints and type restrictions, using overloaded functions instead.
+
+---
+
+### 🚀 特征
+
+- crawlFile 的 beforeSave 生命周期函数需要返回一个 Promise 并且 resolve 是 Buffer 。
+- 文档的描述、特征和类型发生变化。
+
+### 🐞 漏洞修复
+
+- 错误的类型提示和类型限制，改用重载函数。
+
 # [v5.0.2](https://github.com/coder-hxl/x-crawl/compare/v5.0.1...v5.0.2) (2023-04-10)
 
 ### 🚀 Features
