@@ -1,15 +1,15 @@
 import {
-  CrawlFileConfig,
-  CrawlPageConfig,
   StartPollingConfig,
   IntervalTime,
-  CrawlPageRes,
-  CrawlDataConfig,
   CrawlPageSingleRes,
-  CrawlDataRes,
   CrawlDataSingleRes,
   CrawlFileSingleRes,
-  CrawlFileRes
+  CrawlFileConfigObject,
+  FileRequestConfig,
+  DataRequestConfig,
+  CrawlDataConfigObject,
+  PageRequestConfig,
+  CrawlPageConfigObject
 } from './api'
 
 export interface XCrawlBaseConfig {
@@ -28,20 +28,66 @@ export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
 }
 
 export interface XCrawlInstance {
-  crawlPage: <T extends CrawlPageConfig>(
-    config: T,
-    callback?: ((res: CrawlPageSingleRes) => void) | undefined
-  ) => Promise<CrawlPageRes<T>>
+  crawlPage: {
+    (
+      config: string,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlData: <D = any, T extends CrawlDataConfig = CrawlDataConfig>(
-    config: T,
-    callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
-  ) => Promise<CrawlDataRes<D, T>>
+    (
+      config: PageRequestConfig,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlFile: <T extends CrawlFileConfig>(
-    config: T,
-    callback?: ((res: CrawlFileSingleRes) => void) | undefined
-  ) => Promise<CrawlFileRes<T>>
+    (
+      config: (string | PageRequestConfig)[],
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+
+    (
+      config: CrawlPageConfigObject,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+  }
+
+  crawlData: {
+    <T = any>(
+      config: DataRequestConfig,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: string,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: (string | DataRequestConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+
+    <T = any>(
+      config: CrawlDataConfigObject,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+  }
+
+  crawlFile: {
+    (
+      config: FileRequestConfig,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes>
+
+    (
+      config: FileRequestConfig[],
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+
+    (
+      config: CrawlFileConfigObject,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+  }
 
   startPolling: (
     config: StartPollingConfig,

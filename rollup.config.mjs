@@ -19,6 +19,10 @@ console.log(outputMap)
 export default {
   input: 'src/index.ts',
   output: outputMap,
+  treeshake: {
+    tryCatchDeoptimization: false,
+    unknownGlobalSideEffects: false
+  },
   plugins: [
     tsPlugin(),
     getBabelOutputPlugin({

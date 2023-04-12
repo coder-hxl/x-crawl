@@ -29,12 +29,9 @@ import {
   StartPollingConfig,
   LoaderCrawlPageConfig,
   CrawlPageConfigObject,
-  CrawlPageRes,
   LoaderCrawlDataConfig,
   LoaderCrawlFileConfig,
   CrawlDataSingleRes,
-  CrawlDataRes,
-  CrawlFileRes,
   CrawlFileSingleRes,
   CrawlDataConfigObject,
   LoaderPageRequestConfig,
@@ -320,10 +317,30 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   // 通过 爬取cId 找到对应爬取, 再通过 爬取id 找到 page
   const errorPageContainer = new Map<number, Map<number, Page>>()
 
-  async function crawlPage<T extends CrawlPageConfig>(
-    config: T,
+  function crawlPage(
+    config: string,
     callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageRes<T>> {
+  ): Promise<CrawlPageSingleRes>
+
+  function crawlPage(
+    config: PageRequestConfig,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes>
+
+  function crawlPage(
+    config: (string | PageRequestConfig)[],
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+
+  function crawlPage(
+    config: CrawlPageConfigObject,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+
+  async function crawlPage(
+    config: CrawlPageConfig,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes | CrawlPageSingleRes[]> {
     const cId = ++cIdCount
 
     //  创建浏览器
@@ -405,7 +422,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
         ? crawlResArr
         : crawlResArr[0]
 
-    return crawlRes as CrawlPageRes<T>
+    return crawlRes
   }
 
   async function crawlPageSingle(
@@ -466,10 +483,30 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
 }
 
 export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
-  async function crawlData<D = any, T extends CrawlDataConfig = any>(
-    config: T,
-    callback?: (res: CrawlDataSingleRes<D>) => void
-  ): Promise<CrawlDataRes<D, T>> {
+  function crawlData<T = any>(
+    config: string,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  function crawlData<T = any>(
+    config: DataRequestConfig,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  function crawlData<T = any>(
+    config: (string | DataRequestConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+
+  function crawlData<T = any>(
+    config: CrawlDataConfigObject,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+
+  async function crawlData<T = any>(
+    config: CrawlDataConfig,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
     const { requestConfigs, intervalTime } = loaderDataConfig(
       baseConfig,
       config
@@ -484,7 +521,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
       crawlRequestSingle
     )
 
-    const crawlResArr: CrawlDataSingleRes<D>[] = controllerRes.map((item) => {
+    const crawlResArr: CrawlDataSingleRes<T>[] = controllerRes.map((item) => {
       const {
         id,
         isSuccess,
@@ -494,7 +531,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
         crawlSingleRes
       } = item
 
-      const crawlRes: CrawlDataSingleRes<D> = {
+      const crawlRes: CrawlDataSingleRes<T> = {
         id,
         isSuccess,
         maxRetry,
@@ -507,7 +544,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
       if (isSuccess && crawlSingleRes) {
         const contentType = crawlSingleRes.headers['content-type'] ?? ''
 
-        const data: D = contentType.includes('text')
+        const data: T = contentType.includes('text')
           ? crawlSingleRes.data.toString()
           : JSON.parse(crawlSingleRes.data.toString())
 
@@ -527,17 +564,32 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
         ? crawlResArr
         : crawlResArr[0]
 
-    return crawlRes as CrawlDataRes<D, T>
+    return crawlRes
   }
 
   return crawlData
 }
 
 export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
-  async function crawlFile<T extends CrawlFileConfig>(
-    config: T,
+  function crawlFile(
+    config: FileRequestConfig,
     callback?: (res: CrawlFileSingleRes) => void
-  ): Promise<CrawlFileRes<T>> {
+  ): Promise<CrawlFileSingleRes>
+
+  function crawlFile(
+    config: FileRequestConfig[],
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+
+  function crawlFile(
+    config: CrawlFileConfigObject,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+
+  async function crawlFile(
+    config: CrawlFileConfig,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
     const { requestConfigs, intervalTime, fileConfig } = loaderFileConfig(
       baseConfig,
       config
@@ -685,7 +737,7 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
         ? crawlResArr
         : crawlResArr[0]
 
-    return crawlRes as CrawlFileRes<T>
+    return crawlRes
   }
 
   return crawlFile

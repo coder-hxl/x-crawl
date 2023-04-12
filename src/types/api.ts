@@ -31,10 +31,28 @@ export interface LoaderCrawlFileConfig
   requestConfigs: LoaderFileRequestConfig[]
 }
 
+// Function overloading crawl config
+export type CrawlPageConfig =
+  | string
+  | PageRequestConfig
+  | (string | PageRequestConfig)[]
+  | CrawlPageConfigObject
+
+export type CrawlDataConfig =
+  | string
+  | DataRequestConfig
+  | (string | DataRequestConfig)[]
+  | CrawlDataConfigObject
+
+export type CrawlFileConfig =
+  | FileRequestConfig
+  | FileRequestConfig[]
+  | CrawlFileConfigObject
+
 /* API Config */
+// API Config Other
 export type IntervalTime = number | { max: number; min?: number }
 
-// RequestConfig
 export type Method =
   | 'get'
   | 'GET'
@@ -62,6 +80,7 @@ export type PageRequestConfigCookies =
   | Protocol.Network.CookieParam
   | Protocol.Network.CookieParam[]
 
+// API Config Request
 export interface PageRequestConfig {
   url: string
   headers?: AnyObject
@@ -96,7 +115,7 @@ export interface FileRequestConfig {
   extension?: string
 }
 
-// CrawlConfig
+// API Config Crawl
 export interface CrawlPageConfigObject {
   requestConfigs: (string | PageRequestConfig)[]
   proxy?: string
@@ -131,23 +150,6 @@ export interface CrawlFileConfigObject {
     }) => Promise<Buffer>
   }
 }
-
-export type CrawlPageConfig =
-  | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-
-export type CrawlDataConfig =
-  | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-
-export type CrawlFileConfig =
-  | FileRequestConfig
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
 
 export interface StartPollingConfig {
   d?: number
@@ -195,21 +197,3 @@ export interface CrawlFileSingleRes extends CrawlCommonRes {
     }
   } | null
 }
-
-export type CrawlPageRes<R extends CrawlPageConfig> = R extends
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-  ? CrawlPageSingleRes[]
-  : CrawlPageSingleRes
-
-export type CrawlDataRes<D, R extends CrawlDataConfig> = R extends
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-  ? CrawlDataSingleRes<D>[]
-  : CrawlDataSingleRes<D>
-
-export type CrawlFileRes<R extends CrawlFileConfig> = R extends
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
-  ? CrawlFileSingleRes[]
-  : CrawlFileSingleRes
