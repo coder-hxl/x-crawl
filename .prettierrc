@@ -4,6 +4,5 @@
   "printWidth": 80,
   "singleQuote": true,
   "trailingComma": "none",
-  "semi": false,
-  "overrides": [{ "files": "*.md", "options": { "printWidth": 100 } }]
+  "semi": false
 }

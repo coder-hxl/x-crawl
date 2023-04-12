@@ -2,14 +2,14 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible nodejs crawler library. It can crawl pages in batches, network requests in batches, download file resources in batches, polling and crawling, etc. Flexible and simple to use, friendly to JS/TS developers.
+x-crawl is a flexible nodejs crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls. Flexible and simple to use, friendly to JS/TS developers.
 
 > If you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, not only for its recognition, but also for Approved by the developer.
 
 ## Features
 
 - **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
-- **⚙️ Multiple functions** - Batch crawling of pages, batch network requests, batch download of file resources, polling crawling, etc.
+- **⚙️Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
 - **🖋️ Flexible writing method** - A function adapts to multiple crawling configurations and obtains crawling results. The writing method is very flexible.
 - **⏱️ Interval crawling** - no interval/fixed interval/random interval, can effectively use/avoid high concurrent crawling.
 - **🔄 Retry on failure** - It can be set for all crawling requests, for a single crawling request, and for a single request to set a failed retry.
@@ -80,9 +80,6 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
       - [CrawlPageConfigObject](#CrawlPageConfigObject)
       - [CrawlDataConfigObject](#CrawlDataConfigObject)
       - [CrawlFileConfigObject](#CrawlFileConfigObject)
-      - [CrawlPageConfig](#CrawlPageConfig)
-      - [CrawlDataConfig](#CrawlDataConfig)
-      - [CrawlFileConfig](#CrawlFileConfig)
       - [StartPollingConfig](#StartPollingConfig)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
@@ -90,9 +87,6 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     - [CrawlPageSingleRes](#CrawlPageSingleRes)
     - [CrawlDataSingleRes](#CrawlDataSingleRes)
     - [CrawlFileSingleRes](#CrawlFileSingleRes)
-    - [CrawlPageRes](#CrawlPageRes)
-    - [CrawlDataRes](#CrawlDataRes)
-    - [CrawlFileRes](#CrawlFileRes)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [More](#More)
@@ -279,7 +273,11 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 const requestConfigs = [
   'https://www.example.com/api-1',
   'https://www.example.com/api-2',
-  { url: 'https://www.example.com/api-3', method: 'POST', data: { name: 'coderhxl' } }
+  {
+    url: 'https://www.example.com/api-3',
+    method: 'POST',
+    data: { name: 'coderhxl' }
+  }
 ]
 
 myXCrawl.crawlData({ requestConfigs }).then((res) => {
@@ -298,7 +296,10 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      'https://www.example.com/file-2'
+    ],
     fileConfig: {
       storeDir: './upload' // storage folder
     }
@@ -330,7 +331,10 @@ const testXCrawl = xCrawl()
 
 testXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1.jpg', 'https://www.example.com/file-2.jpg'],
+    requestConfigs: [
+      'https://www.example.com/file-1.jpg',
+      'https://www.example.com/file-2.jpg'
+    ],
     fileConfig: {
       beforeSave(info) {
         return sharp(info.data).resize(200).toBuffer()
@@ -394,7 +398,10 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      'https://www.example.com/api-2'
+    ],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -416,7 +423,9 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({ url: 'https://www.example.com/api', maxRetry: 1 }).then((res) => {})
+myXCrawl
+  .crawlData({ url: 'https://www.example.com/api', maxRetry: 1 })
+  .then((res) => {})
 ```
 
 The maxRetry attribute determines how many times to retry.
@@ -463,12 +472,19 @@ Create a crawler instance via call xCrawl. The request queue is maintained by th
 
 #### Type
 
-- [XCrawlBaseConfig](#XCrawlBaseConfig)
-- [XCrawlInstance](#XCrawlInstance)
+The xCrawl API is a function.
 
 ```ts
 function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 ```
+
+**Parameter Type:**
+
+- Look at the [XCrawlBaseConfig](#XCrawlBaseConfig) type
+
+**Return value type:**
+
+- View [XCrawlInstance](#XCrawlInstance) type
 
 #### Example
 
@@ -491,16 +507,40 @@ crawlPage is the method of the crawler instance, usually used to crawl page.
 
 #### Type
 
-- Look at the [CrawlPageConfig](#CrawlPageConfig) type
-- Look at the [CrawlPageSingleRes](#CrawlPageSingleRes) type
-- Look at the [CrawlPageRes](#CrawlPageRes) type
+The crawlPage API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) which can be called (in terms of type) with different configuration parameters.
 
 ```ts
-function crawlPage: <T extends CrawlPageConfig>(
-  config: T,
-  callback?: ((res: CrawlPageSingleRes) => void) | undefined
-) => Promise<CrawlPageRes<T>>
+type crawlPage = {
+  (
+    config: string,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes>
+
+  (
+    config: PageRequestConfig,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes>
+
+  (
+    config: (string | PageRequestConfig)[],
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+
+  (
+    config: CrawlPageConfigObject,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+}
 ```
+
+**Parameter Type:**
+
+- Look at the [PageRequestConfig](#PageRequestConfig) type
+- Look at the [CrawlPageConfigObject](#CrawlPageConfigObject) type
+
+**Return value type:**
+
+- Look at the [CrawlPageSingleRes](#CrawlPageSingleRes) type
 
 #### Example
 
@@ -618,16 +658,40 @@ crawlData is the method of the crawler instance, which is usually used to crawl 
 
 #### Type
 
-- Look at the [CrawlDataConfig](#CrawlDataConfig) type
-- Look at the [CrawlDataSingleRes](#CrawlDataSingleRes) type
-- Look at the [CrawlDataRes](#CrawlDataRes) type
+The crawlData API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) which can be called (in terms of type) with different configuration parameters.
 
 ```ts
-function crawlData<D = any, T extends CrawlDataConfig = CrawlDataConfig>(
-  config: T,
-  callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
-) => Promise<CrawlDataRes<D, T>>
+type crawlData = {
+  <T = any>(
+    config: DataRequestConfig,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  <T = any>(
+    config: string,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  <T = any>(
+    config: (string | DataRequestConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+
+  <T = any>(
+    config: CrawlDataConfigObject,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+}
 ```
+
+**Parameter Type:**
+
+- See [DataRequestConfig](#DataRequestConfig) type
+- Look at the [CrawlDataConfigObject](#CrawlDataConfigObject) type
+
+**Return value type:**
+
+- Look at the [CrawlDataSingleRes](#CrawlDataSingleRes) type
 
 #### Example
 
@@ -641,7 +705,10 @@ const myXCrawl = xCrawl({
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      'https://www.example.com/api-2'
+    ],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -751,16 +818,35 @@ crawlFile is the method of the crawler instance, which is usually used to crawl 
 
 #### Type
 
-- Look at the [CrawlFileConfig](#CrawlFileConfig) type
-- Look at the [CrawlFileSingleRes](#CrawlFileSingleRes) type
-- Look at the [CrawlFileRes](#CrawlFileRes) type
+The crawlFile API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) which can be called (in terms of type) with different configuration parameters.
 
 ```ts
-function crawlFile<T extends CrawlFileConfig>(
-  config: T,
-  callback?: ((res: CrawlFileSingleRes) => void) | undefined
-) => Promise<CrawlFileRes<T>>
+type crawlFile = {
+  (
+    config: FileRequestConfig,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes>
+
+  (
+    config: FileRequestConfig[],
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+
+  (
+    config: CrawlFileConfigObject,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+}
 ```
+
+**Parameter Type:**
+
+- See [FileRequestConfig](#FileRequestConfig) type
+- Look at the [CrawlFileConfigObject](#CrawlFileConfigObject) type
+
+**Return value type:**
+
+- Look at the [CrawlFileSingleRes](#CrawlFileSingleRes) type
 
 #### Example
 
@@ -775,7 +861,10 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      'https://www.example.com/file-2'
+    ],
     storeDir: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
@@ -1054,33 +1143,7 @@ export interface CrawlFileConfigObject {
 }
 ```
 
-##### CrawlPageConfig
-
-```ts
-export type CrawlPageConfig =
-  | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-```
-
-##### CrawlDataConfig
-
-```ts
-export type CrawlDataConfig =
-  | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-```
-
-##### CrawlFileConfig
-
-```ts
-export type CrawlFileConfig = FileRequestConfig | FileRequestConfig[] | CrawlFileConfigObject
-```
-
-##### StartPollingConfig
+##### startPollingConfig
 
 ```js
 export interface StartPollingConfig {
@@ -1096,20 +1159,66 @@ export interface StartPollingConfig {
 
 ```ts
 export interface XCrawlInstance {
-  crawlPage: <T extends CrawlPageConfig>(
-    config: T,
-    callback?: ((res: CrawlPageSingleRes) => void) | undefined
-  ) => Promise<CrawlPageRes<T>>
+  crawlPage: {
+    (
+      config: string,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlData: <D = any, T extends CrawlDataConfig = CrawlDataConfig>(
-    config: T,
-    callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
-  ) => Promise<CrawlDataRes<D, T>>
+    (
+      config: PageRequestConfig,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlFile: <T extends CrawlFileConfig>(
-    config: T,
-    callback?: ((res: CrawlFileSingleRes) => void) | undefined
-  ) => Promise<CrawlFileRes<T>>
+    (
+      config: (string | PageRequestConfig)[],
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+
+    (
+      config: CrawlPageConfigObject,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+  }
+
+  crawlData: {
+    <T = any>(
+      config: DataRequestConfig,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: string,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: (string | DataRequestConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+
+    <T = any>(
+      config: CrawlDataConfigObject,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+  }
+
+  crawlFile: {
+    (
+      config: FileRequestConfig,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes>
+
+    (
+      config: FileRequestConfig[],
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+
+    (
+      config: CrawlFileConfigObject,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+  }
 
   startPolling: (
     config: StartPollingConfig,
@@ -1174,36 +1283,6 @@ export interface CrawlFileSingleRes extends CrawlCommonRes {
 }
 ```
 
-#### CrawlPageRes
-
-```ts
-export type CrawlPageRes<R extends CrawlPageConfig> = R extends
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-  ? CrawlPageSingleRes[]
-  : CrawlPageSingleRes
-```
-
-#### CrawlDataRes
-
-```ts
-export type CrawlDataRes<D, R extends CrawlDataConfig> = R extends
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-  ? CrawlDataSingleRes<D>[]
-  : CrawlDataSingleRes<D>
-```
-
-#### CrawlFileRes
-
-```ts
-export type CrawlFileRes<R extends CrawlFileConfig> = R extends
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
-  ? CrawlFileSingleRes[]
-  : CrawlFileSingleRes
-```
-
 ### API Other
 
 #### AnyObject
@@ -1218,4 +1297,4 @@ export interface AnyObject extends Object {
 
 If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.
 
-[#life-cycle]:
+thank you for your support.

@@ -2,14 +2,14 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。可批量爬取页面、批量网络请求、批量下载文件资源、轮询爬取等。用法灵活和简单，对 JS/TS 开发者友好。
+x-crawl 是一个灵活的 nodejs 爬虫库。用于爬页面、爬接口、爬文件以及轮询爬。用法灵活和简单，对 JS/TS 开发者友好。
 
 > 如果你喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，不仅是对它的认可，同时也是对开发者的认可。
 
 ## 特征
 
 - **🔥 异步/同步** - 只需更改一下 mode 属性即可切换 异步/同步 爬取模式。
-- **⚙️ 多种功能** - 可批量爬取页面、批量网络请求、批量下载文件资源、轮询爬取等。
+- **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬。并且支持爬取单个或多个。
 - **🖋️ 写法灵活** - 一种功能适配多种爬取配置、获取爬取结果的写法，写法非常灵活。
 - **⏱️ 间隔爬取** - 无间隔/固定间隔/随机间隔，可以有效 使用/避免 高并发爬取。
 - **🔄 失败重试** - 可针对所有爬取的请求设置，针对单次爬取的请求设置，针对单个请求设置进行失败重试。
@@ -81,9 +81,6 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
       - [CrawlPageConfigObject](#CrawlPageConfigObject)
       - [CrawlDataConfigObject](#CrawlDataConfigObject)
       - [CrawlFileConfigObject](#CrawlFileConfigObject)
-      - [CrawlPageConfig](#CrawlPageConfig)
-      - [CrawlDataConfig](#CrawlDataConfig)
-      - [CrawlFileConfig](#CrawlFileConfig)
       - [StartPollingConfig](#StartPollingConfig)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
@@ -91,9 +88,6 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [CrawlPageSingleRes](#CrawlPageSingleRes)
     - [CrawlDataSingleRes](#CrawlDataSingleRes)
     - [CrawlFileSingleRes](#CrawlFileSingleRes)
-    - [CrawlPageRes](#CrawlPageRes)
-    - [CrawlDataRes](#CrawlDataRes)
-    - [CrawlFileRes](#CrawlFileRes)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [更多](#更多)
@@ -129,13 +123,13 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 
   // 存放图片 URL
   const imgUrls = []
-  const elSelectorMap = ['.carousel-inner img', '.chief-recom-item img', '.bg-item img']
+  const elSelectorMap = ['.carousel-inner', '.chief-recom-item', '.bg-item']
   for (const item of res) {
     const { id } = item
     const { page } = item.data
 
     // 获取页面轮播图片元素的 URL
-    const urls = await page.$$eval(elSelectorMap[id - 1], (imgEls) =>
+    const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) =>
       imgEls.map((item) => item.src)
     )
     imgUrls.push(...urls)
@@ -277,7 +271,11 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 const requestConfigs = [
   'https://www.example.com/api-1',
   'https://www.example.com/api-2',
-  { url: 'https://www.example.com/api-3', method: 'POST', data: { name: 'coderhxl' } }
+  {
+    url: 'https://www.example.com/api-3',
+    method: 'POST',
+    data: { name: 'coderhxl' }
+  }
 ]
 
 myXCrawl.crawlData({ requestConfigs }).then((res) => {
@@ -296,7 +294,10 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      'https://www.example.com/file-2'
+    ],
     fileConfig: {
       storeDir: './upload' // 存放文件夹
     }
@@ -326,7 +327,10 @@ const testXCrawl = xCrawl()
 
 testXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1.jpg', 'https://www.example.com/file-2.jpg'],
+    requestConfigs: [
+      'https://www.example.com/file-1.jpg',
+      'https://www.example.com/file-2.jpg'
+    ],
     fileConfig: {
       beforeSave(info) {
         return sharp(info.data).resize(200).toBuffer()
@@ -389,7 +393,10 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      'https://www.example.com/api-2'
+    ],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -411,7 +418,9 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl()
 
-myXCrawl.crawlData({ url: 'https://www.example.com/api', maxRetry: 1 }).then((res) => {})
+myXCrawl
+  .crawlData({ url: 'https://www.example.com/api', maxRetry: 1 })
+  .then((res) => {})
 ```
 
 maxRetry 属性决定要重试几次。
@@ -458,12 +467,19 @@ x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持
 
 #### 类型
 
-- [XCrawlBaseConfig](#XCrawlBaseConfig)
-- [XCrawlInstance](#XCrawlInstance)
+xCrawl API 是一个函数。
 
 ```ts
 function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
 ```
+
+**参数类型：**
+
+- 查看 [XCrawlBaseConfig](#XCrawlBaseConfig) 类型
+
+**返回值类型：**
+
+- 查看 [XCrawlInstance](#XCrawlInstance)类型
 
 #### 示例
 
@@ -484,16 +500,40 @@ crawlPage 是爬虫实例的方法，通常用于爬取页面。
 
 #### 类型
 
-- 查看 [CrawlPageConfig](#CrawlPageConfig) 类型
-- 查看 [CrawlPageSingleRes](#CrawlPageSingleRes) 类型
-- 查看 [CrawlPageRes](#CrawlPageRes) 类型
+crawlPage API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
 
 ```ts
-function crawlPage: <T extends CrawlPageConfig>(
-  config: T,
-  callback?: ((res: CrawlPageSingleRes) => void) | undefined
-) => Promise<CrawlPageRes<T>>
+type crawlPage = {
+  (
+    config: string,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes>
+
+  (
+    config: PageRequestConfig,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes>
+
+  (
+    config: (string | PageRequestConfig)[],
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+
+  (
+    config: CrawlPageConfigObject,
+    callback?: (res: CrawlPageSingleRes) => void
+  ): Promise<CrawlPageSingleRes[]>
+}
 ```
+
+**参数类型：**
+
+- 查看 [PageRequestConfig](#PageRequestConfig) 类型
+- 查看 [CrawlPageConfigObject](#CrawlPageConfigObject) 类型
+
+**返回值类型：**
+
+- 查看 [CrawlPageSingleRes](#CrawlPageSingleRes) 类型
 
 #### 示例
 
@@ -611,16 +651,40 @@ crawl 是爬虫实例的方法，通常用于爬取 API ，可获取 JSON 数据
 
 #### 类型
 
-- 查看 [CrawlDataConfig](#CrawlDataConfig) 类型
-- 查看 [CrawlDataSingleRes](#CrawlDataSingleRes) 类型
-- 查看 [CrawlDataRes](#CrawlDataRes) 类型
+crawlData API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
 
 ```ts
-function crawlData<D = any, T extends CrawlDataConfig = CrawlDataConfig>(
-  config: T,
-  callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
-) => Promise<CrawlDataRes<D, T>>
+type crawlData = {
+  <T = any>(
+    config: DataRequestConfig,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  <T = any>(
+    config: string,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>>
+
+  <T = any>(
+    config: (string | DataRequestConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+
+  <T = any>(
+    config: CrawlDataConfigObject,
+    callback?: (res: CrawlDataSingleRes<T>) => void
+  ): Promise<CrawlDataSingleRes<T>[]>
+}
 ```
+
+**参数类型：**
+
+- 查看 [DataRequestConfig](#DataRequestConfig) 类型
+- 查看 [CrawlDataConfigObject](#CrawlDataConfigObject) 类型
+
+**返回值类型：**
+
+- 查看 [CrawlDataSingleRes](#CrawlDataSingleRes) 类型
 
 #### 示例
 
@@ -635,7 +699,10 @@ const myXCrawl = xCrawl({
 // crawlData API
 myXCrawl
   .crawlData({
-    requestConfigs: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
+    requestConfigs: [
+      'https://www.example.com/api-1',
+      'https://www.example.com/api-2'
+    ],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -745,16 +812,35 @@ crawlFile 是爬虫实例的方法，通常用于爬取文件，可获取图片�
 
 #### 类型
 
-- 查看 [CrawlFileConfig](#CrawlFileConfig) 类型
-- 查看 [CrawlFileSingleRes](#CrawlFileSingleRes) 类型
-- 查看 [CrawlFileRes](#CrawlFileRes) 类型
+crawlFile API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
 
 ```ts
-function crawlFile<T extends CrawlFileConfig>(
-  config: T,
-  callback?: ((res: CrawlFileSingleRes) => void) | undefined
-) => Promise<CrawlFileRes<T>>
+type crawlFile = {
+  (
+    config: FileRequestConfig,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes>
+
+  (
+    config: FileRequestConfig[],
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+
+  (
+    config: CrawlFileConfigObject,
+    callback?: (res: CrawlFileSingleRes) => void
+  ): Promise<CrawlFileSingleRes[]>
+}
 ```
+
+**参数类型：**
+
+- 查看 [FileRequestConfig](#FileRequestConfig) 类型
+- 查看 [CrawlFileConfigObject](#CrawlFileConfigObject) 类型
+
+**返回值类型：**
+
+- 查看 [CrawlFileSingleRes](#CrawlFileSingleRes) 类型
 
 #### 示例
 
@@ -769,7 +855,10 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: ['https://www.example.com/file-1', 'https://www.example.com/file-2'],
+    requestConfigs: [
+      'https://www.example.com/file-1',
+      'https://www.example.com/file-2'
+    ],
     storeDir: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
@@ -1047,32 +1136,6 @@ export interface CrawlFileConfigObject {
 }
 ```
 
-##### CrawlPageConfig
-
-```ts
-export type CrawlPageConfig =
-  | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-```
-
-##### CrawlDataConfig
-
-```ts
-export type CrawlDataConfig =
-  | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-```
-
-##### CrawlFileConfig
-
-```ts
-export type CrawlFileConfig = FileRequestConfig | FileRequestConfig[] | CrawlFileConfigObject
-```
-
 ##### StartPollingConfig
 
 ```js
@@ -1089,20 +1152,66 @@ export interface StartPollingConfig {
 
 ```ts
 export interface XCrawlInstance {
-  crawlPage: <T extends CrawlPageConfig>(
-    config: T,
-    callback?: ((res: CrawlPageSingleRes) => void) | undefined
-  ) => Promise<CrawlPageRes<T>>
+  crawlPage: {
+    (
+      config: string,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlData: <D = any, T extends CrawlDataConfig = CrawlDataConfig>(
-    config: T,
-    callback?: ((res: CrawlDataSingleRes<D>) => void) | undefined
-  ) => Promise<CrawlDataRes<D, T>>
+    (
+      config: PageRequestConfig,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes>
 
-  crawlFile: <T extends CrawlFileConfig>(
-    config: T,
-    callback?: ((res: CrawlFileSingleRes) => void) | undefined
-  ) => Promise<CrawlFileRes<T>>
+    (
+      config: (string | PageRequestConfig)[],
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+
+    (
+      config: CrawlPageConfigObject,
+      callback?: (res: CrawlPageSingleRes) => void
+    ): Promise<CrawlPageSingleRes[]>
+  }
+
+  crawlData: {
+    <T = any>(
+      config: DataRequestConfig,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: string,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>>
+
+    <T = any>(
+      config: (string | DataRequestConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+
+    <T = any>(
+      config: CrawlDataConfigObject,
+      callback?: (res: CrawlDataSingleRes<T>) => void
+    ): Promise<CrawlDataSingleRes<T>[]>
+  }
+
+  crawlFile: {
+    (
+      config: FileRequestConfig,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes>
+
+    (
+      config: FileRequestConfig[],
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+
+    (
+      config: CrawlFileConfigObject,
+      callback?: (res: CrawlFileSingleRes) => void
+    ): Promise<CrawlFileSingleRes[]>
+  }
 
   startPolling: (
     config: StartPollingConfig,
@@ -1167,36 +1276,6 @@ export interface CrawlFileSingleRes extends CrawlCommonRes {
 }
 ```
 
-#### CrawlPageRes
-
-```ts
-export type CrawlPageRes<R extends CrawlPageConfig> = R extends
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-  ? CrawlPageSingleRes[]
-  : CrawlPageSingleRes
-```
-
-#### CrawlDataRes
-
-```ts
-export type CrawlDataRes<D, R extends CrawlDataConfig> = R extends
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-  ? CrawlDataSingleRes<D>[]
-  : CrawlDataSingleRes<D>
-```
-
-#### CrawlFileRes
-
-```ts
-export type CrawlFileRes<R extends CrawlFileConfig> = R extends
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
-  ? CrawlFileSingleRes[]
-  : CrawlFileSingleRes
-```
-
 ### API Other
 
 #### AnyObject
@@ -1210,3 +1289,5 @@ export interface AnyObject extends Object {
 ## 更多
 
 如果您有 **问题 、需求、好的建议** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。
+
+感谢你们的支持。
