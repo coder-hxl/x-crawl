@@ -1,0 +1,22 @@
+name: "\U0001F680 新想法建议"
+description: 为这个项目提出一个想法。
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: 这个特性解决了什么问题？
+      description: |
+        解释这个特性请求背后的用例、上下文和基本原理。更重要的是，你想要创造的最终用户体验是什么?
+      placeholder: 问题描述
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-API
+    attributes:
+      label: 提议的 API 是什么样的？
+      description: |
+        描述你打算如何解决问题，并提供API实现后如何工作的代码示例。注意，你可以使用[Markdown](https://guides.github.com/features/mastering-markdown/)来格式化你的代码块。
+      placeholder: 假定的 API
+    validations:
+      required: true
