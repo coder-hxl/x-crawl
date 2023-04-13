@@ -1,0 +1,74 @@
+name: 🐞 Bug 反馈
+description: 创建一份报告来帮助我们改进
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        **感谢您花时间填写这份错误报告！**
+
+  - id: summary
+    type: textarea
+    attributes:
+      label: Bug 预期
+      description: 你希望发生什么?实际上发生了什么?
+      placeholder: |
+        我以为……
+        
+        实际发生的是……
+    validations:
+      required: true
+  - id: mvce
+    type: textarea
+    attributes:
+      label: 最小可重复的例子
+      description: >
+        提供一个[最小可重现的例子](https://stackoverflow.com/help/minimal-reproducible-example).
+        *不需要反引号——这会自动格式化为代码。*
+      render: TypeScript
+    validations:
+      required: true
+  - id: error
+    type: input
+    attributes:
+      label: 报错信息
+      description: >
+        提供报错信息。**如果没有抛出**，写无报错。
+      placeholder: 出了些错误
+    validations:
+      required: true
+  - id: x-crawl-version
+    type: input
+    attributes:
+      label: x-crawl 版本
+      description: |
+       你运行的是什么版本的 x-crawl ？**这必须是一个有效的 semver 标签**。
+    validations:
+      required: true
+  - id: node-version
+    type: input
+    attributes:
+      label: Node 版本
+      description: |
+        你运行的是什么版本的 Node.js ？**这必须是一个有效的 semver 标签**。
+    validations:
+      required: true
+  - id: pkg-mgr
+    type: dropdown
+    attributes:
+      label: 包管理器
+      description: 你在运行什么包管理器？
+      options:
+        - npm
+        - yarn
+        - pnpm
+    validations:
+      required: true
+  - id: pkg-mgr-version
+    type: input
+    attributes:
+      label: 包管理器版本
+      description: |
+        你运行的是什么版本的包管理器？**这必须是一个有效的 semver 标签**。
+    validations:
+      required: true
