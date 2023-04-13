@@ -7,7 +7,12 @@ assignees: ''
 
 ---
 
-- type: markdown
+name: Bug report
+description: File a bug report
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: markdown
     attributes:
       value: >
         **Thanks for taking the time to fill out this bug report!**
