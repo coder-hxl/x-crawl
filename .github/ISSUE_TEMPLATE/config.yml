@@ -3,3 +3,6 @@ contact_links:
   - name: Questions & Discussions
     url: https://github.com/coder-hxl/x-crawl/discussions
     about: Use GitHub discussions for message-board style questions and discussions.
+  - name: 问题 & 讨论
+    url: https://github.com/coder-hxl/x-crawl/discussions
+    about: 使用 GitHub 讨论来进行的问题和讨论。
