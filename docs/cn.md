@@ -4,7 +4,7 @@
 
 x-crawl 是一个灵活的 nodejs 爬虫库。用于爬页面、爬接口、爬文件以及轮询爬。用法灵活和简单，对 JS/TS 开发者友好。
 
-> 如果你喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 Star 支持一下，不仅是对它的认可，同时也是对开发者的认可。
+> 如果你也喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 支持一下，感谢大家的支持。
 
 ## 特征
 
@@ -232,7 +232,7 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 browser 实例他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。
 
-**注意：** browser 实例内部会一直产生事件循环，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为当您修改 browser 实例的属性时，会对该爬虫实例 crawlPage API 内部的 browser 实例和返回结果的 page 实例以及 browser 实例造成影响，因为 browser 实例在同一个爬虫实例的 crawlPage API 内是共享的。
+**注意：** browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为当您修改 browser 实例的属性时，会对该爬虫实例 crawlPage API 内部的 browser 实例和返回结果的 page 实例以及 browser 实例造成影响，因为 browser 实例在同一个爬虫实例的 crawlPage API 内是共享的。
 
 #### page 实例
 

@@ -4,12 +4,12 @@ English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.
 
 x-crawl is a flexible nodejs crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls. Flexible and simple to use, friendly to JS/TS developers.
 
-> If you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, not only for its recognition, but also for Approved by the developer.
+> If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you all for your support.
 
 ## Features
 
 - **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
-- **⚙️Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
+- **⚙️ Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
 - **🖋️ Flexible writing method** - A function adapts to multiple crawling configurations and obtains crawling results. The writing method is very flexible.
 - **⏱️ Interval crawling** - no interval/fixed interval/random interval, can effectively use/avoid high concurrent crawling.
 - **🔄 Retry on failure** - It can be set for all crawling requests, for a single crawling request, and for a single request to set a failed retry.
@@ -157,7 +157,6 @@ running result:
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
-
 **Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
 ## Core concepts
@@ -234,7 +233,7 @@ It is an instance object of [Browser](https://pptr.dev/api/puppeteer.browser). F
 
 The browser instance is a headless browser without a UI shell. What he does is to bring **all modern network platform functions** provided by the browser rendering engine to the code.
 
-**Note:** An event loop will always be generated inside the browser instance, causing the file not to be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because when you modify the properties of the browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
+**Note:** The browser will stay up and running, causing the file not to be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because when you modify the properties of the browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
 
 #### page instance
 
