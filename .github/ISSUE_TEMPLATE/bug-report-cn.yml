@@ -1,5 +1,5 @@
 name: 🐞 Bug 反馈
-description: 创建一份报告来帮助我们改进
+description: 创建一份报告来帮助我们改进。
 labels: ["bug"]
 body:
   - type: markdown
