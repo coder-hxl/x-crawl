@@ -1,7 +1,5 @@
-name: Bug report
-description: File a bug report
-title: '[Bug]: '
-labels: [bug]
+name: 🐞 Bug report
+description: Create a report to help us improve
 body:
   - type: markdown
     attributes:
