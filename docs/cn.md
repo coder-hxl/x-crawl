@@ -2,7 +2,7 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 nodejs 爬虫库。用于爬页面、爬接口、爬文件以及轮询爬。用法灵活和简单，对 JS/TS 开发者友好。
+x-crawl 是一个灵活和功能多的 nodejs 爬虫库。用于爬页面、爬接口、爬文件以及轮询爬。
 
 > 如果你也喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 支持一下，感谢大家的支持。
 
