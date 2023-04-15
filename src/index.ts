@@ -7,13 +7,13 @@ import {
 
 import {
   LoaderXCrawlBaseConfig,
-  XCrawlBaseConfig,
+  XCrawlConfig,
   XCrawlInstance
 } from './types'
 import { isUndefined } from './utils'
 
 function loaderBaseConfig(
-  baseConfig: XCrawlBaseConfig | undefined
+  baseConfig: XCrawlConfig | undefined
 ): LoaderXCrawlBaseConfig {
   const loaderBaseConfig = baseConfig ? baseConfig : {}
 
@@ -43,7 +43,7 @@ function createnInstance(baseConfig: LoaderXCrawlBaseConfig): XCrawlInstance {
   return instance
 }
 
-export default function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance {
+export default function xCrawl(baseConfig?: XCrawlConfig): XCrawlInstance {
   const newBaseConfig = loaderBaseConfig(baseConfig)
 
   const instance = createnInstance(newBaseConfig)

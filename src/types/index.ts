@@ -1,3 +1,4 @@
+import { PuppeteerLaunchOptions } from 'puppeteer'
 import {
   StartPollingConfig,
   IntervalTime,
@@ -12,16 +13,19 @@ import {
   CrawlPageConfigObject
 } from './api'
 
-export interface XCrawlBaseConfig {
+export interface XCrawlConfig {
   baseUrl?: string
   timeout?: number
   intervalTime?: IntervalTime
   mode?: 'async' | 'sync'
   proxy?: string
   maxRetry?: number
+  crawlPage?: {
+    launchBrowser?: PuppeteerLaunchOptions
+  }
 }
 
-export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
+export type LoaderXCrawlConfig = XCrawlConfig & {
   mode: 'async' | 'sync'
   timeout: number
   maxRetry: number

@@ -39,7 +39,7 @@ import {
   LoaderFileRequestConfig,
   CrawlFileConfigObject
 } from './types/api'
-import { LoaderXCrawlBaseConfig } from './types'
+import { LoaderXCrawlConfig } from './types'
 
 async function crawlRequestSingle(
   controllerConfig: ControllerConfig<
@@ -98,7 +98,7 @@ function transformRequestConfig(config: any) {
 }
 
 function loaderCommonConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
+  xCrawlConfig: LoaderXCrawlConfig,
   requestObjects: (PageRequestConfig | DataRequestConfig | FileRequestConfig)[],
   loaderConfig:
     | LoaderCrawlPageConfig
@@ -110,37 +110,37 @@ function loaderCommonConfig(
     let { url, timeout, proxy, maxRetry, priority } = requestConfig
 
     // 1.1.baseUrl
-    if (!isUndefined(baseConfig.baseUrl)) {
-      url = baseConfig.baseUrl + url
+    if (!isUndefined(xCrawlConfig.baseUrl)) {
+      url = xCrawlConfig.baseUrl + url
     }
 
     // 1.2.timeout
-    // requestConfig > loaderConfig > baseConfig
+    // requestConfig > loaderConfig > xCrawlConfig
     if (isUndefined(timeout)) {
       if (!isUndefined(loaderConfig.timeout)) {
         timeout = loaderConfig.timeout
       } else {
-        timeout = baseConfig.timeout
+        timeout = xCrawlConfig.timeout
       }
     }
 
     // 1.3.porxy
-    // requestConfig > loaderConfig > baseConfig
+    // requestConfig > loaderConfig > xCrawlConfig
     if (isUndefined(proxy)) {
       if (!isUndefined(loaderConfig.proxy)) {
         proxy = loaderConfig.proxy
-      } else if (!isUndefined(baseConfig.proxy)) {
-        proxy = baseConfig.proxy
+      } else if (!isUndefined(xCrawlConfig.proxy)) {
+        proxy = xCrawlConfig.proxy
       }
     }
 
     // 1.4.maxRetry
-    // requestConfig > loaderConfig > baseConfig
+    // requestConfig > loaderConfig > xCrawlConfig
     if (isUndefined(maxRetry)) {
       if (!isUndefined(loaderConfig.maxRetry)) {
         maxRetry = loaderConfig.maxRetry
       } else {
-        maxRetry = baseConfig.maxRetry
+        maxRetry = xCrawlConfig.maxRetry
       }
     }
 
@@ -155,14 +155,14 @@ function loaderCommonConfig(
   // 2.intervalTime
   if (
     isUndefined(loaderConfig.intervalTime) &&
-    !isUndefined(baseConfig.intervalTime)
+    !isUndefined(xCrawlConfig.intervalTime)
   ) {
-    loaderConfig.intervalTime = baseConfig.intervalTime
+    loaderConfig.intervalTime = xCrawlConfig.intervalTime
   }
 }
 
 function loaderPageConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
+  xCrawlConfig: LoaderXCrawlConfig,
   rawConfig: CrawlPageConfig
 ): LoaderCrawlPageConfig {
   const loaderConfig: LoaderCrawlPageConfig = { requestConfigs: [] }
@@ -192,7 +192,7 @@ function loaderPageConfig(
   }
 
   // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
+  loaderCommonConfig(xCrawlConfig, requestObjects, loaderConfig)
 
   // 装载单独的配置
   if (!isUndefined(loaderConfig.cookies)) {
@@ -211,7 +211,7 @@ function loaderPageConfig(
 }
 
 function loaderDataConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
+  xCrawlConfig: LoaderXCrawlConfig,
   rawConfig: CrawlDataConfig
 ): LoaderCrawlDataConfig {
   const loaderConfig: LoaderCrawlDataConfig = { requestConfigs: [] }
@@ -240,13 +240,13 @@ function loaderDataConfig(
   }
 
   // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
+  loaderCommonConfig(xCrawlConfig, requestObjects, loaderConfig)
 
   return loaderConfig
 }
 
 function loaderFileConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
+  xCrawlConfig: LoaderXCrawlConfig,
   rawConfig: CrawlFileConfig
 ): LoaderCrawlFileConfig {
   const loaderConfig: LoaderCrawlFileConfig = { requestConfigs: [] }
@@ -280,7 +280,7 @@ function loaderFileConfig(
   }
 
   // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
+  loaderCommonConfig(xCrawlConfig, requestObjects, loaderConfig)
 
   // 装载单独的配置
   if (
@@ -307,7 +307,7 @@ function loaderFileConfig(
   return loaderConfig
 }
 
-export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
   let browser: Browser | null = null
   let createBrowserPending: Promise<void> | null = null
   let haveCreateBrowser = false
@@ -346,9 +346,11 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
     //  创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
-      createBrowserPending = puppeteer.launch().then((res) => {
-        browser = res
-      })
+      createBrowserPending = puppeteer
+        .launch(xCrawlConfig.crawlPage?.launchBrowser)
+        .then((res) => {
+          browser = res
+        })
     }
 
     // 等待浏览器创建完毕
@@ -358,15 +360,15 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       if (createBrowserPending) createBrowserPending = null
     }
 
-    // 合并 baseConfig 配置
+    // 合并 xCrawlConfig 配置
     const { requestConfigs, intervalTime } = loaderPageConfig(
-      baseConfig,
+      xCrawlConfig,
       config
     )
 
     const controllerRes = await controller(
       'page',
-      baseConfig.mode,
+      xCrawlConfig.mode,
       requestConfigs,
       intervalTime,
       cId,
@@ -482,7 +484,7 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   return crawlPage
 }
 
-export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlData<T = any>(
     config: string,
     callback?: (res: CrawlDataSingleRes<T>) => void
@@ -508,13 +510,13 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
     callback?: (res: CrawlDataSingleRes<T>) => void
   ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
     const { requestConfigs, intervalTime } = loaderDataConfig(
-      baseConfig,
+      xCrawlConfig,
       config
     )
 
     const controllerRes = await controller(
       'data',
-      baseConfig.mode,
+      xCrawlConfig.mode,
       requestConfigs,
       intervalTime,
       undefined,
@@ -570,7 +572,7 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
   return crawlData
 }
 
-export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlFile(
     config: FileRequestConfig,
     callback?: (res: CrawlFileSingleRes) => void
@@ -591,13 +593,13 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     callback?: (res: CrawlFileSingleRes) => void
   ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
     const { requestConfigs, intervalTime, fileConfig } = loaderFileConfig(
-      baseConfig,
+      xCrawlConfig,
       config
     )
 
     const controllerRes = await controller(
       'file',
-      baseConfig.mode,
+      xCrawlConfig.mode,
       requestConfigs,
       intervalTime,
       undefined,
