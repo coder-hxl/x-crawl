@@ -2,17 +2,17 @@ import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { priorityQueueMergeSort } from './sort'
 import {
   IntervalTime,
-  LoaderDataRequestConfig,
-  LoaderFileRequestConfig,
-  LoaderPageRequestConfig
+  LoaderCrawlDataDetail,
+  LoaderCrawlFileDetail,
+  LoaderCrawlPageDetail
 } from './types/api'
 import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
 export interface ControllerConfig<
   T extends
-    | LoaderPageRequestConfig
-    | LoaderDataRequestConfig
-    | LoaderFileRequestConfig,
+    | LoaderCrawlPageDetail
+    | LoaderCrawlDataDetail
+    | LoaderCrawlFileDetail,
   V
 > {
   id: number
@@ -20,21 +20,21 @@ export interface ControllerConfig<
   crawlCount: number
   maxRetry: number
   errorQueue: Error[]
-  requestConfig: T
+  crawlDetailConfig: T
   crawlSingleRes: V | null
 }
 
 export async function controller<
   T extends
-    | LoaderPageRequestConfig
-    | LoaderDataRequestConfig
-    | LoaderFileRequestConfig,
+    | LoaderCrawlPageDetail
+    | LoaderCrawlDataDetail
+    | LoaderCrawlFileDetail,
   V,
   C
 >(
   name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
-  requestConfigs: T[],
+  crawlSingleConfigs: T[],
   intervalTime: IntervalTime | undefined,
   crawlSingleFnExtraConfig: C,
   crawlSingleFn: (
@@ -43,27 +43,27 @@ export async function controller<
   ) => Promise<V>
 ): Promise<ControllerConfig<T, V>[]> {
   // 是否使用优先爬取
-  const isPriorityCrawl = !requestConfigs.every(
-    (item) => item.priority === requestConfigs[0].priority
+  const isPriorityCrawl = !crawlSingleConfigs.every(
+    (item) => item.priority === crawlSingleConfigs[0].priority
   )
   const targetRequestConfigs = isPriorityCrawl
     ? priorityQueueMergeSort(
-        requestConfigs.map((item) => ({
+        crawlSingleConfigs.map((item) => ({
           ...item,
           valueOf: () => item.priority
         }))
       )
-    : requestConfigs
+    : crawlSingleConfigs
 
   // 通过映射生成新的配置数组
   const controllerConfigs: ControllerConfig<T, V>[] = targetRequestConfigs.map(
-    (requestConfig, index) => ({
+    (crawlDetailConfig, index) => ({
       id: index + 1,
       isSuccess: false,
-      maxRetry: requestConfig.maxRetry,
+      maxRetry: crawlDetailConfig.maxRetry,
       crawlCount: 0,
       errorQueue: [],
-      requestConfig,
+      crawlDetailConfig,
       crawlSingleRes: null
     })
   )

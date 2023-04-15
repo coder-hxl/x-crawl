@@ -17,7 +17,7 @@ if (environment === 'dev') {
 
 jest.setTimeout(60000)
 
-const requestConfigs: string[] = [
+const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
 ]
@@ -29,7 +29,7 @@ const storeDir = path.resolve(__dirname, './upload')
 async function writtenFileRequestConfig() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
-  const res = await testXCrawl.crawlFile({ url: requestConfigs[0], storeDir })
+  const res = await testXCrawl.crawlFile({ url: urls[0], storeDir })
 
   return res.isSuccess && res.data?.data.isSuccess
 }
@@ -38,9 +38,7 @@ async function writtenFileRequestConfig() {
 async function writtenFileRequestConfigArr() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
-  const res = await testXCrawl.crawlFile(
-    requestConfigs.map((url) => ({ url, storeDir }))
-  )
+  const res = await testXCrawl.crawlFile(urls.map((url) => ({ url, storeDir })))
 
   return res.reduce(
     (prev, item) => prev && item.isSuccess && !!item.data?.data.isSuccess,
@@ -53,7 +51,7 @@ async function writtenCrawlFileConfigObject() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs,
+    crawlFiles: urls,
     fileConfig: { storeDir }
   })
 
@@ -76,7 +74,7 @@ async function loaderBaseConfig() {
   })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs: ['/4401.jpg', '/4403.jpg'],
+    crawlFiles: ['/4401.jpg', '/4403.jpg'],
     fileConfig: { storeDir }
   })
 
@@ -91,7 +89,7 @@ async function loaderAPIConfig() {
   })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs: ['/4401.jpg', '/4403.jpg'],
+    crawlFiles: ['/4401.jpg', '/4403.jpg'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
     fileConfig: { storeDir },
@@ -112,7 +110,7 @@ async function storeConfig() {
 
   const record: string[] = []
   const res = await testXCrawl.crawlFile({
-    requestConfigs: [
+    crawlFiles: [
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
     ],

@@ -10,44 +10,44 @@ type LoaderHasConfig = {
   priority: number
 }
 
-export type LoaderPageRequestConfig = PageRequestConfig & LoaderHasConfig
+export type LoaderCrawlPageDetail = CrawlPageDetailConfig & LoaderHasConfig
 
-export type LoaderDataRequestConfig = DataRequestConfig & LoaderHasConfig
+export type LoaderCrawlDataDetail = CrawlDataDetailConfig & LoaderHasConfig
 
-export type LoaderFileRequestConfig = FileRequestConfig & LoaderHasConfig
+export type LoaderCrawlFileDetail = CrawlFileDetailConfig & LoaderHasConfig
 
 export interface LoaderCrawlPageConfig
-  extends MapTypeObject<CrawlPageConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderPageRequestConfig[]
+  extends MapTypeObject<CrawlPageEnhanceConfig, 'crawlPages'> {
+  crawlPageDetails: LoaderCrawlPageDetail[]
 }
 
 export interface LoaderCrawlDataConfig
-  extends MapTypeObject<CrawlDataConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderDataRequestConfig[]
+  extends MapTypeObject<CrawlDataEnhanceConfig, 'crawlDatas'> {
+  crawlDataDetails: LoaderCrawlDataDetail[]
 }
 
 export interface LoaderCrawlFileConfig
-  extends MapTypeObject<CrawlFileConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderFileRequestConfig[]
+  extends MapTypeObject<CrawlFileEnhanceConfig, 'crawlFiles'> {
+  crawlFileDetails: LoaderCrawlFileDetail[]
 }
 
-// Function overloading crawl config
-export type CrawlPageConfig =
+/* Function overloading crawl config */
+export type UniteCrawlPageConfig =
   | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
+  | CrawlPageDetailConfig
+  | (string | CrawlPageDetailConfig)[]
+  | CrawlPageEnhanceConfig
 
-export type CrawlDataConfig =
+export type UniteCrawlDataConfig =
   | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
+  | CrawlDataDetailConfig
+  | (string | CrawlDataDetailConfig)[]
+  | CrawlDataEnhanceConfig
 
-export type CrawlFileConfig =
-  | FileRequestConfig
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
+export type UniteCrawlFileConfig =
+  | CrawlFileDetailConfig
+  | CrawlFileDetailConfig[]
+  | CrawlFileEnhanceConfig
 
 /* API Config */
 // API Config Other
@@ -75,70 +75,64 @@ export type Method =
   | 'unlink'
   | 'UNLINK'
 
-export type PageRequestConfigCookies =
+export type PageCookies =
   | string
   | Protocol.Network.CookieParam
   | Protocol.Network.CookieParam[]
 
-// API Config Request
-export interface PageRequestConfig {
-  url: string
-  headers?: AnyObject
+// API crawl config
+// Common
+export interface CrawlCommonConfig {
   timeout?: number
   proxy?: string
-  cookies?: PageRequestConfigCookies
   maxRetry?: number
+}
+
+// 1.Crawl page config
+export interface CrawlPageDetailConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject
+  cookies?: PageCookies
   priority?: number
 }
 
-export interface DataRequestConfig {
+export interface CrawlPageEnhanceConfig extends CrawlCommonConfig {
+  crawlPages: (string | CrawlPageDetailConfig)[]
+  intervalTime?: IntervalTime
+
+  // page common attribute
+  cookies?: PageCookies
+}
+
+// 2.Crawl data config
+export interface CrawlDataDetailConfig extends CrawlCommonConfig {
   url: string
   method?: Method
   headers?: AnyObject
   params?: AnyObject
   data?: any
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
   priority?: number
 }
 
-export interface FileRequestConfig {
+export interface CrawlDataEnhanceConfig extends CrawlCommonConfig {
+  crawlDatas: (string | CrawlDataDetailConfig)[]
+  intervalTime?: IntervalTime
+}
+
+// 3.Crawl file config
+export interface CrawlFileDetailConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
   priority?: number
   storeDir?: string
   fileName?: string
   extension?: string
 }
 
-// API Config Crawl
-export interface CrawlPageConfigObject {
-  requestConfigs: (string | PageRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  cookies?: PageRequestConfigCookies
+export interface CrawlFileEnhanceConfig extends CrawlCommonConfig {
+  crawlFiles: (string | CrawlFileDetailConfig)[]
   intervalTime?: IntervalTime
-  maxRetry?: number
-}
 
-export interface CrawlDataConfigObject {
-  requestConfigs: (string | DataRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-
-export interface CrawlFileConfigObject {
-  requestConfigs: (string | FileRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
   fileConfig?: {
     storeDir?: string
     extension?: string
@@ -151,6 +145,7 @@ export interface CrawlFileConfigObject {
   }
 }
 
+// 4.Polling config
 export interface StartPollingConfig {
   d?: number
   h?: number

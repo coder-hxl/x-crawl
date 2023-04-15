@@ -2,9 +2,9 @@ import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
 import type {
   IntervalTime,
-  LoaderDataRequestConfig,
-  LoaderFileRequestConfig,
-  LoaderPageRequestConfig
+  LoaderCrawlDataDetail,
+  LoaderCrawlFileDetail,
+  LoaderCrawlPageDetail
 } from './types/api'
 import type { ControllerConfig } from './controller'
 
@@ -33,9 +33,9 @@ async function useSleepByBatch(
 
 export async function asyncBatchCrawl<
   T extends
-    | LoaderPageRequestConfig
-    | LoaderDataRequestConfig
-    | LoaderFileRequestConfig,
+    | LoaderCrawlPageDetail
+    | LoaderCrawlDataDetail
+    | LoaderCrawlFileDetail,
   V,
   C
 >(
@@ -87,9 +87,9 @@ export async function asyncBatchCrawl<
 
 export async function syncBatchCrawl<
   T extends
-    | LoaderPageRequestConfig
-    | LoaderDataRequestConfig
-    | LoaderFileRequestConfig,
+    | LoaderCrawlPageDetail
+    | LoaderCrawlDataDetail
+    | LoaderCrawlFileDetail,
   V,
   C
 >(

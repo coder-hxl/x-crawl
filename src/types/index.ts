@@ -5,21 +5,19 @@ import {
   CrawlPageSingleRes,
   CrawlDataSingleRes,
   CrawlFileSingleRes,
-  CrawlFileConfigObject,
-  FileRequestConfig,
-  DataRequestConfig,
-  CrawlDataConfigObject,
-  PageRequestConfig,
-  CrawlPageConfigObject
+  CrawlFileEnhanceConfig,
+  CrawlFileDetailConfig,
+  CrawlDataDetailConfig,
+  CrawlDataEnhanceConfig,
+  CrawlPageDetailConfig,
+  CrawlPageEnhanceConfig,
+  CrawlCommonConfig
 } from './api'
 
-export interface XCrawlConfig {
+export interface XCrawlConfig extends CrawlCommonConfig {
   baseUrl?: string
-  timeout?: number
   intervalTime?: IntervalTime
   mode?: 'async' | 'sync'
-  proxy?: string
-  maxRetry?: number
   crawlPage?: {
     launchBrowser?: PuppeteerLaunchOptions
   }
@@ -39,24 +37,24 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: PageRequestConfig,
+      config: CrawlPageDetailConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: (string | PageRequestConfig)[],
+      config: (string | CrawlPageDetailConfig)[],
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes[]>
 
     (
-      config: CrawlPageConfigObject,
+      config: CrawlPageEnhanceConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes[]>
   }
 
   crawlData: {
     <T = any>(
-      config: DataRequestConfig,
+      config: CrawlDataDetailConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>>
 
@@ -66,29 +64,29 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>>
 
     <T = any>(
-      config: (string | DataRequestConfig)[],
+      config: (string | CrawlDataDetailConfig)[],
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
-      config: CrawlDataConfigObject,
+      config: CrawlDataEnhanceConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }
 
   crawlFile: {
     (
-      config: FileRequestConfig,
+      config: CrawlFileDetailConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes>
 
     (
-      config: FileRequestConfig[],
+      config: CrawlFileDetailConfig[],
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes[]>
 
     (
-      config: CrawlFileConfigObject,
+      config: CrawlFileEnhanceConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes[]>
   }
