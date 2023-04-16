@@ -3,53 +3,8 @@ import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
 import { AnyObject } from './common'
 
-/* Loader Config */
-type LoaderHasConfig = {
-  timeout: number
-  maxRetry: number
-  priority: number
-}
-
-export type LoaderCrawlPageDetail = CrawlPageDetailConfig & LoaderHasConfig
-
-export type LoaderCrawlDataDetail = CrawlDataDetailConfig & LoaderHasConfig
-
-export type LoaderCrawlFileDetail = CrawlFileDetailConfig & LoaderHasConfig
-
-export interface LoaderCrawlPageConfig
-  extends Omit<CrawlPageEnhanceConfig, 'crawlPages'> {
-  crawlPageDetails: LoaderCrawlPageDetail[]
-}
-
-export interface LoaderCrawlDataConfig
-  extends Omit<CrawlDataEnhanceConfig, 'crawlDatas'> {
-  crawlDataDetails: LoaderCrawlDataDetail[]
-}
-
-export interface LoaderCrawlFileConfig
-  extends Omit<CrawlFileEnhanceConfig, 'crawlFiles'> {
-  crawlFileDetails: LoaderCrawlFileDetail[]
-}
-
-/* Function overloading crawl config */
-export type UniteCrawlPageConfig =
-  | string
-  | CrawlPageDetailConfig
-  | (string | CrawlPageDetailConfig)[]
-  | CrawlPageEnhanceConfig
-
-export type UniteCrawlDataConfig =
-  | string
-  | CrawlDataDetailConfig
-  | (string | CrawlDataDetailConfig)[]
-  | CrawlDataEnhanceConfig
-
-export type UniteCrawlFileConfig =
-  | CrawlFileDetailConfig
-  | CrawlFileDetailConfig[]
-  | CrawlFileEnhanceConfig
-
 /* API Config */
+
 // API Config Other
 export type IntervalTime = number | { max: number; min?: number }
 
@@ -100,7 +55,7 @@ export interface CrawlPageDetailConfig extends CrawlCommonConfig {
   }
 }
 
-export interface CrawlPageEnhanceConfig extends CrawlCommonConfig {
+export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   crawlPages: (string | CrawlPageDetailConfig)[]
   intervalTime?: IntervalTime
 
@@ -122,7 +77,7 @@ export interface CrawlDataDetailConfig extends CrawlCommonConfig {
   priority?: number
 }
 
-export interface CrawlDataEnhanceConfig extends CrawlCommonConfig {
+export interface CrawlDataAdvancedConfig extends CrawlCommonConfig {
   crawlDatas: (string | CrawlDataDetailConfig)[]
   intervalTime?: IntervalTime
 
@@ -139,7 +94,7 @@ export interface CrawlFileDetailConfig extends CrawlCommonConfig {
   extension?: string
 }
 
-export interface CrawlFileEnhanceConfig extends CrawlCommonConfig {
+export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   crawlFiles: (string | CrawlFileDetailConfig)[]
   intervalTime?: IntervalTime
 

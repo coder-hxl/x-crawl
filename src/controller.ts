@@ -1,11 +1,13 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { priorityQueueMergeSort } from './sort'
+
 import {
-  IntervalTime,
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
   LoaderCrawlPageDetail
-} from './types/api'
+} from './api'
+
+import { IntervalTime } from './types/api'
 import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
 export interface ControllerConfig<

@@ -11,7 +11,7 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import { isUndefined } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './types/api'
+import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './api'
 
 /* Type */
 export interface Request {

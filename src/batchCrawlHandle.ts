@@ -1,11 +1,12 @@
 import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
-import type {
-  IntervalTime,
+import {
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
   LoaderCrawlPageDetail
-} from './types/api'
+} from './api'
+
+import type { IntervalTime } from './types/api'
 import type { ControllerConfig } from './controller'
 
 async function useSleepByBatch(
