@@ -52,7 +52,7 @@ async function writtenCrawlFileConfigObject() {
 
   const res = await testXCrawl.crawlFile({
     crawlFiles: urls,
-    fileConfig: { storeDir }
+    storeDir
   })
 
   return res.reduce(
@@ -75,7 +75,7 @@ async function loaderBaseConfig() {
 
   const res = await testXCrawl.crawlFile({
     crawlFiles: ['/4401.jpg', '/4403.jpg'],
-    fileConfig: { storeDir }
+    storeDir
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -92,7 +92,7 @@ async function loaderAPIConfig() {
     crawlFiles: ['/4401.jpg', '/4403.jpg'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
-    fileConfig: { storeDir },
+    storeDir,
     intervalTime: { max: 1000 },
     maxRetry: 0
   })
@@ -114,13 +114,11 @@ async function storeConfig() {
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
     ],
-    fileConfig: {
-      storeDir: path.resolve(__dirname, './upload'),
-      extension: '.jpg',
-      async beforeSave(info) {
-        record.push(info.fileName)
-        return info.data
-      }
+    storeDir: path.resolve(__dirname, './upload'),
+    extension: '.jpg',
+    async onBeforeSaveFile(info) {
+      record.push(info.fileName)
+      return info.data
     }
   })
 

@@ -10,11 +10,9 @@ testXCrawl
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg'
     ],
     proxy: 'http://localhost:14892',
-    fileConfig: {
-      storeDir: path.resolve(__dirname, './upload'),
-      beforeSave(info) {
-        return sharp(info.data).resize(200).toBuffer()
-      }
+    storeDir: path.resolve(__dirname, './upload'),
+    onBeforeSaveFile(info) {
+      return sharp(info.data).resize(200).toBuffer()
     }
   })
   .then(async (res) => {

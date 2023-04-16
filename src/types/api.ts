@@ -17,17 +17,17 @@ export type LoaderCrawlDataDetail = CrawlDataDetailConfig & LoaderHasConfig
 export type LoaderCrawlFileDetail = CrawlFileDetailConfig & LoaderHasConfig
 
 export interface LoaderCrawlPageConfig
-  extends MapTypeObject<CrawlPageEnhanceConfig, 'crawlPages'> {
+  extends Omit<CrawlPageEnhanceConfig, 'crawlPages'> {
   crawlPageDetails: LoaderCrawlPageDetail[]
 }
 
 export interface LoaderCrawlDataConfig
-  extends MapTypeObject<CrawlDataEnhanceConfig, 'crawlDatas'> {
+  extends Omit<CrawlDataEnhanceConfig, 'crawlDatas'> {
   crawlDataDetails: LoaderCrawlDataDetail[]
 }
 
 export interface LoaderCrawlFileConfig
-  extends MapTypeObject<CrawlFileEnhanceConfig, 'crawlFiles'> {
+  extends Omit<CrawlFileEnhanceConfig, 'crawlFiles'> {
   crawlFileDetails: LoaderCrawlFileDetail[]
 }
 
@@ -100,7 +100,7 @@ export interface CrawlPageEnhanceConfig extends CrawlCommonConfig {
   crawlPages: (string | CrawlPageDetailConfig)[]
   intervalTime?: IntervalTime
 
-  // page common attribute
+  headers?: AnyObject
   cookies?: PageCookies
 }
 
@@ -117,6 +117,8 @@ export interface CrawlDataDetailConfig extends CrawlCommonConfig {
 export interface CrawlDataEnhanceConfig extends CrawlCommonConfig {
   crawlDatas: (string | CrawlDataDetailConfig)[]
   intervalTime?: IntervalTime
+
+  headers?: AnyObject
 }
 
 // 3.Crawl file config
@@ -133,15 +135,16 @@ export interface CrawlFileEnhanceConfig extends CrawlCommonConfig {
   crawlFiles: (string | CrawlFileDetailConfig)[]
   intervalTime?: IntervalTime
 
-  fileConfig?: {
-    storeDir?: string
-    extension?: string
-    beforeSave?: (info: {
-      id: number
-      fileName: string
-      filePath: string
-      data: Buffer
-    }) => Promise<Buffer>
+  headers?: AnyObject
+  storeDir?: string
+  extension?: string
+
+  onBeforeSaveFile?: (info: {
+    id: number
+    fileName: string
+    filePath: string
+    data: Buffer
+  }) => Promise<Buffer>
   }
 }
 
