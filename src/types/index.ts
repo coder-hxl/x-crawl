@@ -43,12 +43,12 @@ export interface XCrawlInstance {
 
     (
       config: (string | CrawlPageDetailConfig)[],
-      callback?: (res: CrawlPageSingleRes) => void
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
 
     (
       config: CrawlPageAdvancedConfig,
-      callback?: (res: CrawlPageSingleRes) => void
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
   }
 
@@ -65,12 +65,12 @@ export interface XCrawlInstance {
 
     <T = any>(
       config: (string | CrawlDataDetailConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
       config: CrawlDataAdvancedConfig,
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }
 
@@ -82,12 +82,12 @@ export interface XCrawlInstance {
 
     (
       config: CrawlFileDetailConfig[],
-      callback?: (res: CrawlFileSingleRes) => void
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
 
     (
       config: CrawlFileAdvancedConfig,
-      callback?: (res: CrawlFileSingleRes) => void
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
   }
 

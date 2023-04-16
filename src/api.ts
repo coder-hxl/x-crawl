@@ -405,17 +405,17 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 
   function crawlPage(
     config: (string | CrawlPageDetailConfig)[],
-    callback?: (res: CrawlPageSingleRes) => void
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   function crawlPage(
     config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleRes) => void
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   async function crawlPage(
     config: UniteCrawlPageConfig,
-    callback?: (res: CrawlPageSingleRes) => void
+    callback?: (res: any) => void
   ): Promise<CrawlPageSingleRes | CrawlPageSingleRes[]> {
     const cId = ++cIdCount
 
@@ -484,10 +484,6 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
         data
       }
 
-      if (callback) {
-        callback(crawlRes)
-      }
-
       return crawlRes
     })
 
@@ -499,6 +495,10 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       (isObject(config) && Object.hasOwn(config, 'crawlPages'))
         ? crawlResArr
         : crawlResArr[0]
+
+    if (callback) {
+      callback(crawlRes)
+    }
 
     return crawlRes
   }
@@ -576,17 +576,17 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
 
   function crawlData<T = any>(
     config: (string | CrawlDataDetailConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   function crawlData<T = any>(
     config: CrawlDataAdvancedConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   async function crawlData<T = any>(
     config: UniteCrawlDataConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    callback?: (res: any) => void
   ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
     const { crawlDetails, intervalTime } = createCrawlDataConfig(
       xCrawlConfig,
@@ -632,10 +632,6 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
         crawlRes.data = { ...crawlSingleRes, data }
       }
 
-      if (callback) {
-        callback(crawlRes)
-      }
-
       return crawlRes
     })
 
@@ -644,6 +640,10 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       (isObject(config) && Object.hasOwn(config, 'crawlDatas'))
         ? crawlResArr
         : crawlResArr[0]
+
+    if (callback) {
+      callback(crawlRes)
+    }
 
     return crawlRes
   }
@@ -659,17 +659,17 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
 
   function crawlFile(
     config: CrawlFileDetailConfig[],
-    callback?: (res: CrawlFileSingleRes) => void
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   function crawlFile(
     config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleRes) => void
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   async function crawlFile(
     config: UniteCrawlFileConfig,
-    callback?: (res: CrawlFileSingleRes) => void
+    callback?: (res: any) => void
   ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
     const { crawlDetails, intervalTime, onBeforeSaveFile } =
       createCrawlFileConfig(xCrawlConfig, config)
@@ -762,17 +762,9 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
               filePath
             }
           }
-
-          if (callback) {
-            callback(crawlRes)
-          }
         })
 
         saveFileQueue.push(saveFileItem)
-      } else {
-        if (callback) {
-          callback(crawlRes)
-        }
       }
 
       return crawlRes
@@ -815,6 +807,10 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       (isObject(config) && Object.hasOwn(config, 'crawlFiles'))
         ? crawlResArr
         : crawlResArr[0]
+
+    if (callback) {
+      callback(crawlRes)
+    }
 
     return crawlRes
   }
