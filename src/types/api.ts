@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'node:http'
 import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { AnyObject, MapTypeObject } from './common'
+import { AnyObject } from './common'
 
 /* Loader Config */
 type LoaderHasConfig = {
@@ -94,6 +94,10 @@ export interface CrawlPageDetailConfig extends CrawlCommonConfig {
   headers?: AnyObject
   cookies?: PageCookies
   priority?: number
+  viewport?: {
+    width?: number
+    height?: number
+  }
 }
 
 export interface CrawlPageEnhanceConfig extends CrawlCommonConfig {
@@ -102,6 +106,10 @@ export interface CrawlPageEnhanceConfig extends CrawlCommonConfig {
 
   headers?: AnyObject
   cookies?: PageCookies
+  viewport?: {
+    width?: number
+    height?: number
+  }
 }
 
 // 2.Crawl data config
@@ -145,7 +153,6 @@ export interface CrawlFileEnhanceConfig extends CrawlCommonConfig {
     filePath: string
     data: Buffer
   }) => Promise<Buffer>
-  }
 }
 
 // 4.Polling config

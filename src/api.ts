@@ -206,7 +206,7 @@ function loaderPageConfig(
     rawCrawlPageDetails.push(...transformToCrawlDetails(crawlPages))
   } else {
     // string | CrawlPageDetailConfig | (string | CrawlPageDetailConfig)[] 处理
-    const transformRes = transformToCrawlObjects(
+    const transformRes = transformToCrawlDetails(
       rawConfig as
         | string
         | CrawlPageDetailConfig
@@ -224,18 +224,23 @@ function loaderPageConfig(
     crawlPageConfig.crawlPageDetails
   )
 
-  // 装载单独的配置
-  if (!isUndefined(crawlPageConfig.cookies)) {
-    crawlPageConfig.crawlPageDetails.forEach((pageConfig) => {
-      const { cookies } = pageConfig
+  // 装载单独配置
+  const APIHaveCookies = !isUndefined(crawlPageConfig.cookies)
+  const APIHaveViewport = !isUndefined(crawlPageConfig.viewport)
+  crawlPageConfig.crawlPageDetails.forEach((detail) => {
+    // detail > crawlConfig > xCrawl
+    const { cookies, viewport } = detail
 
-      // cookies
-      if (isUndefined(cookies)) {
-        // 装载 API Config
-        pageConfig.cookies = crawlPageConfig.cookies
-      }
-    })
-  }
+    // 1.cookies
+    if (isUndefined(cookies) && APIHaveCookies) {
+      detail.cookies = crawlPageConfig.cookies
+    }
+
+    // 2.viewport
+    if (isUndefined(viewport) && APIHaveViewport) {
+      detail.viewport = crawlPageConfig.viewport
+    }
+  })
 
   return crawlPageConfig
 }
@@ -478,8 +483,8 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     const { id, crawlDetailConfig } = controllerConfig
     const page = await browser!.newPage()
     await page.setViewport({
-      width: 1280,
-      height: 1024
+      width: crawlDetailConfig.viewport?.width ?? 1280,
+      height: crawlDetailConfig.viewport?.width ?? 1024
     })
 
     let response: HTTPResponse | null = null
