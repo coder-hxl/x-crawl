@@ -28,8 +28,8 @@ async function writtenString() {
   return res.isSuccess
 }
 
-// 1.2.written DataRequestConfig
-async function writtenDataRequestConfig() {
+// 1.2.written CrawlDataDetailConfig
+async function writtenCrawlDataDetailConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
@@ -39,8 +39,8 @@ async function writtenDataRequestConfig() {
   return res.isSuccess
 }
 
-// 1.3.written (string | DataRequestConfig)[]
-async function writtenStringAndDataRequestConfigArr() {
+// 1.3.written (string | CrawlDataDetailConfig)[]
+async function writtenStringAndCrawlDataDetailConfigArr() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData([
@@ -51,8 +51,8 @@ async function writtenStringAndDataRequestConfigArr() {
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-// 1.4.written CrawlDataConfigObject
-async function writtenCrawlDataConfigObject() {
+// 1.4.written CrawlDataAdvancedConfig
+async function writtenCrawlDataAdvancedConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
@@ -81,8 +81,8 @@ async function loaderBaseConfig() {
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-// 2.2.Loader API Config
-async function loaderAPIConfig() {
+// 2.2.Loader Advanced Config
+async function loaderAdvancedConfig() {
   const testXCrawl = xCrawl({
     baseUrl: 'http://localhost:9001/api'
   })
@@ -105,31 +105,31 @@ test('crawlData - writtenString', async () => {
   await expect(writtenString()).resolves.toBe(true)
 })
 
-test('crawlData - writtenDataRequestConfig', async () => {
+test('crawlData - writtenCrawlDataDetailConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlData - writtenDataRequestConfig ================'
+      '================ crawlData - writtenCrawlDataDetailConfig ================'
     )
   )
-  await expect(writtenDataRequestConfig()).resolves.toBe(true)
+  await expect(writtenCrawlDataDetailConfig()).resolves.toBe(true)
 })
 
-test('crawlData - writtenStringAndDataRequestConfigArr', async () => {
+test('crawlData - writtenStringAndCrawlDataDetailConfigArr', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlData - writtenStringAndDataRequestConfigArr ================'
+      '================ crawlData - writtenStringAndCrawlDataDetailConfigArr ================'
     )
   )
-  await expect(writtenStringAndDataRequestConfigArr()).resolves.toBe(true)
+  await expect(writtenStringAndCrawlDataDetailConfigArr()).resolves.toBe(true)
 })
 
-test('crawlData - writtenCrawlDataConfigObject', async () => {
+test('crawlData - writtenCrawlDataAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlData - writtenCrawlDataConfigObject ================'
+      '================ crawlData - writtenCrawlDataAdvancedConfig ================'
     )
   )
-  await expect(writtenCrawlDataConfigObject()).resolves.toBe(true)
+  await expect(writtenCrawlDataAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Loader Config */
@@ -142,11 +142,11 @@ test('crawlData - loaderBaseConfig', async () => {
   await expect(loaderBaseConfig()).resolves.toBe(true)
 })
 
-test('crawlData - loaderAPIConfig', async () => {
+test('crawlData - loaderAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlData - loaderAPIConfig ================'
+      '================ crawlData - loaderAdvancedConfig ================'
     )
   )
-  await expect(loaderAPIConfig()).resolves.toBe(true)
+  await expect(loaderAdvancedConfig()).resolves.toBe(true)
 })

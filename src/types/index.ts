@@ -69,7 +69,7 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
-      config: CrawlDataAdvancedConfig,
+      config: CrawlDataAdvancedConfig<T>,
       callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }

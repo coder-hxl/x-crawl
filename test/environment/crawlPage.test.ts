@@ -19,17 +19,17 @@ jest.setTimeout(60000)
 /* 1.Written */
 // 1.1.written string
 async function writtenString() {
-  const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
+  const testXCrawl = xCrawl()
 
-  const res = await testXCrawl.crawlPage('https://github.com/coder-hxl/x-crawl')
+  const res = await testXCrawl.crawlPage('https://gitee.com/coderhxl')
 
   await res.data.browser.close()
 
   return res.isSuccess
 }
 
-// 1.2.written PageRequestConfig
-async function writtenPageRequestConfig() {
+// 1.2.written CrawlPageDetailConfig
+async function writtenCrawlPageDetailConfig() {
   const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
 
   const res = await testXCrawl.crawlPage({
@@ -41,8 +41,8 @@ async function writtenPageRequestConfig() {
   return res.isSuccess
 }
 
-// 1.3.written (string | DataRequestConfig)[]
-async function writtenStringAndPageRequestConfigArr() {
+// 1.3.written (string | CrawlPageDetailConfig)[]
+async function writtenStringAndCrawlPageDetailConfigArr() {
   const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
 
   const res = await testXCrawl.crawlPage([
@@ -55,8 +55,8 @@ async function writtenStringAndPageRequestConfigArr() {
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-// 1.4.written CrawlPageConfigObject
-async function writtenCrawlPageConfigObject() {
+// 1.4.written CrawlPageAdvancedConfig
+async function writtenCrawlPageAdvancedConfig() {
   const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
 
   const res = await testXCrawl.crawlPage({
@@ -89,8 +89,8 @@ async function loaderBaseConfig() {
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-// 2.2.Loader API Config
-async function loaderAPIConfig() {
+// 2.2.Loader Advanced Config
+async function loaderAdvancedConfig() {
   const testXCrawl = xCrawl({ baseUrl: 'https://github.com' })
 
   const res = await testXCrawl.crawlPage({
@@ -114,31 +114,31 @@ test('crawlPage - writtenString', async () => {
   await expect(writtenString()).resolves.toBe(true)
 })
 
-test('crawlPage - writtenPageRequestConfig', async () => {
+test('crawlPage - writtenCrawlPageDetailConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlPage - writtenPageRequestConfig ================'
+      '================ crawlPage - writtenCrawlPageDetailConfig ================'
     )
   )
-  await expect(writtenPageRequestConfig()).resolves.toBe(true)
+  await expect(writtenCrawlPageDetailConfig()).resolves.toBe(true)
 })
 
-test('crawlPage - writtenStringAndPageRequestConfigArr', async () => {
+test('crawlPage - writtenStringAndCrawlPageDetailConfigArr', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlPage - writtenStringAndPageRequestConfigArr ================'
+      '================ crawlPage - writtenStringAndCrawlPageDetailConfigArr ================'
     )
   )
-  await expect(writtenStringAndPageRequestConfigArr()).resolves.toBe(true)
+  await expect(writtenStringAndCrawlPageDetailConfigArr()).resolves.toBe(true)
 })
 
-test('crawlPage - writtenCrawlPageConfigObject', async () => {
+test('crawlPage - writtenCrawlPageAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlPage - writtenCrawlPageConfigObject ================'
+      '================ crawlPage - writtenCrawlPageAdvancedConfig ================'
     )
   )
-  await expect(writtenCrawlPageConfigObject()).resolves.toBe(true)
+  await expect(writtenCrawlPageAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Loader Config */
@@ -151,11 +151,11 @@ test('crawlPage - loaderBaseConfig', async () => {
   await expect(loaderBaseConfig()).resolves.toBe(true)
 })
 
-test('crawlPage - loaderAPIConfig', async () => {
+test('crawlPage - loaderAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlPage - loaderAPIConfig ================'
+      '================ crawlPage - loaderAdvancedConfig ================'
     )
   )
-  await expect(loaderAPIConfig()).resolves.toBe(true)
+  await expect(loaderAdvancedConfig()).resolves.toBe(true)
 })

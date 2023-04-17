@@ -1,13 +1,7 @@
 import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
-import {
-  LoaderCrawlDataDetail,
-  LoaderCrawlFileDetail,
-  LoaderCrawlPageDetail
-} from './api'
-
-import type { IntervalTime } from './types/api'
-import type { ControllerConfig, CrawlDetail } from './controller'
+import type { ExtraCommonConfig } from './api'
+import type { DetailInfo, CrawlDetail } from './controller'
 
 async function useSleepByBatch(
   isHaventervalTime: boolean,
@@ -32,21 +26,27 @@ async function useSleepByBatch(
   }
 }
 
-export async function asyncBatchCrawl<T extends CrawlDetail, V, C>(
-  controllerConfigs: ControllerConfig<T, V>[],
-  crawlSingleFnExtra: C,
-  intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (
-    controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtra: C
-  ) => Promise<V>
+export async function asyncBatchCrawl<
+  T extends CrawlDetail,
+  E extends ExtraCommonConfig,
+  R
+>(
+  detailInfos: DetailInfo<T, R>[],
+  extraConfig: E,
+  singleCrawlHandle: (
+    detailInfo: DetailInfo<T, R>,
+    extraConfig: E
+  ) => Promise<R>,
+  singleResultHandle: (detailInfo: DetailInfo<T, R>, extraConfig: E) => void
 ) {
+  const { intervalTime } = extraConfig
+
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  const crawlQueue: Promise<any>[] = []
-  for (const controllerConfig of controllerConfigs) {
-    const { id } = controllerConfig
+  const crawlPendingQueue: Promise<any>[] = []
+  for (const detaileInfo of detailInfos) {
+    const { id } = detaileInfo
 
     await useSleepByBatch(
       isHaventervalTime,
@@ -55,41 +55,53 @@ export async function asyncBatchCrawl<T extends CrawlDetail, V, C>(
       id
     )
 
-    controllerConfig.crawlCount++
-
-    const crawlSingle = crawlSingleFn(controllerConfig, crawlSingleFnExtra)
+    const crawlSinglePending = singleCrawlHandle(detaileInfo, extraConfig)
       .catch((error) => {
-        controllerConfig.errorQueue.push(error)
+        detaileInfo.crawlErrorQueue.push(error)
         return false
       })
-      .then((crawlSingleRes) => {
-        if (crawlSingleRes === false) return
+      .then((detailTargetRes) => {
+        if (typeof detailTargetRes === 'boolean') {
+          if (detaileInfo.retryCount === detaileInfo.maxRetry) {
+            singleResultHandle(detaileInfo, extraConfig)
+          }
 
-        controllerConfig.isSuccess = true
-        controllerConfig.crawlSingleRes = crawlSingleRes as V
+          return
+        }
+
+        detaileInfo.isSuccess = true
+        detaileInfo.detailTargetRes = detailTargetRes
+
+        singleResultHandle(detaileInfo, extraConfig)
       })
 
-    crawlQueue.push(crawlSingle)
+    crawlPendingQueue.push(crawlSinglePending)
   }
 
   // 等待所有爬取结束
-  await Promise.all(crawlQueue)
+  await Promise.all(crawlPendingQueue)
 }
 
-export async function syncBatchCrawl<T extends CrawlDetail, V, C>(
-  controllerConfigs: ControllerConfig<T, V>[],
-  crawlSingleFnExtra: C,
-  intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (
-    controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtra: C
-  ) => Promise<V>
+export async function syncBatchCrawl<
+  T extends CrawlDetail,
+  E extends ExtraCommonConfig,
+  R
+>(
+  detailInfos: DetailInfo<T, R>[],
+  extraConfig: E,
+  singleCrawlHandle: (
+    detaileInfo: DetailInfo<T, R>,
+    extraConfig: E
+  ) => Promise<R>,
+  singleResultHandle: (detaileInfo: DetailInfo<T, R>, extraConfig: E) => void
 ) {
+  const { intervalTime } = extraConfig
+
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
 
-  for (const controllerConfig of controllerConfigs) {
-    const { id } = controllerConfig
+  for (const detailInfo of detailInfos) {
+    const { id } = detailInfo
 
     await useSleepByBatch(
       isHaventervalTime,
@@ -98,16 +110,18 @@ export async function syncBatchCrawl<T extends CrawlDetail, V, C>(
       id
     )
 
-    controllerConfig.crawlCount++
-
     try {
-      controllerConfig.crawlSingleRes = await crawlSingleFn(
-        controllerConfig,
-        crawlSingleFnExtra
+      detailInfo.detailTargetRes = await singleCrawlHandle(
+        detailInfo,
+        extraConfig
       )
-      controllerConfig.isSuccess = true
+      detailInfo.isSuccess = true
     } catch (error: any) {
-      controllerConfig.errorQueue.push(error)
+      detailInfo.crawlErrorQueue.push(error)
+    }
+
+    if (detailInfo.isSuccess || detailInfo.retryCount === detailInfo.maxRetry) {
+      singleResultHandle(detailInfo, extraConfig)
     }
   }
 }

@@ -2,12 +2,12 @@ import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
 import { priorityQueueMergeSort } from './sort'
 
 import {
+  ExtraCommonConfig,
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
   LoaderCrawlPageDetail
 } from './api'
 
-import { IntervalTime } from './types/api'
 import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
 export type CrawlDetail =
@@ -15,81 +15,98 @@ export type CrawlDetail =
   | LoaderCrawlDataDetail
   | LoaderCrawlFileDetail
 
-export interface ControllerConfig<T extends CrawlDetail, V> {
+export interface DetailInfo<T extends CrawlDetail, R> {
   id: number
   isSuccess: boolean
-  crawlCount: number
   maxRetry: number
-  errorQueue: Error[]
-  crawlDetailConfig: T
-  crawlSingleRes: V | null
+  retryCount: number
+  crawlErrorQueue: Error[]
+  data: any | null
+
+  detailTarget: T
+  detailTargetRes: R | null
 }
 
-export async function controller<T extends CrawlDetail, V, C>(
+type TargetSingleRes = Omit<
+  DetailInfo<any, any>,
+  'detailTarget' | 'detailTargetRes'
+>
+
+export async function controller<
+  T extends CrawlDetail,
+  E extends ExtraCommonConfig,
+  R
+>(
   name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
-  crawlDetails: T[],
-  crawlSingleFnExtra: C,
-  intervalTime: IntervalTime | undefined,
-  crawlSingleFn: (
-    controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtra: C
-  ) => Promise<V>
-): Promise<ControllerConfig<T, V>[]> {
+  detailTargets: T[],
+  extraConfig: E,
+  singleCrawlHandle: (
+    detailInfo: DetailInfo<T, R>,
+    extraConfig: E
+  ) => Promise<R>,
+  singleResultHandle: (detailInfo: DetailInfo<T, R>, extraConfig: E) => void
+): Promise<TargetSingleRes[]> {
   // 是否使用优先爬取
-  const isPriorityCrawl = !crawlDetails.every(
-    (item) => item.priority === crawlDetails[0].priority
+  const isPriorityCrawl = !detailTargets.every(
+    (item) => item.priority === detailTargets[0].priority
   )
   const targetRequestConfigs = isPriorityCrawl
     ? priorityQueueMergeSort(
-        crawlDetails.map((item) => ({
+        detailTargets.map((item) => ({
           ...item,
           valueOf: () => item.priority
         }))
       )
-    : crawlDetails
+    : detailTargets
 
   // 通过映射生成新的配置数组
-  const controllerConfigs: ControllerConfig<T, V>[] = targetRequestConfigs.map(
-    (crawlDetailConfig, index) => ({
+  const detailInfos: DetailInfo<T, R>[] = targetRequestConfigs.map(
+    (detailTarget, index) => ({
       id: index + 1,
       isSuccess: false,
-      maxRetry: crawlDetailConfig.maxRetry,
-      crawlCount: 0,
-      errorQueue: [],
-      crawlDetailConfig,
-      crawlSingleRes: null
+      maxRetry: detailTarget.maxRetry,
+      retryCount: 0,
+      crawlErrorQueue: [],
+      data: null,
+
+      detailTarget,
+      detailTargetRes: null
     })
   )
 
   log(
     `${logSuccess(`Start crawling`)} - name: ${logWarn(name)}, mode: ${logWarn(
       mode
-    )}, total: ${logNumber(controllerConfigs.length)} `
+    )}, total: ${logNumber(detailInfos.length)} `
   )
 
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
   let i = 0
-  let crawlQueue: ControllerConfig<T, V>[] = controllerConfigs
+  let crawlQueue: DetailInfo<T, R>[] = detailInfos
   while (crawlQueue.length) {
     await batchCrawl(
       crawlQueue,
-      crawlSingleFnExtra,
-      intervalTime,
-      crawlSingleFn
+      extraConfig,
+      singleCrawlHandle,
+      singleResultHandle
     )
 
     crawlQueue = crawlQueue.filter(
       (config) =>
         config.maxRetry &&
         !config.isSuccess &&
-        config.crawlCount <= config.maxRetry
+        config.retryCount < config.maxRetry
     )
 
     if (crawlQueue.length) {
-      const retriedIds = crawlQueue.map((item) => item.id)
+      const retriedIds = crawlQueue.map((item) => {
+        item.retryCount++
+
+        return item.id
+      })
       log(
         logWarn(`Retry: ${++i} - Ids to retry: [ ${retriedIds.join(' - ')} ]`)
       )
@@ -99,7 +116,7 @@ export async function controller<T extends CrawlDetail, V, C>(
   // 统计结果
   const succssIds: number[] = []
   const errorIds: number[] = []
-  controllerConfigs.forEach((item) => {
+  detailInfos.forEach((item) => {
     if (item.isSuccess) {
       succssIds.push(item.id)
     } else {
@@ -121,5 +138,5 @@ export async function controller<T extends CrawlDetail, V, C>(
     )
   )
 
-  return controllerConfigs
+  return detailInfos as TargetSingleRes[]
 }
