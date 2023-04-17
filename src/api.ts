@@ -50,25 +50,25 @@ export type LoaderCrawlFileDetail = CrawlFileDetailConfig & LoaderHasConfig
 
 // Create config
 interface CrawlPageConfigOriginal {
-  crawlDetails: CrawlPageDetailConfig[]
+  detailTargets: CrawlPageDetailConfig[]
   intervalTime: IntervalTime | undefined
 }
 
-type CrawlPageConfig = Omit<CrawlPageConfigOriginal, 'crawlDetails'> & {
-  crawlDetails: LoaderCrawlPageDetail[]
+type CrawlPageConfig = Omit<CrawlPageConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlPageDetail[]
 }
 
 interface CrawlDataConfigOriginal {
-  crawlDetails: CrawlDataDetailConfig[]
+  detailTargets: CrawlDataDetailConfig[]
   intervalTime: IntervalTime | undefined
 }
 
-type CrawlDataConfig = Omit<CrawlDataConfigOriginal, 'crawlDetails'> & {
-  crawlDetails: LoaderCrawlDataDetail[]
+type CrawlDataConfig = Omit<CrawlDataConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlDataDetail[]
 }
 
 interface CrawlFileConfigOriginal {
-  crawlDetails: CrawlFileDetailConfig[]
+  detailTargets: CrawlFileDetailConfig[]
   intervalTime: IntervalTime | undefined
   onBeforeSaveFile:
     | ((info: {
@@ -80,8 +80,8 @@ interface CrawlFileConfigOriginal {
     | undefined
 }
 
-type CrawlFileConfig = Omit<CrawlFileConfigOriginal, 'crawlDetails'> & {
-  crawlDetails: LoaderCrawlFileDetail[]
+type CrawlFileConfig = Omit<CrawlFileConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlFileDetail[]
 }
 
 // API config
@@ -145,16 +145,16 @@ function parsePageCookies(
   return cookiesArr
 }
 
-function transformToCrawlDetails(
+function transformToDetailTargets(
   config: string | CrawlPageDetailConfig | (string | CrawlPageDetailConfig)[]
 ): CrawlPageDetailConfig[]
-function transformToCrawlDetails(
+function transformToDetailTargets(
   config: string | CrawlDataDetailConfig | (string | CrawlDataDetailConfig)[]
 ): CrawlDataDetailConfig[]
-function transformToCrawlDetails(
+function transformToDetailTargets(
   config: (string | CrawlFileDetailConfig)[]
 ): CrawlFileDetailConfig[]
-function transformToCrawlDetails(config: any) {
+function transformToDetailTargets(config: any) {
   return isArray(config)
     ? config.map((item) => (isObject(item) ? item : { url: item }))
     : [isObject(config) ? config : { url: config }]
@@ -171,8 +171,8 @@ function loaderCommonConfig(
     | CrawlDataConfigOriginal
     | CrawlFileConfigOriginal
 ) {
-  // 1.crawlDetails
-  crawlConfig.crawlDetails.forEach((detail) => {
+  // 1.detailTargets
+  crawlConfig.detailTargets.forEach((detail) => {
     // detail > advanced > app
     const { url, timeout, proxy, maxRetry, priority, headers } = detail
 
@@ -230,12 +230,12 @@ function loaderCommonConfig(
 
 /* Create Config */
 /*
-  每个创建配置函数的返回值都是类似于对应的进阶版(CrawlAdvancedConfig)配置
+  每个创建配置函数的返回值都是类似于对应的进阶版(类似 CrawlAdvancedConfig)配置
   不同点:
-    - crawlDetails 里面存放的是详细版(CrawlDetailConfig)配置
+    - detailTargets 里面存放的是详细版(类似 CrawlDetailConfig)配置
     - 不会保留与详细版配置相同的选项
 
-  生成 advancedConfig 对象可以对每个详细版配置进行装载, 如果传入进阶版(CrawlAdvancedConfig)配置会覆盖生成的
+  生成 advancedConfig 对象可以对每个详细版配置进行装载, 如果传入进阶版(类似 CrawlAdvancedConfig)配置会覆盖生成的
 */
 
 function createCrawlPageConfig(
@@ -243,31 +243,28 @@ function createCrawlPageConfig(
   originalConfig: UniteCrawlPageConfig
 ): CrawlPageConfig {
   const crawlPageConfig: CrawlPageConfigOriginal = {
-    crawlDetails: [],
+    detailTargets: [],
     intervalTime: undefined
   }
 
-  let advancedConfig: CrawlPageAdvancedConfig = {
-    crawlPages: []
-  }
+  let advancedConfig: CrawlPageAdvancedConfig = { targets: [] }
 
-  // 将每个 crawls 配置转成 detail 类型的配置
-  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'crawlPages')) {
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlPageAdvancedConfig 处理
-    const { crawlPages } = originalConfig as CrawlPageAdvancedConfig
+    const { targets } = originalConfig as CrawlPageAdvancedConfig
     advancedConfig = originalConfig as CrawlPageAdvancedConfig
 
-    crawlPageConfig.crawlDetails.push(...transformToCrawlDetails(crawlPages))
+    crawlPageConfig.detailTargets.push(...transformToDetailTargets(targets))
   } else {
     // string | CrawlPageDetailConfig | (string | CrawlPageDetailConfig)[] 处理
-    const detailes = transformToCrawlDetails(
+    const detaileTargets = transformToDetailTargets(
       originalConfig as
         | string
         | CrawlPageDetailConfig
         | (string | CrawlPageDetailConfig)[]
     )
 
-    crawlPageConfig.crawlDetails.push(...detailes)
+    crawlPageConfig.detailTargets.push(...detaileTargets)
   }
 
   // 装载公共配置
@@ -276,7 +273,7 @@ function createCrawlPageConfig(
   // 装载单独配置
   const haveAdvancedCookies = !isUndefined(advancedConfig.cookies)
   const haveAdvancedViewport = !isUndefined(advancedConfig.viewport)
-  crawlPageConfig.crawlDetails.forEach((detail) => {
+  crawlPageConfig.detailTargets.forEach((detail) => {
     // detail > advanced  > xCrawl
     const { cookies, viewport } = detail
 
@@ -299,30 +296,28 @@ function createCrawlDataConfig(
   originalConfig: UniteCrawlDataConfig
 ): CrawlDataConfig {
   const crawlDataConfig: CrawlDataConfigOriginal = {
-    crawlDetails: [],
+    detailTargets: [],
     intervalTime: undefined
   }
 
-  let advancedConfig: CrawlDataAdvancedConfig = {
-    crawlDatas: []
-  }
+  let advancedConfig: CrawlDataAdvancedConfig = { targets: [] }
 
-  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'crawlDatas')) {
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlDataAdvancedConfig 处理
-    const { crawlDatas } = originalConfig as CrawlDataAdvancedConfig
+    const { targets } = originalConfig as CrawlDataAdvancedConfig
     advancedConfig = originalConfig as CrawlDataAdvancedConfig
 
-    crawlDataConfig.crawlDetails.push(...transformToCrawlDetails(crawlDatas))
+    crawlDataConfig.detailTargets.push(...transformToDetailTargets(targets))
   } else {
     // string | CrawlDataDetailConfig | (string | CrawlDataDetailConfig)[] 处理
-    const crawlDatas = transformToCrawlDetails(
+    const detaileTargets = transformToDetailTargets(
       originalConfig as
         | string
         | CrawlDataDetailConfig
         | (string | CrawlDataDetailConfig)[]
     )
 
-    crawlDataConfig.crawlDetails.push(...crawlDatas)
+    crawlDataConfig.detailTargets.push(...detaileTargets)
   }
 
   loaderCommonConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
@@ -335,36 +330,36 @@ function createCrawlFileConfig(
   originalConfig: UniteCrawlFileConfig
 ): CrawlFileConfig {
   const crawlFileConfig: CrawlFileConfigOriginal = {
-    crawlDetails: [],
+    detailTargets: [],
     intervalTime: undefined,
     onBeforeSaveFile: undefined
   }
 
-  let advancedConfig: CrawlFileAdvancedConfig = { crawlFiles: [] }
+  let advancedConfig: CrawlFileAdvancedConfig = { targets: [] }
 
-  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'crawlFiles')) {
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlFileAdvancedConfig 处理
-    const { crawlFiles } = originalConfig as CrawlFileAdvancedConfig
+    const { targets } = originalConfig as CrawlFileAdvancedConfig
 
     advancedConfig = originalConfig as CrawlFileAdvancedConfig
-    crawlFileConfig.crawlDetails.push(...transformToCrawlDetails(crawlFiles))
+    crawlFileConfig.detailTargets.push(...transformToDetailTargets(targets))
   } else {
     // string | CrawlFileDetailConfig | (string | CrawlFileDetailConfig)[] 处理
-    const crawlFiles = transformToCrawlDetails(
+    const detailTargets = transformToDetailTargets(
       originalConfig as
         | string
         | CrawlFileDetailConfig
         | (string | CrawlFileDetailConfig)[]
     )
 
-    crawlFileConfig.crawlDetails.push(...crawlFiles)
+    crawlFileConfig.detailTargets.push(...detailTargets)
   }
 
   loaderCommonConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
 
   const haveAdvancedStoreDir = !isUndefined(advancedConfig?.storeDir)
   const haveAdvancedExtension = !isUndefined(advancedConfig?.extension)
-  crawlFileConfig.crawlDetails.forEach((detail) => {
+  crawlFileConfig.detailTargets.forEach((detail) => {
     // 1.storeDir
     if (isUndefined(detail.storeDir) && haveAdvancedStoreDir) {
       detail.storeDir = advancedConfig!.storeDir
@@ -437,7 +432,7 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     }
 
     // 创建新配置
-    const { crawlDetails, intervalTime } = createCrawlPageConfig(
+    const { detailTargets, intervalTime } = createCrawlPageConfig(
       xCrawlConfig,
       config
     )
@@ -445,9 +440,9 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     const controllerRes = await controller(
       'page',
       xCrawlConfig.mode,
-      crawlDetails,
-      intervalTime,
+      detailTargets,
       cId,
+      intervalTime,
       crawlPageSingle
     )
 
@@ -491,8 +486,7 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     errorPageContainer.delete(cId)
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'crawlPages'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
 
@@ -588,7 +582,7 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     config: UniteCrawlDataConfig,
     callback?: (res: any) => void
   ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
-    const { crawlDetails, intervalTime } = createCrawlDataConfig(
+    const { detailTargets, intervalTime } = createCrawlDataConfig(
       xCrawlConfig,
       config
     )
@@ -596,9 +590,9 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     const controllerRes = await controller(
       'data',
       xCrawlConfig.mode,
-      crawlDetails,
-      intervalTime,
+      detailTargets,
       undefined,
+      intervalTime,
       crawlRequestSingle
     )
 
@@ -636,8 +630,7 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     })
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'crawlDatas'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
 
@@ -671,15 +664,15 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     config: UniteCrawlFileConfig,
     callback?: (res: any) => void
   ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
-    const { crawlDetails, intervalTime, onBeforeSaveFile } =
+    const { detailTargets, intervalTime, onBeforeSaveFile } =
       createCrawlFileConfig(xCrawlConfig, config)
 
     const controllerRes = await controller(
       'file',
       xCrawlConfig.mode,
-      crawlDetails,
-      intervalTime,
+      detailTargets,
       undefined,
+      intervalTime,
       crawlRequestSingle
     )
 
@@ -803,8 +796,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     )
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'crawlFiles'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
 

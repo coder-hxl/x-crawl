@@ -60,7 +60,7 @@ async function writtenCrawlPageConfigObject() {
   const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
 
   const res = await testXCrawl.crawlPage({
-    crawlPages: [
+    targets: [
       'https://github.com/coder-hxl/x-crawl',
       { url: 'https://github.com/coder-hxl/x-crawl' }
     ]
@@ -94,7 +94,7 @@ async function loaderAPIConfig() {
   const testXCrawl = xCrawl({ baseUrl: 'https://github.com' })
 
   const res = await testXCrawl.crawlPage({
-    crawlPages: ['/coder-hxl', '/coder-hxl/x-crawl'],
+    targets: ['/coder-hxl', '/coder-hxl/x-crawl'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
     intervalTime: { max: 1000 },

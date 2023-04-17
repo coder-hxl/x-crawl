@@ -7,7 +7,7 @@ import {
 } from './api'
 
 import type { IntervalTime } from './types/api'
-import type { ControllerConfig } from './controller'
+import type { ControllerConfig, CrawlDetail } from './controller'
 
 async function useSleepByBatch(
   isHaventervalTime: boolean,
@@ -32,20 +32,13 @@ async function useSleepByBatch(
   }
 }
 
-export async function asyncBatchCrawl<
-  T extends
-    | LoaderCrawlPageDetail
-    | LoaderCrawlDataDetail
-    | LoaderCrawlFileDetail,
-  V,
-  C
->(
+export async function asyncBatchCrawl<T extends CrawlDetail, V, C>(
   controllerConfigs: ControllerConfig<T, V>[],
+  crawlSingleFnExtra: C,
   intervalTime: IntervalTime | undefined,
-  crawlSingleFnExtraConfig: C,
   crawlSingleFn: (
     controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtraConfig: C
+    crawlSingleFnExtra: C
   ) => Promise<V>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
@@ -64,10 +57,7 @@ export async function asyncBatchCrawl<
 
     controllerConfig.crawlCount++
 
-    const crawlSingle = crawlSingleFn(
-      controllerConfig,
-      crawlSingleFnExtraConfig
-    )
+    const crawlSingle = crawlSingleFn(controllerConfig, crawlSingleFnExtra)
       .catch((error) => {
         controllerConfig.errorQueue.push(error)
         return false
@@ -86,20 +76,13 @@ export async function asyncBatchCrawl<
   await Promise.all(crawlQueue)
 }
 
-export async function syncBatchCrawl<
-  T extends
-    | LoaderCrawlPageDetail
-    | LoaderCrawlDataDetail
-    | LoaderCrawlFileDetail,
-  V,
-  C
->(
+export async function syncBatchCrawl<T extends CrawlDetail, V, C>(
   controllerConfigs: ControllerConfig<T, V>[],
+  crawlSingleFnExtra: C,
   intervalTime: IntervalTime | undefined,
-  crawlSingleFnExtraConfig: C,
   crawlSingleFn: (
     controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtraConfig: C
+    crawlSingleFnExtra: C
   ) => Promise<V>
 ) {
   const isHaventervalTime = !isUndefined(intervalTime)
@@ -120,7 +103,7 @@ export async function syncBatchCrawl<
     try {
       controllerConfig.crawlSingleRes = await crawlSingleFn(
         controllerConfig,
-        crawlSingleFnExtraConfig
+        crawlSingleFnExtra
       )
       controllerConfig.isSuccess = true
     } catch (error: any) {

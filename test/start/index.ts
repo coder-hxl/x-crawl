@@ -6,7 +6,7 @@ const testXCrawl = xCrawl()
 
 testXCrawl
   .crawlFile({
-    crawlFiles: [
+    targets: [
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg'
     ],
     proxy: 'http://localhost:14892',

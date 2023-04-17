@@ -56,7 +56,7 @@ async function writtenCrawlDataConfigObject() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    crawlDatas: [
+    targets: [
       'http://localhost:9001/api/room/193581217',
       { url: 'http://localhost:9001/api/room/193581217' }
     ]
@@ -88,7 +88,7 @@ async function loaderAPIConfig() {
   })
 
   const res = await testXCrawl.crawlData({
-    crawlDatas: ['/room/193581217', '/room/193581217'],
+    targets: ['/room/193581217', '/room/193581217'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
     intervalTime: { max: 1000 },

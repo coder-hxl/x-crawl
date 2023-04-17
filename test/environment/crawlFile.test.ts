@@ -51,7 +51,7 @@ async function writtenCrawlFileConfigObject() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
   const res = await testXCrawl.crawlFile({
-    crawlFiles: urls,
+    targets: urls,
     storeDir
   })
 
@@ -74,7 +74,7 @@ async function loaderBaseConfig() {
   })
 
   const res = await testXCrawl.crawlFile({
-    crawlFiles: ['/4401.jpg', '/4403.jpg'],
+    targets: ['/4401.jpg', '/4403.jpg'],
     storeDir
   })
 
@@ -89,7 +89,7 @@ async function loaderAPIConfig() {
   })
 
   const res = await testXCrawl.crawlFile({
-    crawlFiles: ['/4401.jpg', '/4403.jpg'],
+    targets: ['/4401.jpg', '/4403.jpg'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
     storeDir,
@@ -110,7 +110,7 @@ async function storeConfig() {
 
   const record: string[] = []
   const res = await testXCrawl.crawlFile({
-    crawlFiles: [
+    targets: [
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
     ],

@@ -10,13 +10,12 @@ import {
 import { IntervalTime } from './types/api'
 import { log, logError, logNumber, logSuccess, logWarn } from './utils'
 
-export interface ControllerConfig<
-  T extends
-    | LoaderCrawlPageDetail
-    | LoaderCrawlDataDetail
-    | LoaderCrawlFileDetail,
-  V
-> {
+export type CrawlDetail =
+  | LoaderCrawlPageDetail
+  | LoaderCrawlDataDetail
+  | LoaderCrawlFileDetail
+
+export interface ControllerConfig<T extends CrawlDetail, V> {
   id: number
   isSuccess: boolean
   crawlCount: number
@@ -26,36 +25,29 @@ export interface ControllerConfig<
   crawlSingleRes: V | null
 }
 
-export async function controller<
-  T extends
-    | LoaderCrawlPageDetail
-    | LoaderCrawlDataDetail
-    | LoaderCrawlFileDetail,
-  V,
-  C
->(
+export async function controller<T extends CrawlDetail, V, C>(
   name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
-  crawlSingleConfigs: T[],
+  crawlDetails: T[],
+  crawlSingleFnExtra: C,
   intervalTime: IntervalTime | undefined,
-  crawlSingleFnExtraConfig: C,
   crawlSingleFn: (
     controllerConfig: ControllerConfig<T, V>,
-    crawlSingleFnExtraConfig: C
+    crawlSingleFnExtra: C
   ) => Promise<V>
 ): Promise<ControllerConfig<T, V>[]> {
   // 是否使用优先爬取
-  const isPriorityCrawl = !crawlSingleConfigs.every(
-    (item) => item.priority === crawlSingleConfigs[0].priority
+  const isPriorityCrawl = !crawlDetails.every(
+    (item) => item.priority === crawlDetails[0].priority
   )
   const targetRequestConfigs = isPriorityCrawl
     ? priorityQueueMergeSort(
-        crawlSingleConfigs.map((item) => ({
+        crawlDetails.map((item) => ({
           ...item,
           valueOf: () => item.priority
         }))
       )
-    : crawlSingleConfigs
+    : crawlDetails
 
   // 通过映射生成新的配置数组
   const controllerConfigs: ControllerConfig<T, V>[] = targetRequestConfigs.map(
@@ -84,8 +76,8 @@ export async function controller<
   while (crawlQueue.length) {
     await batchCrawl(
       crawlQueue,
+      crawlSingleFnExtra,
       intervalTime,
-      crawlSingleFnExtraConfig,
       crawlSingleFn
     )
 

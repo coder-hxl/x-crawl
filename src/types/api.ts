@@ -56,7 +56,7 @@ export interface CrawlPageDetailConfig extends CrawlCommonConfig {
 }
 
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
-  crawlPages: (string | CrawlPageDetailConfig)[]
+  targets: (string | CrawlPageDetailConfig)[]
   intervalTime?: IntervalTime
 
   headers?: AnyObject
@@ -78,7 +78,7 @@ export interface CrawlDataDetailConfig extends CrawlCommonConfig {
 }
 
 export interface CrawlDataAdvancedConfig extends CrawlCommonConfig {
-  crawlDatas: (string | CrawlDataDetailConfig)[]
+  targets: (string | CrawlDataDetailConfig)[]
   intervalTime?: IntervalTime
 
   headers?: AnyObject
@@ -95,7 +95,7 @@ export interface CrawlFileDetailConfig extends CrawlCommonConfig {
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
-  crawlFiles: (string | CrawlFileDetailConfig)[]
+  targets: (string | CrawlFileDetailConfig)[]
   intervalTime?: IntervalTime
 
   headers?: AnyObject
