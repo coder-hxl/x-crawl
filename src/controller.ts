@@ -51,7 +51,7 @@ export async function controller<
   const isPriorityCrawl = !detailTargets.every(
     (item) => item.priority === detailTargets[0].priority
   )
-  const targetRequestConfigs = isPriorityCrawl
+  const detailTargetConfigs = isPriorityCrawl
     ? priorityQueueMergeSort(
         detailTargets.map((item) => ({
           ...item,
@@ -61,7 +61,7 @@ export async function controller<
     : detailTargets
 
   // 通过映射生成新的配置数组
-  const detailInfos: DetailInfo<T, R>[] = targetRequestConfigs.map(
+  const detailInfos: DetailInfo<T, R>[] = detailTargetConfigs.map(
     (detailTarget, index) => ({
       id: index + 1,
       isSuccess: false,

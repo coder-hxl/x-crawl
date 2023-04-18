@@ -46,19 +46,19 @@ export interface CrawlCommonConfig {
 // 1.Detail
 export interface CrawlPageDetailConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject
-  cookies?: PageCookies
+  headers?: AnyObject | null
+  cookies?: PageCookies | null
   priority?: number
   viewport?: {
     width?: number
     height?: number
-  }
+  } | null
 }
 
 export interface CrawlDataDetailConfig extends CrawlCommonConfig {
   url: string
   method?: Method
-  headers?: AnyObject
+  headers?: AnyObject | null
   params?: AnyObject
   data?: any
   priority?: number
@@ -66,11 +66,11 @@ export interface CrawlDataDetailConfig extends CrawlCommonConfig {
 
 export interface CrawlFileDetailConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject
+  headers?: AnyObject | null
   priority?: number
-  storeDir?: string
+  storeDir?: string | null
   fileName?: string
-  extension?: string
+  extension?: string | null
 }
 
 // 2.Advanced
@@ -105,13 +105,13 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   storeDir?: string
   extension?: string
 
+  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
   onBeforeSaveFile?: (info: {
     id: number
     fileName: string
     filePath: string
     data: Buffer
   }) => Promise<Buffer>
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
 }
 
 export interface StartPollingConfig {

@@ -393,15 +393,12 @@ function createCrawlFileConfig(
     advancedConfig = originalConfig as CrawlFileAdvancedConfig
     crawlFileConfig.detailTargets.push(...transformToDetailTargets(targets))
   } else {
-    // string | CrawlFileDetailConfig | (string | CrawlFileDetailConfig)[] 处理
-    const detailTargets = transformToDetailTargets(
-      originalConfig as
-        | string
-        | CrawlFileDetailConfig
-        | (string | CrawlFileDetailConfig)[]
+    // CrawlFileDetailConfig |  CrawlFileDetailConfig[] 处理
+    crawlFileConfig.detailTargets.push(
+      ...(isArray(originalConfig)
+        ? originalConfig
+        : [originalConfig as CrawlFileDetailConfig])
     )
-
-    crawlFileConfig.detailTargets.push(...detailTargets)
   }
 
   loaderCommonConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
@@ -453,9 +450,11 @@ async function pageSingleCrawlHandle(
     }
 
     if (detailTarget.cookies) {
-      await page.setCookie(
-        ...parsePageCookies(detailTarget.url, detailTarget.cookies)
-      )
+      const cookies = parsePageCookies(detailTarget.url, detailTarget.cookies)
+      await page.setCookie(...cookies)
+    } else {
+      const cookies = await page.cookies(detailTarget.url)
+      await page.deleteCookie(...cookies)
     }
 
     if (detailTarget.headers) {
@@ -547,10 +546,7 @@ function fileSingleResultHandle(
     const fileExtension =
       detailTarget.extension ?? `.${mimeType.split('/').pop()}`
 
-    if (
-      !isUndefined(detailTarget.storeDir) &&
-      !fs.existsSync(detailTarget.storeDir)
-    ) {
+    if (detailTarget.storeDir && !fs.existsSync(detailTarget.storeDir)) {
       mkdirDirSync(detailTarget.storeDir)
     }
 
