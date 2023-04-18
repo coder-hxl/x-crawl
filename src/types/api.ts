@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http'
-import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
+import { Browser, HTTPResponse, Page, Protocol, Viewport } from 'puppeteer'
 
 import { AnyObject } from './common'
 
@@ -49,10 +49,7 @@ export interface CrawlPageDetailConfig extends CrawlCommonConfig {
   headers?: AnyObject | null
   cookies?: PageCookies | null
   priority?: number
-  viewport?: {
-    width?: number
-    height?: number
-  } | null
+  viewport?: Viewport | null
 }
 
 export interface CrawlDataDetailConfig extends CrawlCommonConfig {
@@ -80,10 +77,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 
   headers?: AnyObject
   cookies?: PageCookies
-  viewport?: {
-    width?: number
-    height?: number
-  }
+  viewport?: Viewport
 
   onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
 }

@@ -432,10 +432,10 @@ async function pageSingleCrawlHandle(
   const { errorPageMap, browser } = extraConfig
 
   const page = await browser.newPage()
-  await page.setViewport({
-    width: detailTarget.viewport?.width ?? 1280,
-    height: detailTarget.viewport?.width ?? 1024
-  })
+
+  if (detailTarget.viewport) {
+    await page.setViewport(detailTarget.viewport)
+  }
 
   let response: HTTPResponse | null = null
   try {
