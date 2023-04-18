@@ -14,7 +14,8 @@ import {
   logError,
   logSuccess,
   logWarn,
-  mkdirDirSync
+  mkdirDirSync,
+  random
 } from './utils'
 
 import {
@@ -216,7 +217,8 @@ function loaderCommonConfig(
   // 1.detailTargets
   crawlConfig.detailTargets.forEach((detail) => {
     // detail > advanced > app
-    const { url, timeout, proxy, maxRetry, priority, headers } = detail
+    const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
+      detail
 
     // 1.1.baseUrl
     if (!isUndefined(xCrawlConfig.baseUrl)) {
@@ -259,6 +261,75 @@ function loaderCommonConfig(
     if (isUndefined(headers)) {
       detail.headers = advancedConfig.headers
     }
+
+    // 1.7.fingerprint(公共部分)
+    if (fingerprint) {
+      const { userAgent, ua, platform, mobile, acceptLanguage } = fingerprint
+      let headers = detail.headers
+
+      if (!headers) {
+        detail.headers = headers = {}
+      }
+
+      // 1.user-agent
+      if (userAgent) {
+        headers['user-agent'] = userAgent
+      }
+
+      // 2.sec-ch-ua
+      if (ua) {
+        headers['sec-ch-ua'] = ua
+      }
+
+      // 3.sec-ch-platform
+      if (platform) {
+        headers['sec-ch-platform'] = platform
+      }
+
+      // 4.sec-ch-mobile
+      if (mobile) {
+        headers['sec-ch-mobile'] = mobile
+      }
+
+      // 4.accept-language
+      if (acceptLanguage) {
+        headers['accept-language'] = acceptLanguage
+      }
+    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
+      const { userAgents, uas, platforms, mobiles, acceptLanguages } =
+        advancedConfig.fingerprint
+      let headers = detail.headers
+
+      if (!headers) {
+        detail.headers = headers = {}
+      }
+
+      // 1.user-agent
+      if (userAgents) {
+        headers['user-agent'] = userAgents[random(userAgents.length)]
+      }
+
+      // 2.sec-ch-ua
+      if (uas) {
+        headers['sec-ch-ua'] = uas[random(uas.length)]
+      }
+
+      // 3.sec-ch-platform
+      if (platforms) {
+        headers['sec-ch-platform'] = platforms[random(platforms.length)]
+      }
+
+      // 4.sec-ch-mobile
+      if (mobiles) {
+        headers['sec-ch-mobile'] = mobiles[random(mobiles.length)]
+      }
+
+      // 4.accept-language
+      if (acceptLanguages) {
+        headers['accept-language'] =
+          acceptLanguages[random(acceptLanguages.length)]
+      }
+    }
   })
 
   // 2.intervalTime
@@ -272,6 +343,30 @@ function loaderCommonConfig(
 
   // 3.onCrawlItemComplete
   crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
+}
+
+function loaderPageDetailFingerprint(
+  detail: CrawlPageDetailConfig,
+  fingerprint: {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
+  }
+) {
+  const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
+
+  // 1.width / height
+  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
+  const height =
+    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
+  const viewport = detail.viewport
+  if (!viewport) {
+    detail.viewport = { width, height }
+  } else {
+    viewport.width = width
+    viewport.height = height
+  }
 }
 
 /* Create Config */
@@ -318,20 +413,25 @@ function createCrawlPageConfig(
   loaderCommonConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
 
   // 装载单独配置
-  const haveAdvancedCookies = !isUndefined(advancedConfig.cookies)
-  const haveAdvancedViewport = !isUndefined(advancedConfig.viewport)
   crawlPageConfig.detailTargets.forEach((detail) => {
     // detail > advanced  > xCrawl
-    const { cookies, viewport } = detail
+    const { cookies, viewport, fingerprint } = detail
 
     // 1.cookies
-    if (isUndefined(cookies) && haveAdvancedCookies) {
+    if (isUndefined(cookies) && advancedConfig.cookies) {
       detail.cookies = advancedConfig.cookies
     }
 
     // 2.viewport
-    if (isUndefined(viewport) && haveAdvancedViewport) {
+    if (isUndefined(viewport) && advancedConfig.viewport) {
       detail.viewport = advancedConfig.viewport
+    }
+
+    // 3.fingerprint
+    if (fingerprint) {
+      loaderPageDetailFingerprint(detail, fingerprint)
+    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
+      loaderPageDetailFingerprint(detail, advancedConfig.fingerprint)
     }
   })
 
@@ -656,6 +756,8 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     // 创建新配置
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlPageConfig(xCrawlConfig, config)
+
+    log(detailTargets)
 
     const extraConfig: ExtraPageConfig = {
       errorPageMap: new Map(),
