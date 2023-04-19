@@ -11,7 +11,7 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用于爬页面、爬接
 - **🔥 异步/同步** - 只需更改一下 mode 属性即可切换 异步/同步 爬取模式。
 - **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬。并且支持爬取单个或多个。
 - **🖋️ 写法灵活** - 一种功能适配多种爬取配置、获取爬取结果的写法，写法非常灵活。
-- **👀 设备指纹** - 简单的配置即可避免浏览器唯一识别并跟踪我们的在线行为。
+- **👀 设备指纹** - 零配置/自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
 - **⏱️ 间隔爬取** - 无间隔/固定间隔/随机间隔，可以有效 使用/避免 高并发爬取。
 - **🔄 失败重试** - 可针对所有爬取的请求设置，针对单次爬取的请求设置，针对单个请求设置进行失败重试。
 - **🚀 优先队列** - 根据单个请求的优先级使用优先爬取。
@@ -22,7 +22,7 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用于爬页面、爬接
 
 ## 跟 puppeteer 的关系
 
-crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) 库来帮助我们爬取页面，并将 Brower 实例和 Page 实例暴露出来。
+crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来。
 
 # 目录
 
@@ -31,17 +31,24 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
 - [核心概念](#核心概念)
   - [创建应用](#创建应用)
     - [一个爬虫应用实例](#一个爬虫应用实例)
-    - [选择爬取模式](#选择爬取模式)
+    - [爬取模式](#爬取模式)
+    - [设备指纹](#设备指纹)
     - [多个爬虫应用实例](#多个爬虫应用实例)
   - [爬取页面](#爬取页面)
     - [browser 实例](#browser-实例)
     - [page 实例](#page-实例)
-  - [爬取接口](#爬取接口)
-  - [爬取文件](#爬取文件)
     - [生命周期](#生命周期)
-      - [beforeSave](#beforeSave)
+      - [onCrawlItemComplete](#onCrawlItemComplete)
+  - [爬取接口](#爬取接口)
+    - [生命周期](#生命周期-1)
+      - [onCrawlItemComplete](#onCrawlItemComplete-1)
+  - [爬取文件](#爬取文件)
+    - [生命周期](#生命周期-2)
+      - [onCrawlItemComplete](#onCrawlItemComplete-2)
+      - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [启动轮询](#启动轮询)
   - [配置优先级](#配置优先级)
+  - [设备指纹](#设备指纹-1)
   - [间隔时间](#间隔时间)
   - [失败重试](#失败重试)
   - [优先队列](#优先队列)
@@ -68,21 +75,26 @@ crawlPage API 内部使用 [puppeteer](https://github.com/puppeteer/puppeteer) �
     - [示例](#示例-5)
     - [类型](#类型-5)
 - [类型](#类型-6)
-  - [API Config](#API-Config)
-    - [API Config Other](#API-Config-Other)
-      - [IntervalTime](#IntervalTime)
+  - [API Config](#API-config)
+    - [XCrawlConfig](#XCrawlConfig)
+    - [Detail target config](#Detail-target-config)
+      - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
+      - [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig)
+      - [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig)
+    - [Advanced config](#Advanced-config)
+      - [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig)
+      - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
+      - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
+    - [StartPollingConfig](#StartPollingConfig)
+    - [Crawl other config](#Crawl-other-config)
+      - [CrawlCommonConfig](#CrawlCommonConfig)
+      - [DetailTargetFingerprintCommon](#DetailTargetFingerprintCommon)
+      - [AdvancedFingerprintCommon](#AdvancedFingerprintCommon)
+      - [Mobile](#Mobile)
+      - [Platform](#Platform)
+      - [PageCookies](#PageCookies)
       - [Method](#Method)
-      - [PageRequestConfigCookies](#PageRequestConfigCookies)
-    - [API Config Request](#API-Config-Request)
-      - [PageRequestConfig](#PageRequestConfig)
-      - [DataRequestConfig](#DataRequestConfig)
-      - [FileRequestConfig](#FileRequestConfig)
-    - [API Config Crawl](#API-Config-Crawl)
-      - [XCrawlBaseConfig](#XCrawlBaseConfig)
-      - [CrawlPageConfigObject](#CrawlPageConfigObject)
-      - [CrawlDataConfigObject](#CrawlDataConfigObject)
-      - [CrawlFileConfigObject](#CrawlFileConfigObject)
-      - [StartPollingConfig](#StartPollingConfig)
+      - [IntervalTime](#IntervalTime)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
     - [CrawlCommonRes](#CrawlCommonRes)
@@ -122,8 +134,8 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     'https://www.bilibili.com/movie'
   ])
 
-  // 存放图片 URL
-  const imgUrls = []
+  // 存放图片 URL 到 targets
+  const targets = []
   const elSelectorMap = ['.carousel-inner', '.chief-recom-item', '.bg-item']
   for (const item of res) {
     const { id } = item
@@ -133,17 +145,14 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) =>
       imgEls.map((item) => item.src)
     )
-    imgUrls.push(...urls)
+    targets.push(...urls)
 
     // 关闭页面
     page.close()
   }
 
   // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({
-    requestConfigs: imgUrls,
-    fileConfig: { storeDir: './upload' }
-  })
+  await myXCrawl.crawlFile({ targets, storeDir: './upload' })
 })
 ```
 
@@ -177,7 +186,7 @@ const myXCrawl = xCrawl({
 
 相关的 **选项** 可参考 [XCrawlBaseConfig](#XCrawlBaseConfig) 。
 
-#### 选择爬取模式
+#### 爬取模式
 
 一个爬虫应用实例有两种爬取模式: 异步/同步，每个爬虫实例只能选择其中一种。
 
@@ -195,6 +204,25 @@ mode 选项默认为 async 。
 - sync: 同步请求，在批量请求时，需要等这次请求完成，才会进行下次请求
 
 若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
+
+#### 设备指纹
+
+可以通过一个属性控制是否使用默认的随机指纹，您也可以通过后续的爬取配置自定义指纹。
+
+设置设备指纹是为了避免通过指纹识别从不同位置识别并跟踪我们。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  enableRandomFingerprint: true
+})
+```
+
+enableRandomFingerprint 选项默认为 true。
+
+- true: 启动随机设备指纹。可通过进阶版配置或详细目标版配置指定目标的指纹配置。
+- false: 关闭随机设备指纹，不影响进阶版配置或详细版配置为目标指定的指纹配置。
 
 #### 多个爬虫应用实例
 
@@ -260,6 +288,18 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 })
 ```
 
+#### 生命周期
+
+crawlPageAPI 拥有的声明周期函数:
+
+- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
+
+##### onCrawlItemComplete
+
+在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
+
+**注意:** 如果你需要一次性爬取很多页面，就需要在每个页面爬下来后，用这个生命周期函数来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则会因开启的 page 过多而造成程序崩溃。
+
 ### 爬取接口
 
 通过 [crawlData()](#crawlData) 爬取接口数据。
@@ -269,7 +309,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
-const requestConfigs = [
+const targets = [
   'https://www.example.com/api-1',
   'https://www.example.com/api-2',
   {
@@ -279,10 +319,20 @@ const requestConfigs = [
   }
 ]
 
-myXCrawl.crawlData({ requestConfigs }).then((res) => {
+myXCrawl.crawlData({ targets }).then((res) => {
   // 处理
 })
 ```
+
+#### 生命周期
+
+crawlData API 拥有的声明周期函数:
+
+- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
+
+##### onCrawlItemComplete
+
+在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
 
 ### 爬取文件
 
@@ -295,26 +345,30 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    fileConfig: {
-      storeDir: './upload' // 存放文件夹
-    }
+    storeDir: './upload' // 存放文件夹
   })
   .then((res) => {})
 ```
 
 #### 生命周期
 
-crawlFile API 拥有一个声明周期函数:
+crawlFile API 拥有的声明周期函数:
 
-- beforeSave: 在保存文件前执行
+- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
 
-##### beforeSave
+- onBeforeSaveItemFile: 在保存文件前执行
 
-在 beforeSave 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer 。
+##### onCrawlItemComplete
+
+在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
+
+##### onBeforeSaveItemFile
+
+在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer 。
 
 **调整图片大小**
 
@@ -324,18 +378,16 @@ crawlFile API 拥有一个声明周期函数:
 import xCrawl from 'x-crawl'
 import sharp from 'sharp'
 
-const testXCrawl = xCrawl()
+const myXCrawl = xCrawl()
 
-testXCrawl
+myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1.jpg',
       'https://www.example.com/file-2.jpg'
     ],
-    fileConfig: {
-      beforeSave(info) {
-        return sharp(info.data).resize(200).toBuffer()
-      }
+    onBeforeSaveItemFile(info) {
+      return sharp(info.data).resize(200).toBuffer()
     }
   })
   .then((res) => {
@@ -373,13 +425,86 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
 
 ### 配置优先级
 
-一些通用的配置可以在三个地方设置：
+一些通用的配置可以通过在这三个地方设置：
 
-- 爬虫应用实例（全局）
-- 爬虫 API （局部）
-- 请求配置（单独）
+- 应用实例配置（全局）
+- 进阶配置（局部）
+- 详细目标配置（单独）
 
-优先级为：request config > API config > application config
+优先级为：详细目标配置 > 进阶配置 > 应用实例配置
+
+以 crawlPage 爬取两个页面为例：
+
+```js
+import xCrawl from 'x-crawl'
+
+// 应用实例配置
+const myXCrawl = xCrawl({
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+// 进阶配置
+myXCrawl.crawlPage({
+  targets: [
+    'https://www.example.com/page-1',
+    {
+      // 详细目标配置
+      url: 'https://www.example.com/page-1',
+      viewport: { width: 1920, height: 1080 }
+    }
+  ],
+  intervalTime: 1000,
+  viewport: { width: 800, height: 600 }
+})
+```
+
+在上面的实例中，**应用实例配置**和**进阶配置**中都设置了间隔时间，那么将会以**进阶配置**的间隔时间为准。在**进阶配置**和**详细目标配置**中设置了视口，那么第二个目标是设置了视口，其将会以**详细目标配置**的视口为准。
+
+### 设备指纹
+
+自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
+
+可以通过进阶用法在 fingerprint 传入多个信息，内部会帮助您随机分配给 targets 的每个目标。也可以直接用详细目标配置为目标设置特定的指纹。
+
+以 crawlPage 为例：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
+
+myXCrawl
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-1',
+      {
+        // 指定指纹
+        url: 'https://www.example.com/page-2',
+        fingerprint: {
+          maxWidth: 1980,
+          minWidth: 1980,
+          maxHeight: 1080,
+          minHidth: 1080,
+          platform: 'Android'
+        }
+      }
+    ],
+    fingerprint: {
+      // 为 targets 里的每个目标设置指纹
+      maxWidth: 1980,
+      maxHeight: 1080,
+      userAgents: [
+        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
+      ],
+      platforms: ['Chromium OS', 'iOS', 'Linux', 'macOS', 'Windows']
+    }
+  })
+  .then((res) => {})
+```
+
+更多指纹选项可以前往对应的配置查看。
 
 ### 间隔时间
 
@@ -394,10 +519,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: [
-      'https://www.example.com/api-1',
-      'https://www.example.com/api-2'
-    ],
+    targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -511,26 +633,26 @@ type crawlPage = {
   ): Promise<CrawlPageSingleRes>
 
   (
-    config: PageRequestConfig,
+    config: CrawlPageDetailTargetConfig,
     callback?: (res: CrawlPageSingleRes) => void
   ): Promise<CrawlPageSingleRes>
 
   (
-    config: (string | PageRequestConfig)[],
-    callback?: (res: CrawlPageSingleRes) => void
+    config: (string | CrawlPageDetailTargetConfig)[],
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   (
-    config: CrawlPageConfigObject,
-    callback?: (res: CrawlPageSingleRes) => void
+    config: CrawlPageAdvancedConfig,
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 }
 ```
 
 **参数类型：**
 
-- 查看 [PageRequestConfig](#PageRequestConfig) 类型
-- 查看 [CrawlPageConfigObject](#CrawlPageConfigObject) 类型
+- 查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 类型
+- 查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 类型
 
 **返回值类型：**
 
@@ -557,13 +679,13 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 一共有 4 种:
 
 - string
-- PageRequestConfig
-- (string | PageRequestConfig)[]
-- CrawlPageConfigObject
+- CrawlPageDetailTargetConfig
+- (string | CrawlPageDetailTargetConfig)[]
+- CrawlPageAdvancedConfig
 
 **1.string**
 
-如果你只想单纯爬一下这个页面，可以试试这种写法：
+这是简单目标配置。如果你只想单纯爬一下这个页面，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -575,11 +697,9 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 
 拿到的 res 将是一个对象。
 
-**2.PageRequestConfig**
+**2.CrawlPageDetailTargetConfig**
 
-PageRequestConfig 的更多配置选项可以查看 [PageRequestConfig](#PageRequestConfig) 。
-
-如果你想爬一下这个页面，并且需要失败重试之类的，可以试试这种写法：
+这是详细目标配置。如果你想爬一下这个页面，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -597,11 +717,11 @@ myXCrawl
 
 拿到的 res 将是一个对象。
 
-**3.(string | PageRequestConfig)[]**
+更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
 
-PageRequestConfig 的更多配置选项可以查看 [PageRequestConfig](#PageRequestConfig) 。
+**3.(string | CrawlPageDetailTargetConfig)[]**
 
-如果你想爬取多个页面，并且有些页面需要失败重试之类的，可以试试这种写法：
+这是混合目标数组配置。如果你想爬取多个页面，并且有些页面需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -618,11 +738,11 @@ myXCrawl
 
 拿到的 res 将是一个数组，里面是对象。
 
-**4.CrawlPageConfigObject**
+更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
 
-CrawlPageConfigObject 的更多配置选项可以查看 [CrawlPageConfigObject](#CrawlPageConfigObject) 。
+**4.CrawlPageAdvancedConfig**
 
-如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -631,7 +751,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlPage({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/page-1',
       { url: 'https://www.example.com/page-2', maxRetry: 6 }
     ],
@@ -643,6 +763,8 @@ myXCrawl
 ```
 
 拿到的 res 将是一个数组，里面是对象。
+
+更多配置选项可以查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 。
 
 关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
@@ -657,7 +779,7 @@ crawlData API 是一个函数。类型是 [重载函数](https://www.typescriptl
 ```ts
 type crawlData = {
   <T = any>(
-    config: DataRequestConfig,
+    config: CrawlDataDetailTargetConfig,
     callback?: (res: CrawlDataSingleRes<T>) => void
   ): Promise<CrawlDataSingleRes<T>>
 
@@ -667,21 +789,21 @@ type crawlData = {
   ): Promise<CrawlDataSingleRes<T>>
 
   <T = any>(
-    config: (string | DataRequestConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: (string | CrawlDataDetailTargetConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   <T = any>(
-    config: CrawlDataConfigObject,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: CrawlDataAdvancedConfig<T>,
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 }
 ```
 
 **参数类型：**
 
-- 查看 [DataRequestConfig](#DataRequestConfig) 类型
-- 查看 [CrawlDataConfigObject](#CrawlDataConfigObject) 类型
+- 查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 类型
+- 查看 [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) 类型
 
 **返回值类型：**
 
@@ -700,10 +822,7 @@ const myXCrawl = xCrawl({
 // crawlData API
 myXCrawl
   .crawlData({
-    requestConfigs: [
-      'https://www.example.com/api-1',
-      'https://www.example.com/api-2'
-    ],
+    targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -718,13 +837,13 @@ myXCrawl
 一共有 4 种:
 
 - string
-- DataRequestConfig
-- (string | DataRequestConfig)[]
-- CrawlDataConfigObject
+- CrawlDataDetailTargetConfig
+- (string | CrawlDataDetailTargetConfig)[]
+- CrawlDataAdvancedConfig
 
 **1.string**
 
-如果你只想单纯爬一下这个数据，并且该接口是 GET 方式的，可以试试这种写法：
+这是简单目标配置。如果你只想单纯爬一下这个数据，并且该接口是 GET 方式的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -736,11 +855,9 @@ myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 
 拿到的 res 将是一个对象。
 
-**2.DataRequestConfig**
+**2.CrawlDataDetailTargetConfig**
 
-DataRequestConfig 的更多配置选项可以查看 [DataRequestConfig](#DataRequestConfig) 。
-
-如果你想爬一下这个数据，并且需要失败重试之类的，可以试试这种写法：
+这是详细目标配置。如果你想爬一下这个数据，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -758,11 +875,11 @@ myXCrawl
 
 拿到的 res 将是一个对象。
 
-**3.(string | DataRequestConfig)[]**
+更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
 
-DataRequestConfig 的更多配置选项可以查看 [DataRequestConfig](#DataRequestConfig) 。
+**3.(string | CrawlDataDetailTargetConfig)[]**
 
-如果你想爬取多个数据，并且有些数据需要失败重试之类的，可以试试这种写法：
+这是混合目标数组配置。如果你想爬取多个数据，并且有些数据需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -779,11 +896,11 @@ myXCrawl
 
 拿到的 res 将是一个数组，里面是对象。
 
-**4.CrawlDataConfigObject**
+更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
 
-CrawlPageConfigObject 的更多配置选项可以查看 [CrawlPageConfigObject](#CrawlPageConfigObject) 。
+**4.CrawlDataAdvancedConfig**
 
-如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -792,7 +909,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/api-1',
       { url: 'https://www.example.com/api-2', maxRetry: 6 }
     ],
@@ -804,6 +921,8 @@ myXCrawl
 ```
 
 拿到的 res 将是一个数组，里面是对象。
+
+更多配置选项可以查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 。
 
 关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
@@ -818,26 +937,26 @@ crawlFile API 是一个函数。类型是 [重载函数](https://www.typescriptl
 ```ts
 type crawlFile = {
   (
-    config: FileRequestConfig,
+    config: CrawlFileDetailTargetConfig,
     callback?: (res: CrawlFileSingleRes) => void
   ): Promise<CrawlFileSingleRes>
 
   (
-    config: FileRequestConfig[],
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileDetailTargetConfig[],
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   (
-    config: CrawlFileConfigObject,
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileAdvancedConfig,
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 }
 ```
 
 **参数类型：**
 
-- 查看 [FileRequestConfig](#FileRequestConfig) 类型
-- 查看 [CrawlFileConfigObject](#CrawlFileConfigObject) 类型
+- 查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 类型
+- 查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 类型
 
 **返回值类型：**
 
@@ -856,7 +975,7 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
@@ -871,15 +990,13 @@ myXCrawl
 
 一共有 3 种:
 
-- FileRequestConfig
-- FileRequestConfig[]
-- CrawlFileConfigObject
+- CrawlFileDetailTargetConfig
+- CrawlFileDetailTargetConfig[]
+- CrawlFileAdvancedConfig
 
-**1.FileRequestConfig**
+**1.CrawlFileDetailTargetConfig**
 
-FileRequestConfig 的更多配置选项可以查看 [FileRequestConfig](#FileRequestConfig) 。
-
-如果你想爬一下这个文件，并且需要失败重试之类的，可以试试这种写法：
+这是详细目标配置。如果你想爬一下这个文件，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -899,11 +1016,11 @@ myXCrawl
 
 拿到的 res 将是一个对象。
 
-**2.FileRequestConfig[]**
+更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
 
-FileRequestConfig 的更多配置选项可以查看 [FileRequestConfig](#FileRequestConfig) 。
+**2.CrawlFileDetailTargetConfig[]**
 
-如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
+这是详细目标数组配置。如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -920,11 +1037,11 @@ myXCrawl
 
 拿到的 res 将是一个数组，里面是对象。
 
-**3.CrawlFileConfigObject**
+更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
 
-CrawlFileConfigObject 的更多配置选项可以查看 [CrawlFileConfigObject](#CrawlFileConfigObject) 。
+**3.CrawlFileAdvancedConfig**
 
-如果你想爬取多个数据，并且请求配置（storeDir、proxy、重试等等）不想重复写，需要间隔时间等等的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（storeDir、proxy、重试等等）不想重复写，需要间隔时间等等的话，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -933,7 +1050,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       { url: 'https://www.example.com/file-2', storeDir: './upload/file2' }
     ],
@@ -945,6 +1062,8 @@ myXCrawl
 ```
 
 拿到的 res 将是一个数组，里面是对象。
+
+更多配置选项可以查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 。
 
 关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
@@ -982,14 +1101,206 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 
 ## 类型
 
-### API Config
+### API config
 
-#### API Config Other
-
-##### IntervalTime
+#### XCrawlConfig
 
 ```ts
-export type IntervalTime = number | { max: number; min?: number }
+export interface XCrawlConfig extends CrawlCommonConfig {
+  mode?: 'async' | 'sync'
+  enableRandomFingerprint?: boolean
+  baseUrl?: string
+  intervalTime?: IntervalTime
+  crawlPage?: {
+    launchBrowser?: PuppeteerLaunchOptions // puppeteer
+  }
+}
+```
+
+#### Detail target config
+
+##### CrawlPageDetailTargetConfig
+
+```ts
+export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  cookies?: PageCookies | null
+  priority?: number
+  viewport?: Viewport | null // puppeteer
+  fingerprint?:
+    | (DetailTargetFingerprintCommon & {
+        maxWidth: number
+        minWidth?: number
+        maxHeight: number
+        minHidth?: number
+      })
+    | null
+}
+```
+
+##### CrawlDataDetailTargetConfig
+
+```ts
+export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  method?: Method
+  headers?: AnyObject | null
+  params?: AnyObject
+  data?: any
+  priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+##### CrawlFileDetailTargetConfig
+
+```ts
+export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  priority?: number
+  storeDir?: string | null
+  fileName?: string
+  extension?: string | null
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+#### Advanced config
+
+##### CrawlPageAdvancedConfig
+
+```ts
+export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlPageDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon & {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
+  }
+
+  headers?: AnyObject
+  cookies?: PageCookies
+  viewport?: Viewport // puppeteer
+
+  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+}
+```
+
+##### CrawlDataAdvancedConfig
+
+```ts
+export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
+  targets: (string | CrawlDataDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+}
+```
+
+##### CrawlFileAdvancedConfig
+
+```ts
+export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlFileDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+  storeDir?: string
+  extension?: string
+
+  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onBeforeSaveItemFile?: (info: {
+    id: number
+    fileName: string
+    filePath: string
+    data: Buffer
+  }) => Promise<Buffer>
+}
+```
+
+#### StartPollingConfig
+
+```ts
+export interface StartPollingConfig {
+  d?: number
+  h?: number
+  m?: number
+}
+```
+
+#### Crawl other config
+
+##### CrawlCommonConfig
+
+```ts
+export interface CrawlCommonConfig {
+  timeout?: number
+  proxy?: string
+  maxRetry?: number
+}
+```
+
+##### DetailTargetFingerprintCommon
+
+```ts
+export interface DetailTargetFingerprintCommon {
+  userAgent?: string
+  ua?: string
+  platform?: Platform
+  platformVersion?: string
+  mobile?: Mobile
+  acceptLanguage?: string
+}
+```
+
+##### AdvancedFingerprintCommon
+
+```ts
+export interface AdvancedFingerprintCommon {
+  userAgents?: string[]
+  uas?: string[]
+  platforms?: Platform[]
+  platformVersions?: string[]
+  mobiles?: Mobile[]
+  acceptLanguages?: string[]
+}
+```
+
+##### Mobile
+
+```ts
+export type Mobile = '?0' | '?1'
+```
+
+##### Platform
+
+```ts
+export type Platform =
+  | 'Android'
+  | 'Chrome OS'
+  | 'Chromium OS'
+  | 'iOS'
+  | 'Linux'
+  | 'macOS'
+  | 'Windows'
+  | 'Unknown'
+```
+
+##### PageCookies
+
+```ts
+export type PageCookies =
+  | string
+  | Protocol.Network.CookieParam // puppeteer
+  | Protocol.Network.CookieParam[] // puppeteer
 ```
 
 ##### Method
@@ -1018,136 +1329,13 @@ export type Method =
   | 'UNLINK'
 ```
 
-##### PageRequestConfigCookies
+##### IntervalTime
 
 ```ts
-export type PageRequestConfigCookies =
-  | string
-  | Protocol.Network.CookieParam
-  | Protocol.Network.CookieParam[]
+export type IntervalTime = number | { max: number; min?: number }
 ```
 
-#### API Config Request
-
-##### PageRequestConfig
-
-```ts
-export interface PageRequestConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  cookies?: PageRequestConfigCookies
-  maxRetry?: number
-  priority?: number
-}
-```
-
-##### DataRequestConfig
-
-```ts
-export interface DataRequestConfig {
-  url: string
-  method?: Method
-  headers?: AnyObject
-  params?: AnyObject
-  data?: any
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
-  priority?: number
-}
-```
-
-##### FileRequestConfig
-
-```ts
-export interface FileRequestConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
-  priority?: number
-  storeDir?: string
-  fileName?: string
-  extension?: string
-}
-```
-
-#### API Config Crawl
-
-##### XCrawlBaseConfig
-
-```ts
-export interface XCrawlBaseConfig {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  mode?: 'async' | 'sync'
-  proxy?: string
-  maxRetry?: number
-}
-```
-
-##### CrawlPageConfigObject
-
-```ts
-export interface CrawlPageConfigObject {
-  requestConfigs: (string | PageRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  cookies?: PageRequestConfigCookies
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-```
-
-##### CrawlDataConfigObject
-
-```ts
-export interface CrawlDataConfigObject {
-  requestConfigs: (string | DataRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-```
-
-##### CrawlFileConfigObject
-
-```ts
-export interface CrawlFileConfigObject {
-  requestConfigs: (string | FileRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-  fileConfig?: {
-    storeDir?: string
-    extension?: string
-    beforeSave?: (info: {
-      id: number
-      fileName: string
-      filePath: string
-      data: Buffer
-    }) => Promise<Buffer>
-  }
-}
-```
-
-##### StartPollingConfig
-
-```js
-export interface StartPollingConfig {
-  d?: number
-  h?: number
-  m?: number
-}
-```
-
-### API Result
+### API result
 
 #### XCrawlInstance
 
@@ -1160,24 +1348,24 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: PageRequestConfig,
+      config: CrawlPageDetailTargetConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: (string | PageRequestConfig)[],
-      callback?: (res: CrawlPageSingleRes) => void
+      config: (string | CrawlPageDetailTargetConfig)[],
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
 
     (
-      config: CrawlPageConfigObject,
-      callback?: (res: CrawlPageSingleRes) => void
+      config: CrawlPageAdvancedConfig,
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
   }
 
   crawlData: {
     <T = any>(
-      config: DataRequestConfig,
+      config: CrawlDataDetailTargetConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>>
 
@@ -1187,30 +1375,30 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>>
 
     <T = any>(
-      config: (string | DataRequestConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: (string | CrawlDataDetailTargetConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
-      config: CrawlDataConfigObject,
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: CrawlDataAdvancedConfig<T>,
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }
 
   crawlFile: {
     (
-      config: FileRequestConfig,
+      config: CrawlFileDetailTargetConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes>
 
     (
-      config: FileRequestConfig[],
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileDetailTargetConfig[],
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
 
     (
-      config: CrawlFileConfigObject,
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileAdvancedConfig,
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
   }
 
@@ -1228,9 +1416,8 @@ export interface CrawlCommonRes {
   id: number
   isSuccess: boolean
   maxRetry: number
-  crawlCount: number
   retryCount: number
-  errorQueue: Error[]
+  crawlErrorQueue: Error[]
 }
 ```
 
@@ -1239,9 +1426,9 @@ export interface CrawlCommonRes {
 ```ts
 export interface CrawlPageSingleRes extends CrawlCommonRes {
   data: {
-    browser: Browser
-    response: HTTPResponse | null
-    page: Page
+    browser: Browser // puppeteer
+    response: HTTPResponse | null // puppeteer
+    page: Page // puppeteer
   }
 }
 ```
@@ -1252,7 +1439,7 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
 export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders
+    headers: IncomingHttpHeaders // nodejs http
     data: D
   } | null
 }
@@ -1264,7 +1451,7 @@ export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
 export interface CrawlFileSingleRes extends CrawlCommonRes {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders
+    headers: IncomingHttpHeaders // nodejs http
     data: {
       isSuccess: boolean
       fileName: string
@@ -1291,4 +1478,4 @@ export interface AnyObject extends Object {
 
 如果您有 **问题 、需求、好的建议** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。
 
-感谢你们的支持。
+感谢大家的支持。

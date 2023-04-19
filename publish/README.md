@@ -2,15 +2,16 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible Node.js multi-purpose crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls.
+x-crawl is a flexible Node.js multifunctional crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls.
 
-> If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you all for your support.
+> If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you for your support!
 
 ## Features
 
 - **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
-- **⚙️ Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
+- **⚙️Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
 - **🖋️ Flexible writing method** - A function adapts to multiple crawling configurations and obtains crawling results. The writing method is very flexible.
+- **👀 Device Fingerprinting** - Zero configuration/custom configuration to avoid fingerprinting to identify and track us from different locations.
 - **⏱️ Interval crawling** - no interval/fixed interval/random interval, can effectively use/avoid high concurrent crawling.
 - **🔄 Retry on failure** - It can be set for all crawling requests, for a single crawling request, and for a single request to set a failed retry.
 - **🚀 Priority Queue** - Use priority crawling based on the priority of individual requests.
@@ -21,7 +22,7 @@ x-crawl is a flexible Node.js multi-purpose crawler library. Used to crawl pages
 
 ## Relationship with puppeteer
 
-The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/puppeteer) library to help us crawl pages and expose Brower instances and Page instances.
+The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built in, you only need to pass in some configuration options to complete some operations, and the result will expose Brower instances and Page instances.
 
 # Table of Contents
 
@@ -30,17 +31,24 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
 - [Core concepts](#Core-concepts)
   - [Create application](#Create-application)
     - [An example of a crawler application](#An-example-of-a-crawler-application)
-    - [Choose crawling mode](#Choose-crawling-mode)
+    - [Crawl mode](#Crawl-mode)
+    - [Device fingerprint](#Device-fingerprint)
     - [Multiple crawler application instances](#Multiple-crawler-application-instances)
   - [Crawl page](#Crawl-page)
     - [browser instance](#browser-instance)
     - [page instance](#page-instance)
+    - [life cycle](#life-cycle)
+      - [onCrawlItemComplete](#onCrawlItemComplete)
   - [Crawl interface](#Crawl-interface)
+    - [life cycle](#life-cycle-1)
+      - [onCrawlItemComplete](#onCrawlItemComplete-1)
   - [Crawl files](#Crawl-files)
     - [life cycle](#life-cycle)
-      - [beforeSave](#beforeSave)
+      - [onCrawlItemComplete](#onCrawlItemComplete-2)
+      - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [Start polling](#Start-polling)
   - [Config priority](#Config-Priority)
+  - [Device fingerprint](#Device-fingerprint-1)
   - [Interval time](#Interval-time)
   - [Fail retry](#Fail-retry)
   - [Priority queue](#Priority-queue)
@@ -66,21 +74,26 @@ The crawlPage API internally uses the [puppeteer](https://github.com/puppeteer/p
     - [Type](#Type-4)
     - [Example](#Example-5)
 - [Types](#Types)
-  - [API Config](#API-Config)
-    - [API Config Other](#API-Config-Other)
-      - [IntervalTime](#IntervalTime)
+  - [API Config](#API-config)
+    - [XCrawlConfig](#XCrawlConfig)
+    - [Detail target config](#Detail-target-config)
+      - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
+      - [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig)
+      - [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig)
+    - [Advanced config](#Advanced-config)
+      - [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig)
+      - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
+      - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
+    - [StartPollingConfig](#StartPollingConfig)
+    - [Crawl other config](#Crawl-other-config)
+      - [CrawlCommonConfig](#CrawlCommonConfig)
+      - [DetailTargetFingerprintCommon](#DetailTargetFingerprintCommon)
+      - [AdvancedFingerprintCommon](#AdvancedFingerprintCommon)
+      - [Mobile](#Mobile)
+      - [Platform](#Platform)
+      - [PageCookies](#PageCookies)
       - [Method](#Method)
-      - [PageRequestConfigCookies](#PageRequestConfigCookies)
-    - [API Config Request](#API-Config-Request)
-      - [PageRequestConfig](#PageRequestConfig)
-      - [DataRequestConfig](#DataRequestConfig)
-      - [FileRequestConfig](#FileRequestConfig)
-    - [API Config Crawl](#API-Config-Crawl)
-      - [XCrawlBaseConfig](#XCrawlBaseConfig)
-      - [CrawlPageConfigObject](#CrawlPageConfigObject)
-      - [CrawlDataConfigObject](#CrawlDataConfigObject)
-      - [CrawlFileConfigObject](#CrawlFileConfigObject)
-      - [StartPollingConfig](#StartPollingConfig)
+      - [IntervalTime](#IntervalTime)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
     - [CrawlCommonRes](#CrawlCommonRes)
@@ -122,8 +135,8 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     'https://zh.airbnb.com/s/hawaii/plus_homes'
   ])
 
-  // Store the image URL
-  const imgUrls = []
+  // Store the image URL to targets
+  const targets = []
   const elSelectorMap = ['.c14whb16', '.a1stauiv']
   for (const item of res) {
     const { id } = item
@@ -131,20 +144,17 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 
     // Gets the URL of the page's wheel image element
     const boxHandle = await page.$(elSelectorMap[id - 1])
-    const urls = await boxHandle.$$eval('picture img', (imgEls) => {
+    const urls = await boxHandle!.$$eval('picture img', (imgEls) => {
       return imgEls.map((item) => item.src)
     })
-    imgUrls.push(...urls)
+    targets.push(...urls)
 
     // Close page
     page.close()
   }
 
   // Call the crawlFile API to crawl pictures
-  myXCrawl.crawlFile({
-    requestConfigs: imgUrls,
-    fileConfig: { storeDir: './upload' }
-  })
+  myXCrawl.crawlFile({ targets, storeDir: './upload' })
 })
 ```
 
@@ -177,7 +187,7 @@ const myXCrawl = xCrawl({
 
 Related **options** can refer to [XCrawlBaseConfig](#XCrawlBaseConfig) .
 
-#### Choose crawling mode
+#### Crawl mode
 
 A crawler application instance has two crawling modes: asynchronous/synchronous, and each crawler instance can only choose one of them.
 
@@ -195,6 +205,25 @@ The mode option defaults to async .
 - sync: synchronous request, in batch requests, you need to wait for this request to complete before making the next request
 
 If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
+
+#### Device fingerprint
+
+A property can be used to control whether to use the default random fingerprint, or you can configure a custom fingerprint through subsequent crawling.
+
+Device fingerprinting is set up to avoid identifying and tracking us from different locations through fingerprinting.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  enableRandomFingerprint: true
+})
+```
+
+The enableRandomFingerprint option defaults to true.
+
+- true: Enable random device fingerprinting. The fingerprint configuration of the target can be specified through the advanced version configuration or the detailed target version configuration.
+- false: Turn off random device fingerprinting, without affecting the fingerprint configuration specified for the target by the advanced configuration or the detailed configuration.
 
 #### Multiple crawler application instances
 
@@ -260,6 +289,18 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 })
 ```
 
+#### life cycle
+
+Lifecycle functions owned by crawlPageAPI:
+
+- onCrawlItemComplete: executed when each crawl item is finished and processed
+
+##### onCrawlItemComplete
+
+In the onCrawlItemComplete function you can get the result of each crawl object.
+
+**Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
+
 ### Crawl interface
 
 Crawl interface data through [crawlData()](#crawlData) .
@@ -269,7 +310,7 @@ import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
-const requestConfigs = [
+const targets = [
   'https://www.example.com/api-1',
   'https://www.example.com/api-2',
   {
@@ -279,10 +320,22 @@ const requestConfigs = [
   }
 ]
 
-myXCrawl.crawlData({ requestConfigs }).then((res) => {
+myXCrawl.crawlData({ targets }).then((res) => {
   // deal with
 })
 ```
+
+#### life cycle
+
+Lifecycle functions owned by crawlPageAPI:
+
+- onCrawlItemComplete: executed when each crawl item is finished and processed
+
+##### onCrawlItemComplete
+
+In the onCrawlItemComplete function you can get the result of each crawl object.
+
+**Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
 
 ### Crawl files
 
@@ -295,7 +348,7 @@ const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
@@ -310,13 +363,19 @@ myXCrawl
 
 #### life cycle
 
-The crawlFile API has a lifetime function:
+Life cycle functions owned by crawlFile API:
 
-- beforeSave: executed before saving the file
+- onCrawlItemComplete: executed when each crawl item is finished and processed
 
-##### beforeSave
+- onBeforeSaveItemFile: executed before saving the file
 
-In the beforeSave function you can get a file of type Buffer, which you can process and return a Promise and resolve as a Buffer.
+##### onCrawlItemComplete
+
+In the onCrawlItemComplete function you can get the result of each crawl object.
+
+##### onBeforeSaveItemFile
+
+In the onBeforeSaveItemFile function, you can get the Buffer type file, you can process the Buffer, and then you need to return a Promise, and the resolve is Buffer.
 
 **Resize picture**
 
@@ -326,16 +385,16 @@ Use the sharp library to resize the images to be crawled:
 import xCrawl from 'x-crawl'
 import sharp from 'sharp'
 
-const testXCrawl = xCrawl()
+const myXCrawl = xCrawl()
 
-testXCrawl
+myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1.jpg',
       'https://www.example.com/file-2.jpg'
     ],
     fileConfig: {
-      beforeSave(info) {
+      onBeforeSaveItemFile(info) {
         return sharp(info.data).resize(200).toBuffer()
       }
     }
@@ -376,13 +435,86 @@ Callback function parameters:
 
 ### Config priority
 
-Some general configuration can be set in three places:
+Some common configurations can be set in these three places:
 
-- Crawler application instance (global)
-- Crawler API (local)
-- Request configuration (separate)
+- Application instance configuration (global)
+- Advanced configuration (partial)
+- detailed target configuration (separately)
 
-The priority is: request config > API config > application config
+The priority is: detailed target configuration > advanced configuration > application instance configuration
+
+Take crawlPage to crawl two pages as an example:
+
+```js
+import xCrawl from 'x-crawl'
+
+// Application instance configuration
+const myXCrawl = xCrawl({
+  intervalTime: { max: 3000, min: 1000 }
+})
+
+// advanced configuration
+myXCrawl.crawlPage({
+  targets: [
+    'https://www.example.com/page-1',
+    {
+      // Detailed target configuration
+      url: 'https://www.example.com/page-1',
+      viewport: { width: 1920, height: 1080 }
+    }
+  ],
+  intervalTime: 1000,
+  viewport: { width: 800, height: 600 }
+})
+```
+
+### Device fingerprint
+
+Customize the configuration to avoid fingerprinting and tracking us from different locations.
+
+Multiple information can be passed in the fingerprint through advanced usage, and internally it will help you randomly assign each target to targets. It is also possible to set a specific fingerprint for a target directly with the detailed target configuration.
+
+Take crawlPage as an example:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
+
+myXCrawl
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-1',
+      {
+        // Specify the fingerprint
+        url: 'https://www.example.com/page-2',
+        fingerprint: {
+          maxWidth: 1980,
+          minWidth: 1980,
+          maxHeight: 1080,
+          minHidth: 1080,
+          platform: 'Android'
+        }
+      }
+    ],
+    fingerprint: {
+      // set fingerprint for each target in targets
+      maxWidth: 1980,
+      maxHeight: 1080,
+      userAgents: [
+        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
+      ],
+      platforms: ['Chromium OS', 'iOS', 'Linux', 'macOS', 'Windows']
+    }
+  })
+  .then((res) => {})
+```
+
+For more fingerprint options, you can go to the corresponding configuration to view.
+
+In the above example, the interval time is set in both **Application Instance Configuration** and **Advanced Configuration**, then the interval time of **Advanced Configuration** will prevail. If the viewport is set in **Advanced Configuration** and **Detailed Target Configuration**, then the second target is to set the viewport, which will be based on the viewport of **Detailed Target Configuration**.
 
 ### Interval time
 
@@ -397,10 +529,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: [
-      'https://www.example.com/api-1',
-      'https://www.example.com/api-2'
-    ],
+    targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 2000, min: 1000 }
   })
   .then((res) => {})
@@ -516,26 +645,26 @@ type crawlPage = {
   ): Promise<CrawlPageSingleRes>
 
   (
-    config: PageRequestConfig,
+    config: CrawlPageDetailTargetConfig,
     callback?: (res: CrawlPageSingleRes) => void
   ): Promise<CrawlPageSingleRes>
 
   (
-    config: (string | PageRequestConfig)[],
-    callback?: (res: CrawlPageSingleRes) => void
+    config: (string | CrawlPageDetailTargetConfig)[],
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   (
-    config: CrawlPageConfigObject,
-    callback?: (res: CrawlPageSingleRes) => void
+    config: CrawlPageAdvancedConfig,
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 }
 ```
 
 **Parameter Type:**
 
-- Look at the [PageRequestConfig](#PageRequestConfig) type
-- Look at the [CrawlPageConfigObject](#CrawlPageConfigObject) type
+- Look at the [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) type
+- Look at the [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) type
 
 **Return value type:**
 
@@ -562,13 +691,13 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 There are 4 types:
 
 - string
-- PageRequestConfig
-- (string | PageRequestConfig)[]
-- CrawlPageConfigObject
+- CrawlPageDetailTargetConfig
+- (string | CrawlPageDetailTargetConfig)[]
+- CrawlPageAdvancedConfig
 
 **1.string**
 
-If you just want to simply crawl this page, you can try this way of writing:
+This is a simple target configuration. if you just want to simply crawl this page, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -580,11 +709,9 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 
 The res you get will be an object.
 
-**2. PageRequestConfig**
+**2. CrawlPageDetailTargetConfig**
 
-More configuration options of PageRequestConfig can be found in [PageRequestConfig](#PageRequestConfig) .
-
-If you want to crawl this page and need to retry on failure, you can try this way of writing:
+This is the detailed target configuration. if you want to crawl this page and need to retry on failure, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -602,11 +729,11 @@ myXCrawl
 
 The res you get will be an object.
 
-**3.(string | PageRequestConfig)[]**
+More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-More configuration options of PageRequestConfig can be found in [PageRequestConfig](#PageRequestConfig) .
+**3.(string | CrawlPageDetailTargetConfig)[]**
 
-If you want to crawl multiple pages, and some pages need to fail and retry, you can try this way of writing:
+This is a mixed target array configuration. if you want to crawl multiple pages, and some pages need to fail and retry, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -623,11 +750,11 @@ myXCrawl
 
 The res you get will be an array of objects.
 
-**4. CrawlPageConfigObject**
+More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-For more configuration options of CrawlPageConfigObject, please refer to [CrawlPageConfigObject](#CrawlPageConfigObject) .
+**4. CrawlPageAdvancedConfig**
 
-If you want to crawl multiple pages, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this way of writing:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -636,7 +763,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlPage({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/page-1',
       { url: 'https://www.example.com/page-2', maxRetry: 6 }
     ],
@@ -648,6 +775,8 @@ myXCrawl
 ```
 
 The res you get will be an array of objects.
+
+More configuration options can view [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig).
 
 More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
@@ -662,7 +791,7 @@ The crawlData API is a function. A type is an [overloaded function](https://www.
 ```ts
 type crawlData = {
   <T = any>(
-    config: DataRequestConfig,
+    config: CrawlDataDetailTargetConfig,
     callback?: (res: CrawlDataSingleRes<T>) => void
   ): Promise<CrawlDataSingleRes<T>>
 
@@ -672,21 +801,21 @@ type crawlData = {
   ): Promise<CrawlDataSingleRes<T>>
 
   <T = any>(
-    config: (string | DataRequestConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: (string | CrawlDataDetailTargetConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   <T = any>(
-    config: CrawlDataConfigObject,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: CrawlDataAdvancedConfig<T>,
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 }
 ```
 
 **Parameter Type:**
 
-- See [DataRequestConfig](#DataRequestConfig) type
-- Look at the [CrawlDataConfigObject](#CrawlDataConfigObject) type
+- Look at the [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) type
+- Look at the [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) type
 
 **Return value type:**
 
@@ -704,10 +833,7 @@ const myXCrawl = xCrawl({
 
 myXCrawl
   .crawlData({
-    requestConfigs: [
-      'https://www.example.com/api-1',
-      'https://www.example.com/api-2'
-    ],
+    targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 3000, min: 1000 },
     cookies: 'xxx',
     maxRetry: 1
@@ -722,13 +848,13 @@ myXCrawl
 There are 4 types:
 
 - string
-- DataRequestConfig
-- (string | DataRequestConfig)[]
-- CrawlDataConfigObject
+- CrawlDataDetailTargetConfig
+- (string | CrawlDataDetailTargetConfig)[]
+- CrawlDataAdvancedConfig<T>
 
 **1.string**
 
-If you just want to simply crawl the data, and the interface is GET, you can try this way of writing:
+This is a simple target configuration. if you just want to simply crawl the data, and the interface is GET, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -740,11 +866,9 @@ myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 
 The res you get will be an object.
 
-**2. DataRequestConfig**
+**2. CrawlDataDetailTargetConfig**
 
-More configuration options of DataRequestConfig can be found in [DataRequestConfig](#DataRequestConfig) .
-
-If you want to crawl this data and need to retry on failure, you can try this way of writing:
+This is the detailed target configuration. if you want to crawl this data and need to retry on failure, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -762,11 +886,11 @@ myXCrawl
 
 The res you get will be an object.
 
-**3.(string | DataRequestConfig)[]**
+More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-More configuration options of DataRequestConfig can be found in [DataRequestConfig](#DataRequestConfig) .
+**3.(string | CrawlDataDetailTargetConfig)[]**
 
-If you want to crawl multiple data, and some data needs to fail and retry, you can try this way of writing:
+This is a mixed target array configuration. if you want to crawl multiple data, and some data needs to fail and retry, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -783,11 +907,11 @@ myXCrawl
 
 The res you get will be an array of objects.
 
-**4. CrawlDataConfigObject**
+More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-For more configuration options of CrawlPageConfigObject, please refer to [CrawlPageConfigObject](#CrawlPageConfigObject) .
+**4.CrawlDataAdvancedConfig**
 
-If you want to crawl multiple data, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this writing method:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this writing method:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -796,7 +920,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlData({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/api-1',
       { url: 'https://www.example.com/api-2', maxRetry: 6 }
     ],
@@ -808,6 +932,8 @@ myXCrawl
 ```
 
 The res you get will be an array of objects.
+
+More configuration options can view [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) .
 
 More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
@@ -822,26 +948,26 @@ The crawlFile API is a function. A type is an [overloaded function](https://www.
 ```ts
 type crawlFile = {
   (
-    config: FileRequestConfig,
+    config: CrawlFileDetailTargetConfig,
     callback?: (res: CrawlFileSingleRes) => void
   ): Promise<CrawlFileSingleRes>
 
   (
-    config: FileRequestConfig[],
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileDetailTargetConfig[],
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   (
-    config: CrawlFileConfigObject,
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileAdvancedConfig,
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 }
 ```
 
 **Parameter Type:**
 
-- See [FileRequestConfig](#FileRequestConfig) type
-- Look at the [CrawlFileConfigObject](#CrawlFileConfigObject) type
+- Look at the [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) type
+- Look at the [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) type
 
 **Return value type:**
 
@@ -860,7 +986,7 @@ const myXCrawl = xCrawl({
 // crawlFile API
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
@@ -875,16 +1001,14 @@ myXCrawl
 
 There are 3 types:
 
-- FileRequestConfig
+- CrawlFileDetailTargetConfig
 
-- FileRequestConfig[]
-- CrawlFileConfigObject
+- CrawlFileDetailTargetConfig[]
+- CrawlFileAdvancedConfig
 
-**1. FileRequestConfig**
+**1. CrawlFileDetailTargetConfig**
 
-More configuration options of FileRequestConfig can be found in [FileRequestConfig](#FileRequestConfig) .
-
-If you want to crawl this file and need to retry on failure, you can try this way of writing:
+This is the detailed target configuration. if you want to crawl this file and need to retry on failure, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -904,11 +1028,11 @@ myXCrawl
 
 The res you get will be an object.
 
-**2. FileRequestConfig[]**
+More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-More configuration options of FileRequestConfig can be found in [FileRequestConfig](#FileRequestConfig) .
+**2. CrawlFileDetailTargetConfig[]**
 
-If you want to crawl multiple files, and some data needs to be retried after failure, you can try this way of writing:
+This is the detailed target array configuration. if you want to crawl multiple files, and some data needs to be retried after failure, you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -925,11 +1049,11 @@ myXCrawl
 
 The res you get will be an array of objects.
 
-**3. CrawlFileConfigObject**
+More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-For more configuration options of CrawlFileConfigObject, please refer to [CrawlFileConfigObject](#CrawlFileConfigObject) .
+**3. CrawlFileAdvancedConfig**
 
-If you want to crawl multiple data, and the request configuration (storeDir, proxy, retry, etc.) does not want to be written repeatedly, and you need interval time, etc., you can try this way of writing:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (storeDir, proxy, retry, etc.) does not want to be written repeatedly, and you need interval time, etc., you can try this way of writing:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -938,7 +1062,7 @@ const myXCrawl = xCrawl()
 
 myXCrawl
   .crawlFile({
-    requestConfigs: [
+    targets: [
       'https://www.example.com/file-1',
       { url: 'https://www.example.com/file-2', storeDir: './upload/xxx' }
     ],
@@ -950,6 +1074,8 @@ myXCrawl
 ```
 
 The res you get will be an array of objects.
+
+More configuration options can view [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) .
 
 More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
@@ -987,14 +1113,206 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 
 ## Types
 
-### API Config
+### API config
 
-#### API Config Other
-
-##### IntervalTime
+#### XCrawlConfig
 
 ```ts
-export type IntervalTime = number | { max: number; min?: number }
+export interface XCrawlConfig extends CrawlCommonConfig {
+  mode?: 'async' | 'sync'
+  enableRandomFingerprint?: boolean
+  baseUrl?: string
+  intervalTime?: IntervalTime
+  crawlPage?: {
+    launchBrowser?: PuppeteerLaunchOptions // puppeteer
+  }
+}
+```
+
+#### Detail target config
+
+##### CrawlPageDetailTargetConfig
+
+```ts
+export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  cookies?: PageCookies | null
+  priority?: number
+  viewport?: Viewport | null // puppeteer
+  fingerprint?:
+    | (DetailTargetFingerprintCommon & {
+        maxWidth: number
+        minWidth?: number
+        maxHeight: number
+        minHidth?: number
+      })
+    | null
+}
+```
+
+##### CrawlDataDetailTargetConfig
+
+```ts
+export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  method?: Method
+  headers?: AnyObject | null
+  params?: AnyObject
+  data?: any
+  priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+##### CrawlFileDetailTargetConfig
+
+```ts
+export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  priority?: number
+  storeDir?: string | null
+  fileName?: string
+  extension?: string | null
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+#### Advanced config
+
+##### CrawlPageAdvancedConfig
+
+```ts
+export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlPageDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon & {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
+  }
+
+  headers?: AnyObject
+  cookies?: PageCookies
+  viewport?: Viewport // puppeteer
+
+  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+}
+```
+
+##### CrawlDataAdvancedConfig
+
+```ts
+export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
+  targets: (string | CrawlDataDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+}
+```
+
+##### CrawlFileAdvancedConfig
+
+```ts
+export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlFileDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+  storeDir?: string
+  extension?: string
+
+  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onBeforeSaveItemFile?: (info: {
+    id: number
+    fileName: string
+    filePath: string
+    data: Buffer
+  }) => Promise<Buffer>
+}
+```
+
+#### StartPollingConfig
+
+```ts
+export interface StartPollingConfig {
+  d?: number
+  h?: number
+  m?: number
+}
+```
+
+#### Crawl other config
+
+##### CrawlCommonConfig
+
+```ts
+export interface CrawlCommonConfig {
+  timeout?: number
+  proxy?: string
+  maxRetry?: number
+}
+```
+
+##### DetailTargetFingerprintCommon
+
+```ts
+export interface DetailTargetFingerprintCommon {
+  userAgent?: string
+  ua?: string
+  platform?: Platform
+  platformVersion?: string
+  mobile?: Mobile
+  acceptLanguage?: string
+}
+```
+
+##### AdvancedFingerprintCommon
+
+```ts
+export interface AdvancedFingerprintCommon {
+  userAgents?: string[]
+  uas?: string[]
+  platforms?: Platform[]
+  platformVersions?: string[]
+  mobiles?: Mobile[]
+  acceptLanguages?: string[]
+}
+```
+
+##### Mobile
+
+```ts
+export type Mobile = '?0' | '?1'
+```
+
+##### Platform
+
+```ts
+export type Platform =
+  | 'Android'
+  | 'Chrome OS'
+  | 'Chromium OS'
+  | 'iOS'
+  | 'Linux'
+  | 'macOS'
+  | 'Windows'
+  | 'Unknown'
+```
+
+##### PageCookies
+
+```ts
+export type PageCookies =
+  | string
+  | Protocol.Network.CookieParam
+  | Protocol.Network.CookieParam[]
 ```
 
 ##### Method
@@ -1023,136 +1341,13 @@ export type Method =
   | 'UNLINK'
 ```
 
-##### PageRequestConfigCookies
+##### IntervalTime
 
 ```ts
-export type PageRequestConfigCookies =
-  | string
-  | Protocol.Network.CookieParam
-  | Protocol.Network.CookieParam[]
+export type IntervalTime = number | { max: number; min?: number }
 ```
 
-#### API Config Request
-
-##### PageRequestConfig
-
-```ts
-export interface PageRequestConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  cookies?: PageRequestConfigCookies
-  maxRetry?: number
-  priority?: number
-}
-```
-
-##### DataRequestConfig
-
-```ts
-export interface DataRequestConfig {
-  url: string
-  method?: Method
-  headers?: AnyObject
-  params?: AnyObject
-  data?: any
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
-  priority?: number
-}
-```
-
-##### FileRequestConfig
-
-```ts
-export interface FileRequestConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
-  priority?: number
-  storeDir?: string
-  fileName?: string
-  extension?: string
-}
-```
-
-#### API Config Crawl
-
-##### XCrawlBaseConfig
-
-```ts
-export interface XCrawlBaseConfig {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  mode?: 'async' | 'sync'
-  proxy?: string
-  maxRetry?: number
-}
-```
-
-##### CrawlPageConfigObject
-
-```ts
-export interface CrawlPageConfigObject {
-  requestConfigs: (string | PageRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  cookies?: PageRequestConfigCookies
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-```
-
-##### CrawlDataConfigObject
-
-```ts
-export interface CrawlDataConfigObject {
-  requestConfigs: (string | DataRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-```
-
-##### CrawlFileConfigObject
-
-```ts
-export interface CrawlFileConfigObject {
-  requestConfigs: (string | FileRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-  fileConfig?: {
-    storeDir?: string
-    extension?: string
-    beforeSave?: (info: {
-      id: number
-      fileName: string
-      filePath: string
-      data: Buffer
-    }) => Promise<Buffer>
-  }
-}
-```
-
-##### startPollingConfig
-
-```js
-export interface StartPollingConfig {
-  d?: number
-  h?: number
-  m?: number
-}
-```
-
-### API Result
+### API result
 
 #### XCrawlInstance
 
@@ -1165,24 +1360,24 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: PageRequestConfig,
+      config: CrawlPageDetailTargetConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: (string | PageRequestConfig)[],
-      callback?: (res: CrawlPageSingleRes) => void
+      config: (string | CrawlPageDetailTargetConfig)[],
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
 
     (
-      config: CrawlPageConfigObject,
-      callback?: (res: CrawlPageSingleRes) => void
+      config: CrawlPageAdvancedConfig,
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
   }
 
   crawlData: {
     <T = any>(
-      config: DataRequestConfig,
+      config: CrawlDataDetailTargetConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>>
 
@@ -1192,30 +1387,30 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>>
 
     <T = any>(
-      config: (string | DataRequestConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: (string | CrawlDataDetailTargetConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
-      config: CrawlDataConfigObject,
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: CrawlDataAdvancedConfig<T>,
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }
 
   crawlFile: {
     (
-      config: FileRequestConfig,
+      config: CrawlFileDetailTargetConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes>
 
     (
-      config: FileRequestConfig[],
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileDetailTargetConfig[],
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
 
     (
-      config: CrawlFileConfigObject,
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileAdvancedConfig,
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
   }
 
@@ -1233,9 +1428,8 @@ export interface CrawlCommonRes {
   id: number
   isSuccess: boolean
   maxRetry: number
-  crawlCount: number
   retryCount: number
-  errorQueue: Error[]
+  crawlErrorQueue: Error[]
 }
 ```
 
@@ -1244,9 +1438,9 @@ export interface CrawlCommonRes {
 ```ts
 export interface CrawlPageSingleRes extends CrawlCommonRes {
   data: {
-    browser: Browser
-    response: HTTPResponse | null
-    page: Page
+    browser: Browser // puppeteer
+    response: HTTPResponse | null // puppeteer
+    page: Page // puppeteer
   }
 }
 ```
@@ -1257,7 +1451,7 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
 export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders
+    headers: IncomingHttpHeaders // node http
     data: D
   } | null
 }
@@ -1269,7 +1463,7 @@ export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
 export interface CrawlFileSingleRes extends CrawlCommonRes {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders
+    headers: IncomingHttpHeaders // node http
     data: {
       isSuccess: boolean
       fileName: string
@@ -1296,4 +1490,4 @@ export interface AnyObject extends Object {
 
 If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.
 
-thank you for your support.
+Thank you all for your support.
