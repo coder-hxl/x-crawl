@@ -13,8 +13,12 @@ function loaderBaseConfig(
 ): LoaderXCrawlConfig {
   const loaderBaseConfig = baseConfig ? baseConfig : {}
 
-  if (!loaderBaseConfig.mode) {
+  if (isUndefined(loaderBaseConfig.mode)) {
     loaderBaseConfig.mode = 'async'
+  }
+
+  if (isUndefined(loaderBaseConfig.enableRandomFingerprint)) {
+    loaderBaseConfig.enableRandomFingerprint = true
   }
 
   if (isUndefined(baseConfig?.timeout)) {

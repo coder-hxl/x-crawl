@@ -10,7 +10,7 @@
 
 ### 🚀 特征
 
-- 新增设备指纹，避免浏览器识别并跟踪我们的在线行为。可在进阶用法中设置，也可以通过详细用法指定设置。
+- 新增设备指纹，避免浏览器识别并跟踪我们的在线行为。可以通过一个开关使用默认的，如果需指定则可在进阶用法中为所有爬取目标统一设置，也可以通过详细目标用法指定设置。
 - 在创建爬虫应用的配置新增 crawlPage ，可以在 crawlPage.launchBrowser 选项中设置创建浏览器的配置（类型为 PuppeteerLaunchOptions 来自 Puppeteer）。
 - CrawlPageAdvancedConfig、CrawlDataAdvancedConfig 以及 CrawlFileAdvancedConfig 进阶用法里面的每个爬取请求 header 可以在进阶方式配置对象统一设置，不必为每个爬取配置重复设置一遍。
 - crawlPage 新增 viewport 选项，用于设置页面的视口。

@@ -30,10 +30,14 @@ import {
   CrawlFileSingleRes,
   CrawlFileAdvancedConfig,
   CrawlDataAdvancedConfig,
-  IntervalTime
+  IntervalTime,
+  DetailTargetFingerprintCommon,
+  Platform,
+  Mobile
 } from './types/api'
 import { LoaderXCrawlConfig } from './types'
 import { AnyObject } from './types/common'
+import { randomFingerprint } from './default'
 
 /* Types */
 
@@ -212,7 +216,78 @@ function transformToDetailTargets(config: any) {
     : [isObject(config) ? config : { url: config }]
 }
 
-function loaderCommonConfig(
+function loaderCommonFingerprintToDetailTarget(
+  detail:
+    | CrawlPageDetailTargetConfig
+    | CrawlDataDetailTargetConfig
+    | CrawlFileDetailTargetConfig,
+  fingerprint: DetailTargetFingerprintCommon
+) {
+  const { userAgent, ua, platform, platformVersion, mobile, acceptLanguage } =
+    fingerprint
+
+  let headers = detail.headers
+
+  if (!headers) {
+    detail.headers = headers = {}
+  }
+
+  // 1.user-agent
+  if (userAgent) {
+    headers['user-agent'] = userAgent
+  }
+
+  // 2.sec-ch-ua
+  if (ua) {
+    headers['sec-ch-ua'] = ua
+  }
+
+  // 3.sec-ch-platform
+  if (platform) {
+    headers['sec-ch-platform'] = platform
+  }
+
+  // 4.sec-ch-ua-platform-version
+  if (platformVersion) {
+    headers['sec-ch-ua-platform-version'] = platformVersion
+  }
+
+  // 5.sec-ch-mobile
+  if (mobile) {
+    headers['sec-ch-mobile'] = mobile
+  }
+
+  // 6.accept-language
+  if (acceptLanguage) {
+    headers['accept-language'] = acceptLanguage
+  }
+}
+
+function loaderPageFingerprintToDetailTarget(
+  detail: CrawlPageDetailTargetConfig,
+  fingerprint: {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
+  }
+) {
+  const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
+
+  // 1.width / height
+  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
+  const height =
+    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
+  const viewport = detail.viewport
+  if (!viewport) {
+    detail.viewport = { width, height }
+  } else {
+    viewport.width = width
+    viewport.height = height
+  }
+}
+
+function loaderCommonConfigToCrawlConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   advancedConfig:
     | CrawlPageAdvancedConfig
@@ -267,77 +342,82 @@ function loaderCommonConfig(
     }
 
     // 1.6.header
-    if (isUndefined(headers)) {
-      detail.headers = advancedConfig.headers
+    if (isUndefined(headers) && advancedConfig.headers) {
+      detail.headers = { ...advancedConfig.headers }
     }
 
     // 1.7.fingerprint(公共部分)
     if (fingerprint) {
-      const { userAgent, ua, platform, mobile, acceptLanguage } = fingerprint
-      let headers = detail.headers
+      // detaileTarget
 
-      if (!headers) {
-        detail.headers = headers = {}
-      }
-
-      // 1.user-agent
-      if (userAgent) {
-        headers['user-agent'] = userAgent
-      }
-
-      // 2.sec-ch-ua
-      if (ua) {
-        headers['sec-ch-ua'] = ua
-      }
-
-      // 3.sec-ch-platform
-      if (platform) {
-        headers['sec-ch-platform'] = platform
-      }
-
-      // 4.sec-ch-mobile
-      if (mobile) {
-        headers['sec-ch-mobile'] = mobile
-      }
-
-      // 4.accept-language
-      if (acceptLanguage) {
-        headers['accept-language'] = acceptLanguage
-      }
+      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
     } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
-      const { userAgents, uas, platforms, mobiles, acceptLanguages } =
-        advancedConfig.fingerprint
-      let headers = detail.headers
+      // advancedConfig
 
-      if (!headers) {
-        detail.headers = headers = {}
-      }
+      const {
+        userAgents,
+        uas,
+        platforms,
+        platformVersions,
+        mobiles,
+        acceptLanguages
+      } = advancedConfig.fingerprint
 
       // 1.user-agent
-      if (userAgents) {
-        headers['user-agent'] = userAgents[random(userAgents.length)]
-      }
+      const userAgent = userAgents
+        ? userAgents[random(userAgents.length)]
+        : undefined
 
       // 2.sec-ch-ua
-      if (uas) {
-        headers['sec-ch-ua'] = uas[random(uas.length)]
-      }
+      const ua = uas ? uas[random(uas.length)] : undefined
 
       // 3.sec-ch-platform
-      if (platforms) {
-        headers['sec-ch-platform'] = platforms[random(platforms.length)]
-      }
+      const platform = platforms
+        ? platforms[random(platforms.length)]
+        : undefined
 
-      // 4.sec-ch-mobile
-      if (mobiles) {
-        headers['sec-ch-mobile'] = mobiles[random(mobiles.length)]
-      }
+      // 4.sec-ch-platform-version
+      const platformVersion = platformVersions
+        ? platformVersions[random(platformVersions.length)]
+        : undefined
 
-      // 4.accept-language
-      if (acceptLanguages) {
-        headers['accept-language'] =
-          acceptLanguages[random(acceptLanguages.length)]
-      }
+      // 5.sec-ch-mobile
+      const mobile = mobiles ? mobiles[random(mobiles.length)] : undefined
+
+      // 6.accept-language
+      const acceptLanguage = acceptLanguages
+        ? acceptLanguages[random(acceptLanguages.length)]
+        : undefined
+
+      loaderCommonFingerprintToDetailTarget(detail, {
+        userAgent,
+        ua,
+        platform,
+        platformVersion,
+        mobile,
+        acceptLanguage
+      })
+    } else if (xCrawlConfig.enableRandomFingerprint) {
+      // xCrawlConfig
+
+      const { platforms, mobiles } = randomFingerprint
+
+      // 1.user-agent
+      const userAgent = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.${random(
+        10
+      )}.${random(10000)}.${random(1000)} Safari/537.36`
+
+      // 2.sec-ch-platform
+      const platform = platforms[random(platforms.length)] as Platform
+
+      // 3.sec-ch-mobile
+      const mobile = mobiles[random(mobiles.length)] as Mobile
+
+      loaderCommonFingerprintToDetailTarget(detail, {
+        userAgent,
+        platform,
+        mobile
+      })
     }
   })
 
@@ -352,30 +432,6 @@ function loaderCommonConfig(
 
   // 3.onCrawlItemComplete
   crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
-}
-
-function loaderPageDetailTargetFingerprint(
-  detail: CrawlPageDetailTargetConfig,
-  fingerprint: {
-    maxWidth: number
-    minWidth?: number
-    maxHeight: number
-    minHidth?: number
-  }
-) {
-  const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
-
-  // 1.width / height
-  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
-  const height =
-    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
-  const viewport = detail.viewport
-  if (!viewport) {
-    detail.viewport = { width, height }
-  } else {
-    viewport.width = width
-    viewport.height = height
-  }
 }
 
 /* Create Config */
@@ -419,7 +475,7 @@ function createCrawlPageConfig(
   }
 
   // 装载公共配置
-  loaderCommonConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
 
   // 装载单独配置
   crawlPageConfig.detailTargets.forEach((detail) => {
@@ -438,9 +494,9 @@ function createCrawlPageConfig(
 
     // 3.fingerprint
     if (fingerprint) {
-      loaderPageDetailTargetFingerprint(detail, fingerprint)
+      loaderPageFingerprintToDetailTarget(detail, fingerprint)
     } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
-      loaderPageDetailTargetFingerprint(detail, advancedConfig.fingerprint)
+      loaderPageFingerprintToDetailTarget(detail, advancedConfig.fingerprint)
     }
   })
 
@@ -477,7 +533,7 @@ function createCrawlDataConfig<T>(
     crawlDataConfig.detailTargets.push(...detaileTargets)
   }
 
-  loaderCommonConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
 
   return crawlDataConfig as CrawlDataConfig
 }
@@ -510,7 +566,7 @@ function createCrawlFileConfig(
     )
   }
 
-  loaderCommonConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
 
   const haveAdvancedStoreDir = !isUndefined(advancedConfig?.storeDir)
   const haveAdvancedExtension = !isUndefined(advancedConfig?.extension)

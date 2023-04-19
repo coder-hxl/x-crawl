@@ -55,6 +55,24 @@ export interface CrawlCommonConfig {
   maxRetry?: number
 }
 
+export interface DetailTargetFingerprintCommon {
+  userAgent?: string
+  ua?: string
+  platform?: Platform
+  platformVersion?: string
+  mobile?: Mobile
+  acceptLanguage?: string
+}
+
+export interface AdvancedFingerprintCommon {
+  userAgents?: string[]
+  uas?: string[]
+  platforms?: Platform[]
+  platformVersions?: string[]
+  mobiles?: Mobile[]
+  acceptLanguages?: string[]
+}
+
 // 1.Detail
 export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   url: string
@@ -62,17 +80,14 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   cookies?: PageCookies | null
   priority?: number
   viewport?: Viewport | null
-  fingerprint?: {
-    maxWidth: number
-    minWidth: number
-    maxHeight: number
-    minHidth: number
-    userAgent?: string
-    ua?: string
-    platform?: Platform
-    mobile?: Mobile
-    acceptLanguage?: string
-  } | null
+  fingerprint?:
+    | (DetailTargetFingerprintCommon & {
+        maxWidth: number
+        minWidth?: number
+        maxHeight: number
+        minHidth?: number
+      })
+    | null
 }
 
 export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
@@ -82,13 +97,7 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
   params?: AnyObject
   data?: any
   priority?: number
-  fingerprint?: {
-    userAgent?: string
-    ua?: string
-    platform?: Platform
-    mobile?: Mobile
-    acceptLanguage?: string
-  } | null
+  fingerprint?: DetailTargetFingerprintCommon | null
 }
 
 export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
@@ -98,29 +107,18 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   storeDir?: string | null
   fileName?: string
   extension?: string | null
-  fingerprint?: {
-    userAgent?: string
-    ua?: string
-    platform?: Platform
-    mobile?: Mobile
-    acceptLanguage?: string
-  } | null
+  fingerprint?: DetailTargetFingerprintCommon | null
 }
 
 // 2.Advanced
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: {
+  fingerprint?: AdvancedFingerprintCommon & {
     maxWidth: number
     minWidth?: number
     maxHeight: number
     minHidth?: number
-    userAgents?: string[]
-    uas?: string[]
-    platforms?: Platform[]
-    mobiles?: Mobile[]
-    acceptLanguages?: string[]
   }
 
   headers?: AnyObject
@@ -133,13 +131,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: {
-    userAgents?: string[]
-    uas?: string[]
-    platforms?: Platform[]
-    mobiles?: Mobile[]
-    acceptLanguages?: string[]
-  }
+  fingerprint?: AdvancedFingerprintCommon
 
   headers?: AnyObject
 
@@ -149,13 +141,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: {
-    userAgents?: string[]
-    uas?: string[]
-    platforms?: Platform[]
-    mobiles?: Mobile[]
-    acceptLanguages?: string[]
-  }
+  fingerprint?: AdvancedFingerprintCommon
 
   headers?: AnyObject
   storeDir?: string

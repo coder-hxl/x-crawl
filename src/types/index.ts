@@ -15,9 +15,10 @@ import {
 } from './api'
 
 export interface XCrawlConfig extends CrawlCommonConfig {
+  mode?: 'async' | 'sync'
+  enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
-  mode?: 'async' | 'sync'
   crawlPage?: {
     launchBrowser?: PuppeteerLaunchOptions
   }
@@ -25,6 +26,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 
 export type LoaderXCrawlConfig = XCrawlConfig & {
   mode: 'async' | 'sync'
+  enableRandomFingerprint: boolean
   timeout: number
   maxRetry: number
 }
