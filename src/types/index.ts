@@ -1,28 +1,32 @@
+import { PuppeteerLaunchOptions } from 'puppeteer'
 import {
   StartPollingConfig,
   IntervalTime,
   CrawlPageSingleRes,
   CrawlDataSingleRes,
   CrawlFileSingleRes,
-  CrawlFileConfigObject,
-  FileRequestConfig,
-  DataRequestConfig,
-  CrawlDataConfigObject,
-  PageRequestConfig,
-  CrawlPageConfigObject
+  CrawlFileAdvancedConfig,
+  CrawlFileDetailTargetConfig,
+  CrawlDataDetailTargetConfig,
+  CrawlDataAdvancedConfig,
+  CrawlPageDetailTargetConfig,
+  CrawlPageAdvancedConfig,
+  CrawlCommonConfig
 } from './api'
 
-export interface XCrawlBaseConfig {
-  baseUrl?: string
-  timeout?: number
-  intervalTime?: IntervalTime
+export interface XCrawlConfig extends CrawlCommonConfig {
   mode?: 'async' | 'sync'
-  proxy?: string
-  maxRetry?: number
+  enableRandomFingerprint?: boolean
+  baseUrl?: string
+  intervalTime?: IntervalTime
+  crawlPage?: {
+    launchBrowser?: PuppeteerLaunchOptions
+  }
 }
 
-export type LoaderXCrawlBaseConfig = XCrawlBaseConfig & {
+export type LoaderXCrawlConfig = XCrawlConfig & {
   mode: 'async' | 'sync'
+  enableRandomFingerprint: boolean
   timeout: number
   maxRetry: number
 }
@@ -35,24 +39,24 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: PageRequestConfig,
+      config: CrawlPageDetailTargetConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: (string | PageRequestConfig)[],
-      callback?: (res: CrawlPageSingleRes) => void
+      config: (string | CrawlPageDetailTargetConfig)[],
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
 
     (
-      config: CrawlPageConfigObject,
-      callback?: (res: CrawlPageSingleRes) => void
+      config: CrawlPageAdvancedConfig,
+      callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
   }
 
   crawlData: {
     <T = any>(
-      config: DataRequestConfig,
+      config: CrawlDataDetailTargetConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>>
 
@@ -62,30 +66,30 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>>
 
     <T = any>(
-      config: (string | DataRequestConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: (string | CrawlDataDetailTargetConfig)[],
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
     <T = any>(
-      config: CrawlDataConfigObject,
-      callback?: (res: CrawlDataSingleRes<T>) => void
+      config: CrawlDataAdvancedConfig<T>,
+      callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
   }
 
   crawlFile: {
     (
-      config: FileRequestConfig,
+      config: CrawlFileDetailTargetConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes>
 
     (
-      config: FileRequestConfig[],
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileDetailTargetConfig[],
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
 
     (
-      config: CrawlFileConfigObject,
-      callback?: (res: CrawlFileSingleRes) => void
+      config: CrawlFileAdvancedConfig,
+      callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
   }
 

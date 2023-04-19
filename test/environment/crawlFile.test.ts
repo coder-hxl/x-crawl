@@ -17,7 +17,7 @@ if (environment === 'dev') {
 
 jest.setTimeout(60000)
 
-const requestConfigs: string[] = [
+const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
 ]
@@ -25,22 +25,20 @@ const requestConfigs: string[] = [
 const storeDir = path.resolve(__dirname, './upload')
 
 /* 1.Written */
-// 1.1.written FileRequestConfig
-async function writtenFileRequestConfig() {
+// 1.1.written CrawlFileDetailConfig
+async function writtenCrawlFileDetailConfig() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
-  const res = await testXCrawl.crawlFile({ url: requestConfigs[0], storeDir })
+  const res = await testXCrawl.crawlFile({ url: urls[0], storeDir })
 
   return res.isSuccess && res.data?.data.isSuccess
 }
 
-// 1.2.written FileRequestConfig[]
-async function writtenFileRequestConfigArr() {
+// 1.2.written CrawlFileDetailConfig[]
+async function writtenCrawlFileDetailConfigArr() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
-  const res = await testXCrawl.crawlFile(
-    requestConfigs.map((url) => ({ url, storeDir }))
-  )
+  const res = await testXCrawl.crawlFile(urls.map((url) => ({ url, storeDir })))
 
   return res.reduce(
     (prev, item) => prev && item.isSuccess && !!item.data?.data.isSuccess,
@@ -48,13 +46,13 @@ async function writtenFileRequestConfigArr() {
   )
 }
 
-// 1.3.written CrawlFileConfigObject
-async function writtenCrawlFileConfigObject() {
+// 1.3.written CrawlFileAdvancedConfig
+async function writtenCrawlFileAdvancedConfig() {
   const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs,
-    fileConfig: { storeDir }
+    targets: urls,
+    storeDir
   })
 
   return res.reduce(
@@ -76,25 +74,25 @@ async function loaderBaseConfig() {
   })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs: ['/4401.jpg', '/4403.jpg'],
-    fileConfig: { storeDir }
+    targets: ['/4401.jpg', '/4403.jpg'],
+    storeDir
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-// 2.2.Loader API Config
-async function loaderAPIConfig() {
+// 2.2.Loader Advanced Config
+async function loaderAdvancedConfig() {
   const testXCrawl = xCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area'
   })
 
   const res = await testXCrawl.crawlFile({
-    requestConfigs: ['/4401.jpg', '/4403.jpg'],
+    targets: ['/4401.jpg', '/4403.jpg'],
     proxy: 'http://localhost:14892',
     timeout: 10000,
-    fileConfig: { storeDir },
+    storeDir,
     intervalTime: { max: 1000 },
     maxRetry: 0
   })
@@ -112,17 +110,15 @@ async function storeConfig() {
 
   const record: string[] = []
   const res = await testXCrawl.crawlFile({
-    requestConfigs: [
+    targets: [
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
     ],
-    fileConfig: {
-      storeDir: path.resolve(__dirname, './upload'),
-      extension: '.jpg',
-      async beforeSave(info) {
-        record.push(info.fileName)
-        return info.data
-      }
+    storeDir: path.resolve(__dirname, './upload'),
+    extension: '.jpg',
+    async onBeforeSaveItemFile(info) {
+      record.push(info.fileName)
+      return info.data
     }
   })
 
@@ -138,31 +134,31 @@ async function storeConfig() {
 }
 
 /* 1.Written */
-test('crawlFile - writtenFileRequestConfig', async () => {
+test('crawlFile - writtenCrawlFileDetailConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlFile - writtenFileRequestConfig ================'
+      '================ crawlFile - writtenCrawlFileDetailConfig ================'
     )
   )
-  await expect(writtenFileRequestConfig()).resolves.toBe(true)
+  await expect(writtenCrawlFileDetailConfig()).resolves.toBe(true)
 })
 
-test('crawlFile - writtenFileRequestConfigArr', async () => {
+test('crawlFile - writtenCrawlFileDetailConfigArr', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlFile - writtenFileRequestConfigArr ================'
+      '================ crawlFile - writtenCrawlFileDetailConfigArr ================'
     )
   )
-  await expect(writtenFileRequestConfigArr()).resolves.toBe(true)
+  await expect(writtenCrawlFileDetailConfigArr()).resolves.toBe(true)
 })
 
-test('crawlFile - writtenCrawlFileConfigObject', async () => {
+test('crawlFile - writtenCrawlFileAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlFile - writtenCrawlFileConfigObject ================'
+      '================ crawlFile - writtenCrawlFileAdvancedConfig ================'
     )
   )
-  await expect(writtenCrawlFileConfigObject()).resolves.toBe(true)
+  await expect(writtenCrawlFileAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Loader Config */
@@ -175,17 +171,17 @@ test('crawlFile - loaderBaseConfig', async () => {
   await expect(loaderBaseConfig()).resolves.toBe(true)
 })
 
-test('crawlFile - loaderAPIConfig', async () => {
+test('crawlFile - loaderAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen(
-      '================ crawlFile - loaderAPIConfig ================'
+      '================ crawlFile - loaderAdvancedConfig ================'
     )
   )
-  await expect(loaderAPIConfig()).resolves.toBe(true)
+  await expect(loaderAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Store Config */
-test('crawlFile - loaderAPIConfig', async () => {
+test('crawlFile - loaderAdvancedConfig', async () => {
   console.log(
     chalk.bgGreen('================ crawlFile - storeConfig ================')
   )

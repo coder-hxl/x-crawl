@@ -3,8 +3,8 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { ControllerConfig, controller } from './controller'
-import { request } from './request'
+import { DetailInfo, controller } from './controller'
+import { Request, request } from './request'
 import { quickSort } from './sort'
 import {
   isArray,
@@ -14,47 +14,160 @@ import {
   logError,
   logSuccess,
   logWarn,
-  mkdirDirSync
+  mkdirDirSync,
+  random
 } from './utils'
 
 import {
-  DataRequestConfig,
-  FileRequestConfig,
-  PageRequestConfig,
-  PageRequestConfigCookies,
-  CrawlDataConfig,
-  CrawlFileConfig,
+  CrawlDataDetailTargetConfig,
+  CrawlFileDetailTargetConfig,
+  CrawlPageDetailTargetConfig,
+  PageCookies,
   CrawlPageSingleRes,
-  CrawlPageConfig,
   StartPollingConfig,
-  LoaderCrawlPageConfig,
-  CrawlPageConfigObject,
-  LoaderCrawlDataConfig,
-  LoaderCrawlFileConfig,
+  CrawlPageAdvancedConfig,
   CrawlDataSingleRes,
   CrawlFileSingleRes,
-  CrawlDataConfigObject,
-  LoaderPageRequestConfig,
-  LoaderDataRequestConfig,
-  LoaderFileRequestConfig,
-  CrawlFileConfigObject
+  CrawlFileAdvancedConfig,
+  CrawlDataAdvancedConfig,
+  IntervalTime,
+  DetailTargetFingerprintCommon,
+  Platform,
+  Mobile
 } from './types/api'
-import { LoaderXCrawlBaseConfig } from './types'
+import { LoaderXCrawlConfig } from './types'
+import { AnyObject } from './types/common'
+import { randomFingerprint } from './default'
 
-async function crawlRequestSingle(
-  controllerConfig: ControllerConfig<
-    LoaderDataRequestConfig | LoaderFileRequestConfig,
-    any
-  >
-) {
-  const { requestConfig } = controllerConfig
+/* Types */
 
-  return await request(requestConfig)
+// Loader
+type LoaderHasConfig = {
+  timeout: number
+  maxRetry: number
+  priority: number
 }
 
-function parseCrawlPageCookies(
+export type LoaderCrawlPageDetail = CrawlPageDetailTargetConfig &
+  LoaderHasConfig
+
+export type LoaderCrawlDataDetail = CrawlDataDetailTargetConfig &
+  LoaderHasConfig
+
+export type LoaderCrawlFileDetail = CrawlFileDetailTargetConfig &
+  LoaderHasConfig
+
+// Extra config
+export interface ExtraCommonConfig {
+  intervalTime: IntervalTime | undefined
+}
+
+interface ExtraPageConfig extends ExtraCommonConfig {
+  // 存放报错的 Page
+  errorPageMap: Map<number, Page>
+
+  browser: Browser
+  onCrawlItemComplete:
+    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
+    | undefined
+}
+
+interface ExtraDataConfig<T> extends ExtraCommonConfig {
+  onCrawlItemComplete:
+    | ((crawlDataSingleRes: CrawlDataSingleRes<T>) => void)
+    | undefined
+}
+
+interface ExtraFileConfig extends ExtraCommonConfig {
+  saveFileErrorArr: { message: string; valueOf: () => number }[]
+  saveFilePendingQueue: Promise<any>[]
+  onCrawlItemComplete:
+    | ((crawlFileSingleRes: CrawlFileSingleRes) => void)
+    | undefined
+  onBeforeSaveItemFile:
+    | ((info: {
+        id: number
+        fileName: string
+        filePath: string
+        data: Buffer
+      }) => Promise<Buffer>)
+    | undefined
+}
+
+// Single crawl result
+interface PageSingleCrawlResult {
+  response: HTTPResponse | null
+  page: Page
+}
+
+// Create config
+interface CrawlPageConfigOriginal {
+  detailTargets: CrawlPageDetailTargetConfig[]
+  intervalTime: IntervalTime | undefined
+  onCrawlItemComplete:
+    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
+    | undefined
+}
+
+interface CrawlDataConfigOriginal {
+  detailTargets: CrawlDataDetailTargetConfig[]
+  intervalTime: IntervalTime | undefined
+  onCrawlItemComplete:
+    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | undefined
+}
+
+interface CrawlFileConfigOriginal {
+  detailTargets: CrawlFileDetailTargetConfig[]
+  intervalTime: IntervalTime | undefined
+  onBeforeSaveItemFile:
+    | ((info: {
+        id: number
+        fileName: string
+        filePath: string
+        data: Buffer
+      }) => Promise<Buffer>)
+    | undefined
+  onCrawlItemComplete:
+    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | undefined
+}
+
+type CrawlPageConfig = Omit<CrawlPageConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlPageDetail[]
+}
+
+type CrawlDataConfig = Omit<CrawlDataConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlDataDetail[]
+}
+
+type CrawlFileConfig = Omit<CrawlFileConfigOriginal, 'detailTargets'> & {
+  detailTargets: LoaderCrawlFileDetail[]
+}
+
+// API unite config
+type UniteCrawlPageConfig =
+  | string
+  | CrawlPageDetailTargetConfig
+  | (string | CrawlPageDetailTargetConfig)[]
+  | CrawlPageAdvancedConfig
+
+type UniteCrawlDataConfig<T> =
+  | string
+  | CrawlDataDetailTargetConfig
+  | (string | CrawlDataDetailTargetConfig)[]
+  | CrawlDataAdvancedConfig<T>
+
+type UniteCrawlFileConfig =
+  | CrawlFileDetailTargetConfig
+  | CrawlFileDetailTargetConfig[]
+  | CrawlFileAdvancedConfig
+
+/* Function */
+
+function parsePageCookies(
   url: string,
-  cookies: PageRequestConfigCookies
+  cookies: PageCookies
 ): Protocol.Network.CookieParam[] {
   const cookiesArr: Protocol.Network.CookieParam[] = []
 
@@ -82,240 +195,595 @@ function parseCrawlPageCookies(
   return cookiesArr
 }
 
-function transformRequestConfig(
-  config: string | PageRequestConfig | (string | PageRequestConfig)[]
-): PageRequestConfig[]
-function transformRequestConfig(
-  config: string | DataRequestConfig | (string | DataRequestConfig)[]
-): DataRequestConfig[]
-function transformRequestConfig(
-  config: (string | FileRequestConfig)[]
-): FileRequestConfig[]
-function transformRequestConfig(config: any) {
+function transformTargetToDetailTargets(
+  config:
+    | string
+    | CrawlPageDetailTargetConfig
+    | (string | CrawlPageDetailTargetConfig)[]
+): CrawlPageDetailTargetConfig[]
+function transformTargetToDetailTargets(
+  config:
+    | string
+    | CrawlDataDetailTargetConfig
+    | (string | CrawlDataDetailTargetConfig)[]
+): CrawlDataDetailTargetConfig[]
+function transformTargetToDetailTargets(
+  config: (string | CrawlFileDetailTargetConfig)[]
+): CrawlFileDetailTargetConfig[]
+function transformTargetToDetailTargets(config: any) {
   return isArray(config)
     ? config.map((item) => (isObject(item) ? item : { url: item }))
     : [isObject(config) ? config : { url: config }]
 }
 
-function loaderCommonConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
-  requestObjects: (PageRequestConfig | DataRequestConfig | FileRequestConfig)[],
-  loaderConfig:
-    | LoaderCrawlPageConfig
-    | LoaderCrawlDataConfig
-    | LoaderCrawlFileConfig
+/* Loader config */
+
+function loaderCommonFingerprintToDetailTarget(
+  detail:
+    | CrawlPageDetailTargetConfig
+    | CrawlDataDetailTargetConfig
+    | CrawlFileDetailTargetConfig,
+  fingerprint: DetailTargetFingerprintCommon
 ) {
-  // 1.requestConfigs
-  loaderConfig.requestConfigs = requestObjects.map((requestConfig) => {
-    let { url, timeout, proxy, maxRetry, priority } = requestConfig
+  const { userAgent, ua, platform, platformVersion, mobile, acceptLanguage } =
+    fingerprint
+
+  let headers = detail.headers
+
+  if (!headers) {
+    detail.headers = headers = {}
+  }
+
+  // 1.user-agent
+  if (userAgent) {
+    headers['user-agent'] = userAgent
+  }
+
+  // 2.sec-ch-ua
+  if (ua) {
+    headers['sec-ch-ua'] = ua
+  }
+
+  // 3.sec-ch-platform
+  if (platform) {
+    headers['sec-ch-platform'] = platform
+  }
+
+  // 4.sec-ch-ua-platform-version
+  if (platformVersion) {
+    headers['sec-ch-ua-platform-version'] = platformVersion
+  }
+
+  // 5.sec-ch-mobile
+  if (mobile) {
+    headers['sec-ch-mobile'] = mobile
+  }
+
+  // 6.accept-language
+  if (acceptLanguage) {
+    headers['accept-language'] = acceptLanguage
+  }
+}
+
+function loaderPageFingerprintToDetailTarget(
+  detail: CrawlPageDetailTargetConfig,
+  fingerprint: {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
+  }
+) {
+  const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
+
+  // 1.width / height
+  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
+  const height =
+    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
+  const viewport = detail.viewport
+  if (!viewport) {
+    detail.viewport = { width, height }
+  } else {
+    viewport.width = width
+    viewport.height = height
+  }
+}
+
+function loaderCommonConfigToCrawlConfig(
+  xCrawlConfig: LoaderXCrawlConfig,
+  advancedConfig:
+    | CrawlPageAdvancedConfig
+    | CrawlDataAdvancedConfig<any>
+    | CrawlFileAdvancedConfig,
+  crawlConfig:
+    | CrawlPageConfigOriginal
+    | CrawlDataConfigOriginal
+    | CrawlFileConfigOriginal
+) {
+  // 1.detailTargets
+  crawlConfig.detailTargets.forEach((detail) => {
+    // detail > advanced > app
+    const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
+      detail
 
     // 1.1.baseUrl
-    if (!isUndefined(baseConfig.baseUrl)) {
-      url = baseConfig.baseUrl + url
+    if (!isUndefined(xCrawlConfig.baseUrl)) {
+      detail.url = xCrawlConfig.baseUrl + url
     }
 
     // 1.2.timeout
-    // requestConfig > loaderConfig > baseConfig
     if (isUndefined(timeout)) {
-      if (!isUndefined(loaderConfig.timeout)) {
-        timeout = loaderConfig.timeout
+      if (!isUndefined(advancedConfig.timeout)) {
+        detail.timeout = advancedConfig.timeout
       } else {
-        timeout = baseConfig.timeout
+        detail.timeout = xCrawlConfig.timeout
       }
     }
 
     // 1.3.porxy
-    // requestConfig > loaderConfig > baseConfig
     if (isUndefined(proxy)) {
-      if (!isUndefined(loaderConfig.proxy)) {
-        proxy = loaderConfig.proxy
-      } else if (!isUndefined(baseConfig.proxy)) {
-        proxy = baseConfig.proxy
+      if (!isUndefined(advancedConfig.proxy)) {
+        detail.proxy = advancedConfig.proxy
+      } else if (!isUndefined(xCrawlConfig.proxy)) {
+        detail.proxy = xCrawlConfig.proxy
       }
     }
 
     // 1.4.maxRetry
-    // requestConfig > loaderConfig > baseConfig
     if (isUndefined(maxRetry)) {
-      if (!isUndefined(loaderConfig.maxRetry)) {
-        maxRetry = loaderConfig.maxRetry
+      if (!isUndefined(advancedConfig.maxRetry)) {
+        detail.maxRetry = advancedConfig.maxRetry
       } else {
-        maxRetry = baseConfig.maxRetry
+        detail.maxRetry = xCrawlConfig.maxRetry
       }
     }
 
     // 1.5.priority
     if (isUndefined(priority)) {
-      priority = 0
+      detail.priority = 0
     }
 
-    return { ...requestConfig, url, timeout, proxy, maxRetry, priority }
+    // 1.6.header
+    if (isUndefined(headers) && advancedConfig.headers) {
+      detail.headers = { ...advancedConfig.headers }
+    }
+
+    // 1.7.fingerprint(公共部分)
+    if (fingerprint) {
+      // detaileTarget
+
+      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
+      // advancedConfig
+
+      const {
+        userAgents,
+        uas,
+        platforms,
+        platformVersions,
+        mobiles,
+        acceptLanguages
+      } = advancedConfig.fingerprint
+
+      // 1.user-agent
+      const userAgent = userAgents
+        ? userAgents[random(userAgents.length)]
+        : undefined
+
+      // 2.sec-ch-ua
+      const ua = uas ? uas[random(uas.length)] : undefined
+
+      // 3.sec-ch-platform
+      const platform = platforms
+        ? platforms[random(platforms.length)]
+        : undefined
+
+      // 4.sec-ch-platform-version
+      const platformVersion = platformVersions
+        ? platformVersions[random(platformVersions.length)]
+        : undefined
+
+      // 5.sec-ch-mobile
+      const mobile = mobiles ? mobiles[random(mobiles.length)] : undefined
+
+      // 6.accept-language
+      const acceptLanguage = acceptLanguages
+        ? acceptLanguages[random(acceptLanguages.length)]
+        : undefined
+
+      loaderCommonFingerprintToDetailTarget(detail, {
+        userAgent,
+        ua,
+        platform,
+        platformVersion,
+        mobile,
+        acceptLanguage
+      })
+    } else if (xCrawlConfig.enableRandomFingerprint) {
+      // xCrawlConfig
+
+      const { platforms, mobiles } = randomFingerprint
+
+      // 1.user-agent
+      const userAgent = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.${random(
+        10
+      )}.${random(10000)}.${random(1000)} Safari/537.36`
+
+      // 2.sec-ch-platform
+      const platform = platforms[random(platforms.length)] as Platform
+
+      // 3.sec-ch-mobile
+      const mobile = mobiles[random(mobiles.length)] as Mobile
+
+      loaderCommonFingerprintToDetailTarget(detail, {
+        userAgent,
+        platform,
+        mobile
+      })
+    }
   })
 
   // 2.intervalTime
+  crawlConfig.intervalTime = advancedConfig.intervalTime
   if (
-    isUndefined(loaderConfig.intervalTime) &&
-    !isUndefined(baseConfig.intervalTime)
+    isUndefined(advancedConfig.intervalTime) &&
+    !isUndefined(xCrawlConfig.intervalTime)
   ) {
-    loaderConfig.intervalTime = baseConfig.intervalTime
+    crawlConfig.intervalTime = xCrawlConfig.intervalTime
+  }
+
+  // 3.onCrawlItemComplete
+  crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
+}
+
+/* Create config */
+/*
+  每个创建配置函数的返回值都是类似于进阶版配置
+  不同点:
+    - detailTargets 里面将存放的是详细版目标配置
+    - 不会保留与详细版目标配置相同的选项
+
+  生成 advancedConfig 对象对每个详细版目标配置进行装载, 如果是传入进阶版配置会覆盖生成的 advancedConfig 对象
+*/
+
+function createCrawlPageConfig(
+  xCrawlConfig: LoaderXCrawlConfig,
+  originalConfig: UniteCrawlPageConfig
+): CrawlPageConfig {
+  const crawlPageConfig: CrawlPageConfigOriginal = {
+    detailTargets: [],
+    intervalTime: undefined,
+    onCrawlItemComplete: undefined
+  }
+
+  let advancedConfig: CrawlPageAdvancedConfig = { targets: [] }
+
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
+    // CrawlPageAdvancedConfig 处理
+    const { targets } = originalConfig as CrawlPageAdvancedConfig
+    advancedConfig = originalConfig as CrawlPageAdvancedConfig
+
+    crawlPageConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
+  } else {
+    // string | CrawlPageDetailTargetConfig | (string | CrawlPageDetailTargetConfig)[] 处理
+    const detaileTargets = transformTargetToDetailTargets(
+      originalConfig as
+        | string
+        | CrawlPageDetailTargetConfig
+        | (string | CrawlPageDetailTargetConfig)[]
+    )
+
+    crawlPageConfig.detailTargets.push(...detaileTargets)
+  }
+
+  // 装载公共配置
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
+
+  // 装载单独配置
+  crawlPageConfig.detailTargets.forEach((detail) => {
+    // detail > advanced  > xCrawl
+    const { cookies, viewport, fingerprint } = detail
+
+    // 1.cookies
+    if (isUndefined(cookies) && advancedConfig.cookies) {
+      detail.cookies = advancedConfig.cookies
+    }
+
+    // 2.viewport
+    if (isUndefined(viewport) && advancedConfig.viewport) {
+      detail.viewport = advancedConfig.viewport
+    }
+
+    // 3.fingerprint
+    if (fingerprint) {
+      loaderPageFingerprintToDetailTarget(detail, fingerprint)
+    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
+      loaderPageFingerprintToDetailTarget(detail, advancedConfig.fingerprint)
+    }
+  })
+
+  return crawlPageConfig as CrawlPageConfig
+}
+
+function createCrawlDataConfig<T>(
+  xCrawlConfig: LoaderXCrawlConfig,
+  originalConfig: UniteCrawlDataConfig<T>
+): CrawlDataConfig {
+  const crawlDataConfig: CrawlDataConfigOriginal = {
+    detailTargets: [],
+    intervalTime: undefined,
+    onCrawlItemComplete: undefined
+  }
+
+  let advancedConfig: CrawlDataAdvancedConfig<T> = { targets: [] }
+
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
+    // CrawlDataAdvancedConfig 处理
+    const { targets } = originalConfig as CrawlDataAdvancedConfig<T>
+    advancedConfig = originalConfig as CrawlDataAdvancedConfig<T>
+
+    crawlDataConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
+  } else {
+    // string | CrawlDataDetailTargetConfig | (string | CrawlDataDetailTargetConfig)[] 处理
+    const detaileTargets = transformTargetToDetailTargets(
+      originalConfig as
+        | string
+        | CrawlDataDetailTargetConfig
+        | (string | CrawlDataDetailTargetConfig)[]
+    )
+
+    crawlDataConfig.detailTargets.push(...detaileTargets)
+  }
+
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
+
+  return crawlDataConfig as CrawlDataConfig
+}
+
+function createCrawlFileConfig(
+  xCrawlConfig: LoaderXCrawlConfig,
+  originalConfig: UniteCrawlFileConfig
+): CrawlFileConfig {
+  const crawlFileConfig: CrawlFileConfigOriginal = {
+    detailTargets: [],
+    intervalTime: undefined,
+    onBeforeSaveItemFile: undefined,
+    onCrawlItemComplete: undefined
+  }
+
+  let advancedConfig: CrawlFileAdvancedConfig = { targets: [] }
+
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
+    // CrawlFileAdvancedConfig 处理
+    const { targets } = originalConfig as CrawlFileAdvancedConfig
+
+    advancedConfig = originalConfig as CrawlFileAdvancedConfig
+    crawlFileConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
+  } else {
+    // CrawlFileDetailTargetConfig |  CrawlFileDetailTargetConfig[] 处理
+    crawlFileConfig.detailTargets.push(
+      ...(isArray(originalConfig)
+        ? originalConfig
+        : [originalConfig as CrawlFileDetailTargetConfig])
+    )
+  }
+
+  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
+
+  const haveAdvancedStoreDir = !isUndefined(advancedConfig?.storeDir)
+  const haveAdvancedExtension = !isUndefined(advancedConfig?.extension)
+  crawlFileConfig.detailTargets.forEach((detail) => {
+    // 1.storeDir
+    if (isUndefined(detail.storeDir) && haveAdvancedStoreDir) {
+      detail.storeDir = advancedConfig!.storeDir
+    }
+
+    // 2.extension
+    if (isUndefined(detail.extension) && haveAdvancedExtension) {
+      detail.extension = advancedConfig!.extension
+    }
+  })
+
+  crawlFileConfig.onBeforeSaveItemFile = advancedConfig.onBeforeSaveItemFile
+
+  return crawlFileConfig as CrawlFileConfig
+}
+
+/* Single crawl handle */
+
+async function pageSingleCrawlHandle(
+  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  extraConfig: ExtraPageConfig
+): Promise<PageSingleCrawlResult> {
+  const { id, detailTarget } = detaileInfo
+  const { errorPageMap, browser } = extraConfig
+
+  const page = await browser.newPage()
+
+  if (detailTarget.viewport) {
+    await page.setViewport(detailTarget.viewport)
+  }
+
+  let response: HTTPResponse | null = null
+  try {
+    if (detailTarget.proxy) {
+      await browser.createIncognitoBrowserContext({
+        proxyServer: detailTarget.proxy
+      })
+    } else {
+      await browser.createIncognitoBrowserContext({
+        proxyServer: undefined
+      })
+    }
+
+    if (detailTarget.cookies) {
+      const cookies = parsePageCookies(detailTarget.url, detailTarget.cookies)
+      await page.setCookie(...cookies)
+    } else {
+      const cookies = await page.cookies(detailTarget.url)
+      await page.deleteCookie(...cookies)
+    }
+
+    if (detailTarget.headers) {
+      await page.setExtraHTTPHeaders(detailTarget.headers)
+    }
+
+    response = await page.goto(detailTarget.url, {
+      timeout: detailTarget.timeout
+    })
+  } catch (error) {
+    // 收集报错的 page
+    if (!errorPageMap.get(id)) {
+      errorPageMap.set(id, page)
+    }
+
+    // 让外面收集错误
+    throw error
+  }
+
+  return { response, page }
+}
+
+async function dataAndFileSingleCrawlHandle(
+  detaileInfo: DetailInfo<
+    LoaderCrawlDataDetail | LoaderCrawlFileDetail,
+    Request
+  >
+) {
+  const { detailTarget } = detaileInfo
+
+  return await request(detailTarget)
+}
+
+/* Single result handle */
+
+function pageSingleResultHandle(
+  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  extraConfig: ExtraPageConfig
+) {
+  const { id, isSuccess, detailTargetRes } = detaileInfo
+  const { errorPageMap, browser, onCrawlItemComplete } = extraConfig
+
+  let data: {
+    browser: Browser
+    response: HTTPResponse | null
+    page: Page
+  } | null = null
+
+  if (isSuccess && detailTargetRes) {
+    data = { browser: browser!, ...detailTargetRes }
+  } else {
+    const page = errorPageMap.get(id)!
+
+    data = { browser: browser!, response: null, page }
+  }
+
+  detaileInfo.data = data
+
+  const crawlPageSingleRes: AnyObject = detaileInfo
+  delete crawlPageSingleRes.detailTarget
+  delete crawlPageSingleRes.detailTargetRes
+
+  if (onCrawlItemComplete) {
+    onCrawlItemComplete(crawlPageSingleRes as CrawlPageSingleRes)
   }
 }
 
-function loaderPageConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
-  rawConfig: CrawlPageConfig
-): LoaderCrawlPageConfig {
-  const loaderConfig: LoaderCrawlPageConfig = { requestConfigs: [] }
+function fileSingleResultHandle(
+  detaileInfo: DetailInfo<LoaderCrawlFileDetail, Request>,
+  extraConfig: ExtraFileConfig
+) {
+  const { id, isSuccess, detailTarget, detailTargetRes } = detaileInfo
+  const {
+    saveFileErrorArr,
+    saveFilePendingQueue,
 
-  const requestObjects: PageRequestConfig[] = []
-  // requestConfig 统一转成 PageRequestConfig 类型
-  if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
-    // CrawlPageConfigObject 处理
-    const { requestConfigs, proxy, timeout, cookies, intervalTime, maxRetry } =
-      rawConfig as CrawlPageConfigObject
+    onCrawlItemComplete,
+    onBeforeSaveItemFile
+  } = extraConfig
 
-    // 给 loaderConfig 装载 API Config
-    loaderConfig.proxy = proxy
-    loaderConfig.cookies = cookies
-    loaderConfig.intervalTime = intervalTime
-    loaderConfig.maxRetry = maxRetry
-    loaderConfig.timeout = timeout
+  const crawlFileSingleRes: AnyObject = detaileInfo
+  delete crawlFileSingleRes.detailTarget
+  delete crawlFileSingleRes.detailTargetRes
 
-    requestObjects.push(...transformRequestConfig(requestConfigs))
-  } else {
-    // string | PageRequestConfig | (string | PageRequestConfig)[] 处理
-    const transformRes = transformRequestConfig(
-      rawConfig as string | PageRequestConfig | (string | PageRequestConfig)[]
-    )
+  if (isSuccess && detailTargetRes) {
+    const mimeType = detailTargetRes.headers['content-type'] ?? ''
 
-    requestObjects.push(...transformRes)
-  }
+    const fileName = detailTarget.fileName ?? `${id}-${new Date().getTime()}`
+    const fileExtension =
+      detailTarget.extension ?? `.${mimeType.split('/').pop()}`
 
-  // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
+    if (detailTarget.storeDir && !fs.existsSync(detailTarget.storeDir)) {
+      mkdirDirSync(detailTarget.storeDir)
+    }
 
-  // 装载单独的配置
-  if (!isUndefined(loaderConfig.cookies)) {
-    loaderConfig.requestConfigs.forEach((requestConfig) => {
-      const { cookies } = requestConfig
+    const storePath = detailTarget.storeDir ?? __dirname
+    const filePath = path.resolve(storePath, fileName + fileExtension)
 
-      // cookies
-      if (isUndefined(cookies) && !isUndefined(loaderConfig.cookies)) {
-        // 装载 API Config
-        requestConfig.cookies = loaderConfig.cookies
+    // 在保存前的回调
+    const data = detailTargetRes.data
+    let dataPromise = Promise.resolve(data)
+    if (onBeforeSaveItemFile) {
+      dataPromise = onBeforeSaveItemFile({
+        id,
+        fileName,
+        filePath,
+        data
+      })
+    }
+
+    const saveFileItemPending = dataPromise.then(async (newData) => {
+      let isSuccess = true
+      try {
+        await writeFile(filePath, newData)
+      } catch (err: any) {
+        isSuccess = false
+
+        const message = `File save error at id ${id}: ${err.message}`
+        const valueOf = () => id
+
+        saveFileErrorArr.push({ message, valueOf })
+      }
+
+      const size = newData.length
+      detaileInfo.data = {
+        ...detailTargetRes,
+        data: {
+          isSuccess,
+          fileName,
+          fileExtension,
+          mimeType,
+          size,
+          filePath
+        }
+      }
+
+      if (onCrawlItemComplete) {
+        onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
       }
     })
-  }
 
-  return loaderConfig
-}
-
-function loaderDataConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
-  rawConfig: CrawlDataConfig
-): LoaderCrawlDataConfig {
-  const loaderConfig: LoaderCrawlDataConfig = { requestConfigs: [] }
-
-  // requestConfig 统一转成 DataRequestConfig 类型
-  const requestObjects: DataRequestConfig[] = []
-  if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
-    // CrawlDataConfigObject 处理
-    const { requestConfigs, proxy, timeout, intervalTime, maxRetry } =
-      rawConfig as CrawlDataConfigObject
-
-    // 给 loaderConfig 装载 API Config
-    loaderConfig.proxy = proxy
-    loaderConfig.intervalTime = intervalTime
-    loaderConfig.maxRetry = maxRetry
-    loaderConfig.timeout = timeout
-
-    requestObjects.push(...transformRequestConfig(requestConfigs))
+    // 存放保存文件 Promise , 后续等待即可回到 crawlFile 函数内部等待完成即可
+    saveFilePendingQueue.push(saveFileItemPending)
   } else {
-    // string | DataRequestConfig | (string | DataRequestConfig)[] 处理
-    const transformRes = transformRequestConfig(
-      rawConfig as string | DataRequestConfig | (string | DataRequestConfig)[]
-    )
-
-    requestObjects.push(...transformRequestConfig(transformRes))
+    if (onCrawlItemComplete) {
+      onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
+    }
   }
-
-  // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
-
-  return loaderConfig
 }
 
-function loaderFileConfig(
-  baseConfig: LoaderXCrawlBaseConfig,
-  rawConfig: CrawlFileConfig
-): LoaderCrawlFileConfig {
-  const loaderConfig: LoaderCrawlFileConfig = { requestConfigs: [] }
+/* Create crawl API */
 
-  // requestConfig 统一转成 FileRequestConfig 类型
-  const requestObjects: FileRequestConfig[] = []
-  if (isObject(rawConfig) && Object.hasOwn(rawConfig, 'requestConfigs')) {
-    // CrawlFileConfigObject 处理
-    const {
-      requestConfigs,
-      proxy,
-      timeout,
-      intervalTime,
-      maxRetry,
-      fileConfig
-    } = rawConfig as CrawlFileConfigObject
-
-    // 给 loaderConfig 装载 API Config
-    loaderConfig.proxy = proxy
-    loaderConfig.intervalTime = intervalTime
-    loaderConfig.maxRetry = maxRetry
-    loaderConfig.timeout = timeout
-    loaderConfig.fileConfig = fileConfig
-
-    requestObjects.push(...transformRequestConfig(requestConfigs))
-  } else {
-    // FileRequestConfig | FileRequestConfig[] 处理
-    requestObjects.push(
-      ...(isArray(rawConfig) ? rawConfig : [rawConfig as FileRequestConfig])
-    )
-  }
-
-  // 装载公共配置到 loaderConfig
-  loaderCommonConfig(baseConfig, requestObjects, loaderConfig)
-
-  // 装载单独的配置
-  if (
-    !isUndefined(loaderConfig.fileConfig?.storeDir) ||
-    !isUndefined(loaderConfig.fileConfig?.extension)
-  ) {
-    loaderConfig.requestConfigs.forEach((requestConfig) => {
-      if (
-        isUndefined(requestConfig.storeDir) &&
-        !isUndefined(loaderConfig.fileConfig?.storeDir)
-      ) {
-        requestConfig.storeDir = loaderConfig.fileConfig!.storeDir
-      }
-
-      if (
-        isUndefined(requestConfig.extension) &&
-        !isUndefined(loaderConfig.fileConfig?.extension)
-      ) {
-        requestConfig.extension = loaderConfig.fileConfig!.extension
-      }
-    })
-  }
-
-  return loaderConfig
-}
-
-export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
   let browser: Browser | null = null
   let createBrowserPending: Promise<void> | null = null
   let haveCreateBrowser = false
-
-  let cIdCount = 0
-  // 收集报错的 page : 因为 page 不管有没有失败都需要提供出去
-  // 通过 爬取cId 找到对应爬取, 再通过 爬取id 找到 page
-  const errorPageContainer = new Map<number, Map<number, Page>>()
 
   function crawlPage(
     config: string,
@@ -323,32 +791,32 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
   ): Promise<CrawlPageSingleRes>
 
   function crawlPage(
-    config: PageRequestConfig,
+    config: CrawlPageDetailTargetConfig,
     callback?: (res: CrawlPageSingleRes) => void
   ): Promise<CrawlPageSingleRes>
 
   function crawlPage(
-    config: (string | PageRequestConfig)[],
-    callback?: (res: CrawlPageSingleRes) => void
+    config: (string | CrawlPageDetailTargetConfig)[],
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   function crawlPage(
-    config: CrawlPageConfigObject,
-    callback?: (res: CrawlPageSingleRes) => void
+    config: CrawlPageAdvancedConfig,
+    callback?: (res: CrawlPageSingleRes[]) => void
   ): Promise<CrawlPageSingleRes[]>
 
   async function crawlPage(
-    config: CrawlPageConfig,
-    callback?: (res: CrawlPageSingleRes) => void
+    config: UniteCrawlPageConfig,
+    callback?: (res: any) => void
   ): Promise<CrawlPageSingleRes | CrawlPageSingleRes[]> {
-    const cId = ++cIdCount
-
     //  创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
-      createBrowserPending = puppeteer.launch().then((res) => {
-        browser = res
-      })
+      createBrowserPending = puppeteer
+        .launch(xCrawlConfig.crawlPage?.launchBrowser)
+        .then((res) => {
+          browser = res
+        })
     }
 
     // 等待浏览器创建完毕
@@ -358,211 +826,117 @@ export function createCrawlPage(baseConfig: LoaderXCrawlBaseConfig) {
       if (createBrowserPending) createBrowserPending = null
     }
 
-    // 合并 baseConfig 配置
-    const { requestConfigs, intervalTime } = loaderPageConfig(
-      baseConfig,
-      config
-    )
+    // 创建新配置
+    const { detailTargets, intervalTime, onCrawlItemComplete } =
+      createCrawlPageConfig(xCrawlConfig, config)
 
-    const controllerRes = await controller(
-      'page',
-      baseConfig.mode,
-      requestConfigs,
+    const extraConfig: ExtraPageConfig = {
+      errorPageMap: new Map(),
+      browser: browser!,
       intervalTime,
-      cId,
-      crawlPageSingle
-    )
+      onCrawlItemComplete
+    }
 
-    const crawlResArr: CrawlPageSingleRes[] = controllerRes.map((item) => {
-      const {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        errorQueue,
-        crawlSingleRes
-      } = item
-
-      let data: {
-        browser: Browser
-        response: HTTPResponse | null
-        page: Page
-      } | null = null
-
-      if (isSuccess && crawlSingleRes) {
-        data = { browser: browser!, ...crawlSingleRes }
-      } else {
-        const page = errorPageContainer.get(cId)!.get(id)!
-        data = { browser: browser!, response: null, page }
-      }
-
-      const crawlRes: CrawlPageSingleRes = {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        retryCount: crawlCount - 1,
-        errorQueue,
-        data
-      }
-
-      if (callback) {
-        callback(crawlRes)
-      }
-
-      return crawlRes
-    })
-
-    // 避免内存泄露 (这次爬取报错的 page 已经处理完毕, 后续不会再利用)
-    errorPageContainer.delete(cId)
+    const crawlResArr = (await controller(
+      'page',
+      xCrawlConfig.mode,
+      detailTargets,
+      extraConfig,
+      pageSingleCrawlHandle,
+      pageSingleResultHandle
+    )) as CrawlPageSingleRes[]
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'requestConfigs'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
 
-    return crawlRes
-  }
-
-  async function crawlPageSingle(
-    controllerConfig: ControllerConfig<LoaderPageRequestConfig, any>,
-    cid: number
-  ) {
-    const { id, requestConfig } = controllerConfig
-    const page = await browser!.newPage()
-    await page.setViewport({ width: 1280, height: 1024 })
-
-    let response: HTTPResponse | null = null
-    try {
-      if (requestConfig.proxy) {
-        await browser!.createIncognitoBrowserContext({
-          proxyServer: requestConfig.proxy
-        })
-      } else {
-        await browser!.createIncognitoBrowserContext({
-          proxyServer: undefined
-        })
-      }
-
-      if (requestConfig.headers) {
-        await page.setExtraHTTPHeaders(
-          requestConfig.headers as any as Record<string, string>
-        )
-      }
-
-      if (requestConfig.cookies) {
-        await page.setCookie(
-          ...parseCrawlPageCookies(requestConfig.url, requestConfig.cookies)
-        )
-      }
-
-      response = await page.goto(requestConfig.url, {
-        timeout: requestConfig.timeout
-      })
-    } catch (error) {
-      // 收集报错的 page
-      let container = errorPageContainer.get(cid!)
-      if (!container) {
-        container = new Map()
-        errorPageContainer.set(cid!, container)
-      }
-
-      if (!container.get(id)) {
-        container.set(id, page)
-      }
-
-      // 让外面收集错误
-      throw error
+    if (callback) {
+      callback(crawlRes)
     }
 
-    return { response, page }
+    return crawlRes
   }
 
   return crawlPage
 }
 
-export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlData<T = any>(
     config: string,
     callback?: (res: CrawlDataSingleRes<T>) => void
   ): Promise<CrawlDataSingleRes<T>>
 
   function crawlData<T = any>(
-    config: DataRequestConfig,
+    config: CrawlDataDetailTargetConfig,
     callback?: (res: CrawlDataSingleRes<T>) => void
   ): Promise<CrawlDataSingleRes<T>>
 
   function crawlData<T = any>(
-    config: (string | DataRequestConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: (string | CrawlDataDetailTargetConfig)[],
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   function crawlData<T = any>(
-    config: CrawlDataConfigObject,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: CrawlDataAdvancedConfig<T>,
+    callback?: (res: CrawlDataSingleRes<T>[]) => void
   ): Promise<CrawlDataSingleRes<T>[]>
 
   async function crawlData<T = any>(
-    config: CrawlDataConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
+    config: UniteCrawlDataConfig<T>,
+    callback?: (res: any) => void
   ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
-    const { requestConfigs, intervalTime } = loaderDataConfig(
-      baseConfig,
-      config
-    )
+    const { detailTargets, intervalTime, onCrawlItemComplete } =
+      createCrawlDataConfig(xCrawlConfig, config)
 
-    const controllerRes = await controller(
-      'data',
-      baseConfig.mode,
-      requestConfigs,
-      intervalTime,
-      undefined,
-      crawlRequestSingle
-    )
+    function dataSingleResultHandle(
+      detaileInfo: DetailInfo<LoaderCrawlDataDetail, Request>,
+      extraConfig: ExtraDataConfig<T>
+    ) {
+      const { isSuccess, detailTargetRes } = detaileInfo
+      const { onCrawlItemComplete } = extraConfig
 
-    const crawlResArr: CrawlDataSingleRes<T>[] = controllerRes.map((item) => {
-      const {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        errorQueue,
-        crawlSingleRes
-      } = item
-
-      const crawlRes: CrawlDataSingleRes<T> = {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        retryCount: crawlCount - 1,
-        errorQueue,
-        data: null
-      }
-
-      if (isSuccess && crawlSingleRes) {
-        const contentType = crawlSingleRes.headers['content-type'] ?? ''
+      if (isSuccess && detailTargetRes) {
+        const contentType = detailTargetRes.headers['content-type'] ?? ''
 
         const data: T = contentType.includes('text')
-          ? crawlSingleRes.data.toString()
-          : JSON.parse(crawlSingleRes.data.toString())
+          ? detailTargetRes.data.toString()
+          : JSON.parse(detailTargetRes.data.toString())
 
-        crawlRes.data = { ...crawlSingleRes, data }
+        detaileInfo.data = { ...detailTargetRes, data }
       }
 
-      if (callback) {
-        callback(crawlRes)
-      }
+      const crawlDataSingleRes: AnyObject = detaileInfo
+      delete crawlDataSingleRes.detailTarget
+      delete crawlDataSingleRes.detailTargetRes
 
-      return crawlRes
-    })
+      if (onCrawlItemComplete) {
+        onCrawlItemComplete(crawlDataSingleRes as CrawlDataSingleRes<T>)
+      }
+    }
+
+    const extraConfig: ExtraDataConfig<T> = {
+      intervalTime,
+      onCrawlItemComplete
+    }
+
+    const crawlResArr = (await controller(
+      'data',
+      xCrawlConfig.mode,
+      detailTargets,
+      extraConfig,
+      dataAndFileSingleCrawlHandle,
+      dataSingleResultHandle
+    )) as CrawlDataSingleRes<T>[]
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'requestConfigs'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
+
+    if (callback) {
+      callback(crawlRes)
+    }
 
     return crawlRes
   }
@@ -570,137 +944,55 @@ export function createCrawlData(baseConfig: LoaderXCrawlBaseConfig) {
   return crawlData
 }
 
-export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
+export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlFile(
-    config: FileRequestConfig,
+    config: CrawlFileDetailTargetConfig,
     callback?: (res: CrawlFileSingleRes) => void
   ): Promise<CrawlFileSingleRes>
 
   function crawlFile(
-    config: FileRequestConfig[],
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileDetailTargetConfig[],
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   function crawlFile(
-    config: CrawlFileConfigObject,
-    callback?: (res: CrawlFileSingleRes) => void
+    config: CrawlFileAdvancedConfig,
+    callback?: (res: CrawlFileSingleRes[]) => void
   ): Promise<CrawlFileSingleRes[]>
 
   async function crawlFile(
-    config: CrawlFileConfig,
-    callback?: (res: CrawlFileSingleRes) => void
+    config: UniteCrawlFileConfig,
+    callback?: (res: any) => void
   ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
-    const { requestConfigs, intervalTime, fileConfig } = loaderFileConfig(
-      baseConfig,
-      config
-    )
-
-    const controllerRes = await controller(
-      'file',
-      baseConfig.mode,
-      requestConfigs,
+    const {
+      detailTargets,
       intervalTime,
-      undefined,
-      crawlRequestSingle
-    )
+      onBeforeSaveItemFile,
+      onCrawlItemComplete
+    } = createCrawlFileConfig(xCrawlConfig, config)
 
-    const saveFileQueue: Promise<void>[] = []
-    const saveFileErrorArr: { message: string; valueOf: () => number }[] = []
+    const extraConfig: ExtraFileConfig = {
+      saveFileErrorArr: [],
+      saveFilePendingQueue: [],
 
-    const crawlResArr: CrawlFileSingleRes[] = controllerRes.map((item) => {
-      const {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        errorQueue,
-        crawlSingleRes,
-        requestConfig
-      } = item
+      intervalTime,
+      onCrawlItemComplete,
+      onBeforeSaveItemFile
+    }
 
-      const crawlRes: CrawlFileSingleRes = {
-        id,
-        isSuccess,
-        maxRetry,
-        crawlCount,
-        retryCount: crawlCount - 1,
-        errorQueue,
-        data: null
-      }
+    const crawlResArr = (await controller(
+      'file',
+      xCrawlConfig.mode,
+      detailTargets,
+      extraConfig,
+      dataAndFileSingleCrawlHandle,
+      fileSingleResultHandle
+    )) as CrawlFileSingleRes[]
 
-      if (isSuccess && crawlSingleRes) {
-        const mimeType = crawlSingleRes.headers['content-type'] ?? ''
-
-        const fileName =
-          requestConfig.fileName ?? `${id}-${new Date().getTime()}`
-        const fileExtension =
-          requestConfig.extension ?? `.${mimeType.split('/').pop()}`
-
-        if (
-          !isUndefined(requestConfig.storeDir) &&
-          !fs.existsSync(requestConfig.storeDir)
-        ) {
-          mkdirDirSync(requestConfig.storeDir)
-        }
-
-        const storePath = requestConfig.storeDir ?? __dirname
-        const filePath = path.resolve(storePath, fileName + fileExtension)
-
-        // 在保存前的回调
-        const data = crawlSingleRes.data
-        let dataPromise = Promise.resolve(data)
-        if (fileConfig?.beforeSave) {
-          dataPromise = fileConfig.beforeSave({
-            id,
-            fileName,
-            filePath,
-            data
-          })
-        }
-
-        const saveFileItem = dataPromise.then(async (newData) => {
-          let isSuccess = true
-          try {
-            await writeFile(filePath, newData)
-          } catch (err: any) {
-            isSuccess = false
-
-            const message = `File save error at id ${id}: ${err.message}`
-            const valueOf = () => id
-
-            saveFileErrorArr.push({ message, valueOf })
-          }
-
-          const size = newData.length
-          crawlRes.data = {
-            ...crawlSingleRes,
-            data: {
-              isSuccess,
-              fileName,
-              fileExtension,
-              mimeType,
-              size,
-              filePath
-            }
-          }
-
-          if (callback) {
-            callback(crawlRes)
-          }
-        })
-
-        saveFileQueue.push(saveFileItem)
-      } else {
-        if (callback) {
-          callback(crawlRes)
-        }
-      }
-
-      return crawlRes
-    })
+    const { saveFilePendingQueue, saveFileErrorArr } = extraConfig
 
     // 等待保存文件完成
-    await Promise.all(saveFileQueue)
+    await Promise.all(saveFilePendingQueue)
 
     // 打印保存错误
     quickSort(saveFileErrorArr).forEach((item) => log(logError(item.message)))
@@ -732,10 +1024,13 @@ export function createCrawlFile(baseConfig: LoaderXCrawlBaseConfig) {
     )
 
     const crawlRes =
-      isArray(config) ||
-      (isObject(config) && Object.hasOwn(config, 'requestConfigs'))
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResArr
         : crawlResArr[0]
+
+    if (callback) {
+      callback(crawlRes)
+    }
 
     return crawlRes
   }

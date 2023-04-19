@@ -5,20 +5,20 @@ import {
   startPolling
 } from './api'
 
-import {
-  LoaderXCrawlBaseConfig,
-  XCrawlBaseConfig,
-  XCrawlInstance
-} from './types'
+import { LoaderXCrawlConfig, XCrawlConfig, XCrawlInstance } from './types'
 import { isUndefined } from './utils'
 
 function loaderBaseConfig(
-  baseConfig: XCrawlBaseConfig | undefined
-): LoaderXCrawlBaseConfig {
+  baseConfig: XCrawlConfig | undefined
+): LoaderXCrawlConfig {
   const loaderBaseConfig = baseConfig ? baseConfig : {}
 
-  if (!loaderBaseConfig.mode) {
+  if (isUndefined(loaderBaseConfig.mode)) {
     loaderBaseConfig.mode = 'async'
+  }
+
+  if (isUndefined(loaderBaseConfig.enableRandomFingerprint)) {
+    loaderBaseConfig.enableRandomFingerprint = true
   }
 
   if (isUndefined(baseConfig?.timeout)) {
@@ -29,10 +29,10 @@ function loaderBaseConfig(
     loaderBaseConfig.maxRetry = 0
   }
 
-  return loaderBaseConfig as LoaderXCrawlBaseConfig
+  return loaderBaseConfig as LoaderXCrawlConfig
 }
 
-function createnInstance(baseConfig: LoaderXCrawlBaseConfig): XCrawlInstance {
+function createnInstance(baseConfig: LoaderXCrawlConfig): XCrawlInstance {
   const instance: XCrawlInstance = {
     crawlPage: createCrawlPage(baseConfig),
     crawlData: createCrawlData(baseConfig),
@@ -43,7 +43,7 @@ function createnInstance(baseConfig: LoaderXCrawlBaseConfig): XCrawlInstance {
   return instance
 }
 
-export default function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance {
+export default function xCrawl(baseConfig?: XCrawlConfig): XCrawlInstance {
   const newBaseConfig = loaderBaseConfig(baseConfig)
 
   const instance = createnInstance(newBaseConfig)

@@ -11,7 +11,7 @@ import HttpsProxyAgent from 'https-proxy-agent'
 import { isUndefined } from './utils'
 
 import { AnyObject, MapTypeEmptyObject } from './types/common'
-import { LoaderDataRequestConfig, LoaderFileRequestConfig } from './types/api'
+import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './api'
 
 /* Type */
 export interface Request {
@@ -36,13 +36,13 @@ function parseParams(urlSearch: string, params?: AnyObject): string {
 }
 
 function parseHeaders(
-  rawConfig: LoaderDataRequestConfig & LoaderFileRequestConfig,
+  rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail,
   config: RequestOptions & MapTypeEmptyObject<URL>
 ) {
   const rawHeaders = rawConfig.headers ?? {}
   const headers: AnyObject = {
-    'User-Agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+    'user-agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
     ...rawHeaders
   }
 
@@ -55,7 +55,7 @@ function parseHeaders(
 }
 
 function handleRequestConfig(
-  rawConfig: LoaderDataRequestConfig & LoaderFileRequestConfig
+  rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail
 ): RequestOptions & MapTypeEmptyObject<URL> {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
@@ -85,9 +85,7 @@ function handleRequestConfig(
   return config
 }
 
-export function request(
-  config: LoaderDataRequestConfig & LoaderFileRequestConfig
-) {
+export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
   return new Promise<Request>((resolve, reject) => {
     const isDataUndefine = isUndefined(config.data)
     config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data

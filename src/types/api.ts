@@ -1,56 +1,13 @@
 import { IncomingHttpHeaders } from 'node:http'
-import { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
+import { Browser, HTTPResponse, Page, Protocol, Viewport } from 'puppeteer'
 
-import { AnyObject, MapTypeObject } from './common'
-
-/* Loader Config */
-type LoaderHasConfig = {
-  timeout: number
-  maxRetry: number
-  priority: number
-}
-
-export type LoaderPageRequestConfig = PageRequestConfig & LoaderHasConfig
-
-export type LoaderDataRequestConfig = DataRequestConfig & LoaderHasConfig
-
-export type LoaderFileRequestConfig = FileRequestConfig & LoaderHasConfig
-
-export interface LoaderCrawlPageConfig
-  extends MapTypeObject<CrawlPageConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderPageRequestConfig[]
-}
-
-export interface LoaderCrawlDataConfig
-  extends MapTypeObject<CrawlDataConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderDataRequestConfig[]
-}
-
-export interface LoaderCrawlFileConfig
-  extends MapTypeObject<CrawlFileConfigObject, 'requestConfigs'> {
-  requestConfigs: LoaderFileRequestConfig[]
-}
-
-// Function overloading crawl config
-export type CrawlPageConfig =
-  | string
-  | PageRequestConfig
-  | (string | PageRequestConfig)[]
-  | CrawlPageConfigObject
-
-export type CrawlDataConfig =
-  | string
-  | DataRequestConfig
-  | (string | DataRequestConfig)[]
-  | CrawlDataConfigObject
-
-export type CrawlFileConfig =
-  | FileRequestConfig
-  | FileRequestConfig[]
-  | CrawlFileConfigObject
+import { AnyObject } from './common'
 
 /* API Config */
-// API Config Other
+
+// API crawl config
+
+// API crawl config other
 export type IntervalTime = number | { max: number; min?: number }
 
 export type Method =
@@ -75,80 +32,128 @@ export type Method =
   | 'unlink'
   | 'UNLINK'
 
-export type PageRequestConfigCookies =
+export type PageCookies =
   | string
   | Protocol.Network.CookieParam
   | Protocol.Network.CookieParam[]
 
-// API Config Request
-export interface PageRequestConfig {
-  url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  cookies?: PageRequestConfigCookies
-  maxRetry?: number
-  priority?: number
+export type Platform =
+  | 'Android'
+  | 'Chrome OS'
+  | 'Chromium OS'
+  | 'iOS'
+  | 'Linux'
+  | 'macOS'
+  | 'Windows'
+  | 'Unknown'
+
+export type Mobile = '?0' | '?1'
+
+export interface DetailTargetFingerprintCommon {
+  userAgent?: string
+  ua?: string
+  platform?: Platform
+  platformVersion?: string
+  mobile?: Mobile
+  acceptLanguage?: string
 }
 
-export interface DataRequestConfig {
+export interface AdvancedFingerprintCommon {
+  userAgents?: string[]
+  uas?: string[]
+  platforms?: Platform[]
+  platformVersions?: string[]
+  mobiles?: Mobile[]
+  acceptLanguages?: string[]
+}
+
+export interface CrawlCommonConfig {
+  timeout?: number
+  proxy?: string
+  maxRetry?: number
+}
+
+// 1.Detail target
+export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  cookies?: PageCookies | null
+  priority?: number
+  viewport?: Viewport | null
+  fingerprint?:
+    | (DetailTargetFingerprintCommon & {
+        maxWidth: number
+        minWidth?: number
+        maxHeight: number
+        minHidth?: number
+      })
+    | null
+}
+
+export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
   url: string
   method?: Method
-  headers?: AnyObject
+  headers?: AnyObject | null
   params?: AnyObject
   data?: any
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
   priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
 }
 
-export interface FileRequestConfig {
+export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
+  headers?: AnyObject | null
   priority?: number
-  storeDir?: string
+  storeDir?: string | null
   fileName?: string
-  extension?: string
+  extension?: string | null
+  fingerprint?: DetailTargetFingerprintCommon | null
 }
 
-// API Config Crawl
-export interface CrawlPageConfigObject {
-  requestConfigs: (string | PageRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  cookies?: PageRequestConfigCookies
+// 2.Advanced
+export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  maxRetry?: number
-}
-
-export interface CrawlDataConfigObject {
-  requestConfigs: (string | DataRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-}
-
-export interface CrawlFileConfigObject {
-  requestConfigs: (string | FileRequestConfig)[]
-  proxy?: string
-  timeout?: number
-  intervalTime?: IntervalTime
-  maxRetry?: number
-  fileConfig?: {
-    storeDir?: string
-    extension?: string
-    beforeSave?: (info: {
-      id: number
-      fileName: string
-      filePath: string
-      data: Buffer
-    }) => Promise<Buffer>
+  fingerprint?: AdvancedFingerprintCommon & {
+    maxWidth: number
+    minWidth?: number
+    maxHeight: number
+    minHidth?: number
   }
+
+  headers?: AnyObject
+  cookies?: PageCookies
+  viewport?: Viewport
+
+  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+}
+
+export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
+  targets: (string | CrawlDataDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+}
+
+export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlFileDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprint?: AdvancedFingerprintCommon
+
+  headers?: AnyObject
+  storeDir?: string
+  extension?: string
+
+  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onBeforeSaveItemFile?: (info: {
+    id: number
+    fileName: string
+    filePath: string
+    data: Buffer
+  }) => Promise<Buffer>
 }
 
 export interface StartPollingConfig {
@@ -162,9 +167,8 @@ export interface CrawlCommonRes {
   id: number
   isSuccess: boolean
   maxRetry: number
-  crawlCount: number
   retryCount: number
-  errorQueue: Error[]
+  crawlErrorQueue: Error[]
 }
 
 export interface CrawlPageSingleRes extends CrawlCommonRes {
