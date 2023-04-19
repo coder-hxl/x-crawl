@@ -6,10 +6,10 @@ import {
   CrawlDataSingleRes,
   CrawlFileSingleRes,
   CrawlFileAdvancedConfig,
-  CrawlFileDetailConfig,
-  CrawlDataDetailConfig,
+  CrawlFileDetailTargetConfig,
+  CrawlDataDetailTargetConfig,
   CrawlDataAdvancedConfig,
-  CrawlPageDetailConfig,
+  CrawlPageDetailTargetConfig,
   CrawlPageAdvancedConfig,
   CrawlCommonConfig
 } from './api'
@@ -37,12 +37,12 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: CrawlPageDetailConfig,
+      config: CrawlPageDetailTargetConfig,
       callback?: (res: CrawlPageSingleRes) => void
     ): Promise<CrawlPageSingleRes>
 
     (
-      config: (string | CrawlPageDetailConfig)[],
+      config: (string | CrawlPageDetailTargetConfig)[],
       callback?: (res: CrawlPageSingleRes[]) => void
     ): Promise<CrawlPageSingleRes[]>
 
@@ -54,7 +54,7 @@ export interface XCrawlInstance {
 
   crawlData: {
     <T = any>(
-      config: CrawlDataDetailConfig,
+      config: CrawlDataDetailTargetConfig,
       callback?: (res: CrawlDataSingleRes<T>) => void
     ): Promise<CrawlDataSingleRes<T>>
 
@@ -64,7 +64,7 @@ export interface XCrawlInstance {
     ): Promise<CrawlDataSingleRes<T>>
 
     <T = any>(
-      config: (string | CrawlDataDetailConfig)[],
+      config: (string | CrawlDataDetailTargetConfig)[],
       callback?: (res: CrawlDataSingleRes<T>[]) => void
     ): Promise<CrawlDataSingleRes<T>[]>
 
@@ -76,12 +76,12 @@ export interface XCrawlInstance {
 
   crawlFile: {
     (
-      config: CrawlFileDetailConfig,
+      config: CrawlFileDetailTargetConfig,
       callback?: (res: CrawlFileSingleRes) => void
     ): Promise<CrawlFileSingleRes>
 
     (
-      config: CrawlFileDetailConfig[],
+      config: CrawlFileDetailTargetConfig[],
       callback?: (res: CrawlFileSingleRes[]) => void
     ): Promise<CrawlFileSingleRes[]>
 

@@ -56,7 +56,7 @@ export interface CrawlCommonConfig {
 }
 
 // 1.Detail
-export interface CrawlPageDetailConfig extends CrawlCommonConfig {
+export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject | null
   cookies?: PageCookies | null
@@ -75,7 +75,7 @@ export interface CrawlPageDetailConfig extends CrawlCommonConfig {
   } | null
 }
 
-export interface CrawlDataDetailConfig extends CrawlCommonConfig {
+export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
   url: string
   method?: Method
   headers?: AnyObject | null
@@ -91,7 +91,7 @@ export interface CrawlDataDetailConfig extends CrawlCommonConfig {
   } | null
 }
 
-export interface CrawlFileDetailConfig extends CrawlCommonConfig {
+export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject | null
   priority?: number
@@ -109,7 +109,7 @@ export interface CrawlFileDetailConfig extends CrawlCommonConfig {
 
 // 2.Advanced
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
-  targets: (string | CrawlPageDetailConfig)[]
+  targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprint?: {
     maxWidth: number
@@ -131,7 +131,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 }
 
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
-  targets: (string | CrawlDataDetailConfig)[]
+  targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprint?: {
     userAgents?: string[]
@@ -147,7 +147,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
-  targets: (string | CrawlFileDetailConfig)[]
+  targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprint?: {
     userAgents?: string[]

@@ -1,3 +1,21 @@
+# [v6.0.0](https://github.com/coder-hxl/x-crawl/compare/v5.1.0...v6.0.0) (2023-04-18)
+
+### 🚨 重大改变
+
+- 关于对每个爬取目标的结果处理：将会在单个目标完成后就开始进行处理，节省时间，提高性能。原先是等所有目标完成再处理，在爬过程中会有空闲时间。
+- 关于 crawlPage、crawlData 以及 crawlFile 这三个 API 的第二个参数回调函数的执行时机：将移到最后执行，获取的结果跟 Promise 方式的结果相同。
+- 关于类型：PageRequestConfig、DataRequestConfig 以及 FileRequestConfig 分别更改为 CrawlPageDetailTargetConfig、CrawlDataDetailTargetConfig 以及 CrawlFileDetailTargetConfig ，目的是为了不单单可以加请求的配置，也可以扩展更多。CrawlPageConfigObject、 CrawlDataConfigObject 以及 CrawlFileConfigObject 分别更改为 CrawlPageAdvancedConfig、CrawlDataAdvancedConfig 以及 CrawlFileAdvancedConfig。
+- 关于 crawlFile 的 fileConfig 里面的配置选项：可以直接在根对象配置中设置。beforeSave 生命周期函数更改为 onBeforeSaveFile。
+- 关于 crawlPage、crawlData 以及 crawlFile 的对象结果：移除 crawlCount 属性，可通过 retryCount + 1 获取次数。errorQueue 更名为 crawlErrorQueue。
+
+### 🚀 特征
+
+- 新增设备指纹，避免浏览器识别并跟踪我们的在线行为。可在进阶用法中设置，也可以通过详细用法指定设置。
+- 在创建爬虫应用的配置新增 crawlPage ，可以在 crawlPage.launchBrowser 选项中设置创建浏览器的配置（类型为 PuppeteerLaunchOptions 来自 Puppeteer）。
+- CrawlPageAdvancedConfig、CrawlDataAdvancedConfig 以及 CrawlFileAdvancedConfig 进阶用法里面的每个爬取请求 header 可以在进阶方式配置对象统一设置，不必为每个爬取配置重复设置一遍。
+- crawlPage 新增 viewport 选项，用于设置页面的视口。
+- 新增 onCrawlItemComplete 生命周期函数，将在每个爬取目标完成后执行，并且把爬取结果(类似 CrawlSingleRes)传入回调函数。可在进阶用法设置。
+
 # [v5.1.0](https://github.com/coder-hxl/x-crawl/compare/v5.0.2...v5.1.0) (2023-04-12)
 
 ### 🚨 Breaking Changes

@@ -4,7 +4,7 @@ English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.
 
 x-crawl is a flexible Node.js multi-purpose crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls.
 
-> If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you all for your support.
+> If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you for your support!
 
 ## Features
 
