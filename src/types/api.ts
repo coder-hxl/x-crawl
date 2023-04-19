@@ -5,7 +5,9 @@ import { AnyObject } from './common'
 
 /* API Config */
 
-// API Config Other
+// API crawl config
+
+// API crawl config other
 export type IntervalTime = number | { max: number; min?: number }
 
 export type Method =
@@ -47,14 +49,6 @@ export type Platform =
 
 export type Mobile = '?0' | '?1'
 
-// API crawl config
-// Common
-export interface CrawlCommonConfig {
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
-}
-
 export interface DetailTargetFingerprintCommon {
   userAgent?: string
   ua?: string
@@ -73,7 +67,13 @@ export interface AdvancedFingerprintCommon {
   acceptLanguages?: string[]
 }
 
-// 1.Detail
+export interface CrawlCommonConfig {
+  timeout?: number
+  proxy?: string
+  maxRetry?: number
+}
+
+// 1.Detail target
 export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject | null
@@ -148,7 +148,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   extension?: string
 
   onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
-  onBeforeSaveFile?: (info: {
+  onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
     filePath: string

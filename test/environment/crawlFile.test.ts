@@ -116,7 +116,7 @@ async function storeConfig() {
     ],
     storeDir: path.resolve(__dirname, './upload'),
     extension: '.jpg',
-    async onBeforeSaveFile(info) {
+    async onBeforeSaveItemFile(info) {
       record.push(info.fileName)
       return info.data
     }

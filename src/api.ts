@@ -84,7 +84,7 @@ interface ExtraFileConfig extends ExtraCommonConfig {
   onCrawlItemComplete:
     | ((crawlFileSingleRes: CrawlFileSingleRes) => void)
     | undefined
-  onBeforeSaveFile:
+  onBeforeSaveItemFile:
     | ((info: {
         id: number
         fileName: string
@@ -120,7 +120,7 @@ interface CrawlDataConfigOriginal {
 interface CrawlFileConfigOriginal {
   detailTargets: CrawlFileDetailTargetConfig[]
   intervalTime: IntervalTime | undefined
-  onBeforeSaveFile:
+  onBeforeSaveItemFile:
     | ((info: {
         id: number
         fileName: string
@@ -195,26 +195,28 @@ function parsePageCookies(
   return cookiesArr
 }
 
-function transformToDetailTargets(
+function transformTargetToDetailTargets(
   config:
     | string
     | CrawlPageDetailTargetConfig
     | (string | CrawlPageDetailTargetConfig)[]
 ): CrawlPageDetailTargetConfig[]
-function transformToDetailTargets(
+function transformTargetToDetailTargets(
   config:
     | string
     | CrawlDataDetailTargetConfig
     | (string | CrawlDataDetailTargetConfig)[]
 ): CrawlDataDetailTargetConfig[]
-function transformToDetailTargets(
+function transformTargetToDetailTargets(
   config: (string | CrawlFileDetailTargetConfig)[]
 ): CrawlFileDetailTargetConfig[]
-function transformToDetailTargets(config: any) {
+function transformTargetToDetailTargets(config: any) {
   return isArray(config)
     ? config.map((item) => (isObject(item) ? item : { url: item }))
     : [isObject(config) ? config : { url: config }]
 }
+
+/* Loader config */
 
 function loaderCommonFingerprintToDetailTarget(
   detail:
@@ -434,7 +436,7 @@ function loaderCommonConfigToCrawlConfig(
   crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
 }
 
-/* Create Config */
+/* Create config */
 /*
   每个创建配置函数的返回值都是类似于进阶版配置
   不同点:
@@ -461,10 +463,12 @@ function createCrawlPageConfig(
     const { targets } = originalConfig as CrawlPageAdvancedConfig
     advancedConfig = originalConfig as CrawlPageAdvancedConfig
 
-    crawlPageConfig.detailTargets.push(...transformToDetailTargets(targets))
+    crawlPageConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
   } else {
     // string | CrawlPageDetailTargetConfig | (string | CrawlPageDetailTargetConfig)[] 处理
-    const detaileTargets = transformToDetailTargets(
+    const detaileTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlPageDetailTargetConfig
@@ -520,10 +524,12 @@ function createCrawlDataConfig<T>(
     const { targets } = originalConfig as CrawlDataAdvancedConfig<T>
     advancedConfig = originalConfig as CrawlDataAdvancedConfig<T>
 
-    crawlDataConfig.detailTargets.push(...transformToDetailTargets(targets))
+    crawlDataConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
   } else {
     // string | CrawlDataDetailTargetConfig | (string | CrawlDataDetailTargetConfig)[] 处理
-    const detaileTargets = transformToDetailTargets(
+    const detaileTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlDataDetailTargetConfig
@@ -545,7 +551,7 @@ function createCrawlFileConfig(
   const crawlFileConfig: CrawlFileConfigOriginal = {
     detailTargets: [],
     intervalTime: undefined,
-    onBeforeSaveFile: undefined,
+    onBeforeSaveItemFile: undefined,
     onCrawlItemComplete: undefined
   }
 
@@ -556,7 +562,9 @@ function createCrawlFileConfig(
     const { targets } = originalConfig as CrawlFileAdvancedConfig
 
     advancedConfig = originalConfig as CrawlFileAdvancedConfig
-    crawlFileConfig.detailTargets.push(...transformToDetailTargets(targets))
+    crawlFileConfig.detailTargets.push(
+      ...transformTargetToDetailTargets(targets)
+    )
   } else {
     // CrawlFileDetailTargetConfig |  CrawlFileDetailTargetConfig[] 处理
     crawlFileConfig.detailTargets.push(
@@ -582,7 +590,7 @@ function createCrawlFileConfig(
     }
   })
 
-  crawlFileConfig.onBeforeSaveFile = advancedConfig.onBeforeSaveFile
+  crawlFileConfig.onBeforeSaveItemFile = advancedConfig.onBeforeSaveItemFile
 
   return crawlFileConfig as CrawlFileConfig
 }
@@ -697,7 +705,7 @@ function fileSingleResultHandle(
     saveFilePendingQueue,
 
     onCrawlItemComplete,
-    onBeforeSaveFile
+    onBeforeSaveItemFile
   } = extraConfig
 
   const crawlFileSingleRes: AnyObject = detaileInfo
@@ -721,8 +729,8 @@ function fileSingleResultHandle(
     // 在保存前的回调
     const data = detailTargetRes.data
     let dataPromise = Promise.resolve(data)
-    if (onBeforeSaveFile) {
-      dataPromise = onBeforeSaveFile({
+    if (onBeforeSaveItemFile) {
+      dataPromise = onBeforeSaveItemFile({
         id,
         fileName,
         filePath,
@@ -959,7 +967,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     const {
       detailTargets,
       intervalTime,
-      onBeforeSaveFile,
+      onBeforeSaveItemFile,
       onCrawlItemComplete
     } = createCrawlFileConfig(xCrawlConfig, config)
 
@@ -969,7 +977,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
 
       intervalTime,
       onCrawlItemComplete,
-      onBeforeSaveFile
+      onBeforeSaveItemFile
     }
 
     const crawlResArr = (await controller(
