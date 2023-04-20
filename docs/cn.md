@@ -753,7 +753,7 @@ myXCrawl
 
 ##### 4.进阶配置 - CrawlPageAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -898,7 +898,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlPage([
+  .crawlData([
     'https://www.example.com/api-1',
     { url: 'https://www.example.com/api-2', maxRetry: 2 }
   ])
@@ -911,7 +911,7 @@ myXCrawl
 
 ##### 4.进阶配置 - CrawlDataAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -1052,7 +1052,7 @@ myXCrawl
 
 ##### 3.进阶配置 - CrawlFileAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（storeDir、proxy、重试等等）不想重复写，需要间隔时间等等的话，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、storeDir、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'

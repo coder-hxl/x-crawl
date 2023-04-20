@@ -765,7 +765,7 @@ More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDeta
 
 ##### 4.Advanced config - CrawlPageAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this way of writing:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages and request configurations (proxy, cookies, retries, etc.) that you don't want to write repeatedly, but also need interval time, device fingerprint, lifecycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -922,7 +922,7 @@ More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDeta
 
 ##### 4.Advanced config - CrawlDataAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this writing method:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and request configurations (proxy, cookies, retries, etc.) don't want to write twice, but also need interval time, device fingerprint, lifecycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -1064,7 +1064,7 @@ More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDeta
 
 ##### 3.Advanced config CrawlFileAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (storeDir, proxy, retry, etc.) does not want to be written repeatedly, and you need interval time, etc., you can try this way of writing:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and request configurations (proxy, storeDir, retry, etc.) don't want to write twice, but also need interval time, device fingerprint, life cycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
