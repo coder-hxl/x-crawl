@@ -8,16 +8,16 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用于爬页面、爬接
 
 ## 特征
 
-- **🔥 异步/同步** - 只需更改一下 mode 属性即可切换 异步/同步 爬取模式。
-- **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬。并且支持爬取单个或多个。
-- **🖋️ 写法灵活** - 一种功能适配多种爬取配置、获取爬取结果的写法，写法非常灵活。
-- **👀 设备指纹** - 零配置/自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
-- **⏱️ 间隔爬取** - 无间隔/固定间隔/随机间隔，可以有效 使用/避免 高并发爬取。
-- **🔄 失败重试** - 可针对所有爬取的请求设置，针对单次爬取的请求设置，针对单个请求设置进行失败重试。
-- **🚀 优先队列** - 根据单个请求的优先级使用优先爬取。
-- **☁️ 爬取 SPA** - 批量爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
+- **🔥 异步/同步** - 只需更改一下 mode 属性值即可切换异步或同步爬取模式。
+- **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬，并且支持爬取单个或多个。
+- **🖋️ 写法灵活** - 简单目标配置、详细目标配置、混合目标数组配置以及进阶配置，同种爬取 API 适配多种配置。
+- **👀 设备指纹** - 零配置或自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
+- **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，即可产生或避免高并发爬取。
+- **🔄 失败重试** - 全局设置、局部设置以及单独设置。即可避免因一时问题而造成爬取失败。
+- **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前进行爬取。
+- **☁️ 爬取 SPA** - 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
 - **⚒️ 控制页面** - 无头浏览器可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
-- **🧾 捕获记录** - 对爬取的结果进行捕获记录，并在控制台进行高亮的提醒。
+- **🧾 捕获记录** - 对爬取的结果等信息进行捕获记录，并在控制台进行高亮的提醒。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 跟 puppeteer 的关系
@@ -211,12 +211,14 @@ const myXCrawl = xCrawl({
 
 mode 选项默认为 async 。
 
-- async: 异步请求，在批量请求时，无需等当前请求完成，就进行下次请求
-- sync: 同步请求，在批量请求时，需要等这次请求完成，才会进行下次请求
+- async: 异步爬取目标，无需等当前爬取目标完成，就进行下次爬取目标
+- sync: 同步爬取目标，需要等这次爬取目标完成，才会进行下次爬取目标
 
-若有设置间隔时间，则都需要等间隔时间结束才能发送请求。
+若有设置间隔时间，则都需要等间隔时间结束才会爬取下次目标。
 
-#### 设备指纹
+**注意:** 爬取 API 的爬取过程都是单独进行的，该模式对批量爬取目标才有效。
+
+#### 默认设备指纹
 
 可以通过一个属性控制是否使用默认的随机指纹，您也可以通过后续的爬取配置自定义指纹。
 
@@ -232,8 +234,8 @@ const myXCrawl = xCrawl({
 
 enableRandomFingerprint 选项默认为 true。
 
-- true: 启动随机设备指纹。可通过进阶版配置或详细目标版配置指定目标的指纹配置。
-- false: 关闭随机设备指纹，不影响进阶版配置或详细版配置为目标指定的指纹配置。
+- true: 启动随机设备指纹。可通过进阶配置或详细目标配置指定目标的指纹配置。
+- false: 关闭随机设备指纹，不影响进阶配置或详细目标配置为目标指定的指纹配置。
 
 #### 多个爬虫应用实例
 
@@ -268,15 +270,13 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 #### browser 实例
 
-它是 [Browser](https://pptr.dev/api/puppeteer.browser) 的实例对象，具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
+当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
 
-browser 实例他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。
-
-**注意：** browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为当您修改 browser 实例的属性时，会对该爬虫实例 crawlPage API 内部的 browser 实例和返回结果的 page 实例以及 browser 实例造成影响，因为 browser 实例在同一个爬虫实例的 crawlPage API 内是共享的。
+**注意：** browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
 
 #### page 实例
 
-它是 [Page](https://pptr.dev/api/puppeteer.page) 的实例对象，实例还可以做事件之类的交互操作，具体使用可以参考 [page](https://pptr.dev/api/puppeteer.page) 。
+当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。其可以做交互操作，具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
 
 browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
@@ -301,13 +301,13 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 
 #### 生命周期
 
-crawlPageAPI 拥有的声明周期函数:
+crawlPage API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
+- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
 
 ##### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
+在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
 **注意:** 如果你需要一次性爬取很多页面，就需要在每个页面爬下来后，用这个生命周期函数来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则会因开启的 page 过多而造成程序崩溃。
 
@@ -339,11 +339,11 @@ myXCrawl.crawlData({ targets }).then((res) => {
 
 crawlData API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
+- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
 
 ##### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
+在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
 ### 爬取文件
 
@@ -369,17 +369,17 @@ myXCrawl
 
 crawlFile API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标结束并处理后执行
+- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
 
-- onBeforeSaveItemFile: 在保存文件前执行
+- onBeforeSaveItemFile: 会在保存文件前回调
 
 ##### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以拿到每个爬取目标的结果。
+在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
 ##### onBeforeSaveItemFile
 
-在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer 。
+在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer ，该 Buffer 会替换掉拿到的 Buffer 存储到文件中。
 
 **调整图片大小**
 
@@ -427,7 +427,7 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
 })
 ```
 
-**在轮询中使用 crawlPage 注意：** 调用 page.close() 是为了防止 browser 实例内部还保留着对 page 实例的引用，如果后续不再使用当前 page 需要自行关闭，否则会造成内存泄露。
+**在轮询中使用 crawlPage 注意：** browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
 回调函数参数：
 
@@ -469,11 +469,11 @@ myXCrawl.crawlPage({
 })
 ```
 
-在上面的实例中，**应用实例配置**和**进阶配置**中都设置了间隔时间，那么将会以**进阶配置**的间隔时间为准。在**进阶配置**和**详细目标配置**中设置了视口，那么第二个目标是设置了视口，其将会以**详细目标配置**的视口为准。
+在上面的实例中，**应用实例配置**和**进阶配置**中都设置了间隔时间，那么将会以**进阶配置**的间隔时间为准。在**进阶配置**和**详细目标配置**中设置了视口，那么第二个目标会以其**详细目标配置**的视口为准。
 
-### 设备指纹
+### 自定义设备指纹
 
-自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
+自定义配置设备指纹，可避免通过指纹识别从不同位置识别并跟踪我们。
 
 可以通过进阶用法在 fingerprint 传入多个信息，内部会帮助您随机分配给 targets 的每个目标。也可以直接用详细目标配置为目标设置特定的指纹。
 
@@ -521,7 +521,7 @@ myXCrawl
 
 间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
 
-爬取间隔时间是由实例方法内部控制的，并非由实例控制整个爬取间隔时间。
+爬取间隔时间是由爬取 API 内部自己控制的，并非由爬虫实例控制爬取 API 的间隔时间。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -536,16 +536,16 @@ myXCrawl
   .then((res) => {})
 ```
 
-intervalTime 选项默认为 undefined 。若有设置值，则会在请求前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
+intervalTime 选项默认为 undefined 。若有设置值，则会在爬取目标前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
 
-- number: 固定每次请求前必须等待的时间
-- Object: 在 max 和 min 中随机取一个值，更加拟人化
+- number: 固定每次爬取目标前必须等待的时间
+- IntervalTime: 在 max 和 min 中随机取一个值
 
-**注意:** 第一次请求是不会触发间隔时间。
+**注意:** 第一次爬取目标是不会触发间隔时间。
 
 ### 失败重试
 
-失败重试在超时之类的错误发生时，将会等待这一轮请求结束后重新请求。
+可避免因一时问题而造成爬取失败，将会等待这一轮爬取目标结束后重新爬取目标。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -553,7 +553,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlData({ url: 'https://www.example.com/api', maxRetry: 1 })
+  .crawlData({ url: 'https://www.example.com/api', maxRetry: 9 })
   .then((res) => {})
 ```
 
@@ -561,7 +561,7 @@ maxRetry 属性决定要重试几次。
 
 ### 优先队列
 
-优先队列可以让某个请求优先发送。
+优先队列可以让某个爬取目标优先发送。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -581,9 +581,9 @@ priority 属性的值越大就在当前爬取队列中越优先。
 
 ### 关于结果
 
-对于结果，每个请求的结果将统一使用对象包裹着，该对象提供了关于这次请求结果的信息，比如：id、结果、是否成功、最大重试、重试次数、收集到错误信息等。自动根据你选用的配置方式决定返回值是否包裹在一个数组中，并且在 TS 中类型完美适配。
+对于结果，每个爬取目标的结果将统一使用对象包裹着，该对象提供了关于这次爬取目标结果的信息，比如：id、结果、是否成功、最大重试、重试次数、收集到错误信息等。自动根据你选用的配置方式决定返回值是否包裹在一个数组中，并且在 TS 中类型完美适配。
 
-每个对象的 id 是根据你配置里的请求顺序决定的，如果有使用优先级，则会根据优先级排序。
+每个对象的 id 是根据你配置里的爬取目标顺序决定的，如果有使用优先级，则会根据优先级排序。
 
 相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlData 配置](#配置-1)、[crawlFile 配置](#配置-2) 。
 
@@ -597,7 +597,7 @@ x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持
 
 ### xCrawl
 
-通过调用 xCrawl 创建一个爬虫实例。请求是由实例方法内部自己维护，并非由实例自己维护。
+通过调用 xCrawl 创建一个爬虫实例。爬取目标是由实例方法内部自己维护，并非由实例自己维护。
 
 #### 类型
 
@@ -753,7 +753,7 @@ myXCrawl
 
 ##### 进阶配置 - CrawlPageAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -911,7 +911,7 @@ myXCrawl
 
 ##### 进阶配置 - CrawlDataAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'
@@ -1052,7 +1052,7 @@ myXCrawl
 
 ##### 进阶配置 - CrawlFileAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、storeDir、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、storeDir、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
 import xCrawl from 'x-crawl'

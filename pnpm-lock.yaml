@@ -15,7 +15,7 @@ specifiers:
   https-proxy-agent: ^5.0.1
   jest: ^29.3.1
   prettier: ^2.8.3
-  puppeteer: 19.9.0
+  puppeteer: 19.9.1
   rollup: ^3.10.1
   rollup-plugin-typescript2: ^0.34.1
   ts-jest: ^29.0.5
@@ -25,7 +25,7 @@ specifiers:
 dependencies:
   chalk: 4.1.2
   https-proxy-agent: 5.0.1
-  puppeteer: 19.9.0_typescript@5.0.2
+  puppeteer: 19.9.1_typescript@5.0.2
   x-crawl: 'link:'
 
 devDependencies:
@@ -3017,7 +3017,7 @@ packages:
       jest-util: 29.3.1
       jest-validate: 29.3.1
       prompts: 2.4.2
-      yargs: 17.6.2
+      yargs: 17.7.1
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
@@ -3791,8 +3791,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /puppeteer-core/19.9.0_typescript@5.0.2:
-    resolution: {integrity: sha512-IJYfCE0oFpi5dTvNFqOwo8Dey6zzx7hANy7z6K2bjpCux9oPOSOIubq40awNhaHlfi8soYtgU4qabnzMXB7xBQ==}
+  /puppeteer-core/19.9.1_typescript@5.0.2:
+    resolution: {integrity: sha512-46JGqhqTgYO5DuUMRGUiMCKM/86uHMsMCK7Fw7cbY/p+eCKLIPGVyQyI/E0UcGYa0+OH3dz0ResaDdHxqCgDDw==}
     engines: {node: '>=14.14.0'}
     peerDependencies:
       typescript: '>= 4.7.4'
@@ -3819,8 +3819,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /puppeteer/19.9.0_typescript@5.0.2:
-    resolution: {integrity: sha512-JDx8WwGlkdQYTaa3OMYDF+uFWimiwNnacg5FGEC5J6+VxDsLK30wHKU/Db2LqEhtAoIu4RwS+BRH4zRPlCsFpA==}
+  /puppeteer/19.9.1_typescript@5.0.2:
+    resolution: {integrity: sha512-Ii8yZySNdpPzeKAK6ROFQ+gAi04igoZ0cPsBE1LW9fmzkqQTqbJpEGhJ/5gBS8oVqkQ2CNFA4BskJl75zaWWgA==}
     requiresBuild: true
     dependencies:
       '@puppeteer/browsers': 0.4.1_typescript@5.0.2
@@ -3828,7 +3828,7 @@ packages:
       https-proxy-agent: 5.0.1
       progress: 2.0.3
       proxy-from-env: 1.1.0
-      puppeteer-core: 19.9.0_typescript@5.0.2
+      puppeteer-core: 19.9.1_typescript@5.0.2
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -4422,19 +4422,6 @@ packages:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
 
-  /yargs/17.6.2:
-    resolution: {integrity: sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==}
-    engines: {node: '>=12'}
-    dependencies:
-      cliui: 8.0.1
-      escalade: 3.1.1
-      get-caller-file: 2.0.5
-      require-directory: 2.1.1
-      string-width: 4.2.3
-      y18n: 5.0.8
-      yargs-parser: 21.1.1
-    dev: true
-
   /yargs/17.7.1:
     resolution: {integrity: sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==}
     engines: {node: '>=12'}
@@ -4446,7 +4433,6 @@ packages:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-    dev: false
 
   /yauzl/2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}

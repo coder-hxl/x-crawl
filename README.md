@@ -8,19 +8,19 @@ x-crawl is a flexible Node.js multifunctional crawler library. Used to crawl pag
 
 ## Features
 
-- **🔥 Async/Sync** - Just change the mode property to toggle async/sync crawling mode.
-- **⚙️Multiple functions** - Can crawl pages, crawl interfaces, crawl files and poll crawls. And it supports crawling single or multiple.
-- **🖋️ Flexible writing method** - A function adapts to multiple crawling configurations and obtains crawling results. The writing method is very flexible.
-- **👀 Device Fingerprinting** - Zero configuration/custom configuration to avoid fingerprinting to identify and track us from different locations.
-- **⏱️ Interval crawling** - no interval/fixed interval/random interval, can effectively use/avoid high concurrent crawling.
-- **🔄 Retry on failure** - It can be set for all crawling requests, for a single crawling request, and for a single request to set a failed retry.
-- **🚀 Priority Queue** - Use priority crawling based on the priority of individual requests.
-- **☁️ Crawl SPA** - Batch crawl SPA (Single Page Application) to generate pre-rendered content (ie "SSR" (Server Side Rendering)).
+- **🔥 Async/Sync** - Just change the mode attribute value to switch async or sync crawling mode.
+- **⚙️Multiple functions** - It can crawl pages, crawl interfaces, crawl files and polling crawls, and supports crawling single or multiple.
+- **🖋️ Flexible writing style** - Simple target configuration, detailed target configuration, mixed target array configuration and advanced configuration, the same crawling API can adapt to multiple configurations.
+- **👀Device Fingerprinting** - Zero configuration or custom configuration to avoid fingerprinting to identify and track us from different locations.
+- **⏱️ Interval Crawling** - No interval, fixed interval and random interval can generate or avoid high concurrent crawling.
+- **🔄 Retry on failure** - Global settings, local settings and individual settings. It can avoid crawling failure caused by temporary problems.
+- **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
+- **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
 - **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
-- **🧾 Capture Record** - Capture and record the crawled results, and highlight them on the console.
+- **🧾 Capture Record** - Capture and record crawling results and other information, and highlight reminders on the console.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
-## Relationship with puppeteer
+## Relationship with Puppeteer
 
 The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built in, you only need to pass in some configuration options to complete some operations, and the result will expose Brower instances and Page instances.
 
@@ -28,31 +28,31 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
 
 - [Install](#Install)
 - [Example](#Example)
-- [Core concepts](#Core-concepts)
-  - [Create application](#Create-application)
-    - [An example of a crawler application](#An-example-of-a-crawler-application)
-    - [Crawl mode](#Crawl-mode)
-    - [Device fingerprint](#Device-fingerprint)
-    - [Multiple crawler application instances](#Multiple-crawler-application-instances)
-  - [Crawl page](#Crawl-page)
-    - [browser instance](#browser-instance)
-    - [page instance](#page-instance)
-    - [life cycle](#life-cycle)
+- [Core Concepts](#Core-Concepts)
+  - [Create Application](#Create-Application)
+    - [An Example of a Crawler Application](#An-Example-of-a-Crawler-Application)
+    - [Crawl Mode](#Crawl-Mode)
+    - [Default Device Fingerprint](#Default-Device-Fingerprint)
+    - [Multiple Crawler Application Anstances](#Multiple-Crawler-Application-Instances)
+  - [Crawl Page](#Crawl-Page)
+    - [Browser Instance](#Browser-Instance)
+    - [Page Instance](#Page-Instance)
+    - [life Cycle](#life-Cycle)
       - [onCrawlItemComplete](#onCrawlItemComplete)
-  - [Crawl interface](#Crawl-interface)
-    - [life cycle](#life-cycle-1)
+  - [Crawl Interface](#Crawl-Interface)
+    - [life Cycle](#life-Cycle-1)
       - [onCrawlItemComplete](#onCrawlItemComplete-1)
-  - [Crawl files](#Crawl-files)
-    - [life cycle](#life-cycle)
+  - [Crawl Files](#Crawl-Files)
+    - [life Cycle](#life-Cycle)
       - [onCrawlItemComplete](#onCrawlItemComplete-2)
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
-  - [Start polling](#Start-polling)
-  - [Config priority](#Config-Priority)
-  - [Device fingerprint](#Device-fingerprint-1)
-  - [Interval time](#Interval-time)
-  - [Fail retry](#Fail-retry)
-  - [Priority queue](#Priority-queue)
-  - [About results](#About-results)
+  - [Start Polling](#Start-Polling)
+  - [Config Priority](#Config-Priority)
+  - [Custom Device Fingerprint](#Custom-Device-Fingerprint)
+  - [Interval Time](#Interval-Time)
+  - [Fail Retry](#Fail-Retry)
+  - [Priority Queue](#Priority-Queue)
+  - [About Results](#About-Results)
   - [TypeScript](#TypeScript)
 - [API](#API)
   - [xCrawl](#xCrawl)
@@ -180,11 +180,11 @@ running result:
 </div>
 **Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
-## Core concepts
+## Core Concepts
 
-### Create application
+### Create Application
 
-#### An example of a crawler application
+#### An Example of a Crawler Application
 
 Create a new **application instance** via [xCrawl()](#xCrawl):
 
@@ -198,7 +198,7 @@ const myXCrawl = xCrawl({
 
 Related **options** can refer to [XCrawlBaseConfig](#XCrawlBaseConfig) .
 
-#### Crawl mode
+#### Crawl Mode
 
 A crawler application instance has two crawling modes: asynchronous/synchronous, and each crawler instance can only choose one of them.
 
@@ -212,12 +212,14 @@ const myXCrawl = xCrawl({
 
 The mode option defaults to async .
 
-- async: asynchronous request, in batch requests, the next request is made without waiting for the current request to complete
-- sync: synchronous request, in batch requests, you need to wait for this request to complete before making the next request
+- async: Asynchronous crawling target, no need to wait for the current crawling target to complete, then proceed to the next crawling target
+- sync: Synchronize the crawling target. You need to wait for the completion of this crawling target before proceeding to the next crawling target
 
-If there is an interval time set, it is necessary to wait for the interval time to end before sending the request.
+If there is an interval time set, it is necessary to wait for the end of the interval time before crawling the next target.
 
-#### Device fingerprint
+**Note:** The crawling process of the crawling API is performed separately, and this mode is only valid for batch crawling targets.
+
+#### Default Device Fingerprint
 
 A property can be used to control whether to use the default random fingerprint, or you can configure a custom fingerprint through subsequent crawling.
 
@@ -233,10 +235,10 @@ const myXCrawl = xCrawl({
 
 The enableRandomFingerprint option defaults to true.
 
-- true: Enable random device fingerprinting. The fingerprint configuration of the target can be specified through the advanced version configuration or the detailed target version configuration.
-- false: Turn off random device fingerprinting, without affecting the fingerprint configuration specified for the target by the advanced configuration or the detailed configuration.
+- true: Enable random device fingerprinting. The fingerprint configuration of the target can be specified through advanced configuration or detailed target configuration.
+- false: Turns off random device fingerprinting, does not affect the fingerprint configuration specified for the target by advanced configuration or detailed target configuration.
 
-#### Multiple crawler application instances
+#### Multiple Crawler Application Instances
 
 ```js
 import xCrawl from 'x-crawl'
@@ -250,7 +252,7 @@ const myXCrawl2 = xCrawl({
 })
 ```
 
-### Crawl page
+### Crawl Page
 
 Crawl a page via [crawlPage()](#crawlPage) .
 
@@ -267,17 +269,15 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 })
 ```
 
-#### browser instance
+#### Browser Instance
 
-It is an instance object of [Browser](https://pptr.dev/api/puppeteer.browser). For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
+When you call crawlPage API to crawl pages in the same crawler instance, the browser instance used is the same, because the crawlPage API of the browser instance in the same crawler instance is shared. It's a headless browser, no UI shell, what he does is bring **all modern web platform features** provided by the browser rendering engine to the code. For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
 
-The browser instance is a headless browser without a UI shell. What he does is to bring **all modern network platform functions** provided by the browser rendering engine to the code.
+**Note:** The browser will keep running and the file will not be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because the crawlPage API of the browser instance in the same crawler instance is shared.
 
-**Note:** The browser will stay up and running, causing the file not to be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because when you modify the properties of the browser instance, it will affect the browser instance inside the crawlPage API of the crawler instance, the page instance that returns the result, and the browser instance, because the browser instance is shared within the crawlPage API of the same crawler instance.
+#### Page Instance
 
-#### page instance
-
-It is an instance object of [Page](https://pptr.dev/api/puppeteer.page). The instance can also perform interactive operations such as events. For specific usage, please refer to [page](https://pptr.dev /api/puppeteer. page).
+When you call crawlPage API to crawl pages in the same crawler instance, a new page instance will be generated from the browser instance. It can be used for interactive operations. For specific usage, please refer to [Page](https://pptr.dev/api/puppeteer.page).
 
 The browser instance will retain a reference to the page instance. If it is no longer used in the future, the page instance needs to be closed by itself, otherwise it will cause a memory leak.
 
@@ -300,19 +300,19 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 })
 ```
 
-#### life cycle
+#### life Cycle
 
-Lifecycle functions owned by crawlPageAPI:
+Lifecycle functions owned by the crawlPage API:
 
-- onCrawlItemComplete: executed when each crawl item is finished and processed
+- onCrawlItemComplete: Called when each crawl item is completed and processed
 
 ##### onCrawlItemComplete
 
-In the onCrawlItemComplete function you can get the result of each crawl object.
+In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
 
 **Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
 
-### Crawl interface
+### Crawl Interface
 
 Crawl interface data through [crawlData()](#crawlData) .
 
@@ -336,19 +336,17 @@ myXCrawl.crawlData({ targets }).then((res) => {
 })
 ```
 
-#### life cycle
+#### life Cycle
 
-Lifecycle functions owned by crawlPageAPI:
+Life cycle functions owned by crawlData API:
 
-- onCrawlItemComplete: executed when each crawl item is finished and processed
+- onCrawlItemComplete: Called when each crawl item is completed and processed
 
 ##### onCrawlItemComplete
 
-In the onCrawlItemComplete function you can get the result of each crawl object.
+In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
 
-**Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
-
-### Crawl files
+### Crawl Files
 
 Crawl file data via [crawlFile()](#crawlFile) .
 
@@ -372,23 +370,23 @@ myXCrawl
   })
 ```
 
-#### life cycle
+#### life Cycle
 
 Life cycle functions owned by crawlFile API:
 
-- onCrawlItemComplete: executed when each crawl item is finished and processed
+- onCrawlItemComplete: Called when each crawl item is completed and processed
 
-- onBeforeSaveItemFile: executed before saving the file
+- onBeforeSaveItemFile: Callback before saving the file
 
 ##### onCrawlItemComplete
 
-In the onCrawlItemComplete function you can get the result of each crawl object.
+In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
 
 ##### onBeforeSaveItemFile
 
-In the onBeforeSaveItemFile function, you can get the Buffer type file, you can process the Buffer, and then you need to return a Promise, and the resolve is Buffer.
+In the onBeforeSaveItemFile function, you can get the Buffer type file, you can process the Buffer, and then you need to return a Promise, and the resolve is a Buffer, which will replace the obtained Buffer and store it in the file.
 
-**Resize picture**
+**Resize Picture**
 
 Use the sharp library to resize the images to be crawled:
 
@@ -417,7 +415,7 @@ myXCrawl
   })
 ```
 
-### Start polling
+### Start Polling
 
 Start a polling crawl with [startPolling()](#startPolling) .
 
@@ -437,14 +435,14 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
 })
 ```
 
-**Using crawlPage in polling Note:** The purpose of calling page.close() is to prevent the browser instance from retaining references to the page instance. If the current page is no longer used in the future, it needs to be closed by itself, otherwise it will cause a memory leak.
+**Using crawlPage in polling Note:** The browser instance will retain a reference to the page instance. If it is no longer used in the future, you need to close the page instance yourself, otherwise it will cause a memory leak.
 
 Callback function parameters:
 
 - The count attribute records the current number of polling operations.
 - stopPolling is a callback function, calling it can terminate subsequent polling operations.
 
-### Config priority
+### Config Priority
 
 Some common configurations can be set in these three places:
 
@@ -479,9 +477,9 @@ myXCrawl.crawlPage({
 })
 ```
 
-### Device fingerprint
+### Custom Device Fingerprint
 
-Customize the configuration to avoid fingerprinting and tracking us from different locations.
+Customize the configuration of device fingerprints to avoid identifying and tracking us from different locations through fingerprint recognition.
 
 Multiple information can be passed in the fingerprint through advanced usage, and internally it will help you randomly assign each target to targets. It is also possible to set a specific fingerprint for a target directly with the detailed target configuration.
 
@@ -525,13 +523,13 @@ myXCrawl
 
 For more fingerprint options, you can go to the corresponding configuration to view.
 
-In the above example, the interval time is set in both **Application Instance Configuration** and **Advanced Configuration**, then the interval time of **Advanced Configuration** will prevail. If the viewport is set in **Advanced Configuration** and **Detailed Target Configuration**, then the second target is to set the viewport, which will be based on the viewport of **Detailed Target Configuration**.
+In the above example, the interval time is set in both **Application Instance Configuration** and **Advanced Configuration**, then the interval time of **Advanced Configuration** will prevail. If the viewport is set in **Advanced Configuration** and **Detailed Target Configuration**, then the second target will be based on the viewport of its **Detailed Target Configuration**.
 
-### Interval time
+### Interval Time
 
 The interval time can prevent too much concurrency and avoid too much pressure on the server.
 
-The crawling interval is controlled internally by the instance method, not the entire crawling interval is controlled by the instance.
+The crawling interval is controlled by the crawling API itself, not by the crawler instance.
 
 ```js
 import xCrawl from 'x-crawl'
@@ -548,14 +546,14 @@ myXCrawl
 
 The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before requesting, which can prevent too much concurrency and avoid too much pressure on the server.
 
-- number: The time that must wait before each request is fixed
-- Object: Randomly select a value from max and min, which is more anthropomorphic
+- number: The time that must wait before each crawl target is fixed
+- IntervalTime: Take a random value among max and min
 
-**Note:** The first request will not trigger the interval.
+**Note:** The first crawl target will not trigger the interval.
 
-### Fail retry
+### Fail Retry
 
-Failed retry In the event of an error such as a timeout, the request will wait for the round to end and then retry.
+It can avoid crawling failure due to temporary problems, and will wait for the end of this round of crawling targets to crawl again.
 
 ```js
 import xCrawl from 'x-crawl'
@@ -563,15 +561,15 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl()
 
 myXCrawl
-  .crawlData({ url: 'https://www.example.com/api', maxRetry: 1 })
+  .crawlData({ url: 'https://www.example.com/api', maxRetry: 9 })
   .then((res) => {})
 ```
 
 The maxRetry attribute determines how many times to retry.
 
-### Priority queue
+### Priority Queue
 
-A priority queue allows a request to be sent first.
+A priority queue allows a crawl target to be sent first.
 
 ```js
 import xCrawl from 'x-crawl'
@@ -589,11 +587,11 @@ myXCrawl
 
 The larger the value of the priority attribute, the higher the priority in the current crawling queue.
 
-### About results
+### About Results
 
-For the result, the result of each request is uniformly wrapped with an object that provides information about the result of the request, such as id, result, success or not, maximum retry, number of retries, error information collected, and so on. Automatically determine whether the return value is wrapped in an array depending on the configuration you choose, and the type fits perfectly in TS.
+For the result, the result of each crawl target is uniformly wrapped with an object that provides information about the result of the crawl target, such as id, result, success or not, maximum retry, number of retries, error information collected, and so on. Automatically determine whether the return value is wrapped in an array depending on the configuration you choose, and the type fits perfectly in TS.
 
-The id of each object is determined according to the order of requests in your configuration, and if there is a priority used, it will be sorted by priority.
+The id of each object is determined according to the order of crawl targets in your configuration, and if there is a priority used, it will be sorted by priority.
 
 Details about configuration methods and results are as follows: [crawlPage config](#config), [crawlData config](#config-1), [crawlFile config](#config-2).
 
@@ -607,7 +605,7 @@ x-crawl itself is written in TypeScript and supports TypeScript. Comes with a ty
 
 ### xCrawl
 
-Create a crawler instance via call xCrawl. The request queue is maintained by the instance method itself, not by the instance itself.
+Create a crawler instance via call xCrawl. The crawl target queue is maintained by the instance method itself, not by the instance itself.
 
 #### Type
 
@@ -765,7 +763,7 @@ More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDeta
 
 ##### Advanced config - CrawlPageAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages and request configurations (proxy, cookies, retries, etc.) that you don't want to write repeatedly, but also need interval time, device fingerprint, lifecycle, etc., try this:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages and crawl target configurations (proxy, cookies, retries, etc.) that you don't want to write repeatedly, but also need interval time, device fingerprint, lifecycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -922,7 +920,7 @@ More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDeta
 
 ##### Advanced config - CrawlDataAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and request configurations (proxy, cookies, retries, etc.) don't want to write twice, but also need interval time, device fingerprint, lifecycle, etc., try this:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and crawl target configurations (proxy, cookies, retries, etc.) don't want to write twice, but also need interval time, device fingerprint, lifecycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
@@ -1063,7 +1061,7 @@ More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDeta
 
 ##### Advanced config CrawlFileAdvancedConfig
 
-This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and request configurations (proxy, storeDir, retry, etc.) don't want to write twice, but also need interval time, device fingerprint, life cycle, etc., try this:
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl more than one piece of data and crawl target configurations (proxy, storeDir, retry, etc.) don't want to write twice, but also need interval time, device fingerprint, life cycle, etc., try this:
 
 ```js
 import xCrawl from 'x-crawl'
