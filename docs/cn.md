@@ -62,14 +62,25 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
     - [类型](#类型-1)
     - [示例](#示例-2)
     - [配置](#配置)
+      - [1.简单目标配置 - string](#1.简单目标配置---string)
+      - [2.详细目标配置 - CrawlPageDetailTargetConfig](#2.详细目标配置---CrawlPageDetailTargetConfig)
+      - [3.混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]](<#3.混合目标数组配置---(string-|-CrawlPageDetailTargetConfig)[]>)
+      - [4.进阶配置 - CrawlPageAdvancedConfig](#4.进阶配置---CrawlPageAdvancedConfig)
   - [crawlData](#crawlData)
     - [类型](#类型-2)
     - [示例](#示例-3)
     - [配置](#配置-1)
+      - [1.简单目标配置 - string](#1.简单目标配置---string-1)
+      - [2.详细目标配置 - CrawlDataDetailTargetConfig](#2.详细目标配置---CrawlDataDetailTargetConfig)
+      - [3.混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]](<#3.混合目标数组配置---(string-|-CrawlDataDetailTargetConfig)[]>)
+      - [4.进阶配置 - CrawlDataAdvancedConfig](#4.进阶配置---CrawlDataAdvancedConfig)
   - [crawlFile](#crawlFile)
     - [类型](#类型-3)
     - [示例](#示例-4)
     - [配置](#配置-2)
+      - [1.详细目标配置 - CrawlFileDetailTargetConfig](#1.详细目标配置---CrawlFileDetailTargetConfig)
+      - [2.详细目标数组配置 - CrawlFileDetailTargetConfig[]](2.详细目标数组配置---CrawlFileDetailTargetConfig[])
+      - [3.进阶配置 - CrawlFileAdvancedConfig](#3.进阶配置---CrawlFileAdvancedConfig)
   - [startPolling](#startPolling)
     - [类型](#类型-4)
     - [示例](#示例-5)
@@ -678,12 +689,12 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 一共有 4 种:
 
-- string
-- CrawlPageDetailTargetConfig
-- (string | CrawlPageDetailTargetConfig)[]
-- CrawlPageAdvancedConfig
+- 简单目标配置 - string
+- 详细目标配置 - CrawlPageDetailTargetConfig
+- 混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]
+- 进阶配置 - CrawlPageAdvancedConfig
 
-**1.string**
+##### 1.简单目标配置 - string
 
 这是简单目标配置。如果你只想单纯爬一下这个页面，可以试试这种写法：
 
@@ -697,7 +708,7 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 
 拿到的 res 将是一个对象。
 
-**2.CrawlPageDetailTargetConfig**
+##### 2.详细目标配置 - CrawlPageDetailTargetConfig
 
 这是详细目标配置。如果你想爬一下这个页面，并且需要失败重试之类的，可以试试这种写法：
 
@@ -719,7 +730,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
 
-**3.(string | CrawlPageDetailTargetConfig)[]**
+##### 3.混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]
 
 这是混合目标数组配置。如果你想爬取多个页面，并且有些页面需要失败重试之类的，可以试试这种写法：
 
@@ -740,7 +751,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
 
-**4.CrawlPageAdvancedConfig**
+##### 4.进阶配置 - CrawlPageAdvancedConfig
 
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
@@ -836,12 +847,12 @@ myXCrawl
 
 一共有 4 种:
 
-- string
-- CrawlDataDetailTargetConfig
-- (string | CrawlDataDetailTargetConfig)[]
-- CrawlDataAdvancedConfig
+- 简单目标配置 - string
+- 详细目标配置 - CrawlDataDetailTargetConfig
+- 混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]
+- 进阶配置 - CrawlDataAdvancedConfig
 
-**1.string**
+##### 1.简单目标配置 - string
 
 这是简单目标配置。如果你只想单纯爬一下这个数据，并且该接口是 GET 方式的，可以试试这种写法：
 
@@ -855,7 +866,7 @@ myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 
 拿到的 res 将是一个对象。
 
-**2.CrawlDataDetailTargetConfig**
+##### 2.详细目标配置 - CrawlDataDetailTargetConfig
 
 这是详细目标配置。如果你想爬一下这个数据，并且需要失败重试之类的，可以试试这种写法：
 
@@ -877,7 +888,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
 
-**3.(string | CrawlDataDetailTargetConfig)[]**
+##### 3.混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]
 
 这是混合目标数组配置。如果你想爬取多个数据，并且有些数据需要失败重试之类的，可以试试这种写法：
 
@@ -898,7 +909,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
 
-**4.CrawlDataAdvancedConfig**
+##### 4.进阶配置 - CrawlDataAdvancedConfig
 
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（proxy、cookies、重试等等）不想重复写，需要间隔时间的话，可以试试这种写法：
 
@@ -990,11 +1001,11 @@ myXCrawl
 
 一共有 3 种:
 
-- CrawlFileDetailTargetConfig
-- CrawlFileDetailTargetConfig[]
-- CrawlFileAdvancedConfig
+- 详细目标配置 - CrawlFileDetailTargetConfig
+- 详细目标数组配置 - CrawlFileDetailTargetConfig[]
+- 进阶配置 - CrawlFileAdvancedConfig
 
-**1.CrawlFileDetailTargetConfig**
+##### 1.详细目标配置 - CrawlFileDetailTargetConfig
 
 这是详细目标配置。如果你想爬一下这个文件，并且需要失败重试之类的，可以试试这种写法：
 
@@ -1018,7 +1029,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
 
-**2.CrawlFileDetailTargetConfig[]**
+##### 2.详细目标数组配置 - CrawlFileDetailTargetConfig[]
 
 这是详细目标数组配置。如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
 
@@ -1039,7 +1050,7 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
 
-**3.CrawlFileAdvancedConfig**
+##### 3.进阶配置 - CrawlFileAdvancedConfig
 
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且请求配置（storeDir、proxy、重试等等）不想重复写，需要间隔时间等等的话，可以试试这种写法：
 
