@@ -62,25 +62,25 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
     - [Type](#Type-1)
     - [Example](#Example-2)
     - [Config](#Config)
-      - [1.Simple target config - string](#1.Simple-target-config---string)
-      - [2.Detailed target config - CrawlPageDetailTargetConfig](#2.Detailed-target-config---CrawlPageDetailTargetConfig)
-      - [3.Mixed target array config - (string | CrawlPageDetailTargetConfig)[]](<#3.Mixed-target-array-config---(string-|-CrawlPageDetailTargetConfig)[]>)
-      - [4.Advanced config - CrawlPageAdvancedConfig](#4.Advanced-config---CrawlPageAdvancedConfig)
+      - [Simple target config - string](#Simple-target-config---string)
+      - [Detailed target config - CrawlPageDetailTargetConfig](#Detailed-target-config---CrawlPageDetailTargetConfig)
+      - [Mixed target array config - (string | CrawlPageDetailTargetConfig)[]](<#Mixed-target-array-config---(string-|-CrawlPageDetailTargetConfig)[]>)
+      - [Advanced config - CrawlPageAdvancedConfig](#Advanced-config---CrawlPageAdvancedConfig)
   - [crawlData](#crawlData)
     - [Type](#Type-2)
     - [Example](#Example-3)
     - [Config](#Config-1)
-      - [1.Simple target config - string](#1.Simple-target-config---string-1)
-      - [2.Detailed target config - CrawlDataDetailTargetConfig](#2.Detailed-target-config---CrawlDataDetailTargetConfig)
-      - [3.Mixed target array config - (string | CrawlDataDetailTargetConfig)[]](<#3.Mixed-target-array-config---(string-|-CrawlDataDetailTargetConfig)[]>)
-      - [4.Advanced config - CrawlDataAdvancedConfig](#4.Advanced-config---CrawlDataAdvancedConfig)
+      - [Simple target config - string](#Simple-target-config---string-1)
+      - [Detailed target config - CrawlDataDetailTargetConfig](#Detailed-target-config---CrawlDataDetailTargetConfig)
+      - [Mixed target array config - (string | CrawlDataDetailTargetConfig)[]](<#Mixed-target-array-config---(string-|-CrawlDataDetailTargetConfig)[]>)
+      - [Advanced config - CrawlDataAdvancedConfig](#Advanced-config---CrawlDataAdvancedConfig)
   - [crawlFile](#crawlFile)
     - [Type](#Type-3)
     - [Example](#Example-4)
     - [Config](#Config-2)
-      - [1.Detailed target config - CrawlFileDetailTargetConfig](#1.Detailed-target-config---CrawlFileDetailTargetConfig)
-      - [2.Detailed target array config - CrawlFileDetailTargetConfig[]](#2.Detailed-target-array-config---CrawlFileDetailTargetConfig[])
-      - [3.Advanced config - CrawlFileAdvancedConfig](#3.Advanced-config---CrawlFileAdvancedConfig)
+      - [Detailed target config - CrawlFileDetailTargetConfig](#Detailed-target-config---CrawlFileDetailTargetConfig)
+      - [Detailed target array config - CrawlFileDetailTargetConfig[]](#Detailed-target-array-config---CrawlFileDetailTargetConfig[])
+      - [Advanced config - CrawlFileAdvancedConfig](#Advanced-config---CrawlFileAdvancedConfig)
   - [crawlPolling](#crawlPolling)
     - [Type](#Type-4)
     - [Example](#Example-5)
@@ -706,7 +706,7 @@ There are 4 types:
 - Mixed target array config - (string | CrawlPageDetailTargetConfig)[]
 - Advanced config - CrawlPageAdvancedConfig
 
-##### 1.Simple target config - string
+##### Simple target config - string
 
 This is a simple target configuration. if you just want to simply crawl this page, you can try this way of writing:
 
@@ -720,7 +720,7 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 
 The res you get will be an object.
 
-##### 2.Detailed target config - CrawlPageDetailTargetConfig
+##### Detailed target config - CrawlPageDetailTargetConfig
 
 This is the detailed target configuration. if you want to crawl this page and need to retry on failure, you can try this way of writing:
 
@@ -742,7 +742,7 @@ The res you get will be an object.
 
 More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-##### 3.Mixed target array config - (string | CrawlPageDetailTargetConfig)[]
+##### Mixed target array config - (string | CrawlPageDetailTargetConfig)[]
 
 This is a mixed target array configuration. if you want to crawl multiple pages, and some pages need to fail and retry, you can try this way of writing:
 
@@ -763,7 +763,7 @@ The res you get will be an array of objects.
 
 More configuration options can view [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-##### 4.Advanced config - CrawlPageAdvancedConfig
+##### Advanced config - CrawlPageAdvancedConfig
 
 This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple pages, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this way of writing:
 
@@ -863,7 +863,7 @@ There are 4 types:
 - Mixed target array config - (string | CrawlDataDetailTargetConfig)[]
 - Advanced config - CrawlDataAdvancedConfig
 
-##### 1.Simple target config - string
+##### Simple target config - string
 
 This is a simple target configuration. if you just want to simply crawl the data, and the interface is GET, you can try this way of writing:
 
@@ -877,7 +877,7 @@ myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 
 The res you get will be an object.
 
-##### 2.Detailed target config - CrawlDataDetailTargetConfig
+##### Detailed target config - CrawlDataDetailTargetConfig
 
 This is the detailed target configuration. if you want to crawl this data and need to retry on failure, you can try this way of writing:
 
@@ -899,7 +899,7 @@ The res you get will be an object.
 
 More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-##### 3.Mixed target array config - (string | CrawlDataDetailTargetConfig)[]
+##### Mixed target array config - (string | CrawlDataDetailTargetConfig)[]
 
 This is a mixed target array configuration. if you want to crawl multiple data, and some data needs to fail and retry, you can try this way of writing:
 
@@ -920,7 +920,7 @@ The res you get will be an array of objects.
 
 More configuration options can view [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-##### 4.Advanced config - CrawlDataAdvancedConfig
+##### Advanced config - CrawlDataAdvancedConfig
 
 This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (proxy, cookies, retry, etc.) does not want to be written repeatedly, if you need an interval, you can try this writing method:
 
@@ -1013,11 +1013,10 @@ myXCrawl
 There are 3 types:
 
 - Detailed target config - CrawlFileDetailTargetConfig
-
 - Detailed target array config - CrawlFileDetailTargetConfig[]
 - Advanced config CrawlFileAdvancedConfig
 
-##### 1.Detailed target config - CrawlFileDetailTargetConfig
+##### Detailed target config - CrawlFileDetailTargetConfig
 
 This is the detailed target configuration. if you want to crawl this file and need to retry on failure, you can try this way of writing:
 
@@ -1041,7 +1040,7 @@ The res you get will be an object.
 
 More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-##### 2.Detailed target array config - CrawlFileDetailTargetConfig[]
+##### Detailed target array config - CrawlFileDetailTargetConfig[]
 
 This is the detailed target array configuration. if you want to crawl multiple files, and some data needs to be retried after failure, you can try this way of writing:
 
@@ -1062,7 +1061,7 @@ The res you get will be an array of objects.
 
 More configuration options can view [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-##### 3.Advanced config CrawlFileAdvancedConfig
+##### Advanced config CrawlFileAdvancedConfig
 
 This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple data, and the request configuration (storeDir, proxy, retry, etc.) does not want to be written repeatedly, and you need interval time, etc., you can try this way of writing:
 
