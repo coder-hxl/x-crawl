@@ -79,7 +79,7 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
     - [Example](#Example-4)
     - [Config](#Config-2)
       - [Detailed target config - CrawlFileDetailTargetConfig](#Detailed-target-config---CrawlFileDetailTargetConfig)
-      - [Detailed target array config - CrawlFileDetailTargetConfig[]](#Detailed-target-array-config---CrawlFileDetailTargetConfig[])
+      - [Detailed target array config - CrawlFileDetailTargetConfig[]](#Detailed-target-array-config---CrawlFileDetailTargetConfig)
       - [Advanced config - CrawlFileAdvancedConfig](#Advanced-config-CrawlFileAdvancedConfig)
   - [crawlPolling](#crawlPolling)
     - [Type](#Type-4)
