@@ -8,12 +8,12 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用于爬页面、爬接
 
 ## 特征
 
-- **🔥 异步/同步** - 只需更改一下 mode 属性值即可切换异步或同步爬取模式。
+- **🔥 异步同步** - 只需更改一下 mode 属性值即可切换异步或同步爬取模式。
 - **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬，并且支持爬取单个或多个。
 - **🖋️ 写法灵活** - 简单目标配置、详细目标配置、混合目标数组配置以及进阶配置，同种爬取 API 适配多种配置。
 - **👀 设备指纹** - 零配置或自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
 - **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，即可产生或避免高并发爬取。
-- **🔄 失败重试** - 全局设置、局部设置以及单独设置。即可避免因一时问题而造成爬取失败。
+- **🔄 失败重试** - 全局设置、局部设置以及单独设置, 即可避免因一时问题而造成爬取失败。
 - **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前进行爬取。
 - **☁️ 爬取 SPA** - 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
 - **⚒️ 控制页面** - 无头浏览器可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
@@ -1128,6 +1128,15 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 }
 ```
 
+**默认值**
+
+- mode: 'async'
+- enableRandomFingerprint: true
+- baseUrl: undefined
+- intervalTime: undefined
+- crawlPage: undefined
+  - launchBrowser: undefined
+
 #### Detail target config
 
 ##### CrawlPageDetailTargetConfig
@@ -1150,6 +1159,14 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
+**默认值**
+
+- headers: undefined
+- method: undefined
+- priority: undefined
+- viewport: undefined
+- fingerprint: undefined
+
 ##### CrawlDataDetailTargetConfig
 
 ```ts
@@ -1164,6 +1181,16 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
+**默认值**
+
+- method: 'GET'
+
+- headers: undefined
+- params: undefined
+- data: undefined
+- priority: undefined
+- fingerprint: undefined
+
 ##### CrawlFileDetailTargetConfig
 
 ```ts
@@ -1177,6 +1204,15 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   fingerprint?: DetailTargetFingerprintCommon | null
 }
 ```
+
+**默认值**
+
+- headers: undefined
+- priority: undefined
+- storeDir: \_\_dirname
+- fileName: string
+- extension: string
+- fingerprint: undefined
 
 #### Advanced config
 
@@ -1201,6 +1237,15 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
+**默认值**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- cookies: undefined
+- viewport: undefined
+- onCrawlItemComplete: undefined
+
 ##### CrawlDataAdvancedConfig
 
 ```ts
@@ -1214,6 +1259,13 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
 }
 ```
+
+**默认值**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- onCrawlItemComplete: undefined
 
 ##### CrawlFileAdvancedConfig
 
@@ -1237,6 +1289,16 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
+**默认值**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- storeDir: \_\_dirname
+- extension: string
+- onCrawlItemComplete: undefined
+- onBeforeSaveItemFile: undefined
+
 #### StartPollingConfig
 
 ```ts
@@ -1246,6 +1308,12 @@ export interface StartPollingConfig {
   m?: number
 }
 ```
+
+**默认值**
+
+- d: undefined
+- h: undefined
+- m: undefined
 
 #### Crawl other config
 
@@ -1258,6 +1326,12 @@ export interface CrawlCommonConfig {
   maxRetry?: number
 }
 ```
+
+**默认值**
+
+- timeout: 10000
+- proxy: undefined
+- maxRetry: 0
 
 ##### DetailTargetFingerprintCommon
 
@@ -1272,6 +1346,15 @@ export interface DetailTargetFingerprintCommon {
 }
 ```
 
+**默认值**
+
+- userAgent: undefined
+- ua: undefined
+- platform: undefined
+- platformVersion: undefined
+- mobile: undefined
+- acceptLanguage: undefined
+
 ##### AdvancedFingerprintCommon
 
 ```ts
@@ -1284,6 +1367,15 @@ export interface AdvancedFingerprintCommon {
   acceptLanguages?: string[]
 }
 ```
+
+**默认值**
+
+- userAgents: undefined
+- uas: undefined
+- platforms: undefined
+- platformVersions: undefined
+- mobiles: undefined
+- acceptLanguages: undefined
 
 ##### Mobile
 

@@ -11,8 +11,8 @@
     "crawl",
     "crawler",
     "spider",
-    "flexible",
     "fingerprint",
+    "flexible",
     "multifunction"
   ],
   "main": "dist/index.js",
@@ -32,7 +32,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "https-proxy-agent": "^5.0.1",
-    "puppeteer": "19.9.1"
+    "puppeteer": "19.10.0"
   },
   "devDependencies": {}
 }

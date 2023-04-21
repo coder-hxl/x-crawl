@@ -8,12 +8,12 @@ x-crawl is a flexible Node.js multifunctional crawler library. Used to crawl pag
 
 ## Features
 
-- **🔥 Async/Sync** - Just change the mode attribute value to switch async or sync crawling mode.
+- **🔥 AsyncSync** - Just change the mode attribute value to switch async or sync crawling mode.
 - **⚙️Multiple functions** - It can crawl pages, crawl interfaces, crawl files and polling crawls, and supports crawling single or multiple.
 - **🖋️ Flexible writing style** - Simple target configuration, detailed target configuration, mixed target array configuration and advanced configuration, the same crawling API can adapt to multiple configurations.
 - **👀Device Fingerprinting** - Zero configuration or custom configuration to avoid fingerprinting to identify and track us from different locations.
 - **⏱️ Interval Crawling** - No interval, fixed interval and random interval can generate or avoid high concurrent crawling.
-- **🔄 Retry on failure** - Global settings, local settings and individual settings. It can avoid crawling failure caused by temporary problems.
+- **🔄 Retry on failure** - Global settings, local settings and individual settings, It can avoid crawling failure caused by temporary problems.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
 - **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
 - **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
@@ -1137,6 +1137,15 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 }
 ```
 
+**Default Value**
+
+- mode: 'async'
+- enableRandomFingerprint: true
+- baseUrl: undefined
+- intervalTime: undefined
+- crawlPage: undefined
+  - launchBrowser: undefined
+
 #### Detail target config
 
 ##### CrawlPageDetailTargetConfig
@@ -1159,6 +1168,14 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
+**Default Value**
+
+- headers: undefined
+- method: undefined
+- priority: undefined
+- viewport: undefined
+- fingerprint: undefined
+
 ##### CrawlDataDetailTargetConfig
 
 ```ts
@@ -1173,6 +1190,16 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
+**Default Value**
+
+- method: 'GET'
+
+- headers: undefined
+- params: undefined
+- data: undefined
+- priority: undefined
+- fingerprint: undefined
+
 ##### CrawlFileDetailTargetConfig
 
 ```ts
@@ -1186,6 +1213,15 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   fingerprint?: DetailTargetFingerprintCommon | null
 }
 ```
+
+**Default Value**
+
+- headers: undefined
+- priority: undefined
+- storeDir: \_\_dirname
+- fileName: string
+- extension: string
+- fingerprint: undefined
 
 #### Advanced config
 
@@ -1210,6 +1246,15 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
+**Default Value**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- cookies: undefined
+- viewport: undefined
+- onCrawlItemComplete: undefined
+
 ##### CrawlDataAdvancedConfig
 
 ```ts
@@ -1223,6 +1268,13 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
 }
 ```
+
+**Default Value**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- onCrawlItemComplete: undefined
 
 ##### CrawlFileAdvancedConfig
 
@@ -1246,6 +1298,16 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
+**Default Value**
+
+- intervalTime: undefined
+- fingerprint: undefined
+- headers: undefined
+- storeDir: \_\_dirname
+- extension: string
+- onCrawlItemComplete: undefined
+- onBeforeSaveItemFile: undefined
+
 #### StartPollingConfig
 
 ```ts
@@ -1255,6 +1317,12 @@ export interface StartPollingConfig {
   m?: number
 }
 ```
+
+**Default Value**
+
+- d: undefined
+- h: undefined
+- m: undefined
 
 #### Crawl other config
 
@@ -1267,6 +1335,12 @@ export interface CrawlCommonConfig {
   maxRetry?: number
 }
 ```
+
+**Default Value**
+
+- timeout: 10000
+- proxy: undefined
+- maxRetry: 0
 
 ##### DetailTargetFingerprintCommon
 
@@ -1281,6 +1355,15 @@ export interface DetailTargetFingerprintCommon {
 }
 ```
 
+**Default Value**
+
+- userAgent: undefined
+- ua: undefined
+- platform: undefined
+- platformVersion: undefined
+- mobile: undefined
+- acceptLanguage: undefined
+
 ##### AdvancedFingerprintCommon
 
 ```ts
@@ -1293,6 +1376,15 @@ export interface AdvancedFingerprintCommon {
   acceptLanguages?: string[]
 }
 ```
+
+**Default Value**
+
+- userAgents: undefined
+- uas: undefined
+- platforms: undefined
+- platformVersions: undefined
+- mobiles: undefined
+- acceptLanguages: undefined
 
 ##### Mobile
 
