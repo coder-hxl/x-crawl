@@ -1,3 +1,15 @@
+# [v6.0.1](https://github.com/coder-hxl/x-crawl/compare/v6.0.0...v6.0.1) (2023-04-21)
+
+### 🚀 Features
+
+- Perfect documentation.
+
+---
+
+### 特征
+
+- 完善文档。
+
 # [v6.0.0](https://github.com/coder-hxl/x-crawl/compare/v5.1.0...v6.0.0) (2023-04-19)
 
 ### 🚨 Breaking Changes
@@ -11,7 +23,7 @@
 ### 🚀 Features
 
 - Added device fingerprint to avoid identifying and tracking us from different locations through fingerprint recognition. You can use the default with a switch, and if you need to specify it, you can set it uniformly for all crawling targets in the advanced usage, or you can specify the settings through the detailed target usage.
-- Adding multiple attributes for each advanced usage can be configured in an advanced way to set the object uniformly, without having to set it repeatedly for each target configuration. Added onCrawlItemComplete lifecycle function, which will be executed after each crawling goal is completed, and the crawling result (similar to CrawlSingleRes) will be passed to the callback function.
+- Adding multiple attributes for each advanced usage can be configured in an advanced way to set the object uniformly, without having to set it repeatedly for each target configuration. The new onCrawlItemComplete lifecycle function will be executed after each crawling goal is completed, and the result of the crawling goal will be passed to the callback function.
 - Added crawlPage in the configuration of creating a crawler application, you can set the configuration of creating a browser in the crawlPage.launchBrowser option (type is PuppeteerLaunchOptions from Puppeteer).
 - crawlPage adds viewport option, which is used to set the viewport of the page.
 
@@ -28,7 +40,7 @@
 ### 🚀 特征
 
 - 新增设备指纹，可避免通过指纹识别从不同位置识别并跟踪我们。可以通过一个开关使用默认的，如果需指定则可在进阶用法中为所有爬取目标统一设置，也可以通过详细目标用法指定设置。
-- 每个进阶用法新增多个属性可以在进阶方式配置对象统一设置，不必为每个目标配置重复设置一遍。新增 onCrawlItemComplete 生命周期函数，将在每个爬取目标完成后执行，并且把爬取结果(类似 CrawlSingleRes)传入回调函数。
+- 每个进阶用法新增多个属性可以在进阶方式配置对象统一设置，不必为每个目标配置重复设置一遍。新增 onCrawlItemComplete 生命周期函数，将在每个爬取目标完成后执行，并且把爬取目标的结果传入回调函数。
 - 在创建爬虫应用的配置新增 crawlPage ，可以在 crawlPage.launchBrowser 选项中设置创建浏览器的配置（类型为 PuppeteerLaunchOptions 来自 Puppeteer）。
 - crawlPage 新增 viewport 选项，用于设置页面的视口。
 
