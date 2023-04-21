@@ -1,23 +1,23 @@
-# x-crawl [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
+# x-crawl · [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible Node.js multifunctional crawler library. Used to crawl pages, crawl interfaces, crawl files, and poll crawls.
+x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexible, and there are many built-in functions for crawl pages, crawl interfaces, crawl files, etc.
 
 > If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you for your support!
 
 ## Features
 
-- **🔥 AsyncSync** - Just change the mode attribute value to switch async or sync crawling mode.
-- **⚙️Multiple functions** - It can crawl pages, crawl interfaces, crawl files and polling crawls, and supports crawling single or multiple.
-- **🖋️ Flexible writing style** - Simple target configuration, detailed target configuration, mixed target array configuration and advanced configuration, the same crawling API can adapt to multiple configurations.
-- **👀Device Fingerprinting** - Zero configuration or custom configuration to avoid fingerprinting to identify and track us from different locations.
-- **⏱️ Interval Crawling** - No interval, fixed interval and random interval can generate or avoid high concurrent crawling.
-- **🔄 Retry on failure** - Global settings, local settings and individual settings, It can avoid crawling failure caused by temporary problems.
+- **🔥 Asynchronous Synchronous** - Just change the mode property to toggle asynchronous or synchronous crawling mode.
+- **⚙️Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
+- **🖋️ Flexible writing style** - The same crawling API can be adapted to multiple configurations, and each configuration method is very unique.
+- **👀Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
+- **⏱️ Interval Crawling** - No interval, fixed interval and random interval to generate or avoid high concurrent crawling.
+- **🔄 Failed Retry** - Avoid crawling failure due to transient problems, unlimited retries.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
 - **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
-- **⚒️ Controlling Pages** - Headless browsers can submit forms, keystrokes, event actions, generate screenshots of pages, etc.
-- **🧾 Capture Record** - Capture and record crawling results and other information, and highlight reminders on the console.
+- **⚒️ Control Page** - You can submit form, keyboard input, event operation, generate screenshots of the page, etc.
+- **🧾 Capture Record** - Capture and record the crawled information, and highlight it on the console.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
 ## Relationship with Puppeteer
@@ -499,9 +499,9 @@ myXCrawl
         url: 'https://www.example.com/page-2',
         fingerprint: {
           maxWidth: 1980,
-          minWidth: 1980,
+          minWidth: 1200,
           maxHeight: 1080,
-          minHidth: 1080,
+          minHidth: 800,
           platform: 'Android'
         }
       }
@@ -589,9 +589,16 @@ The larger the value of the priority attribute, the higher the priority in the c
 
 ### About Results
 
-For the result, the result of each crawl target is uniformly wrapped with an object that provides information about the result of the crawl target, such as id, result, success or not, maximum retry, number of retries, error information collected, and so on. Automatically determine whether the return value is wrapped in an array depending on the configuration you choose, and the type fits perfectly in TS.
+Each crawl target will generate a detail object, which will contain the following properties:
 
-The id of each object is determined according to the order of crawl targets in your configuration, and if there is a priority used, it will be sorted by priority.
+- id: Generated according to the order of crawling targets, if there is a priority, it will be generated according to the priority
+- isSuccess: Whether to crawl successfully
+- maxRetry: The maximum number of retries for this crawling target
+- retryCount: The number of times the crawling target has been retried
+- crawlErrorQueue: Error collection of the crawl target
+- data: the crawling data of the crawling target
+
+If it is a specific configuration, it will automatically determine whether the details object is stored in an array according to the configuration method you choose, and return the array, otherwise return the details object. Already fits types perfectly in TypeScript.
 
 Details about configuration methods and results are as follows: [crawlPage config](#config), [crawlData config](#config-1), [crawlFile config](#config-2).
 
@@ -1144,7 +1151,6 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - baseUrl: undefined
 - intervalTime: undefined
 - crawlPage: undefined
-  - launchBrowser: undefined
 
 #### Detail target config
 
@@ -1170,8 +1176,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 
 **Default Value**
 
+- url: undefined
 - headers: undefined
-- method: undefined
+- cookies: undefined
 - priority: undefined
 - viewport: undefined
 - fingerprint: undefined
@@ -1192,8 +1199,8 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 
 **Default Value**
 
+- url: undefined
 - method: 'GET'
-
 - headers: undefined
 - params: undefined
 - data: undefined
@@ -1216,6 +1223,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 
 **Default Value**
 
+- url: undefined
 - headers: undefined
 - priority: undefined
 - storeDir: \_\_dirname
@@ -1248,6 +1256,8 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 
 **Default Value**
 
+- targets: undefined
+
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1271,6 +1281,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
 **Default Value**
 
+- targets: undefined
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1300,6 +1311,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 
 **Default Value**
 
+- targets: undefined
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1532,6 +1544,12 @@ export interface CrawlCommonRes {
   crawlErrorQueue: Error[]
 }
 ```
+
+- id: Generated according to the order of crawling targets, if there is a priority, it will be generated according to the priority
+- isSuccess: Whether to crawl successfully
+- maxRetry: The maximum number of retries for this crawling target
+- retryCount: The number of times the crawling target has been retried
+- crawlErrorQueue: Error collection of the crawl target
 
 #### CrawlPageSingleRes
 

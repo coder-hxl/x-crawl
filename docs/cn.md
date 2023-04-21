@@ -1,23 +1,23 @@
-# x-crawl [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
+# x-crawl · [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 Node.js 多功能爬虫库。用于爬页面、爬接口、爬文件以及轮询爬。
+x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并且内置众多功能用于爬页面、爬接口、爬文件等。
 
 > 如果你也喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 支持一下，感谢大家的支持！
 
 ## 特征
 
-- **🔥 异步同步** - 只需更改一下 mode 属性值即可切换异步或同步爬取模式。
-- **⚙️ 多种功能** - 可爬页面、爬接口、爬文件以及轮询爬，并且支持爬取单个或多个。
-- **🖋️ 写法灵活** - 简单目标配置、详细目标配置、混合目标数组配置以及进阶配置，同种爬取 API 适配多种配置。
-- **👀 设备指纹** - 零配置或自定义配置，即可避免通过指纹识别从不同位置识别并跟踪我们。
-- **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，即可产生或避免高并发爬取。
-- **🔄 失败重试** - 全局设置、局部设置以及单独设置, 即可避免因一时问题而造成爬取失败。
-- **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前进行爬取。
+- **🔥 异步同步** - 只需更改一下 mode 属性即可切换异步或同步爬取模式。
+- **⚙️ 多种用途** - 可爬页面、爬接口、爬文件以及轮询爬，满足各种场景需求。
+- **🖋️ 写法灵活** - 同种爬取 API 适配多种配置，每种配置方式都非常独特。
+- **👀 设备指纹** - 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
+- **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，产生或避免高并发爬取。
+- **🔄 失败重试** - 避免因短暂的问题而造成爬取失败，无限制重试次数。
+- **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前爬取。
 - **☁️ 爬取 SPA** - 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
-- **⚒️ 控制页面** - 无头浏览器可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
-- **🧾 捕获记录** - 对爬取的结果等信息进行捕获记录，并在控制台进行高亮的提醒。
+- **⚒️ 控制页面** - 可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
+- **🧾 捕获记录** - 对爬取的信息进行捕获记录，并在控制台进行高亮的提醒。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 跟 puppeteer 的关系
@@ -32,7 +32,7 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
   - [创建应用](#创建应用)
     - [一个爬虫应用实例](#一个爬虫应用实例)
     - [爬取模式](#爬取模式)
-    - [设备指纹](#设备指纹)
+    - [默认设备指纹](#默认设备指纹)
     - [多个爬虫应用实例](#多个爬虫应用实例)
   - [爬取页面](#爬取页面)
     - [browser 实例](#browser-实例)
@@ -48,7 +48,7 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [启动轮询](#启动轮询)
   - [配置优先级](#配置优先级)
-  - [设备指纹](#设备指纹-1)
+  - [自定义设备指纹](#自定义设备指纹)
   - [间隔时间](#间隔时间)
   - [失败重试](#失败重试)
   - [优先队列](#优先队列)
@@ -493,9 +493,9 @@ myXCrawl
         url: 'https://www.example.com/page-2',
         fingerprint: {
           maxWidth: 1980,
-          minWidth: 1980,
+          minWidth: 1200,
           maxHeight: 1080,
-          minHidth: 1080,
+          minHidth: 800,
           platform: 'Android'
         }
       }
@@ -581,9 +581,16 @@ priority 属性的值越大就在当前爬取队列中越优先。
 
 ### 关于结果
 
-对于结果，每个爬取目标的结果将统一使用对象包裹着，该对象提供了关于这次爬取目标结果的信息，比如：id、结果、是否成功、最大重试、重试次数、收集到错误信息等。自动根据你选用的配置方式决定返回值是否包裹在一个数组中，并且在 TS 中类型完美适配。
+每个爬取目标都会产生一个详情对象，该详情对象会包含以下属性：
 
-每个对象的 id 是根据你配置里的爬取目标顺序决定的，如果有使用优先级，则会根据优先级排序。
+- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
+- isSuccess：是否成功爬取
+- maxRetry：该次爬取目标的最大重试次数
+- retryCount：该次爬取目标已经重试的次数
+- crawlErrorQueue：该次爬取目标的报错收集
+- data：该次爬取目标的爬取数据
+
+如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
 
 相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlData 配置](#配置-1)、[crawlFile 配置](#配置-2) 。
 
@@ -1135,7 +1142,6 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - baseUrl: undefined
 - intervalTime: undefined
 - crawlPage: undefined
-  - launchBrowser: undefined
 
 #### Detail target config
 
@@ -1161,8 +1167,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 
 **默认值**
 
+- url: undefined
 - headers: undefined
-- method: undefined
+- cookies: undefined
 - priority: undefined
 - viewport: undefined
 - fingerprint: undefined
@@ -1183,8 +1190,8 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 
 **默认值**
 
+- url: undefined
 - method: 'GET'
-
 - headers: undefined
 - params: undefined
 - data: undefined
@@ -1207,6 +1214,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 
 **默认值**
 
+- url: undefined
 - headers: undefined
 - priority: undefined
 - storeDir: \_\_dirname
@@ -1239,6 +1247,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 
 **默认值**
 
+- targets: undefined
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1262,6 +1271,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
 **默认值**
 
+- targets: undefined
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1291,6 +1301,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 
 **默认值**
 
+- targets: undefined
 - intervalTime: undefined
 - fingerprint: undefined
 - headers: undefined
@@ -1523,6 +1534,12 @@ export interface CrawlCommonRes {
   crawlErrorQueue: Error[]
 }
 ```
+
+- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
+- isSuccess：是否成功爬取
+- maxRetry：该次爬取目标的最大重试次数
+- retryCount：该次爬取目标已经重试的次数
+- crawlErrorQueue：该次爬取目标的报错收集
 
 #### CrawlPageSingleRes
 
