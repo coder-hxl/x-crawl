@@ -47,24 +47,24 @@ export type Platform =
   | 'Windows'
   | 'Unknown'
 
-export type Mobile = '?0' | '?1'
-
 export interface DetailTargetFingerprintCommon {
-  userAgent?: string
   ua?: string
+  mobile?: '?0' | '?1' | 'random'
   platform?: Platform
   platformVersion?: string
-  mobile?: Mobile
   acceptLanguage?: string
-}
-
-export interface AdvancedFingerprintCommon {
-  userAgents?: string[]
-  uas?: string[]
-  platforms?: Platform[]
-  platformVersions?: string[]
-  mobiles?: Mobile[]
-  acceptLanguages?: string[]
+  userAgent?: {
+    value: string
+    versions?: {
+      name: string
+      maxMajorVersion?: number
+      minMajorVersion?: number
+      maxMinorVersion?: number
+      minMinorVersion?: number
+      maxPatchVersion?: number
+      minPatchVersion?: number
+    }[]
+  }
 }
 
 export interface CrawlCommonConfig {
@@ -82,9 +82,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   viewport?: Viewport | null
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
-        maxWidth: number
+        maxWidth?: number
         minWidth?: number
-        maxHeight: number
+        maxHeight?: number
         minHidth?: number
       })
     | null
@@ -114,12 +114,12 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon & {
-    maxWidth: number
+  fingerprints?: (DetailTargetFingerprintCommon & {
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
-  }
+  })[]
 
   headers?: AnyObject
   cookies?: PageCookies
@@ -131,7 +131,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
 
@@ -141,7 +141,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
   storeDir?: string

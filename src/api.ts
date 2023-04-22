@@ -31,13 +31,11 @@ import {
   CrawlFileAdvancedConfig,
   CrawlDataAdvancedConfig,
   IntervalTime,
-  DetailTargetFingerprintCommon,
-  Platform,
-  Mobile
+  DetailTargetFingerprintCommon
 } from './types/api'
 import { LoaderXCrawlConfig } from './types'
 import { AnyObject } from './types/common'
-import { randomFingerprint } from './default'
+import { fingerprints } from './default'
 
 /* Types */
 
@@ -104,6 +102,9 @@ interface PageSingleCrawlResult {
 interface CrawlPageConfigOriginal {
   detailTargets: CrawlPageDetailTargetConfig[]
   intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
   onCrawlItemComplete:
     | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
     | undefined
@@ -112,6 +113,9 @@ interface CrawlPageConfigOriginal {
 interface CrawlDataConfigOriginal {
   detailTargets: CrawlDataDetailTargetConfig[]
   intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
   onCrawlItemComplete:
     | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
     | undefined
@@ -120,6 +124,9 @@ interface CrawlDataConfigOriginal {
 interface CrawlFileConfigOriginal {
   detailTargets: CrawlFileDetailTargetConfig[]
   intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
   onBeforeSaveItemFile:
     | ((info: {
         id: number
@@ -225,7 +232,7 @@ function loaderCommonFingerprintToDetailTarget(
     | CrawlFileDetailTargetConfig,
   fingerprint: DetailTargetFingerprintCommon
 ) {
-  const { userAgent, ua, platform, platformVersion, mobile, acceptLanguage } =
+  const { ua, platform, platformVersion, mobile, acceptLanguage, userAgent } =
     fingerprint
 
   let headers = detail.headers
@@ -234,14 +241,15 @@ function loaderCommonFingerprintToDetailTarget(
     detail.headers = headers = {}
   }
 
-  // 1.user-agent
-  if (userAgent) {
-    headers['user-agent'] = userAgent
-  }
-
-  // 2.sec-ch-ua
+  // 1.sec-ch-ua
   if (ua) {
     headers['sec-ch-ua'] = ua
+  }
+
+  // 2.sec-ch-ua-mobile
+  if (mobile) {
+    headers['sec-ch-ua-mobile'] =
+      mobile === 'random' ? (random(2) ? '?1' : '?0') : mobile
   }
 
   // 3.sec-ch-platform
@@ -254,38 +262,85 @@ function loaderCommonFingerprintToDetailTarget(
     headers['sec-ch-ua-platform-version'] = platformVersion
   }
 
-  // 5.sec-ch-mobile
-  if (mobile) {
-    headers['sec-ch-mobile'] = mobile
-  }
-
-  // 6.accept-language
+  // 5.accept-language
   if (acceptLanguage) {
     headers['accept-language'] = acceptLanguage
+  }
+
+  // 6.user-agent
+  if (userAgent) {
+    let value = userAgent.value
+
+    userAgent.versions?.forEach((version) => {
+      const {
+        name,
+        maxMajorVersion,
+        minMajorVersion,
+        maxMinorVersion,
+        minMinorVersion,
+        maxPatchVersion,
+        minPatchVersion
+      } = version
+
+      const nameSplit = value.split(`${name}/`)
+      const versionSplit: any[] = nameSplit[1].split(' ')[0].split('.')
+      const originalVersion = versionSplit.join('.')
+
+      if (!isUndefined(maxMajorVersion)) {
+        versionSplit[0] =
+          maxMajorVersion === minMajorVersion
+            ? maxMajorVersion
+            : random(maxMajorVersion, minMajorVersion)
+      }
+
+      if (!isUndefined(maxMinorVersion)) {
+        versionSplit[1] =
+          maxMinorVersion === minMinorVersion
+            ? maxMinorVersion
+            : random(maxMinorVersion, minMinorVersion)
+      }
+
+      if (!isUndefined(maxPatchVersion)) {
+        versionSplit[2] =
+          maxPatchVersion === minPatchVersion
+            ? maxPatchVersion
+            : random(maxPatchVersion, minPatchVersion)
+      }
+
+      const searchValue = `${name}/${originalVersion}`
+      const replaceValue = `${name}/${versionSplit.join('.')}`
+      value = value.replace(searchValue, replaceValue)
+    })
+
+    headers['user-agent'] = value
   }
 }
 
 function loaderPageFingerprintToDetailTarget(
   detail: CrawlPageDetailTargetConfig,
   fingerprint: {
-    maxWidth: number
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
   }
 ) {
   const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
 
+  const viewport: any = detail.viewport ?? {}
   // 1.width / height
-  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
-  const height =
-    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
-  const viewport = detail.viewport
-  if (!viewport) {
-    detail.viewport = { width, height }
-  } else {
-    viewport.width = width
-    viewport.height = height
+  if (maxWidth) {
+    viewport.width =
+      maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
+  }
+
+  if (maxHeight) {
+    viewport.height =
+      maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
+  }
+
+  if (Object.hasOwn(viewport, 'width') && Object.hasOwn(viewport, 'height')) {
+    detail.viewport = viewport
   }
 }
 
@@ -353,73 +408,30 @@ function loaderCommonConfigToCrawlConfig(
       // detaileTarget
 
       loaderCommonFingerprintToDetailTarget(detail, fingerprint)
-    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
+    } else if (
+      isUndefined(fingerprint) &&
+      isArray(advancedConfig.fingerprints) &&
+      advancedConfig.fingerprints.length
+    ) {
       // advancedConfig
 
-      const {
-        userAgents,
-        uas,
-        platforms,
-        platformVersions,
-        mobiles,
-        acceptLanguages
-      } = advancedConfig.fingerprint
+      const fingerprints = advancedConfig.fingerprints
+      const selectFingerprintIndex = random(fingerprints.length)
+      const fingerprint = fingerprints[selectFingerprintIndex]
 
-      // 1.user-agent
-      const userAgent = userAgents
-        ? userAgents[random(userAgents.length)]
-        : undefined
+      // 记录每个目标选中的指纹索引
+      crawlConfig.selectFingerprintIndexs.push(selectFingerprintIndex)
 
-      // 2.sec-ch-ua
-      const ua = uas ? uas[random(uas.length)] : undefined
-
-      // 3.sec-ch-platform
-      const platform = platforms
-        ? platforms[random(platforms.length)]
-        : undefined
-
-      // 4.sec-ch-platform-version
-      const platformVersion = platformVersions
-        ? platformVersions[random(platformVersions.length)]
-        : undefined
-
-      // 5.sec-ch-mobile
-      const mobile = mobiles ? mobiles[random(mobiles.length)] : undefined
-
-      // 6.accept-language
-      const acceptLanguage = acceptLanguages
-        ? acceptLanguages[random(acceptLanguages.length)]
-        : undefined
-
-      loaderCommonFingerprintToDetailTarget(detail, {
-        userAgent,
-        ua,
-        platform,
-        platformVersion,
-        mobile,
-        acceptLanguage
-      })
-    } else if (xCrawlConfig.enableRandomFingerprint) {
+      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+    } else if (
+      isUndefined(fingerprint) &&
+      !isArray(advancedConfig.fingerprints) &&
+      xCrawlConfig.enableRandomFingerprint
+    ) {
       // xCrawlConfig
+      const fingerprint = fingerprints[random(fingerprints.length)]
 
-      const { platforms, mobiles } = randomFingerprint
-
-      // 1.user-agent
-      const userAgent = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.${random(
-        10
-      )}.${random(10000)}.${random(1000)} Safari/537.36`
-
-      // 2.sec-ch-platform
-      const platform = platforms[random(platforms.length)] as Platform
-
-      // 3.sec-ch-mobile
-      const mobile = mobiles[random(mobiles.length)] as Mobile
-
-      loaderCommonFingerprintToDetailTarget(detail, {
-        userAgent,
-        platform,
-        mobile
-      })
+      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
     }
   })
 
@@ -453,6 +465,9 @@ function createCrawlPageConfig(
   const crawlPageConfig: CrawlPageConfigOriginal = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onCrawlItemComplete: undefined
   }
 
@@ -482,7 +497,7 @@ function createCrawlPageConfig(
   loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
 
   // 装载单独配置
-  crawlPageConfig.detailTargets.forEach((detail) => {
+  crawlPageConfig.detailTargets.forEach((detail, index) => {
     // detail > advanced  > xCrawl
     const { cookies, viewport, fingerprint } = detail
 
@@ -499,8 +514,16 @@ function createCrawlPageConfig(
     // 3.fingerprint
     if (fingerprint) {
       loaderPageFingerprintToDetailTarget(detail, fingerprint)
-    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
-      loaderPageFingerprintToDetailTarget(detail, advancedConfig.fingerprint)
+    } else if (
+      isUndefined(fingerprint) &&
+      advancedConfig.fingerprints?.length
+    ) {
+      // 从对应的选中记录中取出指纹索引
+      const selectFingerprintIndex =
+        crawlPageConfig.selectFingerprintIndexs[index]
+      const fingerprint = advancedConfig.fingerprints[selectFingerprintIndex]
+
+      loaderPageFingerprintToDetailTarget(detail, fingerprint)
     }
   })
 
@@ -514,6 +537,9 @@ function createCrawlDataConfig<T>(
   const crawlDataConfig: CrawlDataConfigOriginal = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onCrawlItemComplete: undefined
   }
 
@@ -551,6 +577,9 @@ function createCrawlFileConfig(
   const crawlFileConfig: CrawlFileConfigOriginal = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onBeforeSaveItemFile: undefined,
     onCrawlItemComplete: undefined
   }

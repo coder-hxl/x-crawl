@@ -9,9 +9,9 @@ x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexibl
 ## Features
 
 - **🔥 Asynchronous Synchronous** - Just change the mode property to toggle asynchronous or synchronous crawling mode.
-- **⚙️Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
+- **⚙️ Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
 - **🖋️ Flexible writing style** - The same crawling API can be adapted to multiple configurations, and each configuration method is very unique.
-- **👀Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
+- **👀 Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
 - **⏱️ Interval Crawling** - No interval, fixed interval and random interval to generate or avoid high concurrent crawling.
 - **🔄 Failed Retry** - Avoid crawling failure due to transient problems, unlimited retries.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
