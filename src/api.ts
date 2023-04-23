@@ -84,20 +84,30 @@ interface PageSingleCrawlResult {
 
 // Create config
 // Loader
+export type ProxyDetails = { url: string; state: boolean }[]
+
+type LoaderCommonConfig = {
+  proxyUrl?: string
+  proxyDetails: ProxyDetails
+}
+
 type LoaderHasConfig = {
   timeout: number
   maxRetry: number
   priority: number
 }
 
-export type LoaderCrawlPageDetail = CrawlPageDetailTargetConfig &
-  LoaderHasConfig
+export type LoaderCrawlPageDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlPageDetailTargetConfig
 
-export type LoaderCrawlDataDetail = CrawlDataDetailTargetConfig &
-  LoaderHasConfig
+export type LoaderCrawlDataDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlDataDetailTargetConfig
 
-export type LoaderCrawlFileDetail = CrawlFileDetailTargetConfig &
-  LoaderHasConfig
+export type LoaderCrawlFileDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlFileDetailTargetConfig
 
 //  AdvancedDetailTargets
 interface CrawlPageAdvancedDetailTargetsConfig extends CrawlPageAdvancedConfig {
@@ -382,16 +392,7 @@ function loaderCommonConfigToCrawlConfig(
         }
       }
 
-      // 1.3.porxy
-      if (isUndefined(proxy)) {
-        if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
-          detail.proxy = advancedDetailTargetsConfig.proxy
-        } else if (!isUndefined(xCrawlConfig.proxy)) {
-          detail.proxy = xCrawlConfig.proxy
-        }
-      }
-
-      // 1.4.maxRetry
+      // 1.3.maxRetry
       if (isUndefined(maxRetry)) {
         if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
           detail.maxRetry = advancedDetailTargetsConfig.maxRetry
@@ -400,17 +401,33 @@ function loaderCommonConfigToCrawlConfig(
         }
       }
 
-      // 1.5.priority
+      // 1.4.proxy
+      if (isUndefined(proxy)) {
+        if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
+          detail.proxy = advancedDetailTargetsConfig.proxy
+        } else if (!isUndefined(xCrawlConfig.proxy)) {
+          detail.proxy = xCrawlConfig.proxy
+        }
+      }
+
+      // 1.5.proxyUrl & proxyDetail
+      if (!isUndefined(detail.proxy?.urls)) {
+        const urls = detail.proxy!.urls
+        detail.proxyUrl = urls[0]
+        detail.proxyDetails = urls.map((url) => ({ url, state: true }))
+      }
+
+      // 1.6.priority
       if (isUndefined(priority)) {
         detail.priority = 0
       }
 
-      // 1.6.header
+      // 1.7.header
       if (isUndefined(headers) && advancedDetailTargetsConfig.headers) {
         detail.headers = { ...advancedDetailTargetsConfig.headers }
       }
 
-      // 1.7.fingerprint(公共部分)
+      // 1.8.fingerprint(公共部分)
       if (fingerprint) {
         // detaileTarget
 
@@ -675,9 +692,9 @@ async function pageSingleCrawlHandle(
 
   let response: HTTPResponse | null = null
   try {
-    if (detailTarget.proxy) {
+    if (detailTarget.proxyUrl) {
       await browser.createIncognitoBrowserContext({
-        proxyServer: detailTarget.proxy
+        proxyServer: detailTarget.proxyUrl
       })
     } else {
       await browser.createIncognitoBrowserContext({
@@ -973,8 +990,6 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       }
 
       const crawlDataSingleRes: AnyObject = detaileInfo
-      delete crawlDataSingleRes.detailTarget
-      delete crawlDataSingleRes.detailTargetRes
 
       if (onCrawlItemComplete) {
         onCrawlItemComplete(crawlDataSingleRes as CrawlDataSingleRes<T>)

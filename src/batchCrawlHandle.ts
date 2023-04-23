@@ -1,7 +1,7 @@
 import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
 
 import type { ExtraCommonConfig } from './api'
-import type { DetailInfo, CrawlDetail } from './controller'
+import { DetailInfo, CrawlDetail, getCrawlStatus } from './controller'
 
 async function useSleepByBatch(
   isHaventervalTime: boolean,
@@ -45,8 +45,8 @@ export async function asyncBatchCrawl<
   const isNumberIntervalTime = isNumber(intervalTime)
 
   const crawlPendingQueue: Promise<any>[] = []
-  for (const detaileInfo of detailInfos) {
-    const { id } = detaileInfo
+  for (const detailInfo of detailInfos) {
+    const { id } = detailInfo
 
     await useSleepByBatch(
       isHaventervalTime,
@@ -55,24 +55,34 @@ export async function asyncBatchCrawl<
       id
     )
 
-    const crawlSinglePending = singleCrawlHandle(detaileInfo, extraConfig)
+    const crawlSinglePending = singleCrawlHandle(detailInfo, extraConfig)
       .catch((error) => {
-        detaileInfo.crawlErrorQueue.push(error)
+        detailInfo.crawlErrorQueue.push(error)
         return false
       })
       .then((detailTargetRes) => {
+        const notAllowRetry = detailInfo.retryCount === detailInfo.maxRetry
+
         if (typeof detailTargetRes === 'boolean') {
-          if (detaileInfo.retryCount === detaileInfo.maxRetry) {
-            singleResultHandle(detaileInfo, extraConfig)
+          if (notAllowRetry) {
+            singleResultHandle(detailInfo, extraConfig)
           }
 
           return
         }
 
-        detaileInfo.isSuccess = true
-        detaileInfo.detailTargetRes = detailTargetRes
+        detailInfo.isSuccess = true
+        detailInfo.detailTargetRes = detailTargetRes
 
-        singleResultHandle(detaileInfo, extraConfig)
+        // 根据 状态码/是否无法重试 决定处理结果
+        const { detailTarget } = detailInfo
+
+        const status = getCrawlStatus(detailTargetRes)
+        const switchByHttpStatus = detailTarget.proxy?.switchByHttpStatus ?? []
+        if ((status && !switchByHttpStatus.includes(status)) || notAllowRetry) {
+          singleResultHandle(detailInfo, extraConfig)
+          delete detailInfo._notHandle
+        }
       })
 
     crawlPendingQueue.push(crawlSinglePending)
@@ -120,8 +130,20 @@ export async function syncBatchCrawl<
       detailInfo.crawlErrorQueue.push(error)
     }
 
-    if (detailInfo.isSuccess || detailInfo.retryCount === detailInfo.maxRetry) {
+    // 根据 是否成功和状态码/是否无法重试 决定处理结果
+    const { detailTarget, detailTargetRes } = detailInfo
+
+    const status = getCrawlStatus(detailTargetRes)
+    const switchByHttpStatus = detailTarget.proxy?.switchByHttpStatus ?? []
+    const notAllowRetry = detailInfo.retryCount === detailInfo.maxRetry
+    if (
+      (detailInfo.isSuccess &&
+        status &&
+        !switchByHttpStatus.includes(status)) ||
+      notAllowRetry
+    ) {
       singleResultHandle(detailInfo, extraConfig)
+      delete detailInfo._notHandle
     }
   }
 }

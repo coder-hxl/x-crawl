@@ -5,10 +5,21 @@ import {
   ExtraCommonConfig,
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
-  LoaderCrawlPageDetail
+  LoaderCrawlPageDetail,
+  ProxyDetails
 } from './api'
 
-import { log, logError, logNumber, logSuccess, logWarn } from './utils'
+import {
+  isObject,
+  isUndefined,
+  log,
+  logError,
+  logNumber,
+  logSuccess,
+  logWarn
+} from './utils'
+import { HTTPResponse } from 'puppeteer'
+import { Request } from './request'
 
 export type CrawlDetail =
   | LoaderCrawlPageDetail
@@ -16,11 +27,14 @@ export type CrawlDetail =
   | LoaderCrawlFileDetail
 
 export interface DetailInfo<T extends CrawlDetail, R> {
+  _notHandle: any
+
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
   crawlErrorQueue: Error[]
+  proxyDetailes: ProxyDetails
   data: any | null
 
   detailTarget: T
@@ -31,6 +45,25 @@ type TargetSingleRes = Omit<
   DetailInfo<any, any>,
   'detailTarget' | 'detailTargetRes'
 >
+
+export function getCrawlStatus(detailTargetRes: any) {
+  let status: number | null = null
+
+  if (
+    isObject(detailTargetRes) &&
+    Object.hasOwn(detailTargetRes, 'response') &&
+    (detailTargetRes as any).response
+  ) {
+    // crawlPage
+    const response: HTTPResponse = (detailTargetRes as any).response
+    status = response.status()
+  } else if (isObject(detailTargetRes)) {
+    // crawlData / crawlFie
+    status = (detailTargetRes as any as Request).statusCode ?? null
+  }
+
+  return status
+}
 
 export async function controller<
   T extends CrawlDetail,
@@ -63,11 +96,14 @@ export async function controller<
   // 通过映射生成新的配置数组
   const detailInfos: DetailInfo<T, R>[] = detailTargetConfigs.map(
     (detailTarget, index) => ({
+      _notHandle: true,
+
       id: index + 1,
       isSuccess: false,
       maxRetry: detailTarget.maxRetry,
       retryCount: 0,
       crawlErrorQueue: [],
+      proxyDetailes: detailTarget.proxyDetails,
       data: null,
 
       detailTarget,
@@ -94,12 +130,65 @@ export async function controller<
       singleResultHandle
     )
 
-    crawlQueue = crawlQueue.filter(
-      (config) =>
-        config.maxRetry &&
-        !config.isSuccess &&
-        config.retryCount < config.maxRetry
-    )
+    crawlQueue = crawlQueue.filter((detailInfo) => {
+      const {
+        isSuccess,
+        maxRetry,
+        retryCount,
+        proxyDetailes,
+        crawlErrorQueue,
+        detailTarget,
+        detailTargetRes
+      } = detailInfo
+
+      let isRetry = false
+      const haveRetryChance = maxRetry && retryCount < maxRetry
+
+      // 没有被处理/没成功/状态码不符合
+      if (Object.hasOwn(detailInfo, '_notHandle') && haveRetryChance) {
+        // 1.不成功
+        if (!isSuccess) {
+          isRetry = true
+        }
+
+        // 2.代理多, 轮换代理
+        if (proxyDetailes.length >= 2) {
+          // 获取状态码
+          const status = getCrawlStatus(detailTargetRes)
+
+          // 错误次数 / 检测状态码
+          const switchByErrorCount = detailTarget.proxy?.switchByErrorCount ?? 0
+          const switchByHttpStatus =
+            detailTarget.proxy?.switchByHttpStatus ?? []
+          if (
+            (status && switchByHttpStatus.includes(status)) ||
+            switchByErrorCount >= crawlErrorQueue.length
+          ) {
+            isRetry = true
+            proxyDetailes.find(
+              (detail) => detail.url === detailTarget.proxyUrl
+            )!.state = false
+
+            // 寻找新代理 URL
+            const newProxyUrl = proxyDetailes.find(
+              (detaile) => detaile.state
+            )?.url
+
+            // 无则不切换
+            if (!isUndefined(newProxyUrl)) {
+              detailTarget.proxyUrl = newProxyUrl
+            }
+          }
+        }
+      }
+
+      // 重置需要重试的 isSuccess
+      if (isRetry) {
+        detailInfo.isSuccess = false
+      }
+
+      return isRetry
+    })
 
     if (crawlQueue.length) {
       const retriedIds = crawlQueue.map((item) => {

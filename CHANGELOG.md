@@ -1,9 +1,10 @@
-# [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v6.0.1...v7.0.0) (2023-04-23)
+# [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v6.0.1...v7.0.0) (2023-04-24)
 
 ### 🚨 重大改变
 
 - 进阶写法的配置指纹改用数组写法，里面存放 DetailTargetFingerprintCommon 类型的对象，方便定制。内部会将里面的对象随机分配给目标。
 - crawlPage 的进阶写法和详细目标写法的指纹配置的最大宽高改为可选项。
+- 创建爬虫实例、进阶写法以及详细目标写法的 proxy 更改为对象写法, 拥有 urls、switchByHttpStatus 以及 switchByErrorCount 这三个属性，urls 可以设置多个代理 URL ，内部默认先采用第一个，switchByHttpStatus 设置遇到哪些不符合的响应状态码需要切换代理，switchByErrorCount 设置像超时等错误时到达多少次需要切换代理。该代理轮换功能需要配合错误重试才能使用。
 
 ### 🚀 特征
 

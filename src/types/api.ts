@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'node:http'
 import { Browser, HTTPResponse, Page, Protocol, Viewport } from 'puppeteer'
 
 import { AnyObject } from './common'
+import { ProxyDetails } from '../api'
 
 /* API Config */
 
@@ -69,7 +70,11 @@ export interface DetailTargetFingerprintCommon {
 
 export interface CrawlCommonConfig {
   timeout?: number
-  proxy?: string
+  proxy?: {
+    urls: string[]
+    switchByHttpStatus?: number[]
+    switchByErrorCount?: number
+  }
   maxRetry?: number
 }
 
@@ -169,6 +174,7 @@ export interface CrawlCommonRes {
   maxRetry: number
   retryCount: number
   crawlErrorQueue: Error[]
+  proxyDetailes: ProxyDetails
 }
 
 export interface CrawlPageSingleRes extends CrawlCommonRes {
