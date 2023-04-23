@@ -962,9 +962,12 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       if (isSuccess && detailTargetRes) {
         const contentType = detailTargetRes.headers['content-type'] ?? ''
 
-        const data: T = contentType.includes('text')
-          ? detailTargetRes.data.toString()
-          : JSON.parse(detailTargetRes.data.toString())
+        const data: T =
+          contentType === 'application/json'
+            ? JSON.parse(detailTargetRes.data.toString())
+            : contentType.includes('text')
+            ? detailTargetRes.data.toString()
+            : detailTargetRes.data
 
         detaileInfo.data = { ...detailTargetRes, data }
       }
