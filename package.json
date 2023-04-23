@@ -22,6 +22,7 @@
     "build-dts": "tsc && prettier --write ./publish/src",
     "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
     "start": "rollup --config script/start.mjs",
+    "start-server": "rollup --config script/server.mjs",
     "test-dev": "jest test/environment/test.ts dev",
     "test-pro": "jest test/environment/test.ts pro",
     "test-crawlPage": "jest test/environment/crawlPage.test.ts dev",

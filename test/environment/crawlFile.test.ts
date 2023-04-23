@@ -27,7 +27,7 @@ const storeDir = path.resolve(__dirname, './upload')
 /* 1.Written */
 // 1.1.written CrawlFileDetailConfig
 async function writtenCrawlFileDetailConfig() {
-  const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlFile({ url: urls[0], storeDir })
 
@@ -36,7 +36,7 @@ async function writtenCrawlFileDetailConfig() {
 
 // 1.2.written CrawlFileDetailConfig[]
 async function writtenCrawlFileDetailConfigArr() {
-  const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlFile(urls.map((url) => ({ url, storeDir })))
 
@@ -48,7 +48,7 @@ async function writtenCrawlFileDetailConfigArr() {
 
 // 1.3.written CrawlFileAdvancedConfig
 async function writtenCrawlFileAdvancedConfig() {
-  const testXCrawl = xCrawl({ proxy: 'http://localhost:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlFile({
     targets: urls,
@@ -67,7 +67,7 @@ async function loaderBaseConfig() {
   const testXCrawl = xCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
-    proxy: 'http://localhost:14892',
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
@@ -90,7 +90,7 @@ async function loaderAdvancedConfig() {
 
   const res = await testXCrawl.crawlFile({
     targets: ['/4401.jpg', '/4403.jpg'],
-    proxy: 'http://localhost:14892',
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     storeDir,
     intervalTime: { max: 1000 },
@@ -105,7 +105,7 @@ async function storeConfig() {
   const testXCrawl = xCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
-    proxy: 'http://localhost:14892'
+    proxy: { urls: ['http://localhost:14892'] }
   })
 
   const record: string[] = []

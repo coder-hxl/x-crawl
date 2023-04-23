@@ -21,9 +21,7 @@ jest.setTimeout(60000)
 async function writtenString() {
   const testXCrawl = xCrawl()
 
-  const res = await testXCrawl.crawlData(
-    'http://localhost:9001/api/room/193581217'
-  )
+  const res = await testXCrawl.crawlData('http://localhost:8888')
 
   return res.isSuccess
 }
@@ -33,7 +31,7 @@ async function writtenCrawlDataDetailConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    url: 'http://localhost:9001/api/room/193581217'
+    url: 'http://localhost:8888'
   })
 
   return res.isSuccess
@@ -44,8 +42,8 @@ async function writtenStringAndCrawlDataDetailConfigArr() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData([
-    'http://localhost:9001/api/room/193581217',
-    { url: 'http://localhost:9001/api/room/193581217' }
+    'http://localhost:8888',
+    { url: 'http://localhost:8888' }
   ])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -56,10 +54,7 @@ async function writtenCrawlDataAdvancedConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    targets: [
-      'http://localhost:9001/api/room/193581217',
-      { url: 'http://localhost:9001/api/room/193581217' }
-    ]
+    targets: ['http://localhost:8888', { url: 'http://localhost:8888' }]
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -69,14 +64,14 @@ async function writtenCrawlDataAdvancedConfig() {
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
   const testXCrawl = xCrawl({
-    baseUrl: 'http://localhost:9001/api',
-    proxy: 'http://localhost:14892',
+    baseUrl: 'http://localhost:8888',
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
   })
 
-  const res = await testXCrawl.crawlData(['/room/193581217', '/room/193581217'])
+  const res = await testXCrawl.crawlData(['/', '/'])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
@@ -84,12 +79,12 @@ async function loaderBaseConfig() {
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
   const testXCrawl = xCrawl({
-    baseUrl: 'http://localhost:9001/api'
+    baseUrl: 'http://localhost:8888'
   })
 
   const res = await testXCrawl.crawlData({
-    targets: ['/room/193581217', '/room/193581217'],
-    proxy: 'http://localhost:14892',
+    targets: ['/', '/'],
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
