@@ -3,7 +3,7 @@
 ### 🚨 重大改变
 
 - 进阶写法的配置指纹改用数组写法，里面存放 DetailTargetFingerprintCommon 类型的对象，方便定制。内部会将里面的对象随机分配给目标。
-- CrawlPageDetailTargetConfig 和 CrawlPageDetailTargetConfig 类型的指纹配置的最大宽高改为可选项。
+- crawlPage 的进阶写法和详细目标写法的指纹配置的最大宽高改为可选项。
 
 ### 🚀 特征
 

@@ -39,22 +39,6 @@ import { fingerprints } from './default'
 
 /* Types */
 
-// Loader
-type LoaderHasConfig = {
-  timeout: number
-  maxRetry: number
-  priority: number
-}
-
-export type LoaderCrawlPageDetail = CrawlPageDetailTargetConfig &
-  LoaderHasConfig
-
-export type LoaderCrawlDataDetail = CrawlDataDetailTargetConfig &
-  LoaderHasConfig
-
-export type LoaderCrawlFileDetail = CrawlFileDetailTargetConfig &
-  LoaderHasConfig
-
 // Extra config
 export interface ExtraCommonConfig {
   intervalTime: IntervalTime | undefined
@@ -99,8 +83,39 @@ interface PageSingleCrawlResult {
 }
 
 // Create config
-interface CrawlPageConfigOriginal {
+// Loader
+type LoaderHasConfig = {
+  timeout: number
+  maxRetry: number
+  priority: number
+}
+
+export type LoaderCrawlPageDetail = CrawlPageDetailTargetConfig &
+  LoaderHasConfig
+
+export type LoaderCrawlDataDetail = CrawlDataDetailTargetConfig &
+  LoaderHasConfig
+
+export type LoaderCrawlFileDetail = CrawlFileDetailTargetConfig &
+  LoaderHasConfig
+
+//  AdvancedDetailTargets
+interface CrawlPageAdvancedDetailTargetsConfig extends CrawlPageAdvancedConfig {
   detailTargets: CrawlPageDetailTargetConfig[]
+}
+
+interface CrawlDataAdvancedDetailTargetsConfig<T>
+  extends CrawlDataAdvancedConfig<T> {
+  detailTargets: CrawlDataDetailTargetConfig[]
+}
+
+interface CrawlFileAdvancedDetailTargetsConfig extends CrawlFileAdvancedConfig {
+  detailTargets: CrawlFileDetailTargetConfig[]
+}
+
+// CrawlConfig
+interface CrawlPageConfig {
+  detailTargets: LoaderCrawlPageDetail[]
   intervalTime: IntervalTime | undefined
 
   selectFingerprintIndexs: number[]
@@ -110,8 +125,8 @@ interface CrawlPageConfigOriginal {
     | undefined
 }
 
-interface CrawlDataConfigOriginal {
-  detailTargets: CrawlDataDetailTargetConfig[]
+interface CrawlDataConfig {
+  detailTargets: LoaderCrawlDataDetail[]
   intervalTime: IntervalTime | undefined
 
   selectFingerprintIndexs: number[]
@@ -121,8 +136,8 @@ interface CrawlDataConfigOriginal {
     | undefined
 }
 
-interface CrawlFileConfigOriginal {
-  detailTargets: CrawlFileDetailTargetConfig[]
+interface CrawlFileConfig {
+  detailTargets: LoaderCrawlFileDetail[]
   intervalTime: IntervalTime | undefined
 
   selectFingerprintIndexs: number[]
@@ -138,18 +153,6 @@ interface CrawlFileConfigOriginal {
   onCrawlItemComplete:
     | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
     | undefined
-}
-
-type CrawlPageConfig = Omit<CrawlPageConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlPageDetail[]
-}
-
-type CrawlDataConfig = Omit<CrawlDataConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlDataDetail[]
-}
-
-type CrawlFileConfig = Omit<CrawlFileConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlFileDetail[]
 }
 
 // API unite config
@@ -346,111 +349,119 @@ function loaderPageFingerprintToDetailTarget(
 
 function loaderCommonConfigToCrawlConfig(
   xCrawlConfig: LoaderXCrawlConfig,
-  advancedConfig:
-    | CrawlPageAdvancedConfig
-    | CrawlDataAdvancedConfig<any>
-    | CrawlFileAdvancedConfig,
-  crawlConfig:
-    | CrawlPageConfigOriginal
-    | CrawlDataConfigOriginal
-    | CrawlFileConfigOriginal
+  advancedDetailTargetsConfig:
+    | CrawlPageAdvancedDetailTargetsConfig
+    | CrawlDataAdvancedDetailTargetsConfig<any>
+    | CrawlFileAdvancedDetailTargetsConfig,
+  crawlConfig: CrawlPageConfig | CrawlDataConfig | CrawlFileConfig
 ) {
   // 1.detailTargets
-  crawlConfig.detailTargets.forEach((detail) => {
-    // detail > advanced > app
-    const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
-      detail
+  crawlConfig.detailTargets = advancedDetailTargetsConfig.detailTargets.map(
+    (rawDetail) => {
+      // detail > advanced > app
 
-    // 1.1.baseUrl
-    if (!isUndefined(xCrawlConfig.baseUrl)) {
-      detail.url = xCrawlConfig.baseUrl + url
-    }
+      const detail = rawDetail as
+        | LoaderCrawlPageDetail
+        | LoaderCrawlDataDetail
+        | LoaderCrawlFileDetail
 
-    // 1.2.timeout
-    if (isUndefined(timeout)) {
-      if (!isUndefined(advancedConfig.timeout)) {
-        detail.timeout = advancedConfig.timeout
-      } else {
-        detail.timeout = xCrawlConfig.timeout
+      const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
+        detail
+
+      // 1.1.baseUrl
+      if (!isUndefined(xCrawlConfig.baseUrl)) {
+        detail.url = xCrawlConfig.baseUrl + url
       }
-    }
 
-    // 1.3.porxy
-    if (isUndefined(proxy)) {
-      if (!isUndefined(advancedConfig.proxy)) {
-        detail.proxy = advancedConfig.proxy
-      } else if (!isUndefined(xCrawlConfig.proxy)) {
-        detail.proxy = xCrawlConfig.proxy
+      // 1.2.timeout
+      if (isUndefined(timeout)) {
+        if (!isUndefined(advancedDetailTargetsConfig.timeout)) {
+          detail.timeout = advancedDetailTargetsConfig.timeout
+        } else {
+          detail.timeout = xCrawlConfig.timeout
+        }
       }
-    }
 
-    // 1.4.maxRetry
-    if (isUndefined(maxRetry)) {
-      if (!isUndefined(advancedConfig.maxRetry)) {
-        detail.maxRetry = advancedConfig.maxRetry
-      } else {
-        detail.maxRetry = xCrawlConfig.maxRetry
+      // 1.3.porxy
+      if (isUndefined(proxy)) {
+        if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
+          detail.proxy = advancedDetailTargetsConfig.proxy
+        } else if (!isUndefined(xCrawlConfig.proxy)) {
+          detail.proxy = xCrawlConfig.proxy
+        }
       }
+
+      // 1.4.maxRetry
+      if (isUndefined(maxRetry)) {
+        if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
+          detail.maxRetry = advancedDetailTargetsConfig.maxRetry
+        } else {
+          detail.maxRetry = xCrawlConfig.maxRetry
+        }
+      }
+
+      // 1.5.priority
+      if (isUndefined(priority)) {
+        detail.priority = 0
+      }
+
+      // 1.6.header
+      if (isUndefined(headers) && advancedDetailTargetsConfig.headers) {
+        detail.headers = { ...advancedDetailTargetsConfig.headers }
+      }
+
+      // 1.7.fingerprint(公共部分)
+      if (fingerprint) {
+        // detaileTarget
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      } else if (
+        isUndefined(fingerprint) &&
+        isArray(advancedDetailTargetsConfig.fingerprints) &&
+        advancedDetailTargetsConfig.fingerprints.length
+      ) {
+        // advancedConfig
+
+        const fingerprints = advancedDetailTargetsConfig.fingerprints
+        const selectFingerprintIndex = random(fingerprints.length)
+        const fingerprint = fingerprints[selectFingerprintIndex]
+
+        // 记录每个目标选中的指纹索引
+        crawlConfig.selectFingerprintIndexs.push(selectFingerprintIndex)
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      } else if (
+        isUndefined(fingerprint) &&
+        !isArray(advancedDetailTargetsConfig.fingerprints) &&
+        xCrawlConfig.enableRandomFingerprint
+      ) {
+        // xCrawlConfig
+        const fingerprint = fingerprints[random(fingerprints.length)]
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      }
+
+      return detail
     }
-
-    // 1.5.priority
-    if (isUndefined(priority)) {
-      detail.priority = 0
-    }
-
-    // 1.6.header
-    if (isUndefined(headers) && advancedConfig.headers) {
-      detail.headers = { ...advancedConfig.headers }
-    }
-
-    // 1.7.fingerprint(公共部分)
-    if (fingerprint) {
-      // detaileTarget
-
-      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
-    } else if (
-      isUndefined(fingerprint) &&
-      isArray(advancedConfig.fingerprints) &&
-      advancedConfig.fingerprints.length
-    ) {
-      // advancedConfig
-
-      const fingerprints = advancedConfig.fingerprints
-      const selectFingerprintIndex = random(fingerprints.length)
-      const fingerprint = fingerprints[selectFingerprintIndex]
-
-      // 记录每个目标选中的指纹索引
-      crawlConfig.selectFingerprintIndexs.push(selectFingerprintIndex)
-
-      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
-    } else if (
-      isUndefined(fingerprint) &&
-      !isArray(advancedConfig.fingerprints) &&
-      xCrawlConfig.enableRandomFingerprint
-    ) {
-      // xCrawlConfig
-      const fingerprint = fingerprints[random(fingerprints.length)]
-
-      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
-    }
-  })
+  )
 
   // 2.intervalTime
-  crawlConfig.intervalTime = advancedConfig.intervalTime
+  crawlConfig.intervalTime = advancedDetailTargetsConfig.intervalTime
   if (
-    isUndefined(advancedConfig.intervalTime) &&
+    isUndefined(advancedDetailTargetsConfig.intervalTime) &&
     !isUndefined(xCrawlConfig.intervalTime)
   ) {
     crawlConfig.intervalTime = xCrawlConfig.intervalTime
   }
 
   // 3.onCrawlItemComplete
-  crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
+  crawlConfig.onCrawlItemComplete =
+    advancedDetailTargetsConfig.onCrawlItemComplete
 }
 
 /* Create config */
 /*
-  每个创建配置函数的返回值都是类似于进阶版配置
+  每个创建配置函数的返回值都是类似于进阶配置
   不同点:
     - detailTargets 里面将存放的是详细版目标配置
     - 不会保留与详细版目标配置相同的选项
@@ -462,7 +473,7 @@ function createCrawlPageConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlPageConfig
 ): CrawlPageConfig {
-  const crawlPageConfig: CrawlPageConfigOriginal = {
+  const crawlPageConfig: CrawlPageConfig = {
     detailTargets: [],
     intervalTime: undefined,
 
@@ -471,30 +482,35 @@ function createCrawlPageConfig(
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlPageAdvancedConfig = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlPageAdvancedDetailTargetsConfig = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlPageAdvancedConfig 处理
     const { targets } = originalConfig as CrawlPageAdvancedConfig
-    advancedConfig = originalConfig as CrawlPageAdvancedConfig
 
-    crawlPageConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlPageAdvancedDetailTargetsConfig
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // string | CrawlPageDetailTargetConfig | (string | CrawlPageDetailTargetConfig)[] 处理
-    const detaileTargets = transformTargetToDetailTargets(
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlPageDetailTargetConfig
         | (string | CrawlPageDetailTargetConfig)[]
     )
-
-    crawlPageConfig.detailTargets.push(...detaileTargets)
   }
 
   // 装载公共配置
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlPageConfig
+  )
 
   // 装载单独配置
   crawlPageConfig.detailTargets.forEach((detail, index) => {
@@ -502,13 +518,13 @@ function createCrawlPageConfig(
     const { cookies, viewport, fingerprint } = detail
 
     // 1.cookies
-    if (isUndefined(cookies) && advancedConfig.cookies) {
-      detail.cookies = advancedConfig.cookies
+    if (isUndefined(cookies) && advancedDetailTargetsConfig.cookies) {
+      detail.cookies = advancedDetailTargetsConfig.cookies
     }
 
     // 2.viewport
-    if (isUndefined(viewport) && advancedConfig.viewport) {
-      detail.viewport = advancedConfig.viewport
+    if (isUndefined(viewport) && advancedDetailTargetsConfig.viewport) {
+      detail.viewport = advancedDetailTargetsConfig.viewport
     }
 
     // 3.fingerprint
@@ -516,25 +532,26 @@ function createCrawlPageConfig(
       loaderPageFingerprintToDetailTarget(detail, fingerprint)
     } else if (
       isUndefined(fingerprint) &&
-      advancedConfig.fingerprints?.length
+      advancedDetailTargetsConfig.fingerprints?.length
     ) {
       // 从对应的选中记录中取出指纹索引
       const selectFingerprintIndex =
         crawlPageConfig.selectFingerprintIndexs[index]
-      const fingerprint = advancedConfig.fingerprints[selectFingerprintIndex]
+      const fingerprint =
+        advancedDetailTargetsConfig.fingerprints[selectFingerprintIndex]
 
       loaderPageFingerprintToDetailTarget(detail, fingerprint)
     }
   })
 
-  return crawlPageConfig as CrawlPageConfig
+  return crawlPageConfig
 }
 
 function createCrawlDataConfig<T>(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlDataConfig<T>
 ): CrawlDataConfig {
-  const crawlDataConfig: CrawlDataConfigOriginal = {
+  const crawlDataConfig: CrawlDataConfig = {
     detailTargets: [],
     intervalTime: undefined,
 
@@ -543,29 +560,35 @@ function createCrawlDataConfig<T>(
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlDataAdvancedConfig<T> = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlDataAdvancedDetailTargetsConfig<T> = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlDataAdvancedConfig 处理
     const { targets } = originalConfig as CrawlDataAdvancedConfig<T>
-    advancedConfig = originalConfig as CrawlDataAdvancedConfig<T>
 
-    crawlDataConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlDataAdvancedDetailTargetsConfig<T>
+
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // string | CrawlDataDetailTargetConfig | (string | CrawlDataDetailTargetConfig)[] 处理
-    const detaileTargets = transformTargetToDetailTargets(
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlDataDetailTargetConfig
         | (string | CrawlDataDetailTargetConfig)[]
     )
-
-    crawlDataConfig.detailTargets.push(...detaileTargets)
   }
 
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlDataConfig
+  )
 
   return crawlDataConfig as CrawlDataConfig
 }
@@ -574,7 +597,7 @@ function createCrawlFileConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlFileConfig
 ): CrawlFileConfig {
-  const crawlFileConfig: CrawlFileConfigOriginal = {
+  const crawlFileConfig: CrawlFileConfig = {
     detailTargets: [],
     intervalTime: undefined,
 
@@ -584,42 +607,53 @@ function createCrawlFileConfig(
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlFileAdvancedConfig = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlFileAdvancedDetailTargetsConfig = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlFileAdvancedConfig 处理
     const { targets } = originalConfig as CrawlFileAdvancedConfig
 
-    advancedConfig = originalConfig as CrawlFileAdvancedConfig
-    crawlFileConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlFileAdvancedDetailTargetsConfig
+
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // CrawlFileDetailTargetConfig |  CrawlFileDetailTargetConfig[] 处理
-    crawlFileConfig.detailTargets.push(
-      ...(isArray(originalConfig)
-        ? originalConfig
-        : [originalConfig as CrawlFileDetailTargetConfig])
-    )
+    advancedDetailTargetsConfig.detailTargets = isArray(originalConfig)
+      ? originalConfig
+      : [originalConfig as CrawlFileDetailTargetConfig]
   }
 
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlFileConfig
+  )
 
-  const haveAdvancedStoreDir = !isUndefined(advancedConfig?.storeDir)
-  const haveAdvancedExtension = !isUndefined(advancedConfig?.extension)
+  const haveAdvancedStoreDir = !isUndefined(
+    advancedDetailTargetsConfig?.storeDir
+  )
+  const haveAdvancedExtension = !isUndefined(
+    advancedDetailTargetsConfig?.extension
+  )
   crawlFileConfig.detailTargets.forEach((detail) => {
     // 1.storeDir
     if (isUndefined(detail.storeDir) && haveAdvancedStoreDir) {
-      detail.storeDir = advancedConfig!.storeDir
+      detail.storeDir = advancedDetailTargetsConfig!.storeDir
     }
 
     // 2.extension
     if (isUndefined(detail.extension) && haveAdvancedExtension) {
-      detail.extension = advancedConfig!.extension
+      detail.extension = advancedDetailTargetsConfig!.extension
     }
   })
 
-  crawlFileConfig.onBeforeSaveItemFile = advancedConfig.onBeforeSaveItemFile
+  crawlFileConfig.onBeforeSaveItemFile =
+    advancedDetailTargetsConfig.onBeforeSaveItemFile
 
   return crawlFileConfig as CrawlFileConfig
 }
