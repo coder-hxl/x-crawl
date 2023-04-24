@@ -173,8 +173,8 @@ export interface CrawlCommonRes {
   isSuccess: boolean
   maxRetry: number
   retryCount: number
+  proxyDetails: ProxyDetails
   crawlErrorQueue: Error[]
-  proxyDetailes: ProxyDetails
 }
 
 export interface CrawlPageSingleRes extends CrawlCommonRes {

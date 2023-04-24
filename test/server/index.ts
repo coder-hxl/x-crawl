@@ -2,7 +2,7 @@ import http from 'node:http'
 
 http
   .createServer((req, res) => {
-    res.setHeader('Content-type', 'text/plain')
+    res.setHeader('Content-Type', 'text/plain')
     res.end('success')
   })
   .listen(8888, () => {

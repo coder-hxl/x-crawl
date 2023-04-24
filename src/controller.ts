@@ -1,4 +1,4 @@
-import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawlHandle'
+import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawl'
 import { priorityQueueMergeSort } from './sort'
 
 import {
@@ -20,49 +20,60 @@ import {
 } from './utils'
 import { HTTPResponse } from 'puppeteer'
 import { Request } from './request'
+import { CrawlCommonRes } from './types/api'
 
 export type CrawlDetail =
   | LoaderCrawlPageDetail
   | LoaderCrawlDataDetail
   | LoaderCrawlFileDetail
 
-export interface DetailInfo<T extends CrawlDetail, R> {
-  _notHandle: any
-
-  id: number
-  isSuccess: boolean
-  maxRetry: number
-  retryCount: number
-  crawlErrorQueue: Error[]
-  proxyDetailes: ProxyDetails
-  data: any | null
-
-  detailTarget: T
-  detailTargetRes: R | null
+interface DeviceResult extends CrawlCommonRes {
+  data: any
 }
 
-type TargetSingleRes = Omit<
-  DetailInfo<any, any>,
-  'detailTarget' | 'detailTargetRes'
->
+export interface Device<T extends CrawlDetail, R> {
+  id: number
 
-export function getCrawlStatus(detailTargetRes: any) {
+  isHandle: boolean
+  isSuccess: boolean
+  isStatusNormal: boolean
+
+  detailTargetConfig: T
+  detailTargetResult: R | null
+
+  maxRetry: number
+  retryCount: number
+  proxyDetails: ProxyDetails
+  crawlErrorQueue: Error[]
+
+  result: DeviceResult
+}
+
+export function isCrawlStatusInHttpStatus(device: Device<CrawlDetail, any>) {
+  const { detailTargetConfig, detailTargetResult } = device
+
   let status: number | null = null
 
   if (
-    isObject(detailTargetRes) &&
-    Object.hasOwn(detailTargetRes, 'response') &&
-    (detailTargetRes as any).response
+    isObject(detailTargetResult) &&
+    Object.hasOwn(detailTargetResult, 'response') &&
+    (detailTargetResult as any).response
   ) {
     // crawlPage
-    const response: HTTPResponse = (detailTargetRes as any).response
+    const response: HTTPResponse = (detailTargetResult as any).response
     status = response.status()
-  } else if (isObject(detailTargetRes)) {
+  } else if (isObject(detailTargetResult)) {
     // crawlData / crawlFie
-    status = (detailTargetRes as any as Request).statusCode ?? null
+    status = (detailTargetResult as any as Request).statusCode ?? null
   }
 
-  return status
+  let res = false
+  const switchByHttpStatus = detailTargetConfig.proxy?.switchByHttpStatus
+  if (status && switchByHttpStatus && switchByHttpStatus.includes(status)) {
+    res = true
+  }
+
+  return res
 }
 
 export async function controller<
@@ -74,12 +85,8 @@ export async function controller<
   mode: 'async' | 'sync',
   detailTargets: T[],
   extraConfig: E,
-  singleCrawlHandle: (
-    detailInfo: DetailInfo<T, R>,
-    extraConfig: E
-  ) => Promise<R>,
-  singleResultHandle: (detailInfo: DetailInfo<T, R>, extraConfig: E) => void
-): Promise<TargetSingleRes[]> {
+  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<R>
+) {
   // 是否使用优先爬取
   const isPriorityCrawl = !detailTargets.every(
     (item) => item.priority === detailTargets[0].priority
@@ -93,98 +100,98 @@ export async function controller<
       )
     : detailTargets
 
-  // 通过映射生成新的配置数组
-  const detailInfos: DetailInfo<T, R>[] = detailTargetConfigs.map(
-    (detailTarget, index) => ({
-      _notHandle: true,
+  // 生成装置
+  const devices: Device<T, R>[] = detailTargetConfigs.map(
+    (detailTargetConfig, index) => {
+      const id = ++index
+      const { maxRetry, proxyDetails } = detailTargetConfig
+      const crawlErrorQueue: Error[] = []
 
-      id: index + 1,
-      isSuccess: false,
-      maxRetry: detailTarget.maxRetry,
-      retryCount: 0,
-      crawlErrorQueue: [],
-      proxyDetailes: detailTarget.proxyDetails,
-      data: null,
+      return {
+        id,
 
-      detailTarget,
-      detailTargetRes: null
-    })
+        isHandle: false,
+        isSuccess: false,
+        isStatusNormal: false,
+
+        detailTargetConfig,
+        detailTargetResult: null,
+
+        maxRetry,
+        retryCount: 0,
+        proxyDetails,
+        crawlErrorQueue,
+
+        result: {
+          id,
+          isSuccess: false,
+          maxRetry,
+          retryCount: 0,
+          proxyDetails,
+          crawlErrorQueue,
+          data: null
+        }
+      }
+    }
   )
 
   log(
     `${logSuccess(`Start crawling`)} - name: ${logWarn(name)}, mode: ${logWarn(
       mode
-    )}, total: ${logNumber(detailInfos.length)} `
+    )}, total: ${logNumber(devices.length)} `
   )
 
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
 
   let i = 0
-  let crawlQueue: DetailInfo<T, R>[] = detailInfos
+  let crawlQueue: Device<T, R>[] = devices
   while (crawlQueue.length) {
-    await batchCrawl(
-      crawlQueue,
-      extraConfig,
-      singleCrawlHandle,
-      singleResultHandle
-    )
+    await batchCrawl(crawlQueue, extraConfig, singleCrawlHandle)
 
-    crawlQueue = crawlQueue.filter((detailInfo) => {
+    crawlQueue = crawlQueue.filter((device) => {
       const {
-        isSuccess,
-        maxRetry,
+        isHandle,
         retryCount,
-        proxyDetailes,
+        maxRetry,
+        detailTargetConfig,
+        proxyDetails,
         crawlErrorQueue,
-        detailTarget,
-        detailTargetRes
-      } = detailInfo
+        isStatusNormal
+      } = device
 
+      // 没有被处理 / 没成功 / 状态码不符合
       let isRetry = false
-      const haveRetryChance = maxRetry && retryCount < maxRetry
+      const haveRetryChance = retryCount < maxRetry
+      if (!isHandle && haveRetryChance) {
+        isRetry = true
 
-      // 没有被处理/没成功/状态码不符合
-      if (Object.hasOwn(detailInfo, '_notHandle') && haveRetryChance) {
-        // 1.不成功
-        if (!isSuccess) {
-          isRetry = true
-        }
-
-        // 2.代理多, 轮换代理
-        if (proxyDetailes.length >= 2) {
-          // 获取状态码
-          const status = getCrawlStatus(detailTargetRes)
-
-          // 错误次数 / 检测状态码
-          const switchByErrorCount = detailTarget.proxy?.switchByErrorCount ?? 0
-          const switchByHttpStatus =
-            detailTarget.proxy?.switchByHttpStatus ?? []
+        // 轮换代理
+        if (proxyDetails.length >= 2) {
+          // 状态码 / 失败次数
+          const switchByErrorCount =
+            detailTargetConfig.proxy?.switchByErrorCount
           if (
-            (status && switchByHttpStatus.includes(status)) ||
-            switchByErrorCount >= crawlErrorQueue.length
+            !isStatusNormal ||
+            (!isUndefined(switchByErrorCount) &&
+              switchByErrorCount >= crawlErrorQueue.length)
           ) {
-            isRetry = true
-            proxyDetailes.find(
-              (detail) => detail.url === detailTarget.proxyUrl
+            // 设置当前代理 URL 状态
+            proxyDetails.find(
+              (detail) => detail.url === detailTargetConfig.proxyUrl
             )!.state = false
 
             // 寻找新代理 URL
-            const newProxyUrl = proxyDetailes.find(
+            const newProxyUrl = proxyDetails.find(
               (detaile) => detaile.state
             )?.url
 
-            // 无则不切换
+            // 使用新代理 URL
             if (!isUndefined(newProxyUrl)) {
-              detailTarget.proxyUrl = newProxyUrl
+              detailTargetConfig.proxyUrl = newProxyUrl
             }
           }
         }
-      }
-
-      // 重置需要重试的 isSuccess
-      if (isRetry) {
-        detailInfo.isSuccess = false
       }
 
       return isRetry
@@ -205,11 +212,11 @@ export async function controller<
   // 统计结果
   const succssIds: number[] = []
   const errorIds: number[] = []
-  detailInfos.forEach((item) => {
-    if (item.isSuccess) {
-      succssIds.push(item.id)
+  devices.forEach((device) => {
+    if (device.isSuccess) {
+      succssIds.push(device.id)
     } else {
-      errorIds.push(item.id)
+      errorIds.push(device.id)
     }
   })
 
@@ -227,5 +234,5 @@ export async function controller<
     )
   )
 
-  return detailInfos as TargetSingleRes[]
+  return devices.map((device) => device.result)
 }

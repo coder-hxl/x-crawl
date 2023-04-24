@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { DetailInfo, controller } from './controller'
+import { Device, controller, isCrawlStatusInHttpStatus } from './controller'
 import { Request, request } from './request'
 import { quickSort } from './sort'
 import {
@@ -34,7 +34,6 @@ import {
   DetailTargetFingerprintCommon
 } from './types/api'
 import { LoaderXCrawlConfig } from './types'
-import { AnyObject } from './types/common'
 import { fingerprints } from './default'
 
 /* Types */
@@ -44,23 +43,28 @@ export interface ExtraCommonConfig {
   intervalTime: IntervalTime | undefined
 }
 
-interface ExtraPageConfig extends ExtraCommonConfig {
-  // 存放报错的 Page
-  errorPageMap: Map<number, Page>
+export interface ExtraDataAndFileCommonConfig {
+  type: 'data' | 'file'
+}
 
+interface ExtraPageConfig extends ExtraCommonConfig {
   browser: Browser
   onCrawlItemComplete:
     | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
     | undefined
 }
 
-interface ExtraDataConfig<T> extends ExtraCommonConfig {
+interface ExtraDataConfig<T>
+  extends ExtraCommonConfig,
+    ExtraDataAndFileCommonConfig {
   onCrawlItemComplete:
     | ((crawlDataSingleRes: CrawlDataSingleRes<T>) => void)
     | undefined
 }
 
-interface ExtraFileConfig extends ExtraCommonConfig {
+interface ExtraFileConfig
+  extends ExtraCommonConfig,
+    ExtraDataAndFileCommonConfig {
   saveFileErrorArr: { message: string; valueOf: () => number }[]
   saveFilePendingQueue: Promise<any>[]
   onCrawlItemComplete:
@@ -678,23 +682,32 @@ function createCrawlFileConfig(
 /* Single crawl handle */
 
 async function pageSingleCrawlHandle(
-  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
   extraConfig: ExtraPageConfig
 ): Promise<PageSingleCrawlResult> {
-  const { id, detailTarget } = detaileInfo
-  const { errorPageMap, browser } = extraConfig
+  const {
+    detailTargetConfig,
+    detailTargetResult,
+    retryCount,
+    maxRetry,
+    crawlErrorQueue
+  } = device
+  const { browser } = extraConfig
+  const notAllowRetry = retryCount === maxRetry
 
-  const page = await browser.newPage()
+  // 是否创建过 Page
+  const page = detailTargetResult?.page ?? (await browser.newPage())
 
-  if (detailTarget.viewport) {
-    await page.setViewport(detailTarget.viewport)
+  if (detailTargetConfig.viewport) {
+    await page.setViewport(detailTargetConfig.viewport)
   }
 
   let response: HTTPResponse | null = null
+  let notError = true
   try {
-    if (detailTarget.proxyUrl) {
+    if (detailTargetConfig.proxyUrl) {
       await browser.createIncognitoBrowserContext({
-        proxyServer: detailTarget.proxyUrl
+        proxyServer: detailTargetConfig.proxyUrl
       })
     } else {
       await browser.createIncognitoBrowserContext({
@@ -702,84 +715,145 @@ async function pageSingleCrawlHandle(
       })
     }
 
-    if (detailTarget.cookies) {
-      const cookies = parsePageCookies(detailTarget.url, detailTarget.cookies)
+    if (detailTargetConfig.cookies) {
+      const cookies = parsePageCookies(
+        detailTargetConfig.url,
+        detailTargetConfig.cookies
+      )
       await page.setCookie(...cookies)
     } else {
-      const cookies = await page.cookies(detailTarget.url)
+      const cookies = await page.cookies(detailTargetConfig.url)
       await page.deleteCookie(...cookies)
     }
 
-    if (detailTarget.headers) {
-      await page.setExtraHTTPHeaders(detailTarget.headers)
+    if (detailTargetConfig.headers) {
+      await page.setExtraHTTPHeaders(detailTargetConfig.headers)
     }
 
-    response = await page.goto(detailTarget.url, {
-      timeout: detailTarget.timeout
+    response = await page.goto(detailTargetConfig.url, {
+      timeout: detailTargetConfig.timeout
     })
-  } catch (error) {
-    // 收集报错的 page
-    if (!errorPageMap.get(id)) {
-      errorPageMap.set(id, page)
-    }
+  } catch (error: any) {
+    notError = false
+    crawlErrorQueue.push(error)
+  }
 
-    // 让外面收集错误
-    throw error
+  // 保存结果
+  device.detailTargetResult = { response, page }
+
+  // 处理结果
+  const isStatusNormal = !isCrawlStatusInHttpStatus(device)
+  const isSuccess = notError && isStatusNormal
+
+  device.isStatusNormal = isStatusNormal
+  device.isSuccess = isSuccess
+  if (isSuccess || notAllowRetry) {
+    device.isHandle = true
+
+    pageSingleResultHandle(device, extraConfig)
   }
 
   return { response, page }
 }
 
 async function dataAndFileSingleCrawlHandle(
-  detaileInfo: DetailInfo<
-    LoaderCrawlDataDetail | LoaderCrawlFileDetail,
-    Request
-  >
+  device: Device<LoaderCrawlDataDetail | LoaderCrawlFileDetail, Request>,
+  extraConfig: ExtraDataConfig<any> | ExtraFileConfig
 ) {
-  const { detailTarget } = detaileInfo
+  const { detailTargetConfig, crawlErrorQueue, maxRetry, retryCount } = device
+  const notAllowRetry = maxRetry === retryCount
 
-  return await request(detailTarget)
+  let detailTargetResult = null
+  let notError = true
+  try {
+    detailTargetResult = await request(detailTargetConfig)
+  } catch (error: any) {
+    notError = false
+    crawlErrorQueue.push(error)
+  }
+
+  // 保存结果
+  device.detailTargetResult = detailTargetResult
+
+  // 处理结果
+  const isStatusNormal = !isCrawlStatusInHttpStatus(device)
+  const isSuccess = notError && isStatusNormal
+
+  device.isStatusNormal = isStatusNormal
+  device.isSuccess = isSuccess
+  if (isSuccess || notAllowRetry) {
+    device.isHandle = true
+
+    if (extraConfig.type === 'data') {
+      dataSingleResultHandle(device, extraConfig as ExtraDataConfig<any>)
+    } else if (extraConfig.type === 'file') {
+      fileSingleResultHandle(device, extraConfig as ExtraFileConfig)
+    }
+  }
+
+  return await request(detailTargetConfig)
 }
 
 /* Single result handle */
+const resultEssentialOtherKeys = ['isSuccess', 'retryCount'] as const
+
+function handleResultEssentialOtherValue(device: any) {
+  Object.keys(device).forEach((key) => {
+    if (resultEssentialOtherKeys.includes(key as any)) {
+      device.result[key] = device[key]
+    }
+  })
+}
 
 function pageSingleResultHandle(
-  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
   extraConfig: ExtraPageConfig
 ) {
-  const { id, isSuccess, detailTargetRes } = detaileInfo
-  const { errorPageMap, browser, onCrawlItemComplete } = extraConfig
+  const { detailTargetResult, result } = device
+  const { browser, onCrawlItemComplete } = extraConfig
 
-  let data: {
-    browser: Browser
-    response: HTTPResponse | null
-    page: Page
-  } | null = null
+  handleResultEssentialOtherValue(device)
 
-  if (isSuccess && detailTargetRes) {
-    data = { browser: browser!, ...detailTargetRes }
-  } else {
-    const page = errorPageMap.get(id)!
-
-    data = { browser: browser!, response: null, page }
-  }
-
-  detaileInfo.data = data
-
-  const crawlPageSingleRes: AnyObject = detaileInfo
-  delete crawlPageSingleRes.detailTarget
-  delete crawlPageSingleRes.detailTargetRes
+  result.data = { browser, ...detailTargetResult }
 
   if (onCrawlItemComplete) {
-    onCrawlItemComplete(crawlPageSingleRes as CrawlPageSingleRes)
+    onCrawlItemComplete(device.result as CrawlPageSingleRes)
+  }
+}
+
+function dataSingleResultHandle(
+  device: Device<LoaderCrawlDataDetail, Request>,
+  extraConfig: ExtraDataConfig<any>
+) {
+  const { isSuccess, detailTargetResult, result } = device
+  const { onCrawlItemComplete } = extraConfig
+
+  handleResultEssentialOtherValue(device)
+
+  if (isSuccess && detailTargetResult) {
+    const contentType = detailTargetResult.headers['content-type'] ?? ''
+
+    const data =
+      contentType === 'application/json'
+        ? JSON.parse(detailTargetResult.data.toString())
+        : contentType.includes('text')
+        ? detailTargetResult.data.toString()
+        : detailTargetResult.data
+
+    result.data = { ...detailTargetResult, data }
+  }
+
+  if (onCrawlItemComplete) {
+    onCrawlItemComplete(result as CrawlDataSingleRes<any>)
   }
 }
 
 function fileSingleResultHandle(
-  detaileInfo: DetailInfo<LoaderCrawlFileDetail, Request>,
+  device: Device<LoaderCrawlFileDetail, Request>,
   extraConfig: ExtraFileConfig
 ) {
-  const { id, isSuccess, detailTarget, detailTargetRes } = detaileInfo
+  const { id, isSuccess, detailTargetConfig, detailTargetResult, result } =
+    device
   const {
     saveFileErrorArr,
     saveFilePendingQueue,
@@ -788,26 +862,28 @@ function fileSingleResultHandle(
     onBeforeSaveItemFile
   } = extraConfig
 
-  const crawlFileSingleRes: AnyObject = detaileInfo
-  delete crawlFileSingleRes.detailTarget
-  delete crawlFileSingleRes.detailTargetRes
+  handleResultEssentialOtherValue(device)
 
-  if (isSuccess && detailTargetRes) {
-    const mimeType = detailTargetRes.headers['content-type'] ?? ''
+  if (isSuccess && detailTargetResult) {
+    const mimeType = detailTargetResult.headers['content-type'] ?? ''
 
-    const fileName = detailTarget.fileName ?? `${id}-${new Date().getTime()}`
+    const fileName =
+      detailTargetConfig.fileName ?? `${id}-${new Date().getTime()}`
     const fileExtension =
-      detailTarget.extension ?? `.${mimeType.split('/').pop()}`
+      detailTargetConfig.extension ?? `.${mimeType.split('/').pop()}`
 
-    if (detailTarget.storeDir && !fs.existsSync(detailTarget.storeDir)) {
-      mkdirDirSync(detailTarget.storeDir)
+    if (
+      detailTargetConfig.storeDir &&
+      !fs.existsSync(detailTargetConfig.storeDir)
+    ) {
+      mkdirDirSync(detailTargetConfig.storeDir)
     }
 
-    const storePath = detailTarget.storeDir ?? __dirname
+    const storePath = detailTargetConfig.storeDir ?? __dirname
     const filePath = path.resolve(storePath, fileName + fileExtension)
 
     // 在保存前的回调
-    const data = detailTargetRes.data
+    const data = detailTargetResult.data
     let dataPromise = Promise.resolve(data)
     if (onBeforeSaveItemFile) {
       dataPromise = onBeforeSaveItemFile({
@@ -832,8 +908,8 @@ function fileSingleResultHandle(
       }
 
       const size = newData.length
-      detaileInfo.data = {
-        ...detailTargetRes,
+      result.data = {
+        ...detailTargetResult,
         data: {
           isSuccess,
           fileName,
@@ -845,7 +921,7 @@ function fileSingleResultHandle(
       }
 
       if (onCrawlItemComplete) {
-        onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
+        onCrawlItemComplete(device.result as CrawlFileSingleRes)
       }
     })
 
@@ -853,7 +929,7 @@ function fileSingleResultHandle(
     saveFilePendingQueue.push(saveFileItemPending)
   } else {
     if (onCrawlItemComplete) {
-      onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
+      onCrawlItemComplete(device.result as CrawlFileSingleRes)
     }
   }
 }
@@ -911,7 +987,6 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       createCrawlPageConfig(xCrawlConfig, config)
 
     const extraConfig: ExtraPageConfig = {
-      errorPageMap: new Map(),
       browser: browser!,
       intervalTime,
       onCrawlItemComplete
@@ -922,8 +997,7 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      pageSingleCrawlHandle,
-      pageSingleResultHandle
+      pageSingleCrawlHandle
     )) as CrawlPageSingleRes[]
 
     const crawlRes =
@@ -969,34 +1043,8 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlDataConfig(xCrawlConfig, config)
 
-    function dataSingleResultHandle(
-      detaileInfo: DetailInfo<LoaderCrawlDataDetail, Request>,
-      extraConfig: ExtraDataConfig<T>
-    ) {
-      const { isSuccess, detailTargetRes } = detaileInfo
-      const { onCrawlItemComplete } = extraConfig
-
-      if (isSuccess && detailTargetRes) {
-        const contentType = detailTargetRes.headers['content-type'] ?? ''
-
-        const data: T =
-          contentType === 'application/json'
-            ? JSON.parse(detailTargetRes.data.toString())
-            : contentType.includes('text')
-            ? detailTargetRes.data.toString()
-            : detailTargetRes.data
-
-        detaileInfo.data = { ...detailTargetRes, data }
-      }
-
-      const crawlDataSingleRes: AnyObject = detaileInfo
-
-      if (onCrawlItemComplete) {
-        onCrawlItemComplete(crawlDataSingleRes as CrawlDataSingleRes<T>)
-      }
-    }
-
     const extraConfig: ExtraDataConfig<T> = {
+      type: 'data',
       intervalTime,
       onCrawlItemComplete
     }
@@ -1006,8 +1054,7 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle,
-      dataSingleResultHandle
+      dataAndFileSingleCrawlHandle
     )) as CrawlDataSingleRes<T>[]
 
     const crawlRes =
@@ -1053,6 +1100,8 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     } = createCrawlFileConfig(xCrawlConfig, config)
 
     const extraConfig: ExtraFileConfig = {
+      type: 'file',
+
       saveFileErrorArr: [],
       saveFilePendingQueue: [],
 
@@ -1066,8 +1115,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle,
-      fileSingleResultHandle
+      dataAndFileSingleCrawlHandle
     )) as CrawlFileSingleRes[]
 
     const { saveFilePendingQueue, saveFileErrorArr } = extraConfig

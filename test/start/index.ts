@@ -63,22 +63,19 @@ const testXCrawl = xCrawl({
 
 testXCrawl
   .crawlPage({
-    targets: [
-      'https://www.google.com/search?q=1',
-      'https://github.com/coder-hxl'
-    ],
+    targets: ['https://www.google.com', 'https://github.com/coder-hxl'],
     proxy: {
-      urls: ['https://www.npmjs.com/package/x-crawl', 'http://localhost:14892'],
-      switchByErrorCount: 1,
-      switchByHttpStatus: [200]
+      urls: ['http://localhost:14897', 'http://localhost:14892'],
+      switchByErrorCount: 1
     },
-    maxRetry: 4
+    maxRetry: 3
   })
   .then((res) => {
     console.log('================== res ==================')
+    console.log(res)
 
     res.forEach((item, i) => {
-      console.log(item.proxyDetailes)
+      console.log(item.proxyDetails)
       // item.data.page.screenshot({ path: `${i}page.jpg` })
     })
 
