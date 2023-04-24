@@ -1136,19 +1136,19 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
         errorIds.push(item.id)
       }
     })
-    log('Save file final result:')
+    log('Save statistics for the targets:')
     log(
       logSuccess(
-        `  Success - total: ${succssIds.length}, ids: [ ${succssIds.join(
-          ' - '
-        )} ]`
+        `  Success - target total: ${
+          succssIds.length
+        }, targets id: [ ${succssIds.join(', ')} ]`
       )
     )
     log(
       logError(
-        `    Error - total: ${errorIds.length}, ids: [ ${errorIds.join(
-          ' - '
-        )} ]`
+        `    Error - target total: ${
+          errorIds.length
+        }, targets id: [ ${errorIds.join(', ')} ]`
       )
     )
 

@@ -138,7 +138,7 @@ export async function controller<
   log(
     `${logSuccess(`Start crawling`)} - name: ${logWarn(name)}, mode: ${logWarn(
       mode
-    )}, total: ${logNumber(devices.length)} `
+    )}, target total: ${logNumber(devices.length)} `
   )
 
   // 选择爬取模式
@@ -203,8 +203,11 @@ export async function controller<
 
         return item.id
       })
+
       log(
-        logWarn(`Retry: ${++i} - Ids to retry: [ ${retriedIds.join(' - ')} ]`)
+        logWarn(
+          `Start retrying: ${++i} - Targets id: [ ${retriedIds.join(' - ')} ]`
+        )
       )
     }
   }
@@ -220,17 +223,19 @@ export async function controller<
     }
   })
 
-  log('Crawl the final result:')
+  log('Crawl statistics of the targets:')
   log(
     logSuccess(
-      `  Success - total: ${succssIds.length}, ids: [ ${succssIds.join(
-        ' - '
-      )} ]`
+      `  Success - target total: ${
+        succssIds.length
+      }, targets id: [ ${succssIds.join(', ')} ]`
     )
   )
   log(
     logError(
-      `    Error - total: ${errorIds.length}, ids: [ ${errorIds.join(' - ')} ]`
+      `    Error - target total: ${
+        errorIds.length
+      }, targets id: [ ${errorIds.join(', ')} ]`
     )
   )
 

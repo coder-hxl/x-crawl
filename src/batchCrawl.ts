@@ -14,15 +14,11 @@ async function useSleepByBatch(
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
-    log(
-      `Id: ${logNumber(id)} - Crawl needs to sleep for ${logNumber(
-        timeout + 'ms'
-      )} milliseconds before sending`
-    )
+    log(`Target id: ${logNumber(id)} - sleep: ${logNumber(timeout + 'ms')}`)
 
     await sleep(timeout)
   } else {
-    log(`Id: ${logNumber(id)} - Crawl does not need to sleep, send immediately`)
+    log(`Target id: ${logNumber(id)} - sleep: ${logNumber('0ms')}`)
   }
 }
 
