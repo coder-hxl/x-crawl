@@ -23,11 +23,11 @@ import {
   CrawlFileDetailTargetConfig,
   CrawlPageDetailTargetConfig,
   PageCookies,
-  CrawlPageSingleRes,
+  CrawlPageSingleResult,
   StartPollingConfig,
   CrawlPageAdvancedConfig,
-  CrawlDataSingleRes,
-  CrawlFileSingleRes,
+  CrawlDataSingleResult,
+  CrawlFileSingleResult,
   CrawlFileAdvancedConfig,
   CrawlDataAdvancedConfig,
   IntervalTime,
@@ -50,7 +50,7 @@ export interface ExtraDataAndFileCommonConfig {
 interface ExtraPageConfig extends ExtraCommonConfig {
   browser: Browser
   onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
+    | ((crawlPageSingleRes: CrawlPageSingleResult) => void)
     | undefined
 }
 
@@ -58,7 +58,7 @@ interface ExtraDataConfig<T>
   extends ExtraCommonConfig,
     ExtraDataAndFileCommonConfig {
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<T>) => void)
+    | ((crawlDataSingleRes: CrawlDataSingleResult<T>) => void)
     | undefined
 }
 
@@ -68,7 +68,7 @@ interface ExtraFileConfig
   saveFileErrorArr: { message: string; valueOf: () => number }[]
   saveFilePendingQueue: Promise<any>[]
   onCrawlItemComplete:
-    | ((crawlFileSingleRes: CrawlFileSingleRes) => void)
+    | ((crawlFileSingleRes: CrawlFileSingleResult) => void)
     | undefined
   onBeforeSaveItemFile:
     | ((info: {
@@ -135,7 +135,7 @@ interface CrawlPageConfig {
   selectFingerprintIndexs: number[]
 
   onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
+    | ((crawlPageSingleRes: CrawlPageSingleResult) => void)
     | undefined
 }
 
@@ -146,7 +146,7 @@ interface CrawlDataConfig {
   selectFingerprintIndexs: number[]
 
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | ((crawlDataSingleRes: CrawlDataSingleResult<any>) => void)
     | undefined
 }
 
@@ -165,7 +165,7 @@ interface CrawlFileConfig {
       }) => Promise<Buffer>)
     | undefined
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | ((crawlDataSingleRes: CrawlDataSingleResult<any>) => void)
     | undefined
 }
 
@@ -813,7 +813,7 @@ function pageSingleResultHandle(
   result.data = { browser, ...detailTargetResult }
 
   if (onCrawlItemComplete) {
-    onCrawlItemComplete(device.result as CrawlPageSingleRes)
+    onCrawlItemComplete(device.result as CrawlPageSingleResult)
   }
 }
 
@@ -840,7 +840,7 @@ function dataSingleResultHandle(
   }
 
   if (onCrawlItemComplete) {
-    onCrawlItemComplete(result as CrawlDataSingleRes<any>)
+    onCrawlItemComplete(result as CrawlDataSingleResult<any>)
   }
 }
 
@@ -917,7 +917,7 @@ function fileSingleResultHandle(
       }
 
       if (onCrawlItemComplete) {
-        onCrawlItemComplete(device.result as CrawlFileSingleRes)
+        onCrawlItemComplete(device.result as CrawlFileSingleResult)
       }
     })
 
@@ -925,7 +925,7 @@ function fileSingleResultHandle(
     saveFilePendingQueue.push(saveFileItemPending)
   } else {
     if (onCrawlItemComplete) {
-      onCrawlItemComplete(device.result as CrawlFileSingleRes)
+      onCrawlItemComplete(device.result as CrawlFileSingleResult)
     }
   }
 }
@@ -939,35 +939,35 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 
   function crawlPage(
     config: string,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (result: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   function crawlPage(
     config: CrawlPageDetailTargetConfig,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (result: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   function crawlPage(
     config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (result: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   function crawlPage(
     config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (result: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   async function crawlPage(
     config: UniteCrawlPageConfig,
-    callback?: (res: any) => void
-  ): Promise<CrawlPageSingleRes | CrawlPageSingleRes[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlPageSingleResult | CrawlPageSingleResult[]> {
     //  创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
       createBrowserPending = puppeteer
         .launch(xCrawlConfig.crawlPage?.launchBrowser)
-        .then((res) => {
-          browser = res
+        .then((result) => {
+          browser = result
         })
     }
 
@@ -988,24 +988,24 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       onCrawlItemComplete
     }
 
-    const crawlResArr = (await controller(
+    const crawlResultArr = (await controller(
       'page',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
       pageSingleCrawlHandle
-    )) as CrawlPageSingleRes[]
+    )) as CrawlPageSingleResult[]
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlPage
@@ -1014,28 +1014,28 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlData<T = any>(
     config: string,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (result: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   function crawlData<T = any>(
     config: CrawlDataDetailTargetConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (result: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   function crawlData<T = any>(
     config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (result: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   function crawlData<T = any>(
     config: CrawlDataAdvancedConfig<T>,
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (result: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   async function crawlData<T = any>(
     config: UniteCrawlDataConfig<T>,
-    callback?: (res: any) => void
-  ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlDataSingleResult<T> | CrawlDataSingleResult<T>[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlDataConfig(xCrawlConfig, config)
 
@@ -1045,24 +1045,24 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       onCrawlItemComplete
     }
 
-    const crawlResArr = (await controller(
+    const crawlResultArr = (await controller(
       'data',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
       dataAndFileSingleCrawlHandle
-    )) as CrawlDataSingleRes<T>[]
+    )) as CrawlDataSingleResult<T>[]
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlData
@@ -1071,23 +1071,23 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
 export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlFile(
     config: CrawlFileDetailTargetConfig,
-    callback?: (res: CrawlFileSingleRes) => void
-  ): Promise<CrawlFileSingleRes>
+    callback?: (result: CrawlFileSingleResult) => void
+  ): Promise<CrawlFileSingleResult>
 
   function crawlFile(
     config: CrawlFileDetailTargetConfig[],
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (result: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   function crawlFile(
     config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (result: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   async function crawlFile(
     config: UniteCrawlFileConfig,
-    callback?: (res: any) => void
-  ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlFileSingleResult | CrawlFileSingleResult[]> {
     const {
       detailTargets,
       intervalTime,
@@ -1106,13 +1106,13 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       onBeforeSaveItemFile
     }
 
-    const crawlResArr = (await controller(
+    const crawlResultArr = (await controller(
       'file',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
       dataAndFileSingleCrawlHandle
-    )) as CrawlFileSingleRes[]
+    )) as CrawlFileSingleResult[]
 
     const { saveFilePendingQueue, saveFileErrorArr } = extraConfig
 
@@ -1125,7 +1125,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     // 统计保存
     const succssIds: number[] = []
     const errorIds: number[] = []
-    crawlResArr.forEach((item) => {
+    crawlResultArr.forEach((item) => {
       if (item.data?.data.isSuccess) {
         succssIds.push(item.id)
       } else {
@@ -1148,16 +1148,16 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       )
     )
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlFile

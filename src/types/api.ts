@@ -130,7 +130,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   cookies?: PageCookies
   viewport?: Viewport
 
-  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleResult) => void
 }
 
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
@@ -140,7 +140,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleResult<T>) => void
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
@@ -152,7 +152,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   storeDir?: string
   extension?: string
 
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
@@ -168,7 +168,7 @@ export interface StartPollingConfig {
 }
 
 /* API Result */
-export interface CrawlCommonRes {
+export interface CrawlCommonResult {
   id: number
   isSuccess: boolean
   maxRetry: number
@@ -177,7 +177,7 @@ export interface CrawlCommonRes {
   crawlErrorQueue: Error[]
 }
 
-export interface CrawlPageSingleRes extends CrawlCommonRes {
+export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
     browser: Browser
     response: HTTPResponse | null
@@ -185,7 +185,7 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
   }
 }
 
-export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
+export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders
@@ -193,7 +193,7 @@ export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
   } | null
 }
 
-export interface CrawlFileSingleRes extends CrawlCommonRes {
+export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders

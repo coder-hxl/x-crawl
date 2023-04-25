@@ -20,14 +20,14 @@ import {
 } from './utils'
 import { HTTPResponse } from 'puppeteer'
 import { Request } from './request'
-import { CrawlCommonRes } from './types/api'
+import { CrawlCommonResult } from './types/api'
 
 export type CrawlDetail =
   | LoaderCrawlPageDetail
   | LoaderCrawlDataDetail
   | LoaderCrawlFileDetail
 
-interface DeviceResult extends CrawlCommonRes {
+interface DeviceResult extends CrawlCommonResult {
   data: any
 }
 
@@ -67,13 +67,13 @@ export function isCrawlStatusInHttpStatus(device: Device<CrawlDetail, any>) {
     status = (detailTargetResult as any as Request).statusCode ?? null
   }
 
-  let res = false
+  let result = false
   const switchByHttpStatus = detailTargetConfig.proxy?.switchByHttpStatus
   if (status && switchByHttpStatus && switchByHttpStatus.includes(status)) {
-    res = true
+    result = true
   }
 
-  return res
+  return result
 }
 
 export async function controller<

@@ -2,9 +2,9 @@ import { PuppeteerLaunchOptions } from 'puppeteer'
 import {
   StartPollingConfig,
   IntervalTime,
-  CrawlPageSingleRes,
-  CrawlDataSingleRes,
-  CrawlFileSingleRes,
+  CrawlPageSingleResult,
+  CrawlDataSingleResult,
+  CrawlFileSingleResult,
   CrawlFileAdvancedConfig,
   CrawlFileDetailTargetConfig,
   CrawlDataDetailTargetConfig,
@@ -35,62 +35,62 @@ export interface XCrawlInstance {
   crawlPage: {
     (
       config: string,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (result: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: CrawlPageDetailTargetConfig,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (result: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: (string | CrawlPageDetailTargetConfig)[],
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (result: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
 
     (
       config: CrawlPageAdvancedConfig,
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (result: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
   }
 
   crawlData: {
     <T = any>(
       config: CrawlDataDetailTargetConfig,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (result: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: string,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (result: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: (string | CrawlDataDetailTargetConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (result: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
 
     <T = any>(
       config: CrawlDataAdvancedConfig<T>,
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (result: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
   }
 
   crawlFile: {
     (
       config: CrawlFileDetailTargetConfig,
-      callback?: (res: CrawlFileSingleRes) => void
-    ): Promise<CrawlFileSingleRes>
+      callback?: (result: CrawlFileSingleResult) => void
+    ): Promise<CrawlFileSingleResult>
 
     (
       config: CrawlFileDetailTargetConfig[],
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (result: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
 
     (
       config: CrawlFileAdvancedConfig,
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (result: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
   }
 
   startPolling: (

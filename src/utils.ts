@@ -7,13 +7,13 @@ export function sleep(timeout: number) {
 }
 
 export function random(max: number, min = 0) {
-  let res = Math.floor(Math.random() * max)
+  let result = Math.floor(Math.random() * max)
 
-  while (res < min) {
-    res = Math.floor(Math.random() * max)
+  while (result < min) {
+    result = Math.floor(Math.random() * max)
   }
 
-  return res
+  return result
 }
 
 export function mkdirDirSync(dir: string) {
