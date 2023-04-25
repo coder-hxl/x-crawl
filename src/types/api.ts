@@ -69,13 +69,13 @@ export interface DetailTargetFingerprintCommon {
 }
 
 export interface CrawlCommonConfig {
-  timeout?: number
+  timeout?: number | null
   proxy?: {
     urls: string[]
     switchByHttpStatus?: number[]
     switchByErrorCount?: number
-  }
-  maxRetry?: number
+  } | null
+  maxRetry?: number | null
 }
 
 // 1.Detail target
@@ -140,7 +140,9 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleResult: CrawlDataSingleResult<T>) => void
+  onCrawlItemComplete?: (
+    crawlDataSingleResult: CrawlDataSingleResult<T>
+  ) => void
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {

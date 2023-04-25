@@ -91,7 +91,7 @@ type LoaderCommonConfig = {
 }
 
 type LoaderHasConfig = {
-  timeout: number
+  timeout?: number
   maxRetry: number
   priority: number
 }
@@ -378,14 +378,14 @@ function loaderCommonConfigToCrawlConfig(
         detail
 
       // 1.1.baseUrl
-      if (!isUndefined(xCrawlConfig.baseUrl)) {
+      if (xCrawlConfig.baseUrl) {
         detail.url = xCrawlConfig.baseUrl + url
       }
 
       // 1.2.timeout
       if (isUndefined(timeout)) {
         if (!isUndefined(advancedDetailTargetsConfig.timeout)) {
-          detail.timeout = advancedDetailTargetsConfig.timeout
+          detail.timeout = advancedDetailTargetsConfig.timeout ?? undefined
         } else {
           detail.timeout = xCrawlConfig.timeout
         }
@@ -394,7 +394,7 @@ function loaderCommonConfigToCrawlConfig(
       // 1.3.maxRetry
       if (isUndefined(maxRetry)) {
         if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
-          detail.maxRetry = advancedDetailTargetsConfig.maxRetry
+          detail.maxRetry = advancedDetailTargetsConfig.maxRetry ?? 0
         } else {
           detail.maxRetry = xCrawlConfig.maxRetry
         }
