@@ -12,6 +12,8 @@ import {
   isUndefined,
   log,
   logError,
+  logStart,
+  logStatistics,
   logSuccess,
   logWarn,
   mkdirDirSync,
@@ -40,35 +42,29 @@ import { fingerprints } from './default'
 
 // Extra config
 export interface ExtraCommonConfig {
-  intervalTime: IntervalTime | undefined
-}
+  type: 'page' | 'data' | 'file'
 
-export interface ExtraDataAndFileCommonConfig {
-  type: 'data' | 'file'
+  intervalTime: IntervalTime | undefined
 }
 
 interface ExtraPageConfig extends ExtraCommonConfig {
   browser: Browser
   onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleResult) => void)
+    | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
     | undefined
 }
 
-interface ExtraDataConfig<T>
-  extends ExtraCommonConfig,
-    ExtraDataAndFileCommonConfig {
+interface ExtraDataConfig<T> extends ExtraCommonConfig {
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleResult<T>) => void)
+    | ((crawlDataSingleResult: CrawlDataSingleResult<T>) => void)
     | undefined
 }
 
-interface ExtraFileConfig
-  extends ExtraCommonConfig,
-    ExtraDataAndFileCommonConfig {
+interface ExtraFileConfig extends ExtraCommonConfig {
   saveFileErrorArr: { message: string; valueOf: () => number }[]
   saveFilePendingQueue: Promise<any>[]
   onCrawlItemComplete:
-    | ((crawlFileSingleRes: CrawlFileSingleResult) => void)
+    | ((crawlFileSingleResult: CrawlFileSingleResult) => void)
     | undefined
   onBeforeSaveItemFile:
     | ((info: {
@@ -135,7 +131,7 @@ interface CrawlPageConfig {
   selectFingerprintIndexs: number[]
 
   onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleResult) => void)
+    | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
     | undefined
 }
 
@@ -146,7 +142,7 @@ interface CrawlDataConfig {
   selectFingerprintIndexs: number[]
 
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleResult<any>) => void)
+    | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
     | undefined
 }
 
@@ -165,7 +161,7 @@ interface CrawlFileConfig {
       }) => Promise<Buffer>)
     | undefined
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleResult<any>) => void)
+    | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
     | undefined
 }
 
@@ -983,13 +979,14 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       createCrawlPageConfig(xCrawlConfig, config)
 
     const extraConfig: ExtraPageConfig = {
+      type: 'page',
+
       browser: browser!,
       intervalTime,
       onCrawlItemComplete
     }
 
     const crawlResultArr = (await controller(
-      'page',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
@@ -1046,7 +1043,6 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     }
 
     const crawlResultArr = (await controller(
-      'data',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
@@ -1107,7 +1103,6 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     }
 
     const crawlResultArr = (await controller(
-      'file',
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
@@ -1132,19 +1127,19 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
         errorIds.push(item.id)
       }
     })
-    log('Save statistics for the targets:')
+    log(logStatistics('Save files finish:'))
     log(
       logSuccess(
-        `  Success - target total: ${
-          succssIds.length
-        }, targets id: [ ${succssIds.join(', ')} ]`
+        `  Success - total: ${succssIds.length}, targets id: [ ${succssIds.join(
+          ', '
+        )} ]`
       )
     )
     log(
       logError(
-        `    Error - target total: ${
-          errorIds.length
-        }, targets id: [ ${errorIds.join(', ')} ]`
+        `    Error - total: ${errorIds.length}, targets id: [ ${errorIds.join(
+          ', '
+        )} ]`
       )
     )
 
@@ -1180,13 +1175,13 @@ export function startPolling(
   const intervalId = setInterval(startCallback, total)
 
   function startCallback() {
-    console.log(logSuccess(`Start the ${logWarn.bold(++count)} polling`))
+    console.log(logStart(`Start polling - count: ${++count}`))
 
     callback(count, stopPolling)
   }
 
   function stopPolling() {
     clearInterval(intervalId)
-    console.log(logSuccess(`Stop the polling`))
+    console.log(logWarn(`Stop the polling`))
   }
 }

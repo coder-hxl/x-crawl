@@ -14,11 +14,13 @@ async function useSleepByBatch(
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
-    log(`Target id: ${logNumber(id)} - sleep: ${logNumber(timeout + 'ms')}`)
+    log(
+      `Target id: ${logNumber(id)} - Sleep time: ${logNumber(timeout + 'ms')}`
+    )
 
     await sleep(timeout)
   } else {
-    log(`Target id: ${logNumber(id)} - sleep: ${logNumber('0ms')}`)
+    log(`Target id: ${logNumber(id)} - Sleep time: ${logNumber('0ms')}`)
   }
 }
 

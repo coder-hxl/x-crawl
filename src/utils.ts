@@ -31,10 +31,12 @@ export function mkdirDirSync(dir: string) {
 }
 
 export const log = console.log
-export const logNumber = chalk.hex('#a57fff')
+export const logStart = chalk.blueBright
+export const logStatistics = chalk.whiteBright
 export const logSuccess = chalk.green
 export const logError = chalk.red
 export const logWarn = chalk.yellow
+export const logNumber = chalk.hex('#a57fff')
 
 export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined'

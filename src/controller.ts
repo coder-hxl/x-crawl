@@ -15,6 +15,8 @@ import {
   log,
   logError,
   logNumber,
+  logStart,
+  logStatistics,
   logSuccess,
   logWarn
 } from './utils'
@@ -81,12 +83,13 @@ export async function controller<
   E extends ExtraCommonConfig,
   R
 >(
-  name: 'page' | 'data' | 'file',
   mode: 'async' | 'sync',
   detailTargets: T[],
   extraConfig: E,
   singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
 ) {
+  const { type } = extraConfig
+
   // 是否使用优先爬取
   const isPriorityCrawl = !detailTargets.every(
     (item) => item.priority === detailTargets[0].priority
@@ -136,9 +139,9 @@ export async function controller<
   )
 
   log(
-    `${logSuccess(`Start crawling`)} - name: ${logWarn(name)}, mode: ${logWarn(
-      mode
-    )}, target total: ${logNumber(devices.length)} `
+    logStart(
+      `Start crawling - type: ${type}, mode: ${mode}, total: ${devices.length}`
+    )
   )
 
   // 选择爬取模式
@@ -206,7 +209,9 @@ export async function controller<
 
       log(
         logWarn(
-          `Start retrying: ${++i} - Targets id: [ ${retriedIds.join(' - ')} ]`
+          `Start retrying - count: ${++i}, targets id: [ ${retriedIds.join(
+            ', '
+          )} ]`
         )
       )
     }
@@ -223,19 +228,19 @@ export async function controller<
     }
   })
 
-  log('Crawl statistics of the targets:')
+  log(logStatistics(`Crawl ${type}s finish:`))
   log(
     logSuccess(
-      `  Success - target total: ${
-        succssIds.length
-      }, targets id: [ ${succssIds.join(', ')} ]`
+      `  Success - total: ${succssIds.length}, targets id: [ ${succssIds.join(
+        ', '
+      )} ]`
     )
   )
   log(
     logError(
-      `    Error - target total: ${
-        errorIds.length
-      }, targets id: [ ${errorIds.join(', ')} ]`
+      `    Error - total: ${errorIds.length}, targets id: [ ${errorIds.join(
+        ', '
+      )} ]`
     )
   )
 

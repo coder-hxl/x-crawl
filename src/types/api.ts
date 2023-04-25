@@ -130,7 +130,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   cookies?: PageCookies
   viewport?: Viewport
 
-  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleResult) => void
+  onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
 
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
@@ -140,7 +140,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleResult<T>) => void
+  onCrawlItemComplete?: (crawlDataSingleResult: CrawlDataSingleResult<T>) => void
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
@@ -152,7 +152,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   storeDir?: string
   extension?: string
 
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleResult) => void
+  onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
