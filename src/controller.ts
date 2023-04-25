@@ -95,10 +95,7 @@ export async function controller<
   )
   const detailTargetConfigs = isPriorityCrawl
     ? priorityQueueMergeSort(
-        detailTargets.map((item) => ({
-          ...item,
-          valueOf: () => item.priority
-        }))
+        detailTargets.map((item) => ({ ...item, valueOf: () => item.priority }))
       )
     : detailTargets
 

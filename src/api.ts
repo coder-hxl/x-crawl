@@ -414,6 +414,9 @@ function loaderCommonConfigToCrawlConfig(
         const urls = detail.proxy!.urls
         detail.proxyUrl = urls[0]
         detail.proxyDetails = urls.map((url) => ({ url, state: true }))
+      } else {
+        // 默认值
+        detail.proxyDetails = []
       }
 
       // 1.6.priority
