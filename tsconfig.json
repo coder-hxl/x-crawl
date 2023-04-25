@@ -11,7 +11,12 @@
     "skipLibCheck": true,
     "composite": true,
     "outDir": "./publish",
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src"],
+      "publish/*": ["./src"]
+    }
   },
   "include": ["src/**/*", "test/**/*", "publish/dist/index.d.ts"]
 }

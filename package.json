@@ -25,9 +25,9 @@
     "start-server": "rollup --config script/server.mjs",
     "test-dev": "jest test/environment/test.ts dev",
     "test-pro": "jest test/environment/test.ts pro",
-    "test-crawlPage": "jest test/environment/crawlPage.test.ts dev",
-    "test-crawlData": "jest test/environment/crawlData.test.ts dev",
-    "test-crawlFile": "jest test/environment/crawlFile.test.ts dev",
+    "test-crawlPage": "jest test/environment/api/crawlPage.test.ts dev",
+    "test-crawlData": "jest test/environment/api/crawlData.test.ts dev",
+    "test-crawlFile": "jest test/environment/api/crawlFile.test.ts dev",
     "prettier": "prettier --write ."
   },
   "dependencies": {

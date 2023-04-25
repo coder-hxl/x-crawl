@@ -3,16 +3,16 @@ import path from 'node:path'
 import { expect, test, jest } from '@jest/globals'
 import chalk from 'chalk'
 
-import IXCrawl from '../../src'
+import IXCrawl from 'src/'
 
 const args = process.argv.slice(3)
 const environment = args[0]
 
 let xCrawl: typeof IXCrawl
 if (environment === 'dev') {
-  xCrawl = require('../../src').default
+  xCrawl = require('src/').default
 } else if (environment === 'pro') {
-  xCrawl = require('../../publish/dist')
+  xCrawl = require('publish/dist')
 }
 
 jest.setTimeout(60000)

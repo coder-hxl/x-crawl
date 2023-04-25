@@ -8,5 +8,5 @@ export default {
     file: 'test/start/index.js',
     format: 'cjs'
   },
-  plugins: [tsPlugin(), runPlugin({ stdin: { clear: true } })]
+  plugins: [tsPlugin(), terserPlugin(), runPlugin({ stdin: { clear: true } })]
 }
