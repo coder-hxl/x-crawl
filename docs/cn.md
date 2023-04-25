@@ -2,7 +2,7 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并且内置众多功能用于爬页面、爬接口、爬文件等。
+x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并内置众多功能用于爬页面、爬接口、爬文件等。
 
 > 如果你也喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 支持一下，感谢大家的支持！
 
@@ -11,19 +11,19 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并且内
 - **🔥 异步同步** - 只需更改一下 mode 属性即可切换异步或同步爬取模式。
 - **⚙️ 多种用途** - 可爬页面、爬接口、爬文件以及轮询爬，满足各种场景需求。
 - **🖋️ 写法灵活** - 同种爬取 API 适配多种配置，每种配置方式都非常独特。
-- **👀 设备指纹** - 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
 - **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，产生或避免高并发爬取。
-- **🔄 失败重试** - 避免因短暂的问题而造成爬取失败，无限制重试次数。
-- **➡️ 轮换代理** - 配合失败重试，根据自定义错误次数以及 HTTP 状态码自动轮换代理。
+- **🔄 失败重试** - 避免因短暂的问题而造成爬取失败，自定义重试次数。
+- **➡️ 轮换代理** - 配合失败重试，自定义错误次数以及 HTTP 状态码自动轮换代理。
+- **👀 设备指纹** - 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
 - **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前爬取。
 - **☁️ 爬取 SPA** - 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
 - **⚒️ 控制页面** - 可以表单提交、键盘输入、事件操作、生成页面的屏幕截图等。
-- **🧾 捕获记录** - 对爬取的信息进行捕获记录，并在控制台进行高亮的提醒。
+- **🧾 捕获记录** - 对爬取进行捕获记录，并在终端使用彩色字符串提醒。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 跟 puppeteer 的关系
 
-crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来。
+crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来，您拿到的 Brower 实例和 Page 实例将是完好的，x-crawl 并不会对其重写。
 
 # 目录
 
@@ -49,9 +49,10 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [启动轮询](#启动轮询)
   - [配置优先级](#配置优先级)
-  - [自定义设备指纹](#自定义设备指纹)
   - [间隔时间](#间隔时间)
   - [失败重试](#失败重试)
+  - [轮换代理](#轮换代理)
+  - [自定义设备指纹](#自定义设备指纹)
   - [优先队列](#优先队列)
   - [关于结果](#关于结果)
   - [TypeScript](#TypeScript)
@@ -89,19 +90,18 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
 - [类型](#类型-6)
   - [API Config](#API-config)
     - [XCrawlConfig](#XCrawlConfig)
-    - [Detail target config](#Detail-target-config)
+    - [Detail Target Config](#Detail-Target-Config)
       - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
       - [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig)
       - [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig)
-    - [Advanced config](#Advanced-config)
+    - [Advanced Config](#Advanced-Config)
       - [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig)
       - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
       - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
     - [StartPollingConfig](#StartPollingConfig)
-    - [Crawl other config](#Crawl-other-config)
+    - [Crawl Other Config](#Crawl-Other-Config)
       - [CrawlCommonConfig](#CrawlCommonConfig)
       - [DetailTargetFingerprintCommon](#DetailTargetFingerprintCommon)
-      - [AdvancedFingerprintCommon](#AdvancedFingerprintCommon)
       - [Mobile](#Mobile)
       - [Platform](#Platform)
       - [PageCookies](#PageCookies)
@@ -109,10 +109,10 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
       - [IntervalTime](#IntervalTime)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
-    - [CrawlCommonRes](#CrawlCommonRes)
-    - [CrawlPageSingleRes](#CrawlPageSingleRes)
-    - [CrawlDataSingleRes](#CrawlDataSingleRes)
-    - [CrawlFileSingleRes](#CrawlFileSingleRes)
+    - [CrawlCommonResult](#CrawlCommonResult)
+    - [CrawlPageSingleResult](#CrawlPageSingleResult)
+    - [CrawlDataSingleResult](#CrawlDataSingleResult)
+    - [CrawlFileSingleResult](#CrawlFileSingleResult)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [更多](#更多)
@@ -127,7 +127,7 @@ npm install x-crawl
 
 ## 示例
 
-每天自动获取 bilibili 首页、国漫、电影这三个页面的轮播图片为例:
+每天自动获取某站 首页、国漫、电影这三个页面的轮播图片为例:
 
 ```js
 // 1.导入模块 ES/CJS
@@ -304,7 +304,7 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 
 crawlPage API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
+- onCrawlItemComplete: 当每个爬取目标完成后会回调
 
 ##### onCrawlItemComplete
 
@@ -340,7 +340,7 @@ myXCrawl.crawlData({ targets }).then((res) => {
 
 crawlData API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
+- onCrawlItemComplete: 当每个爬取目标完成后会回调
 
 ##### onCrawlItemComplete
 
@@ -370,7 +370,7 @@ myXCrawl
 
 crawlFile API 拥有的声明周期函数:
 
-- onCrawlItemComplete: 当每个爬取目标完成并进行了处理后会回调
+- onCrawlItemComplete: 当每个爬取目标完成后会回调
 
 - onBeforeSaveItemFile: 会在保存文件前回调
 
@@ -451,72 +451,44 @@ myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
 import xCrawl from 'x-crawl'
 
 // 应用实例配置
-const myXCrawl = xCrawl({
-  intervalTime: { max: 3000, min: 1000 }
+const testXCrawl = xCrawl({
+  proxy: {
+    urls: [
+      'https://www.example.com/proxy-1',
+      'https://www.example.com/proxy-2',
+      'https://www.example.com/proxy-3'
+    ],
+    switchByErrorCount: 3,
+    switchByHttpStatus: [401, 403]
+  }
 })
 
 // 进阶配置
-myXCrawl.crawlPage({
-  targets: [
-    'https://www.example.com/page-1',
-    {
-      // 详细目标配置
-      url: 'https://www.example.com/page-1',
-      viewport: { width: 1920, height: 1080 }
-    }
-  ],
-  intervalTime: 1000,
-  viewport: { width: 800, height: 600 }
-})
-```
-
-在上面的实例中，**应用实例配置**和**进阶配置**中都设置了间隔时间，那么将会以**进阶配置**的间隔时间为准。在**进阶配置**和**详细目标配置**中设置了视口，那么第二个目标会以其**详细目标配置**的视口为准。
-
-### 自定义设备指纹
-
-自定义配置设备指纹，可避免通过指纹识别从不同位置识别并跟踪我们。
-
-可以通过进阶用法在 fingerprint 传入多个信息，内部会帮助您随机分配给 targets 的每个目标。也可以直接用详细目标配置为目标设置特定的指纹。
-
-以 crawlPage 为例：
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
-
-myXCrawl
+testXCrawl
   .crawlPage({
     targets: [
       'https://www.example.com/page-1',
+      'https://www.example.com/page-2',
+      // 详细目标配置
       {
-        // 指定指纹
-        url: 'https://www.example.com/page-2',
-        fingerprint: {
-          maxWidth: 1980,
-          minWidth: 1200,
-          maxHeight: 1080,
-          minHidth: 800,
-          platform: 'Android'
-        }
+        url: 'https://www.example.com/page-3',
+        proxy: { urls: ['https://www.example.com/proxy-5'] }
       }
     ],
-    fingerprint: {
-      // 为 targets 里的每个目标设置指纹
-      maxWidth: 1980,
-      maxHeight: 1080,
-      userAgents: [
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
+    maxRetry: 10,
+    proxy: {
+      urls: [
+        'https://www.example.com/proxy-3',
+        'https://www.example.com/proxy-4'
       ],
-      platforms: ['Chromium OS', 'iOS', 'Linux', 'macOS', 'Windows']
+      switchByErrorCount: 3,
+      switchByHttpStatus: [401, 403]
     }
   })
   .then((res) => {})
 ```
 
-更多指纹选项可以前往对应的配置查看。
+在上面的实例中，**应用实例配置**、**进阶配置**以及**详细目标配置**中都设置了**代理**，page3 将会采用自己的代理配置，page1 和 page2 将采用进阶配置的代理配置。
 
 ### 间隔时间
 
@@ -548,6 +520,8 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在爬取目�
 
 可避免因一时问题而造成爬取失败，将会等待这一轮爬取目标结束后重新爬取目标。
 
+可以通过在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置失败重试次数。
+
 ```js
 import xCrawl from 'x-crawl'
 
@@ -559,6 +533,130 @@ myXCrawl
 ```
 
 maxRetry 属性决定要重试几次。
+
+### 轮换代理
+
+配合失败重试，自定义错误次数以及 HTTP 状态码为爬取目标自动轮换代理。
+
+可以通过在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置失败重试次数。
+
+以 crawlPage 为例：
+
+```js
+import xCrawl from 'x-crawl'
+
+const testXCrawl = xCrawl()
+
+testXCrawl
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-1',
+      'https://www.example.com/page-2',
+      'https://www.example.com/page-3',
+      'https://www.example.com/page-4',
+      // 为此目标取消代理
+      { url: 'https://www.example.com/page-6', proxy: null },
+      // 为此目标单独设置代理
+      {
+        url: 'https://www.example.com/page-6',
+        proxy: {
+          urls: [
+            'https://www.example.com/proxy-4',
+            'https://www.example.com/proxy-5'
+          ],
+          switchByErrorCount: 3
+        }
+      }
+    ],
+    maxRetry: 10,
+    // 为此次的目标统一设置代理
+    proxy: {
+      urls: [
+        'https://www.example.com/proxy-1',
+        'https://www.example.com/proxy-2',
+        'https://www.example.com/proxy-3'
+      ],
+      switchByErrorCount: 3,
+      switchByHttpStatus: [401, 403]
+    }
+  })
+  .then((res) => {})
+```
+
+**注意:** 该功能需要配合失败重试才能正常使用。
+
+### 自定义设备指纹
+
+自定义配置设备指纹，可避免通过指纹识别从不同位置识别并跟踪我们。
+
+可以通过进阶用法在 fingerprints 传入多个信息，内部会帮助您随机分配给 targets 的每个目标。也可以直接用详细目标配置为目标设置特定的指纹。
+
+以 crawlPage 为例：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
+
+myXCrawl.crawlPage({
+  targets: [
+    'https://www.example.com/page-1',
+    'https://www.example.com/page-2',
+    'https://www.example.com/page-3',
+    // 为此目标取消指纹
+    { url: 'https://www.example.com/page-4', fingerprint: null },
+    // 为此目标单独设置指纹
+    {
+      url: 'https://www.example.com/page-5',
+      fingerprint: {
+        mobile: 'random',
+        platform: 'Windows',
+        acceptLanguage: `zh-CN,zh;q=0.9,en;q=0.8`,
+        userAgent: {
+          value:
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          versions: [
+            { name: 'Chrome', maxMinorVersion: 10, maxPatchVersion: 5615 },
+            { name: 'Safari', maxMinorVersion: 36, maxPatchVersion: 2333 }
+          ]
+        }
+      }
+    }
+  ],
+  // 为此次的目标统一设置指纹
+  fingerprints: [
+    {
+      maxWidth: 1024,
+      maxHeight: 800,
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+        versions: [
+          {
+            name: 'Chrome',
+            // 浏览器版本
+            maxMajorVersion: 112,
+            minMajorVersion: 100,
+            maxMinorVersion: 20,
+            maxPatchVersion: 5000
+          },
+          {
+            name: 'Safari',
+            maxMajorVersion: 537,
+            minMajorVersion: 500,
+            maxMinorVersion: 36,
+            maxPatchVersion: 5000
+          }
+        ]
+      }
+    }
+  ]
+})
+```
+
+更多指纹选项可以前往对应的配置查看。
 
 ### 优先队列
 
@@ -588,6 +686,7 @@ priority 属性的值越大就在当前爬取队列中越优先。
 - isSuccess：是否成功爬取
 - maxRetry：该次爬取目标的最大重试次数
 - retryCount：该次爬取目标已经重试的次数
+- proxyDetails：记录代理情况
 - crawlErrorQueue：该次爬取目标的报错收集
 - data：该次爬取目标的爬取数据
 
@@ -648,23 +747,23 @@ crawlPage API 是一个函数。类型是 [重载函数](https://www.typescriptl
 type crawlPage = {
   (
     config: string,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (res: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   (
     config: CrawlPageDetailTargetConfig,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (res: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   (
     config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (res: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   (
     config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (res: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 }
 ```
 
@@ -675,7 +774,7 @@ type crawlPage = {
 
 **返回值类型：**
 
-- 查看 [CrawlPageSingleRes](#CrawlPageSingleRes) 类型
+- 查看 [CrawlPageSingleResult](#CrawlPageSingleResult) 类型
 
 #### 示例
 
@@ -799,23 +898,23 @@ crawlData API 是一个函数。类型是 [重载函数](https://www.typescriptl
 type crawlData = {
   <T = any>(
     config: CrawlDataDetailTargetConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (res: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   <T = any>(
     config: string,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (res: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   <T = any>(
     config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (res: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   <T = any>(
     config: CrawlDataAdvancedConfig<T>,
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (res: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 }
 ```
 
@@ -826,7 +925,7 @@ type crawlData = {
 
 **返回值类型：**
 
-- 查看 [CrawlDataSingleRes](#CrawlDataSingleRes) 类型
+- 查看 [CrawlDataSingleResult](#CrawlDataSingleResult) 类型
 
 #### 示例
 
@@ -957,18 +1056,18 @@ crawlFile API 是一个函数。类型是 [重载函数](https://www.typescriptl
 type crawlFile = {
   (
     config: CrawlFileDetailTargetConfig,
-    callback?: (res: CrawlFileSingleRes) => void
-  ): Promise<CrawlFileSingleRes>
+    callback?: (res: CrawlFileSingleResult) => void
+  ): Promise<CrawlFileSingleResult>
 
   (
     config: CrawlFileDetailTargetConfig[],
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (res: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   (
     config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (res: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 }
 ```
 
@@ -979,7 +1078,7 @@ type crawlFile = {
 
 **返回值类型：**
 
-- 查看 [CrawlFileSingleRes](#CrawlFileSingleRes) 类型
+- 查看 [CrawlFileSingleResult](#CrawlFileSingleResult) 类型
 
 #### 示例
 
@@ -1120,7 +1219,7 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 
 ## 类型
 
-### API config
+### API Config
 
 #### XCrawlConfig
 
@@ -1144,7 +1243,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - intervalTime: undefined
 - crawlPage: undefined
 
-#### Detail target config
+#### Detail Target Config
 
 ##### CrawlPageDetailTargetConfig
 
@@ -1157,9 +1256,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   viewport?: Viewport | null // puppeteer
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
-        maxWidth: number
+        maxWidth?: number
         minWidth?: number
-        maxHeight: number
+        maxHeight?: number
         minHidth?: number
       })
     | null
@@ -1223,7 +1322,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 - extension: string
 - fingerprint: undefined
 
-#### Advanced config
+#### Advanced Config
 
 ##### CrawlPageAdvancedConfig
 
@@ -1231,18 +1330,18 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon & {
-    maxWidth: number
+  fingerprints?: (DetailTargetFingerprintCommon & {
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
-  }
+  })[]
 
   headers?: AnyObject
   cookies?: PageCookies
-  viewport?: Viewport // puppeteer
+  viewport?: Viewport
 
-  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+  onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
 ```
 
@@ -1250,7 +1349,7 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 
 - targets: undefined
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - cookies: undefined
 - viewport: undefined
@@ -1262,11 +1361,13 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+  onCrawlItemComplete?: (
+    crawlDataSingleResult: CrawlDataSingleResult<T>
+  ) => void
 }
 ```
 
@@ -1274,7 +1375,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
 - targets: undefined
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - onCrawlItemComplete: undefined
 
@@ -1284,13 +1385,13 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
   storeDir?: string
   extension?: string
 
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
@@ -1304,7 +1405,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 
 - targets: undefined
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - storeDir: \_\_dirname
 - extension: string
@@ -1327,15 +1428,19 @@ export interface StartPollingConfig {
 - h: undefined
 - m: undefined
 
-#### Crawl other config
+#### Crawl Other Config
 
 ##### CrawlCommonConfig
 
 ```ts
 export interface CrawlCommonConfig {
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
+  timeout?: number | null
+  proxy?: {
+    urls: string[]
+    switchByHttpStatus?: number[]
+    switchByErrorCount?: number
+  } | null
+  maxRetry?: number | null
 }
 ```
 
@@ -1349,45 +1454,34 @@ export interface CrawlCommonConfig {
 
 ```ts
 export interface DetailTargetFingerprintCommon {
-  userAgent?: string
   ua?: string
+  mobile?: '?0' | '?1' | 'random'
   platform?: Platform
   platformVersion?: string
-  mobile?: Mobile
   acceptLanguage?: string
+  userAgent?: {
+    value: string
+    versions?: {
+      name: string
+      maxMajorVersion?: number
+      minMajorVersion?: number
+      maxMinorVersion?: number
+      minMinorVersion?: number
+      maxPatchVersion?: number
+      minPatchVersion?: number
+    }[]
+  }
 }
 ```
 
 **默认值**
 
-- userAgent: undefined
 - ua: undefined
+- mobile: undefined
 - platform: undefined
 - platformVersion: undefined
-- mobile: undefined
 - acceptLanguage: undefined
-
-##### AdvancedFingerprintCommon
-
-```ts
-export interface AdvancedFingerprintCommon {
-  userAgents?: string[]
-  uas?: string[]
-  platforms?: Platform[]
-  platformVersions?: string[]
-  mobiles?: Mobile[]
-  acceptLanguages?: string[]
-}
-```
-
-**默认值**
-
-- userAgents: undefined
-- uas: undefined
-- platforms: undefined
-- platformVersions: undefined
-- mobiles: undefined
-- acceptLanguages: undefined
+- userAgent: undefined
 
 ##### Mobile
 
@@ -1450,7 +1544,7 @@ export type Method =
 export type IntervalTime = number | { max: number; min?: number }
 ```
 
-### API result
+### API Result
 
 #### XCrawlInstance
 
@@ -1459,62 +1553,62 @@ export interface XCrawlInstance {
   crawlPage: {
     (
       config: string,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (res: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: CrawlPageDetailTargetConfig,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (res: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: (string | CrawlPageDetailTargetConfig)[],
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (res: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
 
     (
       config: CrawlPageAdvancedConfig,
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (res: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
   }
 
   crawlData: {
     <T = any>(
       config: CrawlDataDetailTargetConfig,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (res: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: string,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (res: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: (string | CrawlDataDetailTargetConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (res: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
 
     <T = any>(
       config: CrawlDataAdvancedConfig<T>,
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (res: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
   }
 
   crawlFile: {
     (
       config: CrawlFileDetailTargetConfig,
-      callback?: (res: CrawlFileSingleRes) => void
-    ): Promise<CrawlFileSingleRes>
+      callback?: (res: CrawlFileSingleResult) => void
+    ): Promise<CrawlFileSingleResult>
 
     (
       config: CrawlFileDetailTargetConfig[],
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (res: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
 
     (
       config: CrawlFileAdvancedConfig,
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (res: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
   }
 
   startPolling: (
@@ -1524,14 +1618,15 @@ export interface XCrawlInstance {
 }
 ```
 
-#### CrawlCommonRes
+#### CrawlCommonResult
 
 ```ts
-export interface CrawlCommonRes {
+export interface CrawlCommonResult {
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
+  proxyDetails: ProxyDetails
   crawlErrorQueue: Error[]
 }
 ```
@@ -1540,12 +1635,13 @@ export interface CrawlCommonRes {
 - isSuccess：是否成功爬取
 - maxRetry：该次爬取目标的最大重试次数
 - retryCount：该次爬取目标已经重试的次数
+- proxyDetails：记录代理情况
 - crawlErrorQueue：该次爬取目标的报错收集
 
-#### CrawlPageSingleRes
+#### CrawlPageSingleResult
 
 ```ts
-export interface CrawlPageSingleRes extends CrawlCommonRes {
+export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
     browser: Browser // puppeteer
     response: HTTPResponse | null // puppeteer
@@ -1554,10 +1650,10 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
 }
 ```
 
-#### CrawlDataSingleRes
+#### CrawlDataSingleResult
 
 ```ts
-export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
+export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders // nodejs http
@@ -1566,10 +1662,10 @@ export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
 }
 ```
 
-#### CrawlFileSingleRes
+#### CrawlFileSingleResult
 
 ```ts
-export interface CrawlFileSingleRes extends CrawlCommonRes {
+export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders // nodejs http
@@ -1598,5 +1694,3 @@ export interface AnyObject extends Object {
 ## 更多
 
 如果您有 **问题 、需求、好的建议** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。
-
-感谢大家的支持。

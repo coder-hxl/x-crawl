@@ -9,20 +9,21 @@ x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexibl
 ## Features
 
 - **🔥 Asynchronous Synchronous** - Just change the mode property to toggle asynchronous or synchronous crawling mode.
-- **⚙️Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
+- **⚙️ Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
 - **🖋️ Flexible writing style** - The same crawling API can be adapted to multiple configurations, and each configuration method is very unique.
-- **👀Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
 - **⏱️ Interval Crawling** - No interval, fixed interval and random interval to generate or avoid high concurrent crawling.
-- **🔄 Failed Retry** - Avoid crawling failure due to transient problems, unlimited retries.
+- **🔄 Failed Retry** - Avoid crawling failure due to short-term problems, and customize the number of retries.
+- **➡️ Proxy Rotation** - Auto-rotate proxies with failure retry, custom error times and HTTP status codes.
+- **👀 Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
 - **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
 - **⚒️ Control Page** - You can submit form, keyboard input, event operation, generate screenshots of the page, etc.
-- **🧾 Capture Record** - Capture and record the crawled information, and highlight it on the console.
+- **🧾 Capture Record** - Capture and record crawling, and use colored strings to remind in the terminal.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
 ## Relationship with Puppeteer
 
-The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built in, you only need to pass in some configuration options to complete some operations, and the result will expose Brower instances and Page instances.
+The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to complete some operations, the result will expose the Brower instance and Page instance, you get Brower instance and Page instance will be intact, x-crawl will not rewrite them.
 
 # Table of Contents
 
@@ -48,9 +49,10 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [Start Polling](#Start-Polling)
   - [Config Priority](#Config-Priority)
-  - [Custom Device Fingerprint](#Custom-Device-Fingerprint)
   - [Interval Time](#Interval-Time)
   - [Fail Retry](#Fail-Retry)
+  - [Rotate Proxy](#Rotate Proxy)
+  - [Custom Device Fingerprint](#Custom-Device-Fingerprint)
   - [Priority Queue](#Priority-Queue)
   - [About Results](#About-Results)
   - [TypeScript](#TypeScript)
@@ -85,21 +87,20 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
     - [Type](#Type-4)
     - [Example](#Example-5)
 - [Types](#Types)
-  - [API Config](#API-config)
+  - [API Config](#API-Config)
     - [XCrawlConfig](#XCrawlConfig)
-    - [Detail target config](#Detail-target-config)
+    - [Detail Target Config](#Detail-Target-Config)
       - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
       - [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig)
       - [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig)
-    - [Advanced config](#Advanced-config)
+    - [Advanced Config](#Advanced-Config)
       - [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig)
       - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
       - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
     - [StartPollingConfig](#StartPollingConfig)
-    - [Crawl other config](#Crawl-other-config)
+    - [Crawl Other Config](#Crawl-Other-Config)
       - [CrawlCommonConfig](#CrawlCommonConfig)
       - [DetailTargetFingerprintCommon](#DetailTargetFingerprintCommon)
-      - [AdvancedFingerprintCommon](#AdvancedFingerprintCommon)
       - [Mobile](#Mobile)
       - [Platform](#Platform)
       - [PageCookies](#PageCookies)
@@ -107,10 +108,10 @@ The crawlPage API has [puppeteer](https://github.com/puppeteer/puppeteer) built 
       - [IntervalTime](#IntervalTime)
   - [API Result](#API-Result)
     - [XCrawlInstance](#XCrawlInstance)
-    - [CrawlCommonRes](#CrawlCommonRes)
-    - [CrawlPageSingleRes](#CrawlPageSingleRes)
-    - [CrawlDataSingleRes](#CrawlDataSingleRes)
-    - [CrawlFileSingleRes](#CrawlFileSingleRes)
+    - [CrawlCommonResult](#CrawlCommonResult)
+    - [CrawlPageSingleResult](#CrawlPageSingleResult)
+    - [CrawlDataSingleResult](#CrawlDataSingleResult)
+    - [CrawlFileSingleResult](#CrawlFileSingleResult)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [More](#More)
@@ -304,7 +305,7 @@ myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
 
 Lifecycle functions owned by the crawlPage API:
 
-- onCrawlItemComplete: Called when each crawl item is completed and processed
+- onCrawlItemComplete: Call back when each crawl is complete
 
 ##### onCrawlItemComplete
 
@@ -340,7 +341,7 @@ myXCrawl.crawlData({ targets }).then((res) => {
 
 Life cycle functions owned by crawlData API:
 
-- onCrawlItemComplete: Called when each crawl item is completed and processed
+- onCrawlItemComplete: Call back when each crawl is complete
 
 ##### onCrawlItemComplete
 
@@ -374,7 +375,7 @@ myXCrawl
 
 Life cycle functions owned by crawlFile API:
 
-- onCrawlItemComplete: Called when each crawl item is completed and processed
+- onCrawlItemComplete: Call back when each crawl is complete
 
 - onBeforeSaveItemFile: Callback before saving the file
 
@@ -448,7 +449,7 @@ Some common configurations can be set in these three places:
 
 - Application instance configuration (global)
 - Advanced configuration (partial)
-- detailed target configuration (separately)
+- Detailed target configuration (separately)
 
 The priority is: detailed target configuration > advanced configuration > application instance configuration
 
@@ -457,73 +458,45 @@ Take crawlPage to crawl two pages as an example:
 ```js
 import xCrawl from 'x-crawl'
 
-// Application instance configuration
-const myXCrawl = xCrawl({
-  intervalTime: { max: 3000, min: 1000 }
+// Application instance configurationconst testXCrawl = xCrawl({
+  proxy: {
+    urls: [
+      'https://www.example.com/proxy-1',
+      'https://www.example.com/proxy-2',
+      'https://www.example.com/proxy-3'
+    ],
+    switchByErrorCount: 3,
+    switchByHttpStatus: [401, 403]
+  }
 })
 
-// advanced configuration
-myXCrawl.crawlPage({
-  targets: [
-    'https://www.example.com/page-1',
-    {
-      // Detailed target configuration
-      url: 'https://www.example.com/page-1',
-      viewport: { width: 1920, height: 1080 }
-    }
-  ],
-  intervalTime: 1000,
-  viewport: { width: 800, height: 600 }
-})
-```
-
-### Custom Device Fingerprint
-
-Customize the configuration of device fingerprints to avoid identifying and tracking us from different locations through fingerprint recognition.
-
-Multiple information can be passed in the fingerprint through advanced usage, and internally it will help you randomly assign each target to targets. It is also possible to set a specific fingerprint for a target directly with the detailed target configuration.
-
-Take crawlPage as an example:
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
-
-myXCrawl
+// Advanced configuration
+testXCrawl
   .crawlPage({
     targets: [
       'https://www.example.com/page-1',
+      'https://www.example.com/page-2',
+      // Detailed target configuration
       {
-        // Specify the fingerprint
-        url: 'https://www.example.com/page-2',
-        fingerprint: {
-          maxWidth: 1980,
-          minWidth: 1200,
-          maxHeight: 1080,
-          minHidth: 800,
-          platform: 'Android'
-        }
+        url: 'https://www.example.com/page-3',
+        proxy: { urls: ['https://www.example.com/proxy-5'] }
       }
     ],
-    fingerprint: {
-      // set fingerprint for each target in targets
-      maxWidth: 1980,
-      maxHeight: 1080,
-      userAgents: [
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'
+    maxRetry: 10,
+    proxy: {
+      urls: [
+        'https://www.example.com/proxy-3',
+        'https://www.example.com/proxy-4'
       ],
-      platforms: ['Chromium OS', 'iOS', 'Linux', 'macOS', 'Windows']
+      switchByErrorCount: 3,
+      switchByHttpStatus: [401, 403]
     }
   })
   .then((res) => {})
+})
 ```
 
-For more fingerprint options, you can go to the corresponding configuration to view.
-
-In the above example, the interval time is set in both **Application Instance Configuration** and **Advanced Configuration**, then the interval time of **Advanced Configuration** will prevail. If the viewport is set in **Advanced Configuration** and **Detailed Target Configuration**, then the second target will be based on the viewport of its **Detailed Target Configuration**.
+In the above example, **Proxy** is set in **Application Instance Configuration**, **Advanced Configuration** and **Detailed Target Configuration**, page3 will use its own proxy configuration, page1 and page2 will use the proxy configuration of the advanced configuration.
 
 ### Interval Time
 
@@ -555,6 +528,8 @@ The intervalTime option defaults to undefined . If there is a setting value, it 
 
 It can avoid crawling failure due to temporary problems, and will wait for the end of this round of crawling targets to crawl again.
 
+The number of failed retries can be set by creating crawler application instance, advanced usage, and detailed target.
+
 ```js
 import xCrawl from 'x-crawl'
 
@@ -566,6 +541,130 @@ myXCrawl
 ```
 
 The maxRetry attribute determines how many times to retry.
+
+### Rotate Proxy
+
+With failed retries, custom error times and HTTP status codes, the proxy is automatically rotated for crawling targets.
+
+You can set the number of failed retries in the three places of creating a crawler application instance, advanced usage, and detailed goals.
+
+Take crawlPage as an example:
+
+```js
+import xCrawl from 'x-crawl'
+
+const testXCrawl = xCrawl()
+
+testXCrawl
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-1',
+      'https://www.example.com/page-2',
+      'https://www.example.com/page-3',
+      'https://www.example.com/page-4',
+      // Undelegate for this target
+      { url: 'https://www.example.com/page-6', proxy: null },
+      // Set the proxy individually for this target
+      {
+        url: 'https://www.example.com/page-6',
+        proxy: {
+          urls: [
+            'https://www.example.com/proxy-4',
+            'https://www.example.com/proxy-5'
+          ],
+          switchByErrorCount: 3
+        }
+      }
+    ],
+    maxRetry: 10,
+    // Set the proxy uniformly for this target
+    proxy: {
+      urls: [
+        'https://www.example.com/proxy-1',
+        'https://www.example.com/proxy-2',
+        'https://www.example.com/proxy-3'
+      ],
+      switchByErrorCount: 3,
+      switchByHttpStatus: [401, 403]
+    }
+  })
+  .then((res) => {})
+```
+
+**Note:** This function needs to cooperate with failure retry to work normally.
+
+### Custom Device Fingerprint
+
+Customize the configuration of device fingerprints to avoid identifying and tracking us from different locations through fingerprint recognition.
+
+Multiple information can be passed in fingerprints through advanced usage, and internally it will help you randomly assign each target to targets. It is also possible to set a specific fingerprint for a target directly with the detailed target configuration.
+
+Take crawlPage as an example:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
+
+myXCrawl.crawlPage({
+  targets: [
+    'https://www.example.com/page-1',
+    'https://www.example.com/page-2',
+    'https://www.example.com/page-3',
+    // Unfingerprint for this target
+    { url: 'https://www.example.com/page-4', fingerprint: null },
+    // Set the fingerprint individually for this target
+    {
+      url: 'https://www.example.com/page-5',
+      fingerprint: {
+        mobile: 'random',
+        platform: 'Windows',
+        acceptLanguage: `zh-CN,zh;q=0.9,en;q=0.8`,
+        userAgent: {
+          value:
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          versions: [
+            { name: 'Chrome', maxMinorVersion: 10, maxPatchVersion: 5615 },
+            { name: 'Safari', maxMinorVersion: 36, maxPatchVersion: 2333 }
+          ]
+        }
+      }
+    }
+  ],
+  // Set the fingerprint uniformly for this target
+  fingerprints: [
+    {
+      maxWidth: 1024,
+      maxHeight: 800,
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+        versions: [
+          {
+            name: 'Chrome',
+            // browser version
+            maxMajorVersion: 112,
+            minMajorVersion: 100,
+            maxMinorVersion: 20,
+            maxPatchVersion: 5000
+          },
+          {
+            name: 'Safari',
+            maxMajorVersion: 537,
+            minMajorVersion: 500,
+            maxMinorVersion: 36,
+            maxPatchVersion: 5000
+          }
+        ]
+      }
+    }
+  ]
+})
+```
+
+For more fingerprint options, you can go to the corresponding configuration to view.
 
 ### Priority Queue
 
@@ -595,6 +694,7 @@ Each crawl target will generate a detail object, which will contain the followin
 - isSuccess: Whether to crawl successfully
 - maxRetry: The maximum number of retries for this crawling target
 - retryCount: The number of times the crawling target has been retried
+- proxyDetails: record the proxy situation
 - crawlErrorQueue: Error collection of the crawl target
 - data: the crawling data of the crawling target
 
@@ -657,23 +757,23 @@ The crawlPage API is a function. A type is an [overloaded function](https://www.
 type crawlPage = {
   (
     config: string,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (res: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   (
     config: CrawlPageDetailTargetConfig,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (res: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   (
     config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (res: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   (
     config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (res: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 }
 ```
 
@@ -684,7 +784,7 @@ type crawlPage = {
 
 **Return value type:**
 
-- Look at the [CrawlPageSingleRes](#CrawlPageSingleRes) type
+- Look at the [CrawlPageSingleResult](#CrawlPageSingleResult) type
 
 #### Example
 
@@ -808,23 +908,23 @@ The crawlData API is a function. A type is an [overloaded function](https://www.
 type crawlData = {
   <T = any>(
     config: CrawlDataDetailTargetConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (res: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   <T = any>(
     config: string,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (res: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   <T = any>(
     config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (res: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   <T = any>(
     config: CrawlDataAdvancedConfig<T>,
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (res: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 }
 ```
 
@@ -835,7 +935,7 @@ type crawlData = {
 
 **Return value type:**
 
-- Look at the [CrawlDataSingleRes](#CrawlDataSingleRes) type
+- Look at the [CrawlDataSingleResult](#CrawlDataSingleResult) type
 
 #### Example
 
@@ -965,18 +1065,18 @@ The crawlFile API is a function. A type is an [overloaded function](https://www.
 type crawlFile = {
   (
     config: CrawlFileDetailTargetConfig,
-    callback?: (res: CrawlFileSingleRes) => void
-  ): Promise<CrawlFileSingleRes>
+    callback?: (res: CrawlFileSingleResult) => void
+  ): Promise<CrawlFileSingleResult>
 
   (
     config: CrawlFileDetailTargetConfig[],
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (res: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   (
     config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (res: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 }
 ```
 
@@ -987,7 +1087,7 @@ type crawlFile = {
 
 **Return value type:**
 
-- Look at the [CrawlFileSingleRes](#CrawlFileSingleRes) type
+- Look at the [CrawlFileSingleResult](#CrawlFileSingleResult) type
 
 #### Example
 
@@ -1128,7 +1228,7 @@ myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
 
 ## Types
 
-### API config
+### API Config
 
 #### XCrawlConfig
 
@@ -1165,9 +1265,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   viewport?: Viewport | null // puppeteer
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
-        maxWidth: number
+        maxWidth?: number
         minWidth?: number
-        maxHeight: number
+        maxHeight?: number
         minHidth?: number
       })
     | null
@@ -1231,7 +1331,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 - extension: string
 - fingerprint: undefined
 
-#### Advanced config
+#### Advanced Config
 
 ##### CrawlPageAdvancedConfig
 
@@ -1239,27 +1339,26 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon & {
-    maxWidth: number
+  fingerprints?: (DetailTargetFingerprintCommon & {
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
-  }
+  })[]
 
   headers?: AnyObject
   cookies?: PageCookies
-  viewport?: Viewport // puppeteer
+  viewport?: Viewport
 
-  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+  onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
 ```
 
 **Default Value**
 
 - targets: undefined
-
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - cookies: undefined
 - viewport: undefined
@@ -1271,11 +1370,13 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+  onCrawlItemComplete?: (
+    crawlDataSingleResult: CrawlDataSingleResult<T>
+  ) => void
 }
 ```
 
@@ -1283,7 +1384,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 
 - targets: undefined
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - onCrawlItemComplete: undefined
 
@@ -1293,13 +1394,13 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
   storeDir?: string
   extension?: string
 
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
@@ -1313,7 +1414,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 
 - targets: undefined
 - intervalTime: undefined
-- fingerprint: undefined
+- fingerprints: undefined
 - headers: undefined
 - storeDir: \_\_dirname
 - extension: string
@@ -1336,15 +1437,19 @@ export interface StartPollingConfig {
 - h: undefined
 - m: undefined
 
-#### Crawl other config
+#### Crawl Other Config
 
 ##### CrawlCommonConfig
 
 ```ts
 export interface CrawlCommonConfig {
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
+  timeout?: number | null
+  proxy?: {
+    urls: string[]
+    switchByHttpStatus?: number[]
+    switchByErrorCount?: number
+  } | null
+  maxRetry?: number | null
 }
 ```
 
@@ -1358,45 +1463,34 @@ export interface CrawlCommonConfig {
 
 ```ts
 export interface DetailTargetFingerprintCommon {
-  userAgent?: string
   ua?: string
+  mobile?: '?0' | '?1' | 'random'
   platform?: Platform
   platformVersion?: string
-  mobile?: Mobile
   acceptLanguage?: string
+  userAgent?: {
+    value: string
+    versions?: {
+      name: string
+      maxMajorVersion?: number
+      minMajorVersion?: number
+      maxMinorVersion?: number
+      minMinorVersion?: number
+      maxPatchVersion?: number
+      minPatchVersion?: number
+    }[]
+  }
 }
 ```
 
 **Default Value**
 
-- userAgent: undefined
 - ua: undefined
+- mobile: undefined
 - platform: undefined
 - platformVersion: undefined
-- mobile: undefined
 - acceptLanguage: undefined
-
-##### AdvancedFingerprintCommon
-
-```ts
-export interface AdvancedFingerprintCommon {
-  userAgents?: string[]
-  uas?: string[]
-  platforms?: Platform[]
-  platformVersions?: string[]
-  mobiles?: Mobile[]
-  acceptLanguages?: string[]
-}
-```
-
-**Default Value**
-
-- userAgents: undefined
-- uas: undefined
-- platforms: undefined
-- platformVersions: undefined
-- mobiles: undefined
-- acceptLanguages: undefined
+- userAgent: undefined
 
 ##### Mobile
 
@@ -1423,8 +1517,8 @@ export type Platform =
 ```ts
 export type PageCookies =
   | string
-  | Protocol.Network.CookieParam
-  | Protocol.Network.CookieParam[]
+  | Protocol.Network.CookieParam // puppeteer
+  | Protocol.Network.CookieParam[] // puppeteer
 ```
 
 ##### Method
@@ -1459,7 +1553,7 @@ export type Method =
 export type IntervalTime = number | { max: number; min?: number }
 ```
 
-### API result
+### API Result
 
 #### XCrawlInstance
 
@@ -1468,62 +1562,62 @@ export interface XCrawlInstance {
   crawlPage: {
     (
       config: string,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (res: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: CrawlPageDetailTargetConfig,
-      callback?: (res: CrawlPageSingleRes) => void
-    ): Promise<CrawlPageSingleRes>
+      callback?: (res: CrawlPageSingleResult) => void
+    ): Promise<CrawlPageSingleResult>
 
     (
       config: (string | CrawlPageDetailTargetConfig)[],
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (res: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
 
     (
       config: CrawlPageAdvancedConfig,
-      callback?: (res: CrawlPageSingleRes[]) => void
-    ): Promise<CrawlPageSingleRes[]>
+      callback?: (res: CrawlPageSingleResult[]) => void
+    ): Promise<CrawlPageSingleResult[]>
   }
 
   crawlData: {
     <T = any>(
       config: CrawlDataDetailTargetConfig,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (res: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: string,
-      callback?: (res: CrawlDataSingleRes<T>) => void
-    ): Promise<CrawlDataSingleRes<T>>
+      callback?: (res: CrawlDataSingleResult<T>) => void
+    ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
       config: (string | CrawlDataDetailTargetConfig)[],
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (res: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
 
     <T = any>(
       config: CrawlDataAdvancedConfig<T>,
-      callback?: (res: CrawlDataSingleRes<T>[]) => void
-    ): Promise<CrawlDataSingleRes<T>[]>
+      callback?: (res: CrawlDataSingleResult<T>[]) => void
+    ): Promise<CrawlDataSingleResult<T>[]>
   }
 
   crawlFile: {
     (
       config: CrawlFileDetailTargetConfig,
-      callback?: (res: CrawlFileSingleRes) => void
-    ): Promise<CrawlFileSingleRes>
+      callback?: (res: CrawlFileSingleResult) => void
+    ): Promise<CrawlFileSingleResult>
 
     (
       config: CrawlFileDetailTargetConfig[],
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (res: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
 
     (
       config: CrawlFileAdvancedConfig,
-      callback?: (res: CrawlFileSingleRes[]) => void
-    ): Promise<CrawlFileSingleRes[]>
+      callback?: (res: CrawlFileSingleResult[]) => void
+    ): Promise<CrawlFileSingleResult[]>
   }
 
   startPolling: (
@@ -1533,28 +1627,30 @@ export interface XCrawlInstance {
 }
 ```
 
-#### CrawlCommonRes
+#### CrawlCommonResult
 
 ```ts
-export interface CrawlCommonRes {
+export interface CrawlCommonResult {
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
+  proxyDetails: ProxyDetails
   crawlErrorQueue: Error[]
 }
 ```
 
-- id: Generated according to the order of crawling targets, if there is a priority, it will be generated according to the priority
-- isSuccess: Whether to crawl successfully
-- maxRetry: The maximum number of retries for this crawling target
-- retryCount: The number of times the crawling target has been retried
-- crawlErrorQueue: Error collection of the crawl target
+- id：Generated according to the order in which the target is climbed, or by priority, if any
+- isSuccess：Whether the climb is successful
+- maxRetry：Maximum number of retries of the crawl target
+- retryCount：Maximum number of retries of the crawl target
+- proxyDetails：Record agent status
+- crawlErrorQueue：Error collection for the crawl target
 
-#### CrawlPageSingleRes
+#### CrawlPageSingleResult
 
 ```ts
-export interface CrawlPageSingleRes extends CrawlCommonRes {
+export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
     browser: Browser // puppeteer
     response: HTTPResponse | null // puppeteer
@@ -1563,25 +1659,25 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
 }
 ```
 
-#### CrawlDataSingleRes
+#### CrawlDataSingleResult
 
 ```ts
-export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
+export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // node http
+    headers: IncomingHttpHeaders // nodejs http
     data: D
   } | null
 }
 ```
 
-#### CrawlFileSingleRes
+#### CrawlFileSingleResult
 
 ```ts
-export interface CrawlFileSingleRes extends CrawlCommonRes {
+export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // node http
+    headers: IncomingHttpHeaders // nodejs http
     data: {
       isSuccess: boolean
       fileName: string
@@ -1607,5 +1703,3 @@ export interface AnyObject extends Object {
 ## More
 
 If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.
-
-Thank you all for your support.
