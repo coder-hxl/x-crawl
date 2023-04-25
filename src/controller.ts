@@ -14,7 +14,6 @@ import {
   isUndefined,
   log,
   logError,
-  logNumber,
   logStart,
   logStatistics,
   logSuccess,

@@ -16,7 +16,6 @@ import {
   logStatistics,
   logSuccess,
   logWarn,
-  mkdirDirSync,
   random
 } from './utils'
 
@@ -868,7 +867,7 @@ function fileSingleResultHandle(
       detailTargetConfig.storeDir &&
       !fs.existsSync(detailTargetConfig.storeDir)
     ) {
-      mkdirDirSync(detailTargetConfig.storeDir)
+      fs.mkdirSync(detailTargetConfig.storeDir, { recursive: true })
     }
 
     const storePath = detailTargetConfig.storeDir ?? __dirname

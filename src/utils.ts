@@ -16,20 +16,6 @@ export function random(max: number, min = 0) {
   return result
 }
 
-export function mkdirDirSync(dir: string) {
-  const dirSplit = path.resolve(dir).split(path.sep)
-
-  dirSplit.reduce((prev, item, index) => {
-    const currentDir = index !== 0 ? path.join(prev, item) : item
-
-    if (!fs.existsSync(currentDir)) {
-      fs.mkdirSync(currentDir)
-    }
-
-    return currentDir
-  }, '')
-}
-
 export const log = console.log
 export const logStart = chalk.blueBright
 export const logStatistics = chalk.whiteBright
