@@ -85,7 +85,7 @@ export async function controller<
   mode: 'async' | 'sync',
   detailTargets: T[],
   extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<R>
+  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
 ) {
   // 是否使用优先爬取
   const isPriorityCrawl = !detailTargets.every(

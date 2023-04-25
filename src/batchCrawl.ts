@@ -29,7 +29,7 @@ export async function asyncBatchCrawl<
 >(
   devices: Device<T, R>[],
   extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<R>
+  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
 ) {
   const { intervalTime } = extraConfig
 
@@ -61,7 +61,7 @@ export async function syncBatchCrawl<
 >(
   devices: Device<T, R>[],
   extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<R>
+  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
 ) {
   const { intervalTime } = extraConfig
 

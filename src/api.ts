@@ -684,7 +684,7 @@ function createCrawlFileConfig(
 async function pageSingleCrawlHandle(
   device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
   extraConfig: ExtraPageConfig
-): Promise<PageSingleCrawlResult> {
+) {
   const {
     detailTargetConfig,
     detailTargetResult,
@@ -752,8 +752,6 @@ async function pageSingleCrawlHandle(
 
     pageSingleResultHandle(device, extraConfig)
   }
-
-  return { response, page }
 }
 
 async function dataAndFileSingleCrawlHandle(
@@ -790,8 +788,6 @@ async function dataAndFileSingleCrawlHandle(
       fileSingleResultHandle(device, extraConfig as ExtraFileConfig)
     }
   }
-
-  return await request(detailTargetConfig)
 }
 
 /* Single result handle */
