@@ -2,7 +2,7 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并内置众多功能用于爬页面、爬接口、爬文件等。
+x-crawl 是一个灵活的 Node.js 多功能爬虫库。灵活的使用方式和众多的功能可以帮助您安全稳定地爬取页面、接口和文件。
 
 > 如果你也喜欢 x-crawl ，可以给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 支持一下，感谢大家的支持！
 
@@ -23,7 +23,7 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。用法灵活，并内置
 
 ## 跟 puppeteer 的关系
 
-crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来，您拿到的 Brower 实例和 Page 实例将是完好的，x-crawl 并不会对其重写。
+crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可让 x-crawl 帮助您完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来，您拿到的 Brower 实例和 Page 实例将是完好的，x-crawl 并不会对其重写。
 
 # 目录
 

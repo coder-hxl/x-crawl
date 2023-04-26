@@ -2,7 +2,7 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexible, and there are many built-in functions for crawl pages, crawl interfaces, crawl files, etc.
+x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage and numerous functions help you to crawl pages, interfaces, and files securely and stably.
 
 > If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you for your support!
 
@@ -23,7 +23,7 @@ x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexibl
 
 ## Relationship with Puppeteer
 
-The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to complete some operations, the result will expose the Brower instance and Page instance, you get Brower instance and Page instance will be intact, x-crawl will not rewrite them.
+The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to let x-crawl help you complete some operations, and the result will expose the Brower instance and the Page instance Come out, the Brower instance and Page instance you get will be intact, and x-crawl will not rewrite them.
 
 # Table of Contents
 
