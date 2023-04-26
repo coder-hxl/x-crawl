@@ -51,7 +51,7 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
   - [Config Priority](#Config-Priority)
   - [Interval Time](#Interval-Time)
   - [Fail Retry](#Fail-Retry)
-  - [Rotate Proxy](#Rotate Proxy)
+  - [Rotate Proxy](#Rotate-Proxy)
   - [Custom Device Fingerprint](#Custom-Device-Fingerprint)
   - [Priority Queue](#Priority-Queue)
   - [About Results](#About-Results)
@@ -115,6 +115,8 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [More](#More)
+  - [Community](#Community)
+  - [Issues](#Issues)
 
 ## Install
 
@@ -126,14 +128,14 @@ npm install x-crawl
 
 ## Example
 
-Take the automatic acquisition of photos of experiences and homes in hawaii every day as an example::
+Take the automatic acquisition of some photos of experiences and homes around the world every day as an example:
 
 ```js
 // 1.Import module ES/CJS
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
-const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
+const myXCrawl = xCrawl({maxRetry: 3,intervalTime: { max: 3000, min: 2000 }})
 
 // 3.Set the crawling task
 /*
@@ -142,27 +144,31 @@ const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 */
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // Call crawlPage API to crawl Page
-  const res = await myXCrawl.crawlPage([
-    'https://zh.airbnb.com/s/hawaii/experiences',
-    'https://zh.airbnb.com/s/hawaii/homes'
-  ])
+  const res = await myXCrawl.crawlPage({
+    targets: [
+      'https://www.airbnb.cn/s/experiences',
+      'https://www.airbnb.cn/s/plus_homes'
+    ],
+    viewport: { width: 1920, height: 1080 }
+  })
 
   // Store the image URL to targets
   const targets = []
-  const elSelectorMap = ['.c14whb16', '.l196t2l1']
+  const elSelectorMap = ['._fig15y', '._aov0j6']
   for (const item of res) {
     const { id } = item
     const { page } = item.data
-    const boxSelector = elSelectorMap[id - 1]
 
-    // Wait for the image element to appear
-    await page.waitForSelector(`${boxSelector} img`)
+    // Wait for the page to load
+    await new Promise((r) => setTimeout(r, 300))
 
-    // Gets the URL of the page's wheel image element
-    const boxHandle = await page.$(boxSelector)
-    const urls = await boxHandle.$$eval('picture img', (imgEls) => {
-      return imgEls.map((item) => item.src)
-    })
+    // Gets the URL of the page image
+    const urls = await page!.$$eval(
+      `${elSelectorMap[id - 1]} img`,
+      (imgEls) => {
+        return imgEls.map((item) => item.src)
+      }
+    )
     targets.push(...urls)
 
     // Close page
@@ -532,7 +538,7 @@ The intervalTime option defaults to undefined . If there is a setting value, it 
 
 It can avoid crawling failure due to temporary problems, and will wait for the end of this round of crawling targets to crawl again.
 
-The number of failed retries can be set by creating crawler application instance, advanced usage, and detailed target.
+You can create crawler application instance, advanced usage, detailed target these three places Settings.
 
 ```js
 import xCrawl from 'x-crawl'
@@ -550,7 +556,7 @@ The maxRetry attribute determines how many times to retry.
 
 With failed retries, custom error times and HTTP status codes, the proxy is automatically rotated for crawling targets.
 
-You can set the number of failed retries in the three places of creating a crawler application instance, advanced usage, and detailed goals.
+You can create crawler application instance, advanced usage, detailed target these three places Settings.
 
 Take crawlPage as an example:
 
@@ -615,9 +621,9 @@ myXCrawl.crawlPage({
     'https://www.example.com/page-1',
     'https://www.example.com/page-2',
     'https://www.example.com/page-3',
-    // Unfingerprint for this target
+    // Cancel the fingerprint for this target
     { url: 'https://www.example.com/page-4', fingerprint: null },
-    // Set the fingerprint individually for this target
+    // Set a separate fingerprint for this target
     {
       url: 'https://www.example.com/page-5',
       fingerprint: {
@@ -635,8 +641,9 @@ myXCrawl.crawlPage({
       }
     }
   ],
-  // Set the fingerprint uniformly for this target
+  // Set fingerprints uniformly for this target
   fingerprints: [
+    // Device fingerprint 1
     {
       maxWidth: 1024,
       maxHeight: 800,
@@ -648,7 +655,7 @@ myXCrawl.crawlPage({
         versions: [
           {
             name: 'Chrome',
-            // browser version
+            // Browser version
             maxMajorVersion: 112,
             minMajorVersion: 100,
             maxMinorVersion: 20,
@@ -659,6 +666,44 @@ myXCrawl.crawlPage({
             maxMajorVersion: 537,
             minMajorVersion: 500,
             maxMinorVersion: 36,
+            maxPatchVersion: 5000
+          }
+        ]
+      }
+    },
+    // Device fingerprint 2
+    {
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59',
+        versions: [
+          {
+            name: 'Chrome',
+            maxMajorVersion: 91,
+            minMajorVersion: 88,
+            maxMinorVersion: 10,
+            maxPatchVersion: 5615
+          },
+          { name: 'Safari', maxMinorVersion: 36, maxPatchVersion: 2333 },
+          { name: 'Edg', maxMinorVersion: 10, maxPatchVersion: 864 }
+        ]
+      }
+    },
+    // Device fingerprint 3
+    {
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
+        versions: [
+          {
+            name: 'Firefox',
+            maxMajorVersion: 47,
+            minMajorVersion: 43,
+            maxMinorVersion: 10,
             maxPatchVersion: 5000
           }
         ]
@@ -1706,4 +1751,10 @@ export interface AnyObject extends Object {
 
 ## More
 
-If you have **problems, needs, good suggestions** please raise **Issues** in https://github.com/coder-hxl/x-crawl/issues.
+### Community
+
+**GitHub Discussions:** May be discussed through [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions).
+
+### Issues
+
+If you have questions, needs, or good suggestions, you can raise them at [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues).

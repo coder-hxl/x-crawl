@@ -116,6 +116,8 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [更多](#更多)
+  - [社区](#社区)
+  - [Issues](#Issues)
 
 ## 安装
 
@@ -127,7 +129,7 @@ npm install x-crawl
 
 ## 示例
 
-每天自动获取某站 首页、国漫、电影这三个页面的轮播图片为例:
+以每天自动获取世界各地的经历和房间的一些照片为例：
 
 ```js
 // 1.导入模块 ES/CJS
@@ -139,23 +141,31 @@ const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
-  // 调用 crawlPage API 爬取 首页、国漫、电影 这三个页面
-  const res = await myXCrawl.crawlPage([
-    'https://www.bilibili.com',
-    'https://www.bilibili.com/guochuang',
-    'https://www.bilibili.com/movie'
-  ])
+  // 调用 crawlPage API 来爬取页面
+  const res = await myXCrawl.crawlPage({
+    targets: [
+      'https://www.airbnb.cn/s/experiences',
+      'https://www.airbnb.cn/s/plus_homes'
+    ],
+    viewport: { width: 1920, height: 1080 }
+  })
 
   // 存放图片 URL 到 targets
   const targets = []
-  const elSelectorMap = ['.carousel-inner', '.chief-recom-item', '.bg-item']
+  const elSelectorMap = ['._fig15y', '._aov0j6']
   for (const item of res) {
     const { id } = item
     const { page } = item.data
 
-    // 获取页面轮播图片元素的 URL
-    const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) =>
-      imgEls.map((item) => item.src)
+    // 等待页面加载完成
+    await new Promise((r) => setTimeout(r, 300))
+
+    // 获取页面图片的 URL
+    const urls = await page!.$$eval(
+      `${elSelectorMap[id - 1]} img`,
+      (imgEls) => {
+        return imgEls.map((item) => item.src)
+      }
     )
     targets.push(...urls)
 
@@ -520,7 +530,7 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在爬取目�
 
 可避免因一时问题而造成爬取失败，将会等待这一轮爬取目标结束后重新爬取目标。
 
-可以通过在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置失败重试次数。
+可以在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置。
 
 ```js
 import xCrawl from 'x-crawl'
@@ -538,7 +548,7 @@ maxRetry 属性决定要重试几次。
 
 配合失败重试，自定义错误次数以及 HTTP 状态码为爬取目标自动轮换代理。
 
-可以通过在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置失败重试次数。
+可以在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置。
 
 以 crawlPage 为例：
 
@@ -625,6 +635,7 @@ myXCrawl.crawlPage({
   ],
   // 为此次的目标统一设置指纹
   fingerprints: [
+    // 设备指纹 1
     {
       maxWidth: 1024,
       maxHeight: 800,
@@ -647,6 +658,44 @@ myXCrawl.crawlPage({
             maxMajorVersion: 537,
             minMajorVersion: 500,
             maxMinorVersion: 36,
+            maxPatchVersion: 5000
+          }
+        ]
+      }
+    },
+    // 设备指纹 2
+    {
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59',
+        versions: [
+          {
+            name: 'Chrome',
+            maxMajorVersion: 91,
+            minMajorVersion: 88,
+            maxMinorVersion: 10,
+            maxPatchVersion: 5615
+          },
+          { name: 'Safari', maxMinorVersion: 36, maxPatchVersion: 2333 },
+          { name: 'Edg', maxMinorVersion: 10, maxPatchVersion: 864 }
+        ]
+      }
+    },
+    // 设备指纹 3
+    {
+      platform: 'Windows',
+      mobile: 'random',
+      userAgent: {
+        value:
+          'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0',
+        versions: [
+          {
+            name: 'Firefox',
+            maxMajorVersion: 47,
+            minMajorVersion: 43,
+            maxMinorVersion: 10,
             maxPatchVersion: 5000
           }
         ]
@@ -1693,4 +1742,10 @@ export interface AnyObject extends Object {
 
 ## 更多
 
-如果您有 **问题 、需求、好的建议** 请在 https://github.com/coder-hxl/x-crawl/issues 中提 **Issues** 。
+### 社区
+
+**GitHub Discussions:** 可以通过 [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) 进行讨论。
+
+### Issues
+
+如果您有 **问题 、需求、好的建议** 可以在 [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues) 中提 **Issues** 。
