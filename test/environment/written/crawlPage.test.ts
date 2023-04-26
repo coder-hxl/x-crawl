@@ -2,16 +2,16 @@ import process from 'node:process'
 import { expect, test, jest } from '@jest/globals'
 import chalk from 'chalk'
 
-import IXCrawl from '../../src'
+import IXCrawl from 'src/'
 
 const args = process.argv.slice(3)
 const environment = args[0]
 
 let xCrawl: typeof IXCrawl
 if (environment === 'dev') {
-  xCrawl = require('../../src').default
+  xCrawl = require('src/').default
 } else if (environment === 'pro') {
-  xCrawl = require('../../publish/dist')
+  xCrawl = require('publish/dist')
 }
 
 jest.setTimeout(60000)
@@ -30,7 +30,7 @@ async function writtenString() {
 
 // 1.2.written CrawlPageDetailConfig
 async function writtenCrawlPageDetailConfig() {
-  const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlPage({
     url: 'https://github.com/coder-hxl/x-crawl'
@@ -43,7 +43,7 @@ async function writtenCrawlPageDetailConfig() {
 
 // 1.3.written (string | CrawlPageDetailConfig)[]
 async function writtenStringAndCrawlPageDetailConfigArr() {
-  const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlPage([
     'https://github.com/coder-hxl/x-crawl',
@@ -57,7 +57,7 @@ async function writtenStringAndCrawlPageDetailConfigArr() {
 
 // 1.4.written CrawlPageAdvancedConfig
 async function writtenCrawlPageAdvancedConfig() {
-  const testXCrawl = xCrawl({ proxy: 'http://localohst:14892' })
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlPage({
     targets: [
@@ -76,7 +76,7 @@ async function writtenCrawlPageAdvancedConfig() {
 async function loaderBaseConfig() {
   const testXCrawl = xCrawl({
     baseUrl: 'https://github.com',
-    proxy: 'http://localhost:14892',
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
@@ -95,7 +95,7 @@ async function loaderAdvancedConfig() {
 
   const res = await testXCrawl.crawlPage({
     targets: ['/coder-hxl', '/coder-hxl/x-crawl'],
-    proxy: 'http://localhost:14892',
+    proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0

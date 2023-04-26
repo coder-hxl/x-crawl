@@ -3,5 +3,9 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
-  detectOpenHandles: true
+  detectOpenHandles: true,
+  moduleNameMapper: {
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^publish/(.*)$': '<rootDir>/publish/$1'
+  }
 }

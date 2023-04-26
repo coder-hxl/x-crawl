@@ -3,7 +3,7 @@ import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
-import { DetailInfo, controller } from './controller'
+import { Device, controller, isCrawlStatusInHttpStatus } from './controller'
 import { Request, request } from './request'
 import { quickSort } from './sort'
 import {
@@ -12,9 +12,10 @@ import {
   isUndefined,
   log,
   logError,
+  logStart,
+  logStatistics,
   logSuccess,
   logWarn,
-  mkdirDirSync,
   random
 } from './utils'
 
@@ -23,58 +24,38 @@ import {
   CrawlFileDetailTargetConfig,
   CrawlPageDetailTargetConfig,
   PageCookies,
-  CrawlPageSingleRes,
+  CrawlPageSingleResult,
   StartPollingConfig,
   CrawlPageAdvancedConfig,
-  CrawlDataSingleRes,
-  CrawlFileSingleRes,
+  CrawlDataSingleResult,
+  CrawlFileSingleResult,
   CrawlFileAdvancedConfig,
   CrawlDataAdvancedConfig,
   IntervalTime,
-  DetailTargetFingerprintCommon,
-  Platform,
-  Mobile
+  DetailTargetFingerprintCommon
 } from './types/api'
 import { LoaderXCrawlConfig } from './types'
-import { AnyObject } from './types/common'
-import { randomFingerprint } from './default'
+import { fingerprints } from './default'
 
 /* Types */
 
-// Loader
-type LoaderHasConfig = {
-  timeout: number
-  maxRetry: number
-  priority: number
-}
-
-export type LoaderCrawlPageDetail = CrawlPageDetailTargetConfig &
-  LoaderHasConfig
-
-export type LoaderCrawlDataDetail = CrawlDataDetailTargetConfig &
-  LoaderHasConfig
-
-export type LoaderCrawlFileDetail = CrawlFileDetailTargetConfig &
-  LoaderHasConfig
-
 // Extra config
 export interface ExtraCommonConfig {
+  type: 'page' | 'data' | 'file'
+
   intervalTime: IntervalTime | undefined
 }
 
 interface ExtraPageConfig extends ExtraCommonConfig {
-  // 存放报错的 Page
-  errorPageMap: Map<number, Page>
-
   browser: Browser
   onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
+    | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
     | undefined
 }
 
 interface ExtraDataConfig<T> extends ExtraCommonConfig {
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<T>) => void)
+    | ((crawlDataSingleResult: CrawlDataSingleResult<T>) => void)
     | undefined
 }
 
@@ -82,7 +63,7 @@ interface ExtraFileConfig extends ExtraCommonConfig {
   saveFileErrorArr: { message: string; valueOf: () => number }[]
   saveFilePendingQueue: Promise<any>[]
   onCrawlItemComplete:
-    | ((crawlFileSingleRes: CrawlFileSingleRes) => void)
+    | ((crawlFileSingleResult: CrawlFileSingleResult) => void)
     | undefined
   onBeforeSaveItemFile:
     | ((info: {
@@ -101,25 +82,75 @@ interface PageSingleCrawlResult {
 }
 
 // Create config
-interface CrawlPageConfigOriginal {
+// Loader
+export type ProxyDetails = { url: string; state: boolean }[]
+
+type LoaderCommonConfig = {
+  proxyUrl?: string
+  proxyDetails: ProxyDetails
+}
+
+type LoaderHasConfig = {
+  timeout?: number
+  maxRetry: number
+  priority: number
+}
+
+export type LoaderCrawlPageDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlPageDetailTargetConfig
+
+export type LoaderCrawlDataDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlDataDetailTargetConfig
+
+export type LoaderCrawlFileDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlFileDetailTargetConfig
+
+//  AdvancedDetailTargets
+interface CrawlPageAdvancedDetailTargetsConfig extends CrawlPageAdvancedConfig {
   detailTargets: CrawlPageDetailTargetConfig[]
-  intervalTime: IntervalTime | undefined
-  onCrawlItemComplete:
-    | ((crawlPageSingleRes: CrawlPageSingleRes) => void)
-    | undefined
 }
 
-interface CrawlDataConfigOriginal {
+interface CrawlDataAdvancedDetailTargetsConfig<T>
+  extends CrawlDataAdvancedConfig<T> {
   detailTargets: CrawlDataDetailTargetConfig[]
+}
+
+interface CrawlFileAdvancedDetailTargetsConfig extends CrawlFileAdvancedConfig {
+  detailTargets: CrawlFileDetailTargetConfig[]
+}
+
+// CrawlConfig
+interface CrawlPageConfig {
+  detailTargets: LoaderCrawlPageDetail[]
   intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
     | undefined
 }
 
-interface CrawlFileConfigOriginal {
-  detailTargets: CrawlFileDetailTargetConfig[]
+interface CrawlDataConfig {
+  detailTargets: LoaderCrawlDataDetail[]
   intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
+  onCrawlItemComplete:
+    | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
+    | undefined
+}
+
+interface CrawlFileConfig {
+  detailTargets: LoaderCrawlFileDetail[]
+  intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
   onBeforeSaveItemFile:
     | ((info: {
         id: number
@@ -129,20 +160,8 @@ interface CrawlFileConfigOriginal {
       }) => Promise<Buffer>)
     | undefined
   onCrawlItemComplete:
-    | ((crawlDataSingleRes: CrawlDataSingleRes<any>) => void)
+    | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
     | undefined
-}
-
-type CrawlPageConfig = Omit<CrawlPageConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlPageDetail[]
-}
-
-type CrawlDataConfig = Omit<CrawlDataConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlDataDetail[]
-}
-
-type CrawlFileConfig = Omit<CrawlFileConfigOriginal, 'detailTargets'> & {
-  detailTargets: LoaderCrawlFileDetail[]
 }
 
 // API unite config
@@ -225,7 +244,7 @@ function loaderCommonFingerprintToDetailTarget(
     | CrawlFileDetailTargetConfig,
   fingerprint: DetailTargetFingerprintCommon
 ) {
-  const { userAgent, ua, platform, platformVersion, mobile, acceptLanguage } =
+  const { ua, platform, platformVersion, mobile, acceptLanguage, userAgent } =
     fingerprint
 
   let headers = detail.headers
@@ -234,14 +253,15 @@ function loaderCommonFingerprintToDetailTarget(
     detail.headers = headers = {}
   }
 
-  // 1.user-agent
-  if (userAgent) {
-    headers['user-agent'] = userAgent
-  }
-
-  // 2.sec-ch-ua
+  // 1.sec-ch-ua
   if (ua) {
     headers['sec-ch-ua'] = ua
+  }
+
+  // 2.sec-ch-ua-mobile
+  if (mobile) {
+    headers['sec-ch-ua-mobile'] =
+      mobile === 'random' ? (random(2) ? '?1' : '?0') : mobile
   }
 
   // 3.sec-ch-platform
@@ -254,191 +274,213 @@ function loaderCommonFingerprintToDetailTarget(
     headers['sec-ch-ua-platform-version'] = platformVersion
   }
 
-  // 5.sec-ch-mobile
-  if (mobile) {
-    headers['sec-ch-mobile'] = mobile
-  }
-
-  // 6.accept-language
+  // 5.accept-language
   if (acceptLanguage) {
     headers['accept-language'] = acceptLanguage
+  }
+
+  // 6.user-agent
+  if (userAgent) {
+    let value = userAgent.value
+
+    userAgent.versions?.forEach((version) => {
+      const {
+        name,
+        maxMajorVersion,
+        minMajorVersion,
+        maxMinorVersion,
+        minMinorVersion,
+        maxPatchVersion,
+        minPatchVersion
+      } = version
+
+      const nameSplit = value.split(`${name}/`)
+      const versionSplit: any[] = nameSplit[1].split(' ')[0].split('.')
+      const originalVersion = versionSplit.join('.')
+
+      if (!isUndefined(maxMajorVersion)) {
+        versionSplit[0] =
+          maxMajorVersion === minMajorVersion
+            ? maxMajorVersion
+            : random(maxMajorVersion, minMajorVersion)
+      }
+
+      if (!isUndefined(maxMinorVersion)) {
+        versionSplit[1] =
+          maxMinorVersion === minMinorVersion
+            ? maxMinorVersion
+            : random(maxMinorVersion, minMinorVersion)
+      }
+
+      if (!isUndefined(maxPatchVersion)) {
+        versionSplit[2] =
+          maxPatchVersion === minPatchVersion
+            ? maxPatchVersion
+            : random(maxPatchVersion, minPatchVersion)
+      }
+
+      const searchValue = `${name}/${originalVersion}`
+      const replaceValue = `${name}/${versionSplit.join('.')}`
+      value = value.replace(searchValue, replaceValue)
+    })
+
+    headers['user-agent'] = value
   }
 }
 
 function loaderPageFingerprintToDetailTarget(
   detail: CrawlPageDetailTargetConfig,
   fingerprint: {
-    maxWidth: number
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
   }
 ) {
   const { maxWidth, minWidth, maxHeight, minHidth } = fingerprint
 
+  const viewport: any = detail.viewport ?? {}
   // 1.width / height
-  const width = maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
-  const height =
-    maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
-  const viewport = detail.viewport
-  if (!viewport) {
-    detail.viewport = { width, height }
-  } else {
-    viewport.width = width
-    viewport.height = height
+  if (maxWidth) {
+    viewport.width =
+      maxWidth === minWidth ? maxWidth : random(maxWidth, minWidth)
+  }
+
+  if (maxHeight) {
+    viewport.height =
+      maxHeight === minHidth ? maxHeight : random(maxHeight, minHidth)
+  }
+
+  if (Object.hasOwn(viewport, 'width') && Object.hasOwn(viewport, 'height')) {
+    detail.viewport = viewport
   }
 }
 
 function loaderCommonConfigToCrawlConfig(
   xCrawlConfig: LoaderXCrawlConfig,
-  advancedConfig:
-    | CrawlPageAdvancedConfig
-    | CrawlDataAdvancedConfig<any>
-    | CrawlFileAdvancedConfig,
-  crawlConfig:
-    | CrawlPageConfigOriginal
-    | CrawlDataConfigOriginal
-    | CrawlFileConfigOriginal
+  advancedDetailTargetsConfig:
+    | CrawlPageAdvancedDetailTargetsConfig
+    | CrawlDataAdvancedDetailTargetsConfig<any>
+    | CrawlFileAdvancedDetailTargetsConfig,
+  crawlConfig: CrawlPageConfig | CrawlDataConfig | CrawlFileConfig
 ) {
   // 1.detailTargets
-  crawlConfig.detailTargets.forEach((detail) => {
-    // detail > advanced > app
-    const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
-      detail
+  crawlConfig.detailTargets = advancedDetailTargetsConfig.detailTargets.map(
+    (rawDetail) => {
+      // detail > advanced > app
 
-    // 1.1.baseUrl
-    if (!isUndefined(xCrawlConfig.baseUrl)) {
-      detail.url = xCrawlConfig.baseUrl + url
-    }
+      const detail = rawDetail as
+        | LoaderCrawlPageDetail
+        | LoaderCrawlDataDetail
+        | LoaderCrawlFileDetail
 
-    // 1.2.timeout
-    if (isUndefined(timeout)) {
-      if (!isUndefined(advancedConfig.timeout)) {
-        detail.timeout = advancedConfig.timeout
+      const { url, timeout, proxy, maxRetry, priority, headers, fingerprint } =
+        detail
+
+      // 1.1.baseUrl
+      if (xCrawlConfig.baseUrl) {
+        detail.url = xCrawlConfig.baseUrl + url
+      }
+
+      // 1.2.timeout
+      if (isUndefined(timeout)) {
+        if (!isUndefined(advancedDetailTargetsConfig.timeout)) {
+          detail.timeout = advancedDetailTargetsConfig.timeout ?? undefined
+        } else {
+          detail.timeout = xCrawlConfig.timeout
+        }
+      }
+
+      // 1.3.maxRetry
+      if (isUndefined(maxRetry)) {
+        if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
+          detail.maxRetry = advancedDetailTargetsConfig.maxRetry ?? 0
+        } else {
+          detail.maxRetry = xCrawlConfig.maxRetry
+        }
+      }
+
+      // 1.4.proxy
+      if (isUndefined(proxy)) {
+        if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
+          detail.proxy = advancedDetailTargetsConfig.proxy
+        } else if (!isUndefined(xCrawlConfig.proxy)) {
+          detail.proxy = xCrawlConfig.proxy
+        }
+      }
+
+      // 1.5.proxyUrl & proxyDetail
+      if (!isUndefined(detail.proxy?.urls)) {
+        const urls = detail.proxy!.urls
+        detail.proxyUrl = urls[0]
+        detail.proxyDetails = urls.map((url) => ({ url, state: true }))
       } else {
-        detail.timeout = xCrawlConfig.timeout
+        // 默认值
+        detail.proxyDetails = []
       }
-    }
 
-    // 1.3.porxy
-    if (isUndefined(proxy)) {
-      if (!isUndefined(advancedConfig.proxy)) {
-        detail.proxy = advancedConfig.proxy
-      } else if (!isUndefined(xCrawlConfig.proxy)) {
-        detail.proxy = xCrawlConfig.proxy
+      // 1.6.priority
+      if (isUndefined(priority)) {
+        detail.priority = 0
       }
-    }
 
-    // 1.4.maxRetry
-    if (isUndefined(maxRetry)) {
-      if (!isUndefined(advancedConfig.maxRetry)) {
-        detail.maxRetry = advancedConfig.maxRetry
-      } else {
-        detail.maxRetry = xCrawlConfig.maxRetry
+      // 1.7.header
+      if (isUndefined(headers) && advancedDetailTargetsConfig.headers) {
+        detail.headers = { ...advancedDetailTargetsConfig.headers }
       }
+
+      // 1.8.fingerprint(公共部分)
+      if (fingerprint) {
+        // detaileTarget
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      } else if (
+        isUndefined(fingerprint) &&
+        isArray(advancedDetailTargetsConfig.fingerprints) &&
+        advancedDetailTargetsConfig.fingerprints.length
+      ) {
+        // advancedConfig
+
+        const fingerprints = advancedDetailTargetsConfig.fingerprints
+        const selectFingerprintIndex = random(fingerprints.length)
+        const fingerprint = fingerprints[selectFingerprintIndex]
+
+        // 记录每个目标选中的指纹索引
+        crawlConfig.selectFingerprintIndexs.push(selectFingerprintIndex)
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      } else if (
+        isUndefined(fingerprint) &&
+        !isArray(advancedDetailTargetsConfig.fingerprints) &&
+        xCrawlConfig.enableRandomFingerprint
+      ) {
+        // xCrawlConfig
+        const fingerprint = fingerprints[random(fingerprints.length)]
+
+        loaderCommonFingerprintToDetailTarget(detail, fingerprint)
+      }
+
+      return detail
     }
-
-    // 1.5.priority
-    if (isUndefined(priority)) {
-      detail.priority = 0
-    }
-
-    // 1.6.header
-    if (isUndefined(headers) && advancedConfig.headers) {
-      detail.headers = { ...advancedConfig.headers }
-    }
-
-    // 1.7.fingerprint(公共部分)
-    if (fingerprint) {
-      // detaileTarget
-
-      loaderCommonFingerprintToDetailTarget(detail, fingerprint)
-    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
-      // advancedConfig
-
-      const {
-        userAgents,
-        uas,
-        platforms,
-        platformVersions,
-        mobiles,
-        acceptLanguages
-      } = advancedConfig.fingerprint
-
-      // 1.user-agent
-      const userAgent = userAgents
-        ? userAgents[random(userAgents.length)]
-        : undefined
-
-      // 2.sec-ch-ua
-      const ua = uas ? uas[random(uas.length)] : undefined
-
-      // 3.sec-ch-platform
-      const platform = platforms
-        ? platforms[random(platforms.length)]
-        : undefined
-
-      // 4.sec-ch-platform-version
-      const platformVersion = platformVersions
-        ? platformVersions[random(platformVersions.length)]
-        : undefined
-
-      // 5.sec-ch-mobile
-      const mobile = mobiles ? mobiles[random(mobiles.length)] : undefined
-
-      // 6.accept-language
-      const acceptLanguage = acceptLanguages
-        ? acceptLanguages[random(acceptLanguages.length)]
-        : undefined
-
-      loaderCommonFingerprintToDetailTarget(detail, {
-        userAgent,
-        ua,
-        platform,
-        platformVersion,
-        mobile,
-        acceptLanguage
-      })
-    } else if (xCrawlConfig.enableRandomFingerprint) {
-      // xCrawlConfig
-
-      const { platforms, mobiles } = randomFingerprint
-
-      // 1.user-agent
-      const userAgent = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.${random(
-        10
-      )}.${random(10000)}.${random(1000)} Safari/537.36`
-
-      // 2.sec-ch-platform
-      const platform = platforms[random(platforms.length)] as Platform
-
-      // 3.sec-ch-mobile
-      const mobile = mobiles[random(mobiles.length)] as Mobile
-
-      loaderCommonFingerprintToDetailTarget(detail, {
-        userAgent,
-        platform,
-        mobile
-      })
-    }
-  })
+  )
 
   // 2.intervalTime
-  crawlConfig.intervalTime = advancedConfig.intervalTime
+  crawlConfig.intervalTime = advancedDetailTargetsConfig.intervalTime
   if (
-    isUndefined(advancedConfig.intervalTime) &&
+    isUndefined(advancedDetailTargetsConfig.intervalTime) &&
     !isUndefined(xCrawlConfig.intervalTime)
   ) {
     crawlConfig.intervalTime = xCrawlConfig.intervalTime
   }
 
   // 3.onCrawlItemComplete
-  crawlConfig.onCrawlItemComplete = advancedConfig.onCrawlItemComplete
+  crawlConfig.onCrawlItemComplete =
+    advancedDetailTargetsConfig.onCrawlItemComplete
 }
 
 /* Create config */
 /*
-  每个创建配置函数的返回值都是类似于进阶版配置
+  每个创建配置函数的返回值都是类似于进阶配置
   不同点:
     - detailTargets 里面将存放的是详细版目标配置
     - 不会保留与详细版目标配置相同的选项
@@ -450,96 +492,122 @@ function createCrawlPageConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlPageConfig
 ): CrawlPageConfig {
-  const crawlPageConfig: CrawlPageConfigOriginal = {
+  const crawlPageConfig: CrawlPageConfig = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlPageAdvancedConfig = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlPageAdvancedDetailTargetsConfig = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlPageAdvancedConfig 处理
     const { targets } = originalConfig as CrawlPageAdvancedConfig
-    advancedConfig = originalConfig as CrawlPageAdvancedConfig
 
-    crawlPageConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlPageAdvancedDetailTargetsConfig
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // string | CrawlPageDetailTargetConfig | (string | CrawlPageDetailTargetConfig)[] 处理
-    const detaileTargets = transformTargetToDetailTargets(
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlPageDetailTargetConfig
         | (string | CrawlPageDetailTargetConfig)[]
     )
-
-    crawlPageConfig.detailTargets.push(...detaileTargets)
   }
 
   // 装载公共配置
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlPageConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlPageConfig
+  )
 
   // 装载单独配置
-  crawlPageConfig.detailTargets.forEach((detail) => {
+  crawlPageConfig.detailTargets.forEach((detail, index) => {
     // detail > advanced  > xCrawl
     const { cookies, viewport, fingerprint } = detail
 
     // 1.cookies
-    if (isUndefined(cookies) && advancedConfig.cookies) {
-      detail.cookies = advancedConfig.cookies
+    if (isUndefined(cookies) && advancedDetailTargetsConfig.cookies) {
+      detail.cookies = advancedDetailTargetsConfig.cookies
     }
 
     // 2.viewport
-    if (isUndefined(viewport) && advancedConfig.viewport) {
-      detail.viewport = advancedConfig.viewport
+    if (isUndefined(viewport) && advancedDetailTargetsConfig.viewport) {
+      detail.viewport = advancedDetailTargetsConfig.viewport
     }
 
     // 3.fingerprint
     if (fingerprint) {
       loaderPageFingerprintToDetailTarget(detail, fingerprint)
-    } else if (isUndefined(fingerprint) && advancedConfig.fingerprint) {
-      loaderPageFingerprintToDetailTarget(detail, advancedConfig.fingerprint)
+    } else if (
+      isUndefined(fingerprint) &&
+      advancedDetailTargetsConfig.fingerprints?.length
+    ) {
+      // 从对应的选中记录中取出指纹索引
+      const selectFingerprintIndex =
+        crawlPageConfig.selectFingerprintIndexs[index]
+      const fingerprint =
+        advancedDetailTargetsConfig.fingerprints[selectFingerprintIndex]
+
+      loaderPageFingerprintToDetailTarget(detail, fingerprint)
     }
   })
 
-  return crawlPageConfig as CrawlPageConfig
+  return crawlPageConfig
 }
 
 function createCrawlDataConfig<T>(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlDataConfig<T>
 ): CrawlDataConfig {
-  const crawlDataConfig: CrawlDataConfigOriginal = {
+  const crawlDataConfig: CrawlDataConfig = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlDataAdvancedConfig<T> = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlDataAdvancedDetailTargetsConfig<T> = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlDataAdvancedConfig 处理
     const { targets } = originalConfig as CrawlDataAdvancedConfig<T>
-    advancedConfig = originalConfig as CrawlDataAdvancedConfig<T>
 
-    crawlDataConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlDataAdvancedDetailTargetsConfig<T>
+
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // string | CrawlDataDetailTargetConfig | (string | CrawlDataDetailTargetConfig)[] 处理
-    const detaileTargets = transformTargetToDetailTargets(
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
       originalConfig as
         | string
         | CrawlDataDetailTargetConfig
         | (string | CrawlDataDetailTargetConfig)[]
     )
-
-    crawlDataConfig.detailTargets.push(...detaileTargets)
   }
 
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlDataConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlDataConfig
+  )
 
   return crawlDataConfig as CrawlDataConfig
 }
@@ -548,49 +616,63 @@ function createCrawlFileConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   originalConfig: UniteCrawlFileConfig
 ): CrawlFileConfig {
-  const crawlFileConfig: CrawlFileConfigOriginal = {
+  const crawlFileConfig: CrawlFileConfig = {
     detailTargets: [],
     intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
     onBeforeSaveItemFile: undefined,
     onCrawlItemComplete: undefined
   }
 
-  let advancedConfig: CrawlFileAdvancedConfig = { targets: [] }
+  let advancedDetailTargetsConfig: CrawlFileAdvancedDetailTargetsConfig = {
+    targets: [],
+    detailTargets: []
+  }
 
   if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
     // CrawlFileAdvancedConfig 处理
     const { targets } = originalConfig as CrawlFileAdvancedConfig
 
-    advancedConfig = originalConfig as CrawlFileAdvancedConfig
-    crawlFileConfig.detailTargets.push(
-      ...transformTargetToDetailTargets(targets)
-    )
+    advancedDetailTargetsConfig =
+      originalConfig as CrawlFileAdvancedDetailTargetsConfig
+
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
   } else {
     // CrawlFileDetailTargetConfig |  CrawlFileDetailTargetConfig[] 处理
-    crawlFileConfig.detailTargets.push(
-      ...(isArray(originalConfig)
-        ? originalConfig
-        : [originalConfig as CrawlFileDetailTargetConfig])
-    )
+    advancedDetailTargetsConfig.detailTargets = isArray(originalConfig)
+      ? originalConfig
+      : [originalConfig as CrawlFileDetailTargetConfig]
   }
 
-  loaderCommonConfigToCrawlConfig(xCrawlConfig, advancedConfig, crawlFileConfig)
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlFileConfig
+  )
 
-  const haveAdvancedStoreDir = !isUndefined(advancedConfig?.storeDir)
-  const haveAdvancedExtension = !isUndefined(advancedConfig?.extension)
+  const haveAdvancedStoreDir = !isUndefined(
+    advancedDetailTargetsConfig?.storeDir
+  )
+  const haveAdvancedExtension = !isUndefined(
+    advancedDetailTargetsConfig?.extension
+  )
   crawlFileConfig.detailTargets.forEach((detail) => {
     // 1.storeDir
     if (isUndefined(detail.storeDir) && haveAdvancedStoreDir) {
-      detail.storeDir = advancedConfig!.storeDir
+      detail.storeDir = advancedDetailTargetsConfig!.storeDir
     }
 
     // 2.extension
     if (isUndefined(detail.extension) && haveAdvancedExtension) {
-      detail.extension = advancedConfig!.extension
+      detail.extension = advancedDetailTargetsConfig!.extension
     }
   })
 
-  crawlFileConfig.onBeforeSaveItemFile = advancedConfig.onBeforeSaveItemFile
+  crawlFileConfig.onBeforeSaveItemFile =
+    advancedDetailTargetsConfig.onBeforeSaveItemFile
 
   return crawlFileConfig as CrawlFileConfig
 }
@@ -598,23 +680,32 @@ function createCrawlFileConfig(
 /* Single crawl handle */
 
 async function pageSingleCrawlHandle(
-  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
   extraConfig: ExtraPageConfig
-): Promise<PageSingleCrawlResult> {
-  const { id, detailTarget } = detaileInfo
-  const { errorPageMap, browser } = extraConfig
+) {
+  const {
+    detailTargetConfig,
+    detailTargetResult,
+    retryCount,
+    maxRetry,
+    crawlErrorQueue
+  } = device
+  const { browser } = extraConfig
+  const notAllowRetry = retryCount === maxRetry
 
-  const page = await browser.newPage()
+  // 是否创建过 Page
+  const page = detailTargetResult?.page ?? (await browser.newPage())
 
-  if (detailTarget.viewport) {
-    await page.setViewport(detailTarget.viewport)
+  if (detailTargetConfig.viewport) {
+    await page.setViewport(detailTargetConfig.viewport)
   }
 
   let response: HTTPResponse | null = null
+  let notError = true
   try {
-    if (detailTarget.proxy) {
+    if (detailTargetConfig.proxyUrl) {
       await browser.createIncognitoBrowserContext({
-        proxyServer: detailTarget.proxy
+        proxyServer: detailTargetConfig.proxyUrl
       })
     } else {
       await browser.createIncognitoBrowserContext({
@@ -622,84 +713,141 @@ async function pageSingleCrawlHandle(
       })
     }
 
-    if (detailTarget.cookies) {
-      const cookies = parsePageCookies(detailTarget.url, detailTarget.cookies)
+    if (detailTargetConfig.cookies) {
+      const cookies = parsePageCookies(
+        detailTargetConfig.url,
+        detailTargetConfig.cookies
+      )
       await page.setCookie(...cookies)
     } else {
-      const cookies = await page.cookies(detailTarget.url)
+      const cookies = await page.cookies(detailTargetConfig.url)
       await page.deleteCookie(...cookies)
     }
 
-    if (detailTarget.headers) {
-      await page.setExtraHTTPHeaders(detailTarget.headers)
+    if (detailTargetConfig.headers) {
+      await page.setExtraHTTPHeaders(detailTargetConfig.headers)
     }
 
-    response = await page.goto(detailTarget.url, {
-      timeout: detailTarget.timeout
+    response = await page.goto(detailTargetConfig.url, {
+      timeout: detailTargetConfig.timeout
     })
-  } catch (error) {
-    // 收集报错的 page
-    if (!errorPageMap.get(id)) {
-      errorPageMap.set(id, page)
-    }
-
-    // 让外面收集错误
-    throw error
+  } catch (error: any) {
+    notError = false
+    crawlErrorQueue.push(error)
   }
 
-  return { response, page }
+  // 保存结果
+  device.detailTargetResult = { response, page }
+
+  // 处理结果
+  const isStatusNormal = !isCrawlStatusInHttpStatus(device)
+  const isSuccess = notError && isStatusNormal
+
+  device.isStatusNormal = isStatusNormal
+  device.isSuccess = isSuccess
+  if (isSuccess || notAllowRetry) {
+    device.isHandle = true
+
+    pageSingleResultHandle(device, extraConfig)
+  }
 }
 
 async function dataAndFileSingleCrawlHandle(
-  detaileInfo: DetailInfo<
-    LoaderCrawlDataDetail | LoaderCrawlFileDetail,
-    Request
-  >
+  device: Device<LoaderCrawlDataDetail | LoaderCrawlFileDetail, Request>,
+  extraConfig: ExtraDataConfig<any> | ExtraFileConfig
 ) {
-  const { detailTarget } = detaileInfo
+  const { detailTargetConfig, crawlErrorQueue, maxRetry, retryCount } = device
+  const notAllowRetry = maxRetry === retryCount
 
-  return await request(detailTarget)
+  let detailTargetResult = null
+  let notError = true
+  try {
+    detailTargetResult = await request(detailTargetConfig)
+  } catch (error: any) {
+    notError = false
+    crawlErrorQueue.push(error)
+  }
+
+  // 保存结果
+  device.detailTargetResult = detailTargetResult
+
+  // 处理结果
+  const isStatusNormal = !isCrawlStatusInHttpStatus(device)
+  const isSuccess = notError && isStatusNormal
+
+  device.isStatusNormal = isStatusNormal
+  device.isSuccess = isSuccess
+  if (isSuccess || notAllowRetry) {
+    device.isHandle = true
+
+    if (extraConfig.type === 'data') {
+      dataSingleResultHandle(device, extraConfig as ExtraDataConfig<any>)
+    } else if (extraConfig.type === 'file') {
+      fileSingleResultHandle(device, extraConfig as ExtraFileConfig)
+    }
+  }
 }
 
 /* Single result handle */
+const resultEssentialOtherKeys = ['isSuccess', 'retryCount'] as const
+
+function handleResultEssentialOtherValue(device: any) {
+  Object.keys(device).forEach((key) => {
+    if (resultEssentialOtherKeys.includes(key as any)) {
+      device.result[key] = device[key]
+    }
+  })
+}
 
 function pageSingleResultHandle(
-  detaileInfo: DetailInfo<LoaderCrawlPageDetail, PageSingleCrawlResult>,
+  device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
   extraConfig: ExtraPageConfig
 ) {
-  const { id, isSuccess, detailTargetRes } = detaileInfo
-  const { errorPageMap, browser, onCrawlItemComplete } = extraConfig
+  const { detailTargetResult, result } = device
+  const { browser, onCrawlItemComplete } = extraConfig
 
-  let data: {
-    browser: Browser
-    response: HTTPResponse | null
-    page: Page
-  } | null = null
+  handleResultEssentialOtherValue(device)
 
-  if (isSuccess && detailTargetRes) {
-    data = { browser: browser!, ...detailTargetRes }
-  } else {
-    const page = errorPageMap.get(id)!
-
-    data = { browser: browser!, response: null, page }
-  }
-
-  detaileInfo.data = data
-
-  const crawlPageSingleRes: AnyObject = detaileInfo
-  delete crawlPageSingleRes.detailTarget
-  delete crawlPageSingleRes.detailTargetRes
+  result.data = { browser, ...detailTargetResult }
 
   if (onCrawlItemComplete) {
-    onCrawlItemComplete(crawlPageSingleRes as CrawlPageSingleRes)
+    onCrawlItemComplete(device.result as CrawlPageSingleResult)
+  }
+}
+
+function dataSingleResultHandle(
+  device: Device<LoaderCrawlDataDetail, Request>,
+  extraConfig: ExtraDataConfig<any>
+) {
+  const { isSuccess, detailTargetResult, result } = device
+  const { onCrawlItemComplete } = extraConfig
+
+  handleResultEssentialOtherValue(device)
+
+  if (isSuccess && detailTargetResult) {
+    const contentType = detailTargetResult.headers['content-type'] ?? ''
+
+    const data =
+      contentType === 'application/json'
+        ? JSON.parse(detailTargetResult.data.toString())
+        : contentType.includes('text')
+        ? detailTargetResult.data.toString()
+        : detailTargetResult.data
+
+    result.data = { ...detailTargetResult, data }
+  }
+
+  if (onCrawlItemComplete) {
+    onCrawlItemComplete(result as CrawlDataSingleResult<any>)
   }
 }
 
 function fileSingleResultHandle(
-  detaileInfo: DetailInfo<LoaderCrawlFileDetail, Request>,
+  device: Device<LoaderCrawlFileDetail, Request>,
   extraConfig: ExtraFileConfig
 ) {
-  const { id, isSuccess, detailTarget, detailTargetRes } = detaileInfo
+  const { id, isSuccess, detailTargetConfig, detailTargetResult, result } =
+    device
   const {
     saveFileErrorArr,
     saveFilePendingQueue,
@@ -708,26 +856,28 @@ function fileSingleResultHandle(
     onBeforeSaveItemFile
   } = extraConfig
 
-  const crawlFileSingleRes: AnyObject = detaileInfo
-  delete crawlFileSingleRes.detailTarget
-  delete crawlFileSingleRes.detailTargetRes
+  handleResultEssentialOtherValue(device)
 
-  if (isSuccess && detailTargetRes) {
-    const mimeType = detailTargetRes.headers['content-type'] ?? ''
+  if (isSuccess && detailTargetResult) {
+    const mimeType = detailTargetResult.headers['content-type'] ?? ''
 
-    const fileName = detailTarget.fileName ?? `${id}-${new Date().getTime()}`
+    const fileName =
+      detailTargetConfig.fileName ?? `${id}-${new Date().getTime()}`
     const fileExtension =
-      detailTarget.extension ?? `.${mimeType.split('/').pop()}`
+      detailTargetConfig.extension ?? `.${mimeType.split('/').pop()}`
 
-    if (detailTarget.storeDir && !fs.existsSync(detailTarget.storeDir)) {
-      mkdirDirSync(detailTarget.storeDir)
+    if (
+      detailTargetConfig.storeDir &&
+      !fs.existsSync(detailTargetConfig.storeDir)
+    ) {
+      fs.mkdirSync(detailTargetConfig.storeDir, { recursive: true })
     }
 
-    const storePath = detailTarget.storeDir ?? __dirname
+    const storePath = detailTargetConfig.storeDir ?? __dirname
     const filePath = path.resolve(storePath, fileName + fileExtension)
 
     // 在保存前的回调
-    const data = detailTargetRes.data
+    const data = detailTargetResult.data
     let dataPromise = Promise.resolve(data)
     if (onBeforeSaveItemFile) {
       dataPromise = onBeforeSaveItemFile({
@@ -752,8 +902,8 @@ function fileSingleResultHandle(
       }
 
       const size = newData.length
-      detaileInfo.data = {
-        ...detailTargetRes,
+      result.data = {
+        ...detailTargetResult,
         data: {
           isSuccess,
           fileName,
@@ -765,7 +915,7 @@ function fileSingleResultHandle(
       }
 
       if (onCrawlItemComplete) {
-        onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
+        onCrawlItemComplete(device.result as CrawlFileSingleResult)
       }
     })
 
@@ -773,7 +923,7 @@ function fileSingleResultHandle(
     saveFilePendingQueue.push(saveFileItemPending)
   } else {
     if (onCrawlItemComplete) {
-      onCrawlItemComplete(crawlFileSingleRes as CrawlFileSingleRes)
+      onCrawlItemComplete(device.result as CrawlFileSingleResult)
     }
   }
 }
@@ -787,35 +937,35 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 
   function crawlPage(
     config: string,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (result: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   function crawlPage(
     config: CrawlPageDetailTargetConfig,
-    callback?: (res: CrawlPageSingleRes) => void
-  ): Promise<CrawlPageSingleRes>
+    callback?: (result: CrawlPageSingleResult) => void
+  ): Promise<CrawlPageSingleResult>
 
   function crawlPage(
     config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (result: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   function crawlPage(
     config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleRes[]) => void
-  ): Promise<CrawlPageSingleRes[]>
+    callback?: (result: CrawlPageSingleResult[]) => void
+  ): Promise<CrawlPageSingleResult[]>
 
   async function crawlPage(
     config: UniteCrawlPageConfig,
-    callback?: (res: any) => void
-  ): Promise<CrawlPageSingleRes | CrawlPageSingleRes[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlPageSingleResult | CrawlPageSingleResult[]> {
     //  创建浏览器
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
       createBrowserPending = puppeteer
         .launch(xCrawlConfig.crawlPage?.launchBrowser)
-        .then((res) => {
-          browser = res
+        .then((result) => {
+          browser = result
         })
     }
 
@@ -831,31 +981,30 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
       createCrawlPageConfig(xCrawlConfig, config)
 
     const extraConfig: ExtraPageConfig = {
-      errorPageMap: new Map(),
+      type: 'page',
+
       browser: browser!,
       intervalTime,
       onCrawlItemComplete
     }
 
-    const crawlResArr = (await controller(
-      'page',
+    const crawlResultArr = (await controller(
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      pageSingleCrawlHandle,
-      pageSingleResultHandle
-    )) as CrawlPageSingleRes[]
+      pageSingleCrawlHandle
+    )) as CrawlPageSingleResult[]
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlPage
@@ -864,81 +1013,54 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlData<T = any>(
     config: string,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (result: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   function crawlData<T = any>(
     config: CrawlDataDetailTargetConfig,
-    callback?: (res: CrawlDataSingleRes<T>) => void
-  ): Promise<CrawlDataSingleRes<T>>
+    callback?: (result: CrawlDataSingleResult<T>) => void
+  ): Promise<CrawlDataSingleResult<T>>
 
   function crawlData<T = any>(
     config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (result: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   function crawlData<T = any>(
     config: CrawlDataAdvancedConfig<T>,
-    callback?: (res: CrawlDataSingleRes<T>[]) => void
-  ): Promise<CrawlDataSingleRes<T>[]>
+    callback?: (result: CrawlDataSingleResult<T>[]) => void
+  ): Promise<CrawlDataSingleResult<T>[]>
 
   async function crawlData<T = any>(
     config: UniteCrawlDataConfig<T>,
-    callback?: (res: any) => void
-  ): Promise<CrawlDataSingleRes<T> | CrawlDataSingleRes<T>[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlDataSingleResult<T> | CrawlDataSingleResult<T>[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlDataConfig(xCrawlConfig, config)
 
-    function dataSingleResultHandle(
-      detaileInfo: DetailInfo<LoaderCrawlDataDetail, Request>,
-      extraConfig: ExtraDataConfig<T>
-    ) {
-      const { isSuccess, detailTargetRes } = detaileInfo
-      const { onCrawlItemComplete } = extraConfig
-
-      if (isSuccess && detailTargetRes) {
-        const contentType = detailTargetRes.headers['content-type'] ?? ''
-
-        const data: T = contentType.includes('text')
-          ? detailTargetRes.data.toString()
-          : JSON.parse(detailTargetRes.data.toString())
-
-        detaileInfo.data = { ...detailTargetRes, data }
-      }
-
-      const crawlDataSingleRes: AnyObject = detaileInfo
-      delete crawlDataSingleRes.detailTarget
-      delete crawlDataSingleRes.detailTargetRes
-
-      if (onCrawlItemComplete) {
-        onCrawlItemComplete(crawlDataSingleRes as CrawlDataSingleRes<T>)
-      }
-    }
-
     const extraConfig: ExtraDataConfig<T> = {
+      type: 'data',
       intervalTime,
       onCrawlItemComplete
     }
 
-    const crawlResArr = (await controller(
-      'data',
+    const crawlResultArr = (await controller(
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle,
-      dataSingleResultHandle
-    )) as CrawlDataSingleRes<T>[]
+      dataAndFileSingleCrawlHandle
+    )) as CrawlDataSingleResult<T>[]
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlData
@@ -947,23 +1069,23 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
 export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlFile(
     config: CrawlFileDetailTargetConfig,
-    callback?: (res: CrawlFileSingleRes) => void
-  ): Promise<CrawlFileSingleRes>
+    callback?: (result: CrawlFileSingleResult) => void
+  ): Promise<CrawlFileSingleResult>
 
   function crawlFile(
     config: CrawlFileDetailTargetConfig[],
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (result: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   function crawlFile(
     config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleRes[]) => void
-  ): Promise<CrawlFileSingleRes[]>
+    callback?: (result: CrawlFileSingleResult[]) => void
+  ): Promise<CrawlFileSingleResult[]>
 
   async function crawlFile(
     config: UniteCrawlFileConfig,
-    callback?: (res: any) => void
-  ): Promise<CrawlFileSingleRes | CrawlFileSingleRes[]> {
+    callback?: (result: any) => void
+  ): Promise<CrawlFileSingleResult | CrawlFileSingleResult[]> {
     const {
       detailTargets,
       intervalTime,
@@ -972,6 +1094,8 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     } = createCrawlFileConfig(xCrawlConfig, config)
 
     const extraConfig: ExtraFileConfig = {
+      type: 'file',
+
       saveFileErrorArr: [],
       saveFilePendingQueue: [],
 
@@ -980,14 +1104,12 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       onBeforeSaveItemFile
     }
 
-    const crawlResArr = (await controller(
-      'file',
+    const crawlResultArr = (await controller(
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle,
-      fileSingleResultHandle
-    )) as CrawlFileSingleRes[]
+      dataAndFileSingleCrawlHandle
+    )) as CrawlFileSingleResult[]
 
     const { saveFilePendingQueue, saveFileErrorArr } = extraConfig
 
@@ -1000,39 +1122,39 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
     // 统计保存
     const succssIds: number[] = []
     const errorIds: number[] = []
-    crawlResArr.forEach((item) => {
+    crawlResultArr.forEach((item) => {
       if (item.data?.data.isSuccess) {
         succssIds.push(item.id)
       } else {
         errorIds.push(item.id)
       }
     })
-    log('Save file final result:')
+    log(logStatistics('Save files finish:'))
     log(
       logSuccess(
-        `  Success - total: ${succssIds.length}, ids: [ ${succssIds.join(
-          ' - '
+        `  Success - total: ${succssIds.length}, targets id: [ ${succssIds.join(
+          ', '
         )} ]`
       )
     )
     log(
       logError(
-        `    Error - total: ${errorIds.length}, ids: [ ${errorIds.join(
-          ' - '
+        `    Error - total: ${errorIds.length}, targets id: [ ${errorIds.join(
+          ', '
         )} ]`
       )
     )
 
-    const crawlRes =
+    const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
-        ? crawlResArr
-        : crawlResArr[0]
+        ? crawlResultArr
+        : crawlResultArr[0]
 
     if (callback) {
-      callback(crawlRes)
+      callback(crawlResult)
     }
 
-    return crawlRes
+    return crawlResult
   }
 
   return crawlFile
@@ -1055,13 +1177,13 @@ export function startPolling(
   const intervalId = setInterval(startCallback, total)
 
   function startCallback() {
-    console.log(logSuccess(`Start the ${logWarn.bold(++count)} polling`))
+    console.log(logStart(`Start polling - count: ${++count}`))
 
     callback(count, stopPolling)
   }
 
   function stopPolling() {
     clearInterval(intervalId)
-    console.log(logSuccess(`Stop the polling`))
+    console.log(logWarn(`Stop the polling`))
   }
 }

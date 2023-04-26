@@ -63,8 +63,8 @@ function handleRequestConfig(
   const isHttp = protocol === 'http:'
 
   const config: RequestOptions & MapTypeEmptyObject<URL> = {
-    agent: rawConfig.proxy
-      ? HttpsProxyAgent(rawConfig.proxy)
+    agent: rawConfig.proxyUrl
+      ? HttpsProxyAgent(rawConfig.proxyUrl)
       : isHttp
       ? new http.Agent()
       : new https.Agent(),

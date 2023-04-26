@@ -7,34 +7,22 @@ export function sleep(timeout: number) {
 }
 
 export function random(max: number, min = 0) {
-  let res = Math.floor(Math.random() * max)
+  let result = Math.floor(Math.random() * max)
 
-  while (res < min) {
-    res = Math.floor(Math.random() * max)
+  while (result < min) {
+    result = Math.floor(Math.random() * max)
   }
 
-  return res
-}
-
-export function mkdirDirSync(dir: string) {
-  const dirSplit = path.resolve(dir).split(path.sep)
-
-  dirSplit.reduce((prev, item, index) => {
-    const currentDir = index !== 0 ? path.join(prev, item) : item
-
-    if (!fs.existsSync(currentDir)) {
-      fs.mkdirSync(currentDir)
-    }
-
-    return currentDir
-  }, '')
+  return result
 }
 
 export const log = console.log
-export const logNumber = chalk.hex('#a57fff')
+export const logStart = chalk.blueBright
+export const logStatistics = chalk.whiteBright
 export const logSuccess = chalk.green
 export const logError = chalk.red
 export const logWarn = chalk.yellow
+export const logNumber = chalk.hex('#a57fff')
 
 export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined'

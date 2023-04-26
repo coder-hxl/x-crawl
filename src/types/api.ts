@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'node:http'
 import { Browser, HTTPResponse, Page, Protocol, Viewport } from 'puppeteer'
 
 import { AnyObject } from './common'
+import { ProxyDetails } from '../api'
 
 /* API Config */
 
@@ -47,30 +48,34 @@ export type Platform =
   | 'Windows'
   | 'Unknown'
 
-export type Mobile = '?0' | '?1'
-
 export interface DetailTargetFingerprintCommon {
-  userAgent?: string
   ua?: string
+  mobile?: '?0' | '?1' | 'random'
   platform?: Platform
   platformVersion?: string
-  mobile?: Mobile
   acceptLanguage?: string
-}
-
-export interface AdvancedFingerprintCommon {
-  userAgents?: string[]
-  uas?: string[]
-  platforms?: Platform[]
-  platformVersions?: string[]
-  mobiles?: Mobile[]
-  acceptLanguages?: string[]
+  userAgent?: {
+    value: string
+    versions?: {
+      name: string
+      maxMajorVersion?: number
+      minMajorVersion?: number
+      maxMinorVersion?: number
+      minMinorVersion?: number
+      maxPatchVersion?: number
+      minPatchVersion?: number
+    }[]
+  }
 }
 
 export interface CrawlCommonConfig {
-  timeout?: number
-  proxy?: string
-  maxRetry?: number
+  timeout?: number | null
+  proxy?: {
+    urls: string[]
+    switchByHttpStatus?: number[]
+    switchByErrorCount?: number
+  } | null
+  maxRetry?: number | null
 }
 
 // 1.Detail target
@@ -82,9 +87,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   viewport?: Viewport | null
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
-        maxWidth: number
+        maxWidth?: number
         minWidth?: number
-        maxHeight: number
+        maxHeight?: number
         minHidth?: number
       })
     | null
@@ -114,40 +119,42 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlPageDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon & {
-    maxWidth: number
+  fingerprints?: (DetailTargetFingerprintCommon & {
+    maxWidth?: number
     minWidth?: number
-    maxHeight: number
+    maxHeight?: number
     minHidth?: number
-  }
+  })[]
 
   headers?: AnyObject
   cookies?: PageCookies
   viewport?: Viewport
 
-  onCrawlItemComplete?: (crawlPageSingleRes: CrawlPageSingleRes) => void
+  onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
 
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   targets: (string | CrawlDataDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
 
-  onCrawlItemComplete?: (crawlDataSingleRes: CrawlDataSingleRes<T>) => void
+  onCrawlItemComplete?: (
+    crawlDataSingleResult: CrawlDataSingleResult<T>
+  ) => void
 }
 
 export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
-  fingerprint?: AdvancedFingerprintCommon
+  fingerprints?: DetailTargetFingerprintCommon[]
 
   headers?: AnyObject
   storeDir?: string
   extension?: string
 
-  onCrawlItemComplete?: (crawlFileSingleRes: CrawlFileSingleRes) => void
+  onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
     id: number
     fileName: string
@@ -163,15 +170,16 @@ export interface StartPollingConfig {
 }
 
 /* API Result */
-export interface CrawlCommonRes {
+export interface CrawlCommonResult {
   id: number
   isSuccess: boolean
   maxRetry: number
   retryCount: number
+  proxyDetails: ProxyDetails
   crawlErrorQueue: Error[]
 }
 
-export interface CrawlPageSingleRes extends CrawlCommonRes {
+export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
     browser: Browser
     response: HTTPResponse | null
@@ -179,7 +187,7 @@ export interface CrawlPageSingleRes extends CrawlCommonRes {
   }
 }
 
-export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
+export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders
@@ -187,7 +195,7 @@ export interface CrawlDataSingleRes<D> extends CrawlCommonRes {
   } | null
 }
 
-export interface CrawlFileSingleRes extends CrawlCommonRes {
+export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
     headers: IncomingHttpHeaders

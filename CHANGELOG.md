@@ -1,3 +1,47 @@
+# [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v6.0.1...v7.0.0) (2023-04-26)
+
+### 🚨 Breaking Changes
+
+- Fingerprint upgrade:
+  - The fingerprint of the advanced writing method is renamed to fingerprints, which is an array writing method, which stores objects of the DetailTargetFingerprintCommon type, which is convenient for customization. Internally, the objects inside will be randomly assigned to the target.
+  - Adjustment of crawlPage fingerprint options: the maximum width and height of the fingerprint configuration of advanced writing and detailed target writing are changed to optional.
+- Proxy upgrade: create a crawler instance, change the proxy of the advanced writing method and the detailed target writing method to the object writing method, with three attributes: urls, switchByHttpStatus and switchByErrorCount, urls can set multiple proxy URLs, and the internal default uses the first one first, switchByHttpStatus Set which non-compliant response status codes need to switch the proxy, and switchByErrorCount sets how many times the proxy needs to be switched when errors such as timeouts arrive. The proxy rotation feature needs to be used with error retries.
+- Return value type adjustment: CrawlCommonRes, CrawlPageSingleRes, CrawlDataSingleRes and CrawlFileSingleRes are renamed to CrawlCommonResult, CrawlPageSingleResult, CrawlDataSingleResult and CrawlFileSingleResult respectively
+
+### 🚀 Features
+
+- It is possible to cancel the configuration of the upper-level unified setting by setting null in the option.
+- The userAgent option in DetailTargetFingerprintCommon overrides the object notation and allows customization of the maximum and minimum values of the major version, minor version, and revision number inside. Each crawl target gets a new userAgent .
+- A new proxyDetails property is added to the crawling results to record the proxy status.
+- Added 'random' attribute value to mobile option of fingerprint configuration, allowing internal randomization.
+- Terminal prompts are simplified and color adjusted.
+
+### 🐞 Bug fixes
+
+- Unable to create multiple levels of non-existent folders on linux systems.
+
+---
+
+### 🚨 重大改变
+
+- 指纹升级：
+  - 进阶写法的 fingerprint 改名为 fingerprints ，为数组写法，里面存放 DetailTargetFingerprintCommon 类型的对象，方便定制。内部会将里面的对象随机分配给目标。
+  - crawlPage 的指纹选项调整：进阶写法和详细目标写法的指纹配置的最大宽高改为可选项。
+- 代理升级：创建爬虫实例、进阶写法以及详细目标写法的 proxy 更改为对象写法, 拥有 urls、switchByHttpStatus 以及 switchByErrorCount 这三个属性，urls 可以设置多个代理 URL ，内部默认先采用第一个，switchByHttpStatus 设置遇到哪些不符合的响应状态码需要切换代理，switchByErrorCount 设置像超时等错误时到达多少次需要切换代理。该代理轮换功能需要配合错误重试才能使用。
+- 返回值类型调整：CrawlCommonRes、CrawlPageSingleRes、CrawlDataSingleRes 以及 CrawlFileSingleRes 分别更名为 CrawlCommonResult、CrawlPageSingleResult、CrawlDataSingleResult 以及 CrawlFileSingleResult
+
+### 🚀 特征
+
+- 可以通过在选项设置为 null 取消上级统一设置的配置。
+- DetailTargetFingerprintCommon 里的 userAgent 选项改写对象写法，并允许定制里面的主版本、次版本以及修订号的最大值和最小值。每个爬取目标都会获取一个新的 userAgent 。
+- 爬取结果新增 proxyDetails 属性，记录代理状态。
+- 指纹配置的 mobile 选项添加 'random' 属性值，允许由内部随机决定。
+- 终端提示信息进行简化以及颜色调整。
+
+### 🐞 漏洞修复
+
+- 在 linux 系统上无法创建多级不存在的文件夹。
+
 # [v6.0.1](https://github.com/coder-hxl/x-crawl/compare/v6.0.0...v6.0.1) (2023-04-21)
 
 ### 🚀 Features
@@ -6,7 +50,7 @@
 
 ---
 
-### 特征
+### 🚀 特征
 
 - 完善文档。
 
