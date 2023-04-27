@@ -40,6 +40,7 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
     - [page 实例](#page-实例)
     - [生命周期](#生命周期)
       - [onCrawlItemComplete](#onCrawlItemComplete)
+    - [打开浏览器](#打开浏览器)
   - [爬取接口](#爬取接口)
     - [生命周期](#生命周期-1)
       - [onCrawlItemComplete](#onCrawlItemComplete-1)
@@ -161,7 +162,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     await new Promise((r) => setTimeout(r, 300))
 
     // 获取页面图片的 URL
-    const urls = await page!.$$eval(
+    const urls = await page.$$eval(
       `${elSelectorMap[id - 1]} img`,
       (imgEls) => {
         return imgEls.map((item) => item.src)
@@ -281,13 +282,13 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 #### browser 实例
 
-当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。他是个无头浏览器，并无 UI 外壳，他做的是将浏览器渲染引擎提供的**所有现代网络平台功能**带到代码中。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
+当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
 
 **注意：** browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
 
 #### page 实例
 
-当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。其可以做交互操作，具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
+当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
 
 browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
@@ -321,6 +322,22 @@ crawlPage API 拥有的声明周期函数:
 在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
 **注意:** 如果你需要一次性爬取很多页面，就需要在每个页面爬下来后，用这个生命周期函数来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则会因开启的 page 过多而造成程序崩溃。
+
+#### 打开浏览器
+
+取消以无头模式运行浏览器。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+  maxRetry: 3,
+  // 取消以无头模式运行浏览器
+  crawlPage: { launchBrowser: { headless: false } }
+})
+
+myXCrawl.crawlPage('https://www.example.com').then((res) => {})
+```
 
 ### 爬取接口
 
