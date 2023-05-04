@@ -5,8 +5,8 @@ dependencies:
     specifier: 4.1.2
     version: 4.1.2
   https-proxy-agent:
-    specifier: ^5.0.1
-    version: 5.0.1
+    specifier: ^6.0.0
+    version: 6.0.0
   puppeteer:
     specifier: 19.10.0
     version: 19.10.0(typescript@5.0.2)
@@ -1953,6 +1953,15 @@ packages:
       - supports-color
     dev: false
 
+  /agent-base@7.0.0:
+    resolution: {integrity: sha512-awaqsf16R0tAUMxWiVikaBDKrbt0im7XdzPMh3I8TFC097G4ZowjGgLBfXt+tGPsE+1U1FyLBGuWMd/EPVblWg==}
+    engines: {node: '>= 14'}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
     dependencies:
@@ -2834,6 +2843,16 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /https-proxy-agent@6.0.0:
+    resolution: {integrity: sha512-g821um/ZvXlENs8tqKh96b6G0wafab6ypfkZdFZImJEGZrn47oLeRhWMKvCYxrasOgNi3Yh6Cxkws2Zn13v2QA==}
+    engines: {node: '>= 14'}
+    dependencies:
+      agent-base: 7.0.0
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
