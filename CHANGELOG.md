@@ -1,4 +1,4 @@
-# [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v7.0.0...v7.0.1) (2023-05-04)
+# [v7.0.1](https://github.com/coder-hxl/x-crawl/compare/v7.0.0...v7.0.1) (2023-05-04)
 
 ### 🐞 Bug fixes
 
