@@ -5,12 +5,14 @@ import http, {
   IncomingHttpHeaders
 } from 'node:http'
 import https from 'node:https'
-import Url, { URL } from 'node:url'
+import Url from 'node:url'
+import querystring from 'node:querystring'
+
 import HttpsProxyAgent from 'https-proxy-agent'
 
 import { isUndefined } from './utils'
 
-import { AnyObject, MapTypeEmptyObject } from './types/common'
+import { AnyObject } from './types/common'
 import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './api'
 
 /* Type */
@@ -20,24 +22,9 @@ export interface Request {
   data: Buffer
 }
 
-function parseParams(urlSearch: string, params?: AnyObject): string {
-  let res = urlSearch ? `${urlSearch}` : '?'
-
-  if (params) {
-    for (const key in params) {
-      const value = params[key]
-      res += `&${key}=${value}`
-    }
-  } else {
-    res = urlSearch
-  }
-
-  return res
-}
-
 function parseHeaders(
   rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail,
-  config: RequestOptions & MapTypeEmptyObject<URL>
+  config: RequestOptions
 ) {
   const rawHeaders = rawConfig.headers ?? {}
   const headers: AnyObject = {
@@ -56,13 +43,24 @@ function parseHeaders(
 
 function handleRequestConfig(
   rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail
-): RequestOptions & MapTypeEmptyObject<URL> {
+): RequestOptions {
   const { protocol, hostname, port, pathname, search } = new Url.URL(
     rawConfig.url
   )
   const isHttp = protocol === 'http:'
 
-  const config: RequestOptions & MapTypeEmptyObject<URL> = {
+  let path = pathname
+  if (search || rawConfig.params) {
+    if (search) {
+      path += `${search}${
+        rawConfig.params ? '&' + querystring.stringify(rawConfig.params) : ''
+      }`
+    } else {
+      path += `?${querystring.stringify(rawConfig.params)}`
+    }
+  }
+
+  const config: RequestOptions = {
     agent: rawConfig.proxyUrl
       ? HttpsProxyAgent(rawConfig.proxyUrl)
       : isHttp
@@ -72,8 +70,7 @@ function handleRequestConfig(
     protocol,
     hostname,
     port,
-    path: pathname,
-    search: parseParams(search, rawConfig.params),
+    path,
 
     method: rawConfig.method?.toLocaleUpperCase() ?? 'GET',
     headers: {},
