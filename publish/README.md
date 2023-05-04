@@ -2,7 +2,7 @@
 
 English | [简体中文](https://github.com/coder-hxl/x-crawl/blob/main/docs/cn.md)
 
-x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexible, and there are many built-in functions for crawl pages, crawl interfaces, crawl files, etc.
+x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage and numerous functions can help you quickly, safely, and stably crawl pages, interfaces, and files.
 
 > If you also like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a star to support it, thank you for your support!
 
@@ -23,7 +23,7 @@ x-crawl is a flexible Node.js multipurpose crawler library. The usage is flexibl
 
 ## Relationship with Puppeteer
 
-The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to complete some operations, the result will expose the Brower instance and Page instance, you get Brower instance and Page instance will be intact, x-crawl will not rewrite them.
+The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to let x-crawl help you complete some operations, and the result will expose the Brower instance and the Page instance Come out, the Brower instance and Page instance you get will be intact, and x-crawl will not rewrite them.
 
 # Table of Contents
 
@@ -40,6 +40,7 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
     - [Page Instance](#Page-Instance)
     - [life Cycle](#life-Cycle)
       - [onCrawlItemComplete](#onCrawlItemComplete)
+    - [Open Browser](#Open-Browser)
   - [Crawl Interface](#Crawl-Interface)
     - [life Cycle](#life-Cycle-1)
       - [onCrawlItemComplete](#onCrawlItemComplete-1)
@@ -163,7 +164,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     await new Promise((r) => setTimeout(r, 300))
 
     // Gets the URL of the page image
-    const urls = await page!.$$eval(
+    const urls = await page.$$eval(
       `${elSelectorMap[id - 1]} img`,
       (imgEls) => {
         return imgEls.map((item) => item.src)
@@ -282,13 +283,13 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 #### Browser Instance
 
-When you call crawlPage API to crawl pages in the same crawler instance, the browser instance used is the same, because the crawlPage API of the browser instance in the same crawler instance is shared. It's a headless browser, no UI shell, what he does is bring **all modern web platform features** provided by the browser rendering engine to the code. For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
+When you call crawlPage API to crawl pages in the same crawler instance, the browser instance used is the same, because the crawlPage API of the browser instance in the same crawler instance is shared.  For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
 
 **Note:** The browser will keep running and the file will not be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because the crawlPage API of the browser instance in the same crawler instance is shared.
 
 #### Page Instance
 
-When you call crawlPage API to crawl pages in the same crawler instance, a new page instance will be generated from the browser instance. It can be used for interactive operations. For specific usage, please refer to [Page](https://pptr.dev/api/puppeteer.page).
+When you call crawlPage API to crawl pages in the same crawler instance, a new page instance will be generated from the browser instance. For specific usage, please refer to [Page](https://pptr.dev/api/puppeteer.page).
 
 The browser instance will retain a reference to the page instance. If it is no longer used in the future, the page instance needs to be closed by itself, otherwise it will cause a memory leak.
 
@@ -322,6 +323,22 @@ Lifecycle functions owned by the crawlPage API:
 In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
 
 **Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
+
+#### Open Browser
+
+Disable running the browser in headless mode.
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({
+   maxRetry: 3,
+   // Cancel running the browser in headless mode
+   crawlPage: { launchBrowser: { headless: false } }
+})
+
+myXCrawl.crawlPage('https://www.example.com').then((res) => {})
+```
 
 ### Crawl Interface
 

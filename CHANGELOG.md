@@ -1,3 +1,15 @@
+# [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v7.0.0...v7.0.1) (2023-05-04)
+
+### 🐞 Bug fixes
+
+- The params configuration option for the crawlData API is not working.
+
+---
+
+### 🐞 漏洞修复
+
+- crawlData API 的 params 配置选项不起作用。
+
 # [v7.0.0](https://github.com/coder-hxl/x-crawl/compare/v6.0.1...v7.0.0) (2023-04-26)
 
 ### 🚨 Breaking Changes
