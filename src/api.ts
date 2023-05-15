@@ -9,6 +9,7 @@ import { quickSort } from './sort'
 import {
   isArray,
   isObject,
+  isString,
   isUndefined,
   log,
   logError,
@@ -653,21 +654,40 @@ function createCrawlFileConfig(
     crawlFileConfig
   )
 
-  const haveAdvancedStoreDir = !isUndefined(
-    advancedDetailTargetsConfig?.storeDir
+  const advancedStoreDirInfo = {
+    exist: !isUndefined(advancedDetailTargetsConfig?.storeDirs),
+    type: isString(advancedDetailTargetsConfig?.storeDirs) ? 0 : 1
+  }
+
+  const AdvancedExtension = {
+    exist: !isUndefined(advancedDetailTargetsConfig?.extensions),
+    type: isString(advancedDetailTargetsConfig?.extensions) ? 0 : 1
+  }
+  const haveAdvancedFileNames = !isUndefined(
+    advancedDetailTargetsConfig?.fileNames
   )
-  const haveAdvancedExtension = !isUndefined(
-    advancedDetailTargetsConfig?.extension
-  )
-  crawlFileConfig.detailTargets.forEach((detail) => {
+  crawlFileConfig.detailTargets.forEach((detail, i) => {
     // 1.storeDir
-    if (isUndefined(detail.storeDir) && haveAdvancedStoreDir) {
-      detail.storeDir = advancedDetailTargetsConfig!.storeDir
+    if (isUndefined(detail.storeDir) && advancedStoreDirInfo.exist) {
+      detail.storeDir =
+        advancedStoreDirInfo.type === 0
+          ? (advancedDetailTargetsConfig!.storeDirs as string)
+          : (advancedDetailTargetsConfig!.storeDirs as (string | null)[])[i]
     }
 
     // 2.extension
-    if (isUndefined(detail.extension) && haveAdvancedExtension) {
-      detail.extension = advancedDetailTargetsConfig!.extension
+    if (isUndefined(detail.extension) && AdvancedExtension.exist) {
+      detail.extension =
+        advancedStoreDirInfo.type === 0
+          ? (advancedDetailTargetsConfig!.extensions as string)
+          : (advancedDetailTargetsConfig!.extensions as (string | null)[])[i]
+    }
+
+    // 3.fileName
+    if (isUndefined(detail.fileName) && haveAdvancedFileNames) {
+      detail.fileName = (
+        advancedDetailTargetsConfig!.fileNames as (string | null)[]
+      )[i]
     }
   })
 

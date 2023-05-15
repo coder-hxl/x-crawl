@@ -22,14 +22,14 @@ const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
 ]
 
-const storeDir = path.resolve(__dirname, './upload')
+const storeDirs = path.resolve(__dirname, './upload')
 
 /* 1.Written */
 // 1.1.written CrawlFileDetailConfig
 async function writtenCrawlFileDetailConfig() {
   const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
-  const res = await testXCrawl.crawlFile({ url: urls[0], storeDir })
+  const res = await testXCrawl.crawlFile({ url: urls[0], storeDir: storeDirs })
 
   return res.isSuccess && res.data?.data.isSuccess
 }
@@ -38,7 +38,9 @@ async function writtenCrawlFileDetailConfig() {
 async function writtenCrawlFileDetailConfigArr() {
   const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
-  const res = await testXCrawl.crawlFile(urls.map((url) => ({ url, storeDir })))
+  const res = await testXCrawl.crawlFile(
+    urls.map((url) => ({ url, storeDir: storeDirs }))
+  )
 
   return res.reduce(
     (prev, item) => prev && item.isSuccess && !!item.data?.data.isSuccess,
@@ -52,7 +54,7 @@ async function writtenCrawlFileAdvancedConfig() {
 
   const res = await testXCrawl.crawlFile({
     targets: urls,
-    storeDir
+    storeDirs
   })
 
   return res.reduce(
@@ -75,7 +77,7 @@ async function loaderBaseConfig() {
 
   const res = await testXCrawl.crawlFile({
     targets: ['/4401.jpg', '/4403.jpg'],
-    storeDir
+    storeDirs
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -92,7 +94,7 @@ async function loaderAdvancedConfig() {
     targets: ['/4401.jpg', '/4403.jpg'],
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
-    storeDir,
+    storeDirs,
     intervalTime: { max: 1000 },
     maxRetry: 0
   })
@@ -114,8 +116,8 @@ async function storeConfig() {
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
     ],
-    storeDir: path.resolve(__dirname, './upload'),
-    extension: '.jpg',
+    storeDirs: path.resolve(__dirname, './upload'),
+    extensions: '.jpg',
     async onBeforeSaveItemFile(info) {
       record.push(info.fileName)
       return info.data

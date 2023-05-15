@@ -22,14 +22,14 @@ const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
 ]
 
-const storeDir = path.resolve(__dirname, './upload')
+const storeDirs = path.resolve(__dirname, './upload')
 
 async function testCrawlFile() {
   const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlFile({
     targets: urls,
-    storeDir
+    storeDirs
   })
 
   return res.reduce(
