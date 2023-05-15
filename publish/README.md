@@ -10,14 +10,14 @@ x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage an
 
 - **🔥 Asynchronous Synchronous** - Just change the mode property to toggle asynchronous or synchronous crawling mode.
 - **⚙️ Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
+- **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
+- **⚒️ Control Page** - Automate form submission, UI testing, keyboard input, event manipulation, open browser, etc.
 - **🖋️ Flexible writing style** - The same crawling API can be adapted to multiple configurations, and each configuration method is very unique.
 - **⏱️ Interval Crawling** - No interval, fixed interval and random interval to generate or avoid high concurrent crawling.
 - **🔄 Failed Retry** - Avoid crawling failure due to short-term problems, and customize the number of retries.
 - **➡️ Proxy Rotation** - Auto-rotate proxies with failure retry, custom error times and HTTP status codes.
 - **👀 Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
-- **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
-- **⚒️ Control Page** - You can submit form, keyboard input, event operation, generate screenshots of the page, etc.
 - **🧾 Capture Record** - Capture and record crawling, and use colored strings to remind in the terminal.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
@@ -136,7 +136,7 @@ Take the automatic acquisition of some photos of experiences and homes around th
 import xCrawl from 'x-crawl'
 
 // 2.Create a crawler instance
-const myXCrawl = xCrawl({maxRetry: 3,intervalTime: { max: 3000, min: 2000 }})
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
 
 // 3.Set the crawling task
 /*
@@ -164,12 +164,9 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     await new Promise((r) => setTimeout(r, 300))
 
     // Gets the URL of the page image
-    const urls = await page.$$eval(
-      `${elSelectorMap[id - 1]} img`,
-      (imgEls) => {
-        return imgEls.map((item) => item.src)
-      }
-    )
+    const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) => {
+      return imgEls.map((item) => item.src)
+    })
     targets.push(...urls)
 
     // Close page
@@ -177,7 +174,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   }
 
   // Call the crawlFile API to crawl pictures
-  myXCrawl.crawlFile({ targets, storeDir: './upload' })
+  myXCrawl.crawlFile({ targets, storeDirs: './upload' })
 })
 ```
 
@@ -283,7 +280,7 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 #### Browser Instance
 
-When you call crawlPage API to crawl pages in the same crawler instance, the browser instance used is the same, because the crawlPage API of the browser instance in the same crawler instance is shared.  For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
+When you call crawlPage API to crawl pages in the same crawler instance, the browser instance used is the same, because the crawlPage API of the browser instance in the same crawler instance is shared. For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
 
 **Note:** The browser will keep running and the file will not be terminated. If you want to stop, you can execute browser.close() to close it. Do not call [crawlPage](#crawlPage) or [page](#page) if you need to use it later. Because the crawlPage API of the browser instance in the same crawler instance is shared.
 
@@ -332,9 +329,9 @@ Disable running the browser in headless mode.
 import xCrawl from 'x-crawl'
 
 const myXCrawl = xCrawl({
-   maxRetry: 3,
-   // Cancel running the browser in headless mode
-   crawlPage: { launchBrowser: { headless: false } }
+  maxRetry: 3,
+  // Cancel running the browser in headless mode
+  crawlPage: { launchBrowser: { headless: false } }
 })
 
 myXCrawl.crawlPage('https://www.example.com').then((res) => {})
@@ -389,9 +386,7 @@ myXCrawl
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    fileConfig: {
-      storeDir: './upload' // storage folder
-    }
+    storeDirs: './upload' // storage folder
   })
   .then((res) => {
     console.log(res)
@@ -430,10 +425,8 @@ myXCrawl
       'https://www.example.com/file-1.jpg',
       'https://www.example.com/file-2.jpg'
     ],
-    fileConfig: {
-      onBeforeSaveItemFile(info) {
-        return sharp(info.data).resize(200).toBuffer()
-      }
+    onBeforeSaveItemFile(info) {
+      return sharp(info.data).resize(200).toBuffer()
     }
   })
   .then((res) => {
@@ -1172,7 +1165,7 @@ myXCrawl
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    storeDir: './upload',
+    storeDirs: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
   })
@@ -1247,7 +1240,7 @@ myXCrawl
       'https://www.example.com/file-1',
       { url: 'https://www.example.com/file-2', storeDir: './upload/xxx' }
     ],
-    storeDir: './upload',
+    storeDirs: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
   })
@@ -1381,7 +1374,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   headers?: AnyObject | null
   priority?: number
   storeDir?: string | null
-  fileName?: string
+  fileName?: string | null
   extension?: string | null
   fingerprint?: DetailTargetFingerprintCommon | null
 }
@@ -1461,10 +1454,11 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprints?: DetailTargetFingerprintCommon[]
+  storeDirs?: string | (string | null)[]
+  extensions?: string | (string | null)[]
+  fileNames?: (string | null)[]
 
   headers?: AnyObject
-  storeDir?: string
-  extension?: string
 
   onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
@@ -1481,9 +1475,10 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 - targets: undefined
 - intervalTime: undefined
 - fingerprints: undefined
-- headers: undefined
 - storeDir: \_\_dirname
 - extension: string
+- fileNames: undefined
+- headers: undefined
 - onCrawlItemComplete: undefined
 - onBeforeSaveItemFile: undefined
 

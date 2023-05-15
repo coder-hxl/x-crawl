@@ -172,7 +172,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   }
 
   // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({ targets, storeDir: './upload' })
+  await myXCrawl.crawlFile({ targets, storeDirs: './upload' })
 })
 ```
 
@@ -385,7 +385,7 @@ myXCrawl
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    storeDir: './upload' // 存放文件夹
+    storeDirs: './upload' // 存放文件夹
   })
   .then((res) => {})
 ```
@@ -1160,7 +1160,7 @@ myXCrawl
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    storeDir: './upload',
+    storeDirs: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
   })
@@ -1235,7 +1235,7 @@ myXCrawl
       'https://www.example.com/file-1',
       { url: 'https://www.example.com/file-2', storeDir: './upload/file2' }
     ],
-    storeDir: './upload',
+    storeDirs: './upload',
     intervalTime: { max: 3000, min: 1000 },
     maxRetry: 1
   })
@@ -1369,7 +1369,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   headers?: AnyObject | null
   priority?: number
   storeDir?: string | null
-  fileName?: string
+  fileName?: string | null
   extension?: string | null
   fingerprint?: DetailTargetFingerprintCommon | null
 }
@@ -1449,10 +1449,11 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprints?: DetailTargetFingerprintCommon[]
+  storeDirs?: string | (string | null)[]
+  extensions?: string | (string | null)[]
+  fileNames?: (string | null)[]
 
   headers?: AnyObject
-  storeDir?: string
-  extension?: string
 
   onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
@@ -1469,9 +1470,10 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 - targets: undefined
 - intervalTime: undefined
 - fingerprints: undefined
+- storeDirs: \_\_dirname
+- extensions: string
+- fileNames: undefined
 - headers: undefined
-- storeDir: \_\_dirname
-- extension: string
 - onCrawlItemComplete: undefined
 - onBeforeSaveItemFile: undefined
 
