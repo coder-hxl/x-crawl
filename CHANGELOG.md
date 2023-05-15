@@ -1,3 +1,19 @@
+# [v7.1.0](https://github.com/coder-hxl/x-crawl/compare/v7.0.1...v7.1.0) (2023-05-15)
+
+### 🚀 Features
+
+- The flexibility of crawlFile API has been upgraded again, mainly adjusting fileName, storeDir, and extension.
+  - The storeDir and extension of the advanced writing method (CrawlFileAdvancedConfig) are changed to storeDirs and extensions respectively, and the type is string or (string | null)[], and the fileNames option is added, and the type is (string | null)[] . If it is an array, it will be assigned to the crawling targets in order.
+  - The fileName of the detailed target notation (CrawlFileDetailTargetConfig) adds a null type, which is used to use the default file name instead of the fileName corresponding to the advanced notation (CrawlFileAdvancedConfig) fileNames.
+
+---
+
+### 🚀 特征
+
+- crawlFile API 灵活度再次升级，主要对 fileName、storeDir、extension 进行调整。
+  - 进阶写法 (CrawlFileAdvancedConfig) 的 storeDir 和 extension 分别更改为 storeDirs 和 extensions ，类型为 string 或者 (string | null)[]，同时新增 fileNames 选项，类型为 (string | null)[] 。如果是数组则会按顺序分配给爬取目标。
+  - 详细目标写法 (CrawlFileDetailTargetConfig) 的 fileName 新增 null 类型，用于使用默认文件名，不使用进阶写法 (CrawlFileAdvancedConfig) fileNames 对应的 fileName 。
+
 # [v7.0.1](https://github.com/coder-hxl/x-crawl/compare/v7.0.0...v7.0.1) (2023-05-04)
 
 ### 🐞 Bug fixes

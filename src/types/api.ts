@@ -110,7 +110,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   headers?: AnyObject | null
   priority?: number
   storeDir?: string | null
-  fileName?: string
+  fileName?: string | null
   extension?: string | null
   fingerprint?: DetailTargetFingerprintCommon | null
 }
@@ -149,10 +149,11 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   targets: (string | CrawlFileDetailTargetConfig)[]
   intervalTime?: IntervalTime
   fingerprints?: DetailTargetFingerprintCommon[]
+  storeDirs?: string | (string | null)[]
+  extensions?: string | (string | null)[]
+  fileNames?: (string | null)[]
 
   headers?: AnyObject
-  storeDir?: string
-  extension?: string
 
   onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
