@@ -1760,7 +1760,11 @@ export interface AnyObject extends Object {
 
 ### 社区
 
-**GitHub Discussions:** 可以通过 [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) 进行讨论。
+### 社区
+
+- **Discord 聊天:** 通过 [Discord](https://discord.gg/SF7aaebg4E) 与其他 x-crawl 用户实时提问和讨论。
+
+- **GitHub 讨论:** 使用 [GitHub 讨论](https://github.com/coder-hxl/x-crawl/discussions) 来进行留言板式的问题和讨论。
 
 ### Issues
 
