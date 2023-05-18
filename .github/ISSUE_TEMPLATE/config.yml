@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Discord Chat
+    url: https://discord.gg/SF7aaebg4E
+    about: Ask questions and discuss with other x-crawl users in real time.
+  - name: Discord Chat
+    url: https://discord.gg/SF7aaebg4E
+    about: 与其他 x-crawl 用户实时提问和讨论。
   - name: Questions & Discussions
     url: https://github.com/coder-hxl/x-crawl/discussions
     about: Use GitHub discussions for message-board style questions and discussions.
