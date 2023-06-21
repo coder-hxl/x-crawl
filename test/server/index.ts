@@ -2,6 +2,8 @@ import http from 'node:http'
 
 http
   .createServer((req, res) => {
+    console.log(req.headers)
+
     res.setHeader('Content-Type', 'text/plain')
     res.end('success')
   })

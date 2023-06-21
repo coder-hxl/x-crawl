@@ -28,14 +28,24 @@ function parseHeaders(
 ) {
   const rawHeaders = rawConfig.headers ?? {}
   const headers: AnyObject = {
-    'user-agent':
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
     ...rawHeaders
   }
 
   if (config.method === 'POST' && rawConfig.data) {
-    headers['Content-Type'] = 'application/json'
-    headers['Content-Length'] = Buffer.byteLength(rawConfig.data)
+    const defaultHeaderConfig = [
+      { key: 'Content-Type', value: 'application/json' },
+      { key: 'Content-Length', value: Buffer.byteLength(rawConfig.data) }
+    ]
+
+    defaultHeaderConfig.forEach((item) => {
+      const { key, value } = item
+
+      if (isUndefined(rawHeaders[key])) {
+        headers[key] = value
+      }
+    })
   }
 
   return headers
