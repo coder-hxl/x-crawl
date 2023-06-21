@@ -1,3 +1,15 @@
+# [v7.1.1](https://github.com/coder-hxl/x-crawl/compare/v7.1.0...v7.1.1) (2023-06-21)
+
+### 🐞 Bug fixes
+
+- Correctly handle the header of the post method configured by the crawlData API.
+
+---
+
+### 🐞 漏洞修复
+
+- 正确处理 crawlData API 配置 post 方法的 header 。
+
 # [v7.1.0](https://github.com/coder-hxl/x-crawl/compare/v7.0.1...v7.1.0) (2023-05-15)
 
 ### 🚀 Features

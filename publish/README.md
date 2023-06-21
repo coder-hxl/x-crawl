@@ -21,9 +21,9 @@ x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage an
 - **🧾 Capture Record** - Capture and record crawling, and use colored strings to remind in the terminal.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
-## Relationship with Puppeteer
+## Sponsor
 
-The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to let x-crawl help you complete some operations, and the result will expose the Brower instance and the Page instance Come out, the Brower instance and Page instance you get will be intact, and x-crawl will not rewrite them.
+x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
 
 # Table of Contents
 
@@ -115,9 +115,12 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
     - [CrawlFileSingleResult](#CrawlFileSingleResult)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
+- [FAQ](#FAQ)
+  - [The relationship between crawlPage API and puppeteer](#The-relationship-between-crawlPage-API-and-puppeteer)
 - [More](#More)
   - [Community](#Community)
   - [Issues](#Issues)
+  - [Sponsor](#Sponsor-1)
 
 ## Install
 
@@ -187,6 +190,7 @@ running result:
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
 </div>
+
 **Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
 
 ## Core Concepts
@@ -1761,12 +1765,24 @@ export interface AnyObject extends Object {
 }
 ```
 
+## FAQ
+
+### The relationship between crawlPage API and puppeteer
+
+The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to let x-crawl help you simplify the operation and get the intact Brower instance and Page instance , x-crawl does not override it.
+
 ## More
 
 ### Community
 
-**GitHub Discussions:** May be discussed through [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions).
+- **Discord Chat:** Ask questions and discuss live with other x-crawl users via [Discord](https://discord.gg/SF7aaebg4E).
+
+- **GitHub Discussions:** Use [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) for message board-style questions and discussions.
 
 ### Issues
 
 If you have questions, needs, or good suggestions, you can raise them at [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues).
+
+### Sponsor
+
+x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
