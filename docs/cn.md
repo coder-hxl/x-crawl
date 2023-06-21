@@ -21,9 +21,9 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。灵活的使用方式和
 - **🧾 捕获记录** - 对爬取进行捕获记录，并在终端使用彩色字符串提醒。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
-## 跟 puppeteer 的关系
+## 赞助
 
-crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可让 x-crawl 帮助您完成一些操作，结果会将 Brower 实例和 Page 实例暴露出来，您拿到的 Brower 实例和 Page 实例将是完好的，x-crawl 并不会对其重写。
+x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在工作中受益于我开发维护的项目，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。
 
 # 目录
 
@@ -116,9 +116,12 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
     - [CrawlFileSingleResult](#CrawlFileSingleResult)
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
+- [常见问题](#常见问题)
+  - [crawlPage 跟 puppeteer 的关系](#crawlPage-跟-puppeteer-的关系)
 - [更多](#更多)
   - [社区](#社区)
   - [Issues](#Issues)
+  - [赞助](#赞助-1)
 
 ## 安装
 
@@ -1756,9 +1759,13 @@ export interface AnyObject extends Object {
 }
 ```
 
-## 更多
+## 常见问题
 
-### 社区
+### crawlPage API 跟 puppeteer 的关系
+
+crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可让 x-crawl 帮助您简化操作，并拿到完好的 Brower 实例和 Page 实例，x-crawl 并不会对其重写。
+
+## 更多
 
 ### 社区
 
@@ -1769,3 +1776,7 @@ export interface AnyObject extends Object {
 ### Issues
 
 如果您有 **问题 、需求、好的建议** 可以在 [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues) 中提 **Issues** 。
+
+### 赞助
+
+x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在工作中受益于我开发维护的项目，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。
