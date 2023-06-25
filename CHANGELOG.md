@@ -1,3 +1,15 @@
+# [v7.1.2](https://github.com/coder-hxl/x-crawl/compare/v7.1.1...v7.1.2) (2023-06-25)
+
+### 🐞 Bug fixes
+
+- Data parameter option conversion issue for crawlData API.
+
+---
+
+### 🐞 漏洞修复
+
+- crawlData API 的 data 参数选项转换问题。
+
 # [v7.1.1](https://github.com/coder-hxl/x-crawl/compare/v7.1.0...v7.1.1) (2023-06-21)
 
 ### 🐞 Bug fixes
