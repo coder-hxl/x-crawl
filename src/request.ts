@@ -10,7 +10,7 @@ import querystring from 'node:querystring'
 
 import HttpsProxyAgent from 'https-proxy-agent'
 
-import { isUndefined } from './utils'
+import { isObject, isUndefined } from './utils'
 
 import { AnyObject } from './types/common'
 import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './api'
@@ -22,21 +22,30 @@ export interface Request {
   data: Buffer
 }
 
+interface ContentConfig {
+  protocol: 'http:' | 'https:'
+  data: string | undefined
+
+  requestConfig: RequestOptions
+}
+
 function parseHeaders(
-  rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail,
-  config: RequestOptions
+  rawRequestConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail,
+  contentConfig: ContentConfig
 ) {
-  const rawHeaders = rawConfig.headers ?? {}
+  const rawHeaders = rawRequestConfig.headers ?? {}
+  const { requestConfig, data } = contentConfig
+
   const headers: AnyObject = {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
     ...rawHeaders
   }
 
-  if (config.method === 'POST' && rawConfig.data) {
+  if (!isUndefined(data)) {
     const defaultHeaderConfig = [
       { key: 'Content-Type', value: 'application/json' },
-      { key: 'Content-Length', value: Buffer.byteLength(rawConfig.data) }
+      { key: 'Content-Length', value: Buffer.byteLength(data) }
     ]
 
     defaultHeaderConfig.forEach((item) => {
@@ -48,56 +57,54 @@ function parseHeaders(
     })
   }
 
-  return headers
+  requestConfig.headers = headers
 }
 
-function handleRequestConfig(
-  rawConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail
-): RequestOptions {
-  const { protocol, hostname, port, pathname, search } = new Url.URL(
-    rawConfig.url
-  )
-  const isHttp = protocol === 'http:'
+function createContentConfig(
+  rawRequestConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail
+): ContentConfig {
+  const { data: rawData, url, params, proxyUrl } = rawRequestConfig
+  const { protocol, hostname, port, pathname, search } = new Url.URL(url)
 
   let path = pathname
-  if (search || rawConfig.params) {
+  if (search || params) {
     if (search) {
-      path += `${search}${
-        rawConfig.params ? '&' + querystring.stringify(rawConfig.params) : ''
-      }`
+      path += `${search}${params ? '&' + querystring.stringify(params) : ''}`
     } else {
-      path += `?${querystring.stringify(rawConfig.params)}`
+      path += `?${querystring.stringify(params)}`
     }
   }
 
-  const config: RequestOptions = {
-    agent: rawConfig.proxyUrl
-      ? HttpsProxyAgent(rawConfig.proxyUrl)
-      : isHttp
-      ? new http.Agent()
-      : new https.Agent(),
+  const contentConfig: ContentConfig = {
+    requestConfig: {
+      agent: proxyUrl
+        ? HttpsProxyAgent(proxyUrl)
+        : protocol === 'http:'
+        ? new http.Agent()
+        : new https.Agent(),
 
-    protocol,
-    hostname,
-    port,
-    path,
+      protocol,
+      hostname,
+      port,
+      path,
 
-    method: rawConfig.method?.toLocaleUpperCase() ?? 'GET',
-    headers: {},
-    timeout: rawConfig.timeout
+      method: rawRequestConfig.method?.toLocaleUpperCase() ?? 'GET',
+      headers: {},
+      timeout: rawRequestConfig.timeout
+    },
+
+    protocol: protocol as 'http:' | 'https:',
+    data: isObject(rawData) ? JSON.stringify(rawData) : rawData
   }
 
-  config.headers = parseHeaders(rawConfig, config)
+  parseHeaders(rawRequestConfig, contentConfig)
 
-  return config
+  return contentConfig
 }
 
 export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
   return new Promise<Request>((resolve, reject) => {
-    const isDataUndefine = isUndefined(config.data)
-    config.data = !isDataUndefine ? JSON.stringify(config.data) : config.data
-
-    const requestConfig = handleRequestConfig(config)
+    const { requestConfig, protocol, data } = createContentConfig(config)
 
     function handleRes(res: IncomingMessage) {
       const { statusCode, headers } = res
@@ -118,12 +125,10 @@ export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
       })
     }
 
-    let req: ClientRequest
-    if (requestConfig.protocol === 'http:') {
-      req = http.request(requestConfig, handleRes)
-    } else {
-      req = https.request(requestConfig, handleRes)
-    }
+    const req: ClientRequest =
+      protocol === 'http:'
+        ? http.request(requestConfig, handleRes)
+        : https.request(requestConfig, handleRes)
 
     req.on('timeout', () => {
       reject(new Error(`Timeout ${config.timeout}ms`))
@@ -134,7 +139,7 @@ export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
     })
 
     // 其他处理
-    if (requestConfig.method === 'POST' && !isDataUndefine) {
+    if (!isUndefined(data)) {
       req.write(config.data)
     }
 
