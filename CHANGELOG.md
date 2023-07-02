@@ -1,3 +1,15 @@
+# [v7.1.3](https://github.com/coder-hxl/x-crawl/compare/v7.1.2...v7.1.3) (2023-07-02)
+
+### 🐞 Bug fixes
+
+- The crawlData API writes the correct data to the request body and processes the response body..
+
+---
+
+### 🐞 漏洞修复
+
+- crawlData API 将正确的 data 写入请求体以及处理响应体。
+
 # [v7.1.2](https://github.com/coder-hxl/x-crawl/compare/v7.1.1...v7.1.2) (2023-06-25)
 
 ### 🐞 Bug fixes
