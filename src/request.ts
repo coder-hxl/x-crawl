@@ -63,7 +63,14 @@ function parseHeaders(
 function createContentConfig(
   rawRequestConfig: LoaderCrawlDataDetail & LoaderCrawlFileDetail
 ): ContentConfig {
-  const { data: rawData, url, params, proxyUrl } = rawRequestConfig
+  const {
+    data: rawData,
+    url,
+    params,
+    proxyUrl,
+    timeout,
+    method
+  } = rawRequestConfig
   const { protocol, hostname, port, pathname, search } = new Url.URL(url)
 
   let path = pathname
@@ -88,9 +95,9 @@ function createContentConfig(
       port,
       path,
 
-      method: rawRequestConfig.method?.toLocaleUpperCase() ?? 'GET',
+      method: method?.toLocaleUpperCase() ?? 'GET',
       headers: {},
-      timeout: rawRequestConfig.timeout
+      timeout
     },
 
     protocol: protocol as 'http:' | 'https:',
@@ -131,7 +138,7 @@ export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
         : https.request(requestConfig, handleRes)
 
     req.on('timeout', () => {
-      reject(new Error(`Timeout ${config.timeout}ms`))
+      reject(new Error(`Timeout ${requestConfig.timeout}ms`))
     })
 
     req.on('error', (err) => {
@@ -140,7 +147,7 @@ export function request(config: LoaderCrawlDataDetail & LoaderCrawlFileDetail) {
 
     // 其他处理
     if (!isUndefined(data)) {
-      req.write(config.data)
+      req.write(data)
     }
 
     req.end()
