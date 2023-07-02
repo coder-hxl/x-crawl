@@ -847,12 +847,11 @@ function dataSingleResultHandle(
   if (isSuccess && detailTargetResult) {
     const contentType = detailTargetResult.headers['content-type'] ?? ''
 
-    const data =
-      contentType === 'application/json'
-        ? JSON.parse(detailTargetResult.data.toString())
-        : contentType.includes('text')
-        ? detailTargetResult.data.toString()
-        : detailTargetResult.data
+    const data = contentType.includes('application/json')
+      ? JSON.parse(detailTargetResult.data.toString())
+      : contentType.includes('text')
+      ? detailTargetResult.data.toString()
+      : detailTargetResult.data
 
     result.data = { ...detailTargetResult, data }
   }
