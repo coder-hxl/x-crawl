@@ -59,8 +59,8 @@ devDependencies:
     specifier: ^3.10.1
     version: 3.10.1
   rollup-plugin-typescript2:
-    specifier: ^0.34.1
-    version: 0.34.1(rollup@3.10.1)(typescript@5.1.6)
+    specifier: ^0.35.0
+    version: 0.35.0(rollup@3.10.1)(typescript@5.1.6)
   ts-jest:
     specifier: ^29.0.5
     version: 29.0.5(@babel/core@7.20.12)(jest@29.3.1)(typescript@5.1.6)
@@ -4025,8 +4025,8 @@ packages:
       glob: 7.2.3
     dev: true
 
-  /rollup-plugin-typescript2@0.34.1(rollup@3.10.1)(typescript@5.1.6):
-    resolution: {integrity: sha512-P4cHLtGikESmqi1CA+tdMDUv8WbQV48mzPYt77TSTOPJpERyZ9TXdDgjSDix8Fkqce6soYz3+fa4lrC93IEkcw==}
+  /rollup-plugin-typescript2@0.35.0(rollup@3.10.1)(typescript@5.1.6):
+    resolution: {integrity: sha512-szcIO9hPUx3PhQl91u4pfNAH2EKbtrXaES+m163xQVE5O1CC0ea6YZV/5woiDDW3CR9jF2CszPrKN+AFiND0bg==}
     peerDependencies:
       rollup: '>=1.26.3'
       typescript: '>=2.4.0'
