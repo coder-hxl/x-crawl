@@ -117,7 +117,7 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
   - [API Other](#API-Other)
     - [AnyObject](#AnyObject)
 - [常见问题](#常见问题)
-  - [crawlPage 跟 puppeteer 的关系](#crawlPage-跟-puppeteer-的关系)
+  - [crawlPage API 跟 puppeteer 的关系](#crawlPage-API-跟-puppeteer-的关系)
 - [更多](#更多)
   - [社区](#社区)
   - [Issues](#Issues)
@@ -140,56 +140,52 @@ npm install x-crawl
 import xCrawl from 'x-crawl'
 
 // 2.创建一个爬虫实例
-const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 2000, min: 1000 } })
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   // 调用 crawlPage API 来爬取页面
-  const res = await myXCrawl.crawlPage({
+  const pageResults = await myXCrawl.crawlPage({
     targets: [
-      'https://www.airbnb.cn/s/experiences',
+      'https://www.airbnb.cn/s/*/experiences',
       'https://www.airbnb.cn/s/plus_homes'
     ],
     viewport: { width: 1920, height: 1080 }
   })
 
-  // 存放图片 URL 到 targets
-  const targets = []
-  const elSelectorMap = ['._fig15y', '._aov0j6']
-  for (const item of res) {
+  // 通过遍历爬取页面结果获取图片 URL
+  const imgUrls = []
+  for (const item of pageResults) {
     const { id } = item
     const { page } = item.data
+    const elSelector = id === 1 ? '.i9cqrtb' : '.c4mnd7m'
 
-    // 等待页面加载完成
-    await new Promise((r) => setTimeout(r, 300))
+    // 等待页面元素出现
+    await page.waitForSelector(elSelector)
 
     // 获取页面图片的 URL
-    const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) => {
-      return imgEls.map((item) => item.src)
-    })
-    targets.push(...urls)
+    const urls = await page.$$eval(`${elSelector} picture img`, (imgEls) =>
+      imgEls.map((item) => item.src)
+    )
+    imgUrls.push(...urls.slice(0, 8))
 
     // 关闭页面
     page.close()
   }
 
   // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({ targets, storeDirs: './upload' })
+  await myXCrawl.crawlFile({ targets: imgUrls, storeDirs: './upload' })
 })
 ```
 
 运行效果:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler.png" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif" />
 </div>
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/cn/crawler-result.png" />
-</div>
-
-**注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。这里只是为了演示如何使用 x-crawl 。
+**注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。网站的类名可能会有变更，这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
 

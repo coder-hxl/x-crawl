@@ -135,63 +135,59 @@ npm install x-crawl
 Take the automatic acquisition of some photos of experiences and homes around the world every day as an example:
 
 ```js
-// 1.Import module ES/CJS
+// 1. Import module ES/CJS
 import xCrawl from 'x-crawl'
 
-// 2.Create a crawler instance
-const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 3000, min: 2000 } })
+// 2. Create a crawler instance
+const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 2000, min: 1000 } })
 
-// 3.Set the crawling task
+// 3. Set the crawling task
 /*
   Call the startPolling API to start the polling function,
   and the callback function will be called every other day
 */
 myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
-  // Call crawlPage API to crawl Page
-  const res = await myXCrawl.crawlPage({
+  // Call the crawlPage API to crawl the page
+  const pageResults = await myXCrawl.crawlPage({
     targets: [
-      'https://www.airbnb.cn/s/experiences',
+      'https://www.airbnb.cn/s/*/experiences',
       'https://www.airbnb.cn/s/plus_homes'
     ],
     viewport: { width: 1920, height: 1080 }
   })
 
-  // Store the image URL to targets
-  const targets = []
-  const elSelectorMap = ['._fig15y', '._aov0j6']
-  for (const item of res) {
+  // Obtain the image URL by traversing the crawled page results
+  const imgUrls = []
+  for (const item of pageResults) {
     const { id } = item
     const { page } = item.data
+    const elSelector = id === 1 ? '.i9cqrtb' : '.c4mnd7m'
 
-    // Wait for the page to load
-    await new Promise((r) => setTimeout(r, 300))
+    // wait for the page element to appear
+    await page.waitForSelector(elSelector)
 
-    // Gets the URL of the page image
-    const urls = await page.$$eval(`${elSelectorMap[id - 1]} img`, (imgEls) => {
-      return imgEls.map((item) => item.src)
-    })
-    targets.push(...urls)
+    // Get the URL of the page image
+    const urls = await page.$$eval(`${elSelector} picture img`, (imgEls) =>
+      imgEls.map((item) => item.src)
+    )
+    imgUrls.push(...urls.slice(0, 8))
 
-    // Close page
+    // close the page
     page.close()
   }
 
-  // Call the crawlFile API to crawl pictures
-  myXCrawl.crawlFile({ targets, storeDirs: './upload' })
+  // Call crawlFile API to crawl pictures
+  await myXCrawl.crawlFile({ targets: imgUrls, storeDirs: './upload' })
 })
 ```
 
 running result:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler.png" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif" />
 </div>
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/en/crawler-result.png" />
-</div>
-
-**Note:** Do not crawl at will, you can check the **robots.txt** protocol before crawling. This is just to demonstrate how to use x-crawl.
+**Note:** Please do not crawl randomly, you can check the **robots.txt** protocol before crawling. The class name of the website may change, this is just to demonstrate how to use x-crawl.
 
 ## Core Concepts
 
