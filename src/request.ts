@@ -8,7 +8,7 @@ import https from 'node:https'
 import Url from 'node:url'
 import querystring from 'node:querystring'
 
-import HttpsProxyAgent from 'https-proxy-agent'
+import { HttpsProxyAgent } from 'https-proxy-agent'
 
 import { isObject, isUndefined } from './utils'
 
@@ -85,7 +85,7 @@ function createContentConfig(
   const contentConfig: ContentConfig = {
     requestConfig: {
       agent: proxyUrl
-        ? HttpsProxyAgent(proxyUrl)
+        ? new HttpsProxyAgent(proxyUrl)
         : protocol === 'http:'
         ? new http.Agent()
         : new https.Agent(),
