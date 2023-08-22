@@ -11,7 +11,7 @@ import { isUndefined } from './utils'
 const loaderBaseConfigDefault: LoaderXCrawlConfig = {
   mode: 'async',
   enableRandomFingerprint: true,
-  timeout: 100,
+  timeout: 10000,
   maxRetry: 0
 }
 
