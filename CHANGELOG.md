@@ -1,8 +1,30 @@
+# [v8.0.0](https://github.com/coder-hxl/x-crawl/compare/v7.1.3...v8.0.0) (2023-08-22)
+
+### 🚨 Breaking Changes
+
+- update dependencies
+
+  - puppeteer from 19.10.0 to 21.1.0.
+  - https-proxy-agent upgraded from 5.0.1 to 7.0.1.
+
+- XCrawlConfig.crawlPage's launchBrowser option renamed to puppeteerLaunch .
+
+---
+
+### 🚨 重大改变
+
+- 更新依赖
+
+  - puppeteer 从 19.10.0 升至 21.1.0 。
+  - https-proxy-agent 从 5.0.1 升至 7.0.1 。
+
+- XCrawlConfig.crawlPage 的 launchBrowser 选项更名为 puppeteerLaunch 。
+
 # [v7.1.3](https://github.com/coder-hxl/x-crawl/compare/v7.1.2...v7.1.3) (2023-07-02)
 
 ### 🐞 Bug fixes
 
-- The crawlData API writes the correct data to the request body and processes the response body..
+- The crawlData API writes the correct data to the request body and processes the response body.
 
 ---
 
