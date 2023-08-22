@@ -20,7 +20,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
   baseUrl?: string
   intervalTime?: IntervalTime
   crawlPage?: {
-    launchBrowser?: PuppeteerLaunchOptions
+    puppeteerLaunch?: PuppeteerLaunchOptions
   }
 }
 

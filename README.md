@@ -331,7 +331,7 @@ import xCrawl from 'x-crawl'
 const myXCrawl = xCrawl({
   maxRetry: 3,
   // Cancel running the browser in headless mode
-  crawlPage: { launchBrowser: { headless: false } }
+  crawlPage: { puppeteerLaunch: { headless: false } }
 })
 
 myXCrawl.crawlPage('https://www.example.com').then((res) => {})
@@ -1298,7 +1298,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
   baseUrl?: string
   intervalTime?: IntervalTime
   crawlPage?: {
-    launchBrowser?: PuppeteerLaunchOptions // puppeteer
+    puppeteerLaunch?: PuppeteerLaunchOptions // puppeteer
   }
 }
 ```

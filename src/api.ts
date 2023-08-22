@@ -982,7 +982,7 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
       createBrowserPending = puppeteer
-        .launch(xCrawlConfig.crawlPage?.launchBrowser)
+        .launch(xCrawlConfig.crawlPage?.puppeteerLaunch)
         .then((result) => {
           browser = result
         })

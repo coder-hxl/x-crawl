@@ -8,26 +8,24 @@ import {
 import { LoaderXCrawlConfig, XCrawlConfig, XCrawlInstance } from './types'
 import { isUndefined } from './utils'
 
+const loaderBaseConfigDefault: LoaderXCrawlConfig = {
+  mode: 'async',
+  enableRandomFingerprint: true,
+  timeout: 10000,
+  maxRetry: 0
+}
+
 function loaderBaseConfig(
   baseConfig: XCrawlConfig | undefined
 ): LoaderXCrawlConfig {
-  const loaderBaseConfig = baseConfig ? baseConfig : {}
+  const loaderBaseConfig: any = baseConfig ? baseConfig : {}
 
-  if (isUndefined(loaderBaseConfig.mode)) {
-    loaderBaseConfig.mode = 'async'
-  }
-
-  if (isUndefined(loaderBaseConfig.enableRandomFingerprint)) {
-    loaderBaseConfig.enableRandomFingerprint = true
-  }
-
-  if (isUndefined(baseConfig?.timeout)) {
-    loaderBaseConfig.timeout = 10000
-  }
-
-  if (isUndefined(baseConfig?.maxRetry)) {
-    loaderBaseConfig.maxRetry = 0
-  }
+  Object.keys(loaderBaseConfigDefault).forEach((key) => {
+    if (isUndefined(loaderBaseConfig[key])) {
+      loaderBaseConfig[key] =
+        loaderBaseConfigDefault[key as keyof LoaderXCrawlConfig]
+    }
+  })
 
   return loaderBaseConfig as LoaderXCrawlConfig
 }

@@ -181,9 +181,8 @@ export async function controller<
             )!.state = false
 
             // 寻找新代理 URL
-            const newProxyUrl = proxyDetails.find(
-              (detaile) => detaile.state
-            )?.url
+            const newProxyUrl = proxyDetails.find((detaile) => detaile.state)
+              ?.url
 
             // 使用新代理 URL
             if (!isUndefined(newProxyUrl)) {
