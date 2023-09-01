@@ -1,3 +1,19 @@
+# [v8.1.0](https://github.com/coder-hxl/x-crawl/compare/v8.0.0...v8.1.0) (2023-09-01)
+
+### 🚀 Features
+
+- Limit Node.JS versions to 16.0.0 and above.
+- Expose the corresponding puppeteer version type.
+- Reduce package size and support ESM and cjs by packaging output a CJS file.
+
+---
+
+### 🚀 特征
+
+- 对 Node.JS 版本进行限制，只有 16.0.0 版本以上才能使用。
+- 将对应的 puppeteer 版本类型暴露出来。
+- 减少包体积，通过打包输出一个 cjs 文件支持 ESM 和 CJS 。
+
 # [v8.0.0](https://github.com/coder-hxl/x-crawl/compare/v7.1.3...v8.0.0) (2023-08-22)
 
 ### 🚨 Breaking Changes

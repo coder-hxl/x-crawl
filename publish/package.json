@@ -1,6 +1,6 @@
 {
   "name": "x-crawl",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible Node.js multifunctional crawler library.",
   "license": "MIT",
@@ -15,24 +15,31 @@
     "flexible",
     "multifunction"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "homepage": "https://github.com/coder-hxl/x-crawl/tree/main/publish",
   "repository": {
     "type": "git",
     "url": "https://github.com/coder-hxl/x-crawl"
   },
-  "scripts": {},
+  "main": "index.js",
+  "types": "dist/x-crawl.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./index.js"
+      }
     }
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "dependencies": {
     "chalk": "4.1.2",
     "https-proxy-agent": "^7.0.1",
     "puppeteer": "21.1.0"
-  },
-  "devDependencies": {}
+  }
 }
