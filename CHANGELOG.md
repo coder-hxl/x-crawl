@@ -1,3 +1,15 @@
+# [v8.1.1](https://github.com/coder-hxl/x-crawl/compare/v8.1.0...v8.1.1) (2023-09-01)
+
+### 🐞 Bug fixes
+
+- default export type.
+
+---
+
+### 🐞 漏洞修复
+
+- 默认导出的类型。
+
 # [v8.1.0](https://github.com/coder-hxl/x-crawl/compare/v8.0.0...v8.1.0) (2023-09-01)
 
 ### 🚀 Features
