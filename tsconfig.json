@@ -15,8 +15,8 @@
     "baseUrl": ".",
     "paths": {
       "src/*": ["./src"],
-      "publish/*": ["./src"]
+      "publish/*": ["./publish"]
     }
   },
-  "include": ["src/**/*", "test/**/*", "publish/dist/index.d.ts"]
+  "include": ["src/**/*", "test/**/*", "publish/**/*"]
 }

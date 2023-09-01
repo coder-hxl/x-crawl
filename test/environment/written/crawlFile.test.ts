@@ -12,7 +12,7 @@ let xCrawl: typeof IXCrawl
 if (environment === 'dev') {
   xCrawl = require('src/').default
 } else if (environment === 'pro') {
-  xCrawl = require('publish/dist')
+  xCrawl = require('publish/')
 }
 
 jest.setTimeout(60000)
