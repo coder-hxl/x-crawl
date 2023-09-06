@@ -182,7 +182,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 运行效果:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
 
 **注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。网站的类名可能会有变更，这里只是为了演示如何使用 x-crawl 。
