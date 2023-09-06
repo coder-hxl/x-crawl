@@ -184,7 +184,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 running result:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example-gif.gif" />
 </div>
 
 **Note:** Please do not crawl randomly, you can check the **robots.txt** protocol before crawling. The class name of the website may change, this is just to demonstrate how to use x-crawl.
