@@ -1,3 +1,15 @@
+# [v8.2.0](https://github.com/coder-hxl/x-crawl/compare/v8.1.1...v8.2.0) (2023-09-07)
+
+### 🚀 Features
+
+- Added crawlHTML API for crawling static HTML pages.
+
+---
+
+### 🚀 特征
+
+- 新增 crawlHTML API ，用于爬取静态 HTML 页面。
+
 # [v8.1.1](https://github.com/coder-hxl/x-crawl/compare/v8.1.0...v8.1.1) (2023-09-01)
 
 ### 🐞 Bug fixes
