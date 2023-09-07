@@ -33,7 +33,10 @@ import {
   CrawlFileAdvancedConfig,
   CrawlDataAdvancedConfig,
   IntervalTime,
-  DetailTargetFingerprintCommon
+  DetailTargetFingerprintCommon,
+  CrawlHTMLSingleResult,
+  CrawlHTMLDetailTargetConfig,
+  CrawlHTMLAdvancedConfig
 } from './types/api'
 import { LoaderXCrawlConfig } from './types'
 import { fingerprints } from './default'
@@ -42,7 +45,7 @@ import { fingerprints } from './default'
 
 // Extra config
 export interface ExtraCommonConfig {
-  type: 'page' | 'data' | 'file'
+  type: 'page' | 'html' | 'data' | 'file'
 
   intervalTime: IntervalTime | undefined
 }
@@ -51,6 +54,12 @@ interface ExtraPageConfig extends ExtraCommonConfig {
   browser: Browser
   onCrawlItemComplete:
     | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
+    | undefined
+}
+
+interface ExtraHTMLConfig extends ExtraCommonConfig {
+  onCrawlItemComplete:
+    | ((crawlHTMLSingleResult: CrawlHTMLSingleResult) => void)
     | undefined
 }
 
@@ -101,6 +110,10 @@ export type LoaderCrawlPageDetail = LoaderCommonConfig &
   LoaderHasConfig &
   CrawlPageDetailTargetConfig
 
+export type LoaderCrawlHTMLDetail = LoaderCommonConfig &
+  LoaderHasConfig &
+  CrawlHTMLDetailTargetConfig
+
 export type LoaderCrawlDataDetail = LoaderCommonConfig &
   LoaderHasConfig &
   CrawlDataDetailTargetConfig
@@ -112,6 +125,10 @@ export type LoaderCrawlFileDetail = LoaderCommonConfig &
 //  AdvancedDetailTargets
 interface CrawlPageAdvancedDetailTargetsConfig extends CrawlPageAdvancedConfig {
   detailTargets: CrawlPageDetailTargetConfig[]
+}
+
+interface CrawlHTMLAdvancedDetailTargetsConfig extends CrawlHTMLAdvancedConfig {
+  detailTargets: CrawlHTMLDetailTargetConfig[]
 }
 
 interface CrawlDataAdvancedDetailTargetsConfig<T>
@@ -132,6 +149,17 @@ interface CrawlPageConfig {
 
   onCrawlItemComplete:
     | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
+    | undefined
+}
+
+interface CrawlHTMLConfig {
+  detailTargets: LoaderCrawlHTMLDetail[]
+  intervalTime: IntervalTime | undefined
+
+  selectFingerprintIndexs: number[]
+
+  onCrawlItemComplete:
+    | ((crawlHTMLSingleResult: CrawlHTMLSingleResult) => void)
     | undefined
 }
 
@@ -171,6 +199,12 @@ type UniteCrawlPageConfig =
   | CrawlPageDetailTargetConfig
   | (string | CrawlPageDetailTargetConfig)[]
   | CrawlPageAdvancedConfig
+
+type UniteCrawlHTMLConfig =
+  | string
+  | CrawlHTMLDetailTargetConfig
+  | (string | CrawlHTMLDetailTargetConfig)[]
+  | CrawlHTMLAdvancedConfig
 
 type UniteCrawlDataConfig<T> =
   | string
@@ -361,9 +395,14 @@ function loaderCommonConfigToCrawlConfig(
   xCrawlConfig: LoaderXCrawlConfig,
   advancedDetailTargetsConfig:
     | CrawlPageAdvancedDetailTargetsConfig
+    | CrawlHTMLAdvancedDetailTargetsConfig
     | CrawlDataAdvancedDetailTargetsConfig<any>
     | CrawlFileAdvancedDetailTargetsConfig,
-  crawlConfig: CrawlPageConfig | CrawlDataConfig | CrawlFileConfig
+  crawlConfig:
+    | CrawlPageConfig
+    | CrawlHTMLConfig
+    | CrawlDataConfig
+    | CrawlFileConfig
 ) {
   // 1.detailTargets
   crawlConfig.detailTargets = advancedDetailTargetsConfig.detailTargets.map(
@@ -565,6 +604,55 @@ function createCrawlPageConfig(
   })
 
   return crawlPageConfig
+}
+
+function createCrawlHTMLConfig(
+  xCrawlConfig: LoaderXCrawlConfig,
+  originalConfig: UniteCrawlHTMLConfig
+): CrawlHTMLConfig {
+  const crawlHTMLConfig: CrawlHTMLConfig = {
+    detailTargets: [],
+    intervalTime: undefined,
+
+    selectFingerprintIndexs: [],
+
+    onCrawlItemComplete: undefined
+  }
+
+  let advancedDetailTargetsConfig: CrawlHTMLAdvancedDetailTargetsConfig = {
+    targets: [],
+    detailTargets: []
+  }
+
+  if (isObject(originalConfig) && Object.hasOwn(originalConfig, 'targets')) {
+    // CrawlHTMLAdvancedConfig
+    const { targets } = originalConfig as CrawlHTMLAdvancedConfig
+
+    advancedDetailTargetsConfig = {
+      ...advancedDetailTargetsConfig,
+      ...(originalConfig as CrawlHTMLAdvancedConfig)
+    }
+
+    advancedDetailTargetsConfig.detailTargets =
+      transformTargetToDetailTargets(targets)
+  } else {
+    // string | CrawlHTMLDetailTargetConfig | (string | CrawlHTMLDetailTargetConfig)[]
+
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
+      originalConfig as
+        | string
+        | CrawlDataDetailTargetConfig
+        | (string | CrawlDataDetailTargetConfig)[]
+    )
+  }
+
+  loaderCommonConfigToCrawlConfig(
+    xCrawlConfig,
+    advancedDetailTargetsConfig,
+    crawlHTMLConfig
+  )
+
+  return crawlHTMLConfig
 }
 
 function createCrawlDataConfig<T>(
@@ -772,9 +860,12 @@ async function pageSingleCrawlHandle(
   }
 }
 
-async function dataAndFileSingleCrawlHandle(
-  device: Device<LoaderCrawlDataDetail | LoaderCrawlFileDetail, Request>,
-  extraConfig: ExtraDataConfig<any> | ExtraFileConfig
+async function useRequestFnSingleCrawlHandle(
+  device: Device<
+    LoaderCrawlHTMLDetail | LoaderCrawlDataDetail | LoaderCrawlFileDetail,
+    Request
+  >,
+  extraConfig: ExtraHTMLConfig | ExtraDataConfig<any> | ExtraFileConfig
 ) {
   const { detailTargetConfig, crawlErrorQueue, maxRetry, retryCount } = device
   const notAllowRetry = maxRetry === retryCount
@@ -800,7 +891,9 @@ async function dataAndFileSingleCrawlHandle(
   if (isSuccess || notAllowRetry) {
     device.isHandle = true
 
-    if (extraConfig.type === 'data') {
+    if (extraConfig.type === 'html') {
+      HTMLSingleResultHandle(device, extraConfig as ExtraHTMLConfig)
+    } else if (extraConfig.type === 'data') {
       dataSingleResultHandle(device, extraConfig as ExtraDataConfig<any>)
     } else if (extraConfig.type === 'file') {
       fileSingleResultHandle(device, extraConfig as ExtraFileConfig)
@@ -832,6 +925,27 @@ function pageSingleResultHandle(
 
   if (onCrawlItemComplete) {
     onCrawlItemComplete(device.result as CrawlPageSingleResult)
+  }
+}
+
+function HTMLSingleResultHandle(
+  device: Device<LoaderCrawlHTMLDetail, Request>,
+  extraConfig: ExtraHTMLConfig
+) {
+  const { isSuccess, detailTargetResult, result } = device
+  const { onCrawlItemComplete } = extraConfig
+
+  handleResultEssentialOtherValue(device)
+
+  if (isSuccess && detailTargetResult) {
+    const { data, headers, statusCode } = detailTargetResult
+    const html = data.toString()
+
+    result.data = { statusCode, headers, html }
+  }
+
+  if (onCrawlItemComplete) {
+    onCrawlItemComplete(result as CrawlHTMLSingleResult)
   }
 }
 
@@ -1029,6 +1143,62 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
   return crawlPage
 }
 
+export function createCrawlHTML(xCrawlConfig: LoaderXCrawlConfig) {
+  function crawlHTML(
+    config: string,
+    callback?: (result: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  function crawlHTML(
+    config: CrawlHTMLDetailTargetConfig,
+    callback?: (result: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  function crawlHTML(
+    config: (string | CrawlHTMLDetailTargetConfig)[],
+    callback?: (result: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+
+  function crawlHTML(
+    config: CrawlHTMLAdvancedConfig,
+    callback?: (result: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+
+  async function crawlHTML(
+    config: UniteCrawlHTMLConfig,
+    callback?: (result: any) => void
+  ): Promise<CrawlHTMLSingleResult | CrawlHTMLSingleResult[]> {
+    const { detailTargets, intervalTime, onCrawlItemComplete } =
+      createCrawlHTMLConfig(xCrawlConfig, config)
+
+    const extraConfig: ExtraHTMLConfig = {
+      type: 'html',
+      intervalTime,
+      onCrawlItemComplete
+    }
+
+    const crawlResultArr = (await controller(
+      xCrawlConfig.mode,
+      detailTargets,
+      extraConfig,
+      useRequestFnSingleCrawlHandle
+    )) as CrawlHTMLSingleResult[]
+
+    const crawlResult =
+      isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
+        ? crawlResultArr
+        : crawlResultArr[0]
+
+    if (callback) {
+      callback(crawlResult)
+    }
+
+    return crawlResult
+  }
+
+  return crawlHTML
+}
+
 export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   function crawlData<T = any>(
     config: string,
@@ -1067,7 +1237,7 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle
+      useRequestFnSingleCrawlHandle
     )) as CrawlDataSingleResult<T>[]
 
     const crawlResult =
@@ -1127,7 +1297,7 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       xCrawlConfig.mode,
       detailTargets,
       extraConfig,
-      dataAndFileSingleCrawlHandle
+      useRequestFnSingleCrawlHandle
     )) as CrawlFileSingleResult[]
 
     const { saveFilePendingQueue, saveFileErrorArr } = extraConfig

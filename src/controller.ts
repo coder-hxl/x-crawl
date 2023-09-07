@@ -5,6 +5,7 @@ import {
   ExtraCommonConfig,
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
+  LoaderCrawlHTMLDetail,
   LoaderCrawlPageDetail,
   ProxyDetails
 } from './api'
@@ -25,6 +26,7 @@ import { CrawlCommonResult } from './types/api'
 
 export type CrawlDetail =
   | LoaderCrawlPageDetail
+  | LoaderCrawlHTMLDetail
   | LoaderCrawlDataDetail
   | LoaderCrawlFileDetail
 

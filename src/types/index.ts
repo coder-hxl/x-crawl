@@ -11,7 +11,10 @@ import {
   CrawlDataAdvancedConfig,
   CrawlPageDetailTargetConfig,
   CrawlPageAdvancedConfig,
-  CrawlCommonConfig
+  CrawlCommonConfig,
+  CrawlHTMLSingleResult,
+  CrawlHTMLDetailTargetConfig,
+  CrawlHTMLAdvancedConfig
 } from './api'
 
 export interface XCrawlConfig extends CrawlCommonConfig {
@@ -52,6 +55,28 @@ export interface XCrawlInstance {
       config: CrawlPageAdvancedConfig,
       callback?: (result: CrawlPageSingleResult[]) => void
     ): Promise<CrawlPageSingleResult[]>
+  }
+
+  crawlHTML: {
+    (
+      config: string,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: CrawlHTMLDetailTargetConfig,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: (string | CrawlHTMLDetailTargetConfig)[],
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
+
+    (
+      config: CrawlHTMLAdvancedConfig,
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
   }
 
   crawlData: {
