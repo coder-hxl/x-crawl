@@ -1,6 +1,7 @@
 import {
   createCrawlData,
   createCrawlFile,
+  createCrawlHTML,
   createCrawlPage,
   startPolling
 } from './api'
@@ -33,6 +34,7 @@ function loaderBaseConfig(
 function createnInstance(baseConfig: LoaderXCrawlConfig): XCrawlInstance {
   const instance: XCrawlInstance = {
     crawlPage: createCrawlPage(baseConfig),
+    crawlHTML: createCrawlHTML(baseConfig),
     crawlData: createCrawlData(baseConfig),
     crawlFile: createCrawlFile(baseConfig),
     startPolling

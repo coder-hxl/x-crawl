@@ -21,7 +21,7 @@ jest.setTimeout(60000)
 async function writtenString() {
   const testXCrawl = xCrawl()
 
-  const res = await testXCrawl.crawlPage('https://gitee.com/coderhxl')
+  const res = await testXCrawl.crawlPage('http://localhost:8888/html')
 
   await res.data.browser.close()
 
@@ -33,7 +33,7 @@ async function writtenCrawlPageDetailConfig() {
   const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlPage({
-    url: 'https://github.com/coder-hxl/x-crawl'
+    url: 'http://localhost:8888/html'
   })
 
   await res.data.browser.close()
@@ -46,8 +46,8 @@ async function writtenStringAndCrawlPageDetailConfigArr() {
   const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
   const res = await testXCrawl.crawlPage([
-    'https://github.com/coder-hxl/x-crawl',
-    { url: 'https://github.com/coder-hxl/x-crawl' }
+    'http://localhost:8888/html',
+    { url: 'http://localhost:8888/html' }
   ])
 
   await res[0].data.browser.close()
@@ -61,8 +61,8 @@ async function writtenCrawlPageAdvancedConfig() {
 
   const res = await testXCrawl.crawlPage({
     targets: [
-      'https://github.com/coder-hxl/x-crawl',
-      { url: 'https://github.com/coder-hxl/x-crawl' }
+      'http://localhost:8888/html',
+      { url: 'http://localhost:8888/html' }
     ]
   })
 
@@ -75,14 +75,14 @@ async function writtenCrawlPageAdvancedConfig() {
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
   const testXCrawl = xCrawl({
-    baseUrl: 'https://github.com',
+    baseUrl: 'http://localhost:8888',
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
   })
 
-  const res = await testXCrawl.crawlPage(['/coder-hxl', '/coder-hxl/x-crawl'])
+  const res = await testXCrawl.crawlPage(['/html', '/html'])
 
   await res[0].data.browser.close()
 
@@ -91,10 +91,10 @@ async function loaderBaseConfig() {
 
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
-  const testXCrawl = xCrawl({ baseUrl: 'https://github.com' })
+  const testXCrawl = xCrawl({ baseUrl: 'http://localhost:8888' })
 
   const res = await testXCrawl.crawlPage({
-    targets: ['/coder-hxl', '/coder-hxl/x-crawl'],
+    targets: ['/html', '/html'],
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },

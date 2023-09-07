@@ -95,6 +95,13 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
     | null
 }
 
+export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+
 export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
   url: string
   method?: Method
@@ -108,7 +115,6 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject | null
-  priority?: number
   storeDir?: string | null
   fileName?: string | null
   extension?: string | null
@@ -131,6 +137,16 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
   viewport?: Viewport
 
   onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
+}
+
+export interface CrawlHTMLAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlHTMLDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprints?: DetailTargetFingerprintCommon[]
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleResult: CrawlHTMLSingleResult) => void
 }
 
 export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
@@ -186,6 +202,14 @@ export interface CrawlPageSingleResult extends CrawlCommonResult {
     response: HTTPResponse | null
     page: Page
   }
+}
+
+export interface CrawlHTMLSingleResult extends CrawlCommonResult {
+  data: {
+    statusCode: number | undefined
+    headers: IncomingHttpHeaders
+    html: string
+  } | null
 }
 
 export interface CrawlDataSingleResult<D> extends CrawlCommonResult {

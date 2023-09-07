@@ -16,20 +16,20 @@ if (environment === 'dev') {
 
 jest.setTimeout(60000)
 
-async function testCrawlData() {
-  const testXCrawl = xCrawl()
+async function testCrawlHTML() {
+  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
 
-  const res = await testXCrawl.crawlData({
+  const res = await testXCrawl.crawlHTML({
     targets: [
-      'http://localhost:8888/data',
-      { url: 'http://localhost:8888/data' }
+      'http://localhost:8888/html',
+      { url: 'http://localhost:8888/html' }
     ]
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
 
-test('crawlData', async () => {
-  console.log(chalk.bgGreen('================ crawlData ================'))
-  await expect(testCrawlData()).resolves.toBe(true)
+test('crawlHTML', async () => {
+  console.log(chalk.bgGreen('================ crawlHTML ================'))
+  await expect(testCrawlHTML()).resolves.toBe(true)
 })

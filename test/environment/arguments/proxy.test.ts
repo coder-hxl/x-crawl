@@ -20,7 +20,7 @@ async function proxy() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlPage({
-    targets: ['https://', 'http://localhost:8888'],
+    targets: ['https://', 'http://localhost:8888/html'],
     maxRetry: 3,
     proxy: {
       urls: ['http://localhost:129032', 'http://localhost:14892'],

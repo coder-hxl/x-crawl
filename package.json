@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "x-crawl",
-  "version": "8.1.1",
+  "version": "8.2.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible Node.js multifunctional crawler library.",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "build-dts": "tsc && prettier --write ./publish/src",
     "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
     "start": "rollup --config script/start.mjs",
-    "start-server": "rollup --config script/server.mjs",
+    "start-server": "rollup --watch --config script/server.mjs",
     "test-dev": "jest test/environment/test.ts dev",
     "test-pro": "jest test/environment/test.ts pro",
     "test-crawlPage": "jest test/environment/api/crawlPage.test.ts dev",

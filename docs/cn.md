@@ -9,16 +9,15 @@ x-crawl 是一个灵活的 Node.js 多功能爬虫库。灵活的使用方式和
 ## 特征
 
 - **🔥 异步同步** - 只需更改一下 mode 属性即可切换异步或同步爬取模式。
-- **⚙️ 多种用途** - 可爬页面、爬接口、爬文件以及轮询爬，满足各种场景需求。
-- **☁️ 爬取 SPA** - 爬取 SPA（单页应用程序）生成预渲染内容（即“SSR”（服务器端渲染））。
-- **⚒️ 控制页面** - 自动化表单提交、UI 测试、键盘输入、事件操作、打开浏览器等。
+- **⚙️ 多种用途** - 支持爬动态页面、静态页面、接口数据、文件以及轮询操作。
+- **⚒️ 控制页面** - 爬取动态页面支持自动化操作、键盘输入、事件操作等。
 - **🖋️ 写法灵活** - 同种爬取 API 适配多种配置，每种配置方式都非常独特。
 - **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，产生或避免高并发爬取。
 - **🔄 失败重试** - 避免因短暂的问题而造成爬取失败，自定义重试次数。
 - **➡️ 轮换代理** - 配合失败重试，自定义错误次数以及 HTTP 状态码自动轮换代理。
 - **👀 设备指纹** - 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
 - **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前爬取。
-- **🧾 捕获记录** - 对爬取进行捕获记录，并在终端使用彩色字符串提醒。
+- **🧾 爬取记录** - 对爬取进行记录，并在终端使用彩色字符串提醒。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 赞助
@@ -41,12 +40,15 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
     - [生命周期](#生命周期)
       - [onCrawlItemComplete](#onCrawlItemComplete)
     - [打开浏览器](#打开浏览器)
-  - [爬取接口](#爬取接口)
+  - [爬取 HTML](#爬取-html)
     - [生命周期](#生命周期-1)
       - [onCrawlItemComplete](#onCrawlItemComplete-1)
-  - [爬取文件](#爬取文件)
+  - [爬取接口](#爬取接口)
     - [生命周期](#生命周期-2)
       - [onCrawlItemComplete](#onCrawlItemComplete-2)
+  - [爬取文件](#爬取文件)
+    - [生命周期](#生命周期-3)
+      - [onCrawlItemComplete](#onCrawlItemComplete-3)
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
   - [启动轮询](#启动轮询)
   - [配置优先级](#配置优先级)
@@ -69,34 +71,43 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
       - [详细目标配置 - CrawlPageDetailTargetConfig](#详细目标配置---CrawlPageDetailTargetConfig)
       - [混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]](#混合目标数组配置---string--CrawlPageDetailTargetConfig)
       - [进阶配置 - CrawlPageAdvancedConfig](#进阶配置---CrawlPageAdvancedConfig)
-  - [crawlData](#crawlData)
+  - [crawlHTML](#crawlHTML)
     - [类型](#类型-2)
     - [示例](#示例-3)
     - [配置](#配置-1)
       - [简单目标配置 - string](#简单目标配置---string-1)
+      - [详细目标配置 - CrawlHTMLDetailTargetConfig](#详细目标配置---CrawlHTMLDetailTargetConfig)
+      - [混合目标数组配置 - (string | CrawlHTMLDetailTargetConfig)[]](#混合目标数组配置---string--CrawlHTMLDetailTargetConfig)
+      - [进阶配置 - CrawlHTMLAdvancedConfig](#进阶配置---CrawlHTMLAdvancedConfig)
+  - [crawlData](#crawlData)
+    - [类型](#类型-3)
+    - [示例](#示例-4)
+    - [配置](#配置-2)
+      - [简单目标配置 - string](#简单目标配置---string-2)
       - [详细目标配置 - CrawlDataDetailTargetConfig](#详细目标配置---CrawlDataDetailTargetConfig)
       - [混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]](#混合目标数组配置---string--CrawlDataDetailTargetConfig)
       - [进阶配置 - CrawlDataAdvancedConfig](#进阶配置---CrawlDataAdvancedConfig)
   - [crawlFile](#crawlFile)
-    - [类型](#类型-3)
-    - [示例](#示例-4)
-    - [配置](#配置-2)
+    - [类型](#类型-4)
+    - [示例](#示例-5)
+    - [配置](#配置-3)
       - [详细目标配置 - CrawlFileDetailTargetConfig](#详细目标配置---CrawlFileDetailTargetConfig)
       - [详细目标数组配置 - CrawlFileDetailTargetConfig[]](#详细目标数组配置---CrawlFileDetailTargetConfig)
       - [进阶配置 - CrawlFileAdvancedConfig](#进阶配置---CrawlFileAdvancedConfig)
   - [startPolling](#startPolling)
-    - [类型](#类型-4)
-    - [示例](#示例-5)
     - [类型](#类型-5)
+    - [示例](#示例-6)
 - [类型](#类型-6)
   - [API Config](#API-config)
     - [XCrawlConfig](#XCrawlConfig)
     - [Detail Target Config](#Detail-Target-Config)
       - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
+      - [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig)
       - [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig)
       - [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig)
     - [Advanced Config](#Advanced-Config)
       - [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig)
+      - [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig)
       - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
       - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
     - [StartPollingConfig](#StartPollingConfig)
@@ -112,6 +123,7 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
     - [XCrawlInstance](#XCrawlInstance)
     - [CrawlCommonResult](#CrawlCommonResult)
     - [CrawlPageSingleResult](#CrawlPageSingleResult)
+    - [CrawlHTMLSingleResult](#CrawlHTMLSingleResult)
     - [CrawlDataSingleResult](#CrawlDataSingleResult)
     - [CrawlFileSingleResult](#CrawlFileSingleResult)
   - [API Other](#API-Other)
@@ -334,6 +346,35 @@ const myXCrawl = xCrawl({
 
 myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 ```
+
+### 爬取 HTML
+
+通过 [crawlHTML()](#crawlData) 爬取静态 HTML。
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
+
+myXCrawl
+  .crawlHTML([
+    'https://www.example.com/html-1',
+    'https://www.example.com/html-2'
+  ])
+  .then((res) => {
+    // 处理
+  })
+```
+
+#### 生命周期
+
+crawlHTML API 拥有的声明周期函数:
+
+- onCrawlItemComplete: 当每个爬取目标完成后会回调
+
+##### onCrawlItemComplete
+
+在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
 ### 爬取接口
 
@@ -754,7 +795,7 @@ priority 属性的值越大就在当前爬取队列中越优先。
 
 如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
 
-相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlData 配置](#配置-1)、[crawlFile 配置](#配置-2) 。
+相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlHTML 配置](#配置-1)、[crawlData 配置](#配置-2)、[crawlFile 配置](#配置-3) 。
 
 ### TypeScript
 
@@ -766,7 +807,7 @@ x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持
 
 ### xCrawl
 
-通过调用 xCrawl 创建一个爬虫实例。爬取目标是由实例方法内部自己维护，并非由实例自己维护。
+通过调用 xCrawl 创建一个爬虫实例。爬取目标是由实例方法内部维护，并非由实例维护。
 
 #### 类型
 
@@ -799,7 +840,7 @@ const myXCrawl = xCrawl({
 
 ### crawlPage
 
-crawlPage 是爬虫实例的方法，通常用于爬取页面。
+crawlPage 是爬虫实例的方法，通常用于爬取动态页面。
 
 #### 类型
 
@@ -945,6 +986,152 @@ myXCrawl
 拿到的 res 将是一个数组，里面是对象。
 
 更多配置选项可以查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 。
+
+关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+
+### crawlHTML
+
+crawlHTML 是爬虫实例的方法，通常用于爬取静态 HTML 页面。
+
+#### 类型
+
+crawlHTML API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
+
+```ts
+type crawlHTML = {
+  (
+    config: string,
+    callback?: (res: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  (
+    config: CrawlHTMLDetailTargetConfig,
+    callback?: (res: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  (
+    config: (string | CrawlHTMLDetailTargetConfig)[],
+    callback?: (res: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+
+  (
+    config: CrawlHTMLAdvancedConfig,
+    callback?: (res: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+}
+```
+
+**参数类型：**
+
+- 查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 类型
+- 查看 [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig) 类型
+
+**返回值类型：**
+
+- 查看 [CrawlHTMLSingleResult](#CrawlHTMLSingleResult) 类型
+
+#### 示例
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+// crawlHTML API
+myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
+```
+
+#### 配置
+
+一共有 4 种:
+
+- 简单目标配置 - string
+- 详细目标配置 - CrawlHTMLDetailTargetConfig
+- 混合目标数组配置 - (string | CrawlHTMLDetailTargetConfig)[]
+- 进阶配置 - CrawlHTMLAdvancedConfig
+
+##### 简单目标配置 - string
+
+这是简单目标配置。如果你只想单纯爬一下这个静态 HTML 页面，可以试试这种写法：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
+```
+
+拿到的 res 将是一个对象。
+
+##### 详细目标配置 - CrawlHTMLDetailTargetConfig
+
+这是详细目标配置。如果你想爬一下这个静态 HTML 页面，并且需要失败重试之类的，可以试试这种写法：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML({
+    url: 'https://www.example.com',
+    proxy: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
+```
+
+拿到的 res 将是一个对象。
+
+更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 。
+
+##### 混合目标数组配置 - (string | CrawlHTMLDetailTargetConfig)[]
+
+这是混合目标数组配置。如果你想爬取多个静态 HTML 页面，并且有些静态 HTML 页面需要失败重试之类的，可以试试这种写法：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML([
+    'https://www.example.com/page-1',
+    { url: 'https://www.example.com/page-2', maxRetry: 2 }
+  ])
+  .then((res) => {})
+```
+
+拿到的 res 将是一个数组，里面是对象。
+
+更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 。
+
+##### 进阶配置 - CrawlHTMLAdvancedConfig
+
+这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个静态 HTML 页面，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML({
+    targets: [
+      'https://www.example.com/page-1',
+      { url: 'https://www.example.com/page-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
+```
+
+拿到的 res 将是一个数组，里面是对象。
+
+更多配置选项可以查看 [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig) 。
 
 关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
@@ -1336,6 +1523,24 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 - viewport: undefined
 - fingerprint: undefined
 
+##### CrawlHTMLDetailTargetConfig
+
+```ts
+export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+**默认值**
+
+- url: undefined
+- headers: undefined
+- priority: undefined
+- fingerprint: undefined
+
 ##### CrawlDataDetailTargetConfig
 
 ```ts
@@ -1415,6 +1620,28 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 - headers: undefined
 - cookies: undefined
 - viewport: undefined
+- onCrawlItemComplete: undefined
+
+##### CrawlHTMLAdvancedConfig
+
+```ts
+export interface CrawlHTMLAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlHTMLDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprints?: DetailTargetFingerprintCommon[]
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleResult: CrawlHTMLSingleResult) => void
+}
+```
+
+**默认值**
+
+- targets: undefined
+- intervalTime: undefined
+- fingerprints: undefined
+- headers: undefined
 - onCrawlItemComplete: undefined
 
 ##### CrawlDataAdvancedConfig
@@ -1636,6 +1863,28 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleResult[]>
   }
 
+  crawlHTML: {
+    (
+      config: string,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: CrawlHTMLDetailTargetConfig,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: (string | CrawlHTMLDetailTargetConfig)[],
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
+
+    (
+      config: CrawlHTMLAdvancedConfig,
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
+  }
+
   crawlData: {
     <T = any>(
       config: CrawlDataDetailTargetConfig,
@@ -1711,6 +1960,18 @@ export interface CrawlPageSingleResult extends CrawlCommonResult {
     response: HTTPResponse | null // puppeteer
     page: Page // puppeteer
   }
+}
+```
+
+#### CrawlHTMLSingleResult
+
+```ts
+export interface CrawlHTMLSingleResult extends CrawlCommonResult {
+  data: {
+    statusCode: number | undefined
+    headers: IncomingHttpHeaders
+    html: string
+  } | null
 }
 ```
 
