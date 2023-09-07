@@ -21,8 +21,8 @@ async function testCrawlPage() {
 
   const res = await testXCrawl.crawlPage({
     targets: [
-      'https://github.com/coder-hxl/x-crawl',
-      { url: 'https://github.com/coder-hxl/x-crawl' }
+      'http://localhost:8888/html',
+      { url: 'http://localhost:8888/html' }
     ]
   })
 

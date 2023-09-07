@@ -20,8 +20,8 @@ async function async() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData([
-    'http://localhost:8888',
-    'http://localhost:8888'
+    'http://localhost:8888/data',
+    'http://localhost:8888/data'
   ])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -31,8 +31,8 @@ async function sync() {
   const testXCrawl = xCrawl({ mode: 'sync' })
 
   const res = await testXCrawl.crawlData([
-    'http://localhost:8888',
-    'http://localhost:8888'
+    'http://localhost:8888/data',
+    'http://localhost:8888/data'
   ])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)

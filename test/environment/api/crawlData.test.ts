@@ -20,7 +20,10 @@ async function testCrawlData() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    targets: ['http://localhost:8888', { url: 'http://localhost:8888' }]
+    targets: [
+      'http://localhost:8888/data',
+      { url: 'http://localhost:8888/data' }
+    ]
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)

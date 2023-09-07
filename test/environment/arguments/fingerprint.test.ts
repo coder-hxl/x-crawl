@@ -21,10 +21,10 @@ async function fingerprint() {
 
   const res = await testXCrawl.crawlPage({
     targets: [
-      'http://localhost:8888',
-      { url: 'http://localhost:8888', fingerprint: null },
+      'http://localhost:8888/html',
+      { url: 'http://localhost:8888/html', fingerprint: null },
       {
-        url: 'http://localhost:8888',
+        url: 'http://localhost:8888/html',
         fingerprint: {
           maxWidth: 1024,
           maxHeight: 800,

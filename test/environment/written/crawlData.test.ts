@@ -21,7 +21,7 @@ jest.setTimeout(60000)
 async function writtenString() {
   const testXCrawl = xCrawl()
 
-  const res = await testXCrawl.crawlData('http://localhost:8888')
+  const res = await testXCrawl.crawlData('http://localhost:8888/data')
 
   return res.isSuccess
 }
@@ -31,7 +31,7 @@ async function writtenCrawlDataDetailConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    url: 'http://localhost:8888'
+    url: 'http://localhost:8888/data'
   })
 
   return res.isSuccess
@@ -42,8 +42,8 @@ async function writtenStringAndCrawlDataDetailConfigArr() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData([
-    'http://localhost:8888',
-    { url: 'http://localhost:8888' }
+    'http://localhost:8888/data',
+    { url: 'http://localhost:8888/data' }
   ])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -54,7 +54,10 @@ async function writtenCrawlDataAdvancedConfig() {
   const testXCrawl = xCrawl()
 
   const res = await testXCrawl.crawlData({
-    targets: ['http://localhost:8888', { url: 'http://localhost:8888' }]
+    targets: [
+      'http://localhost:8888/data',
+      { url: 'http://localhost:8888/data' }
+    ]
   })
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
@@ -71,7 +74,7 @@ async function loaderBaseConfig() {
     maxRetry: 0
   })
 
-  const res = await testXCrawl.crawlData(['/', '/'])
+  const res = await testXCrawl.crawlData(['/data', '/data'])
 
   return res.reduce((prev, item) => prev && item.isSuccess, true)
 }
@@ -83,7 +86,7 @@ async function loaderAdvancedConfig() {
   })
 
   const res = await testXCrawl.crawlData({
-    targets: ['/', '/'],
+    targets: ['/data', '/data'],
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
