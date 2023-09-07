@@ -9,16 +9,15 @@ x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage an
 ## Features
 
 - **🔥 Asynchronous Synchronous** - Just change the mode property to toggle asynchronous or synchronous crawling mode.
-- **⚙️ Multiple purposes** - It can crawl pages, crawl interfaces, crawl files and poll crawls to meet the needs of various scenarios.
-- **☁️ Crawl SPA** - Crawl SPA (Single Page Application) to generate pre-rendered content (aka "SSR" (Server Side Rendering)).
-- **⚒️ Control Page** - Automate form submission, UI testing, keyboard input, event manipulation, open browser, etc.
+- **⚙️Multiple uses** - Supports crawling dynamic pages, static pages, interface data, files and polling operations.
+- **⚒️ Control page** - Crawling dynamic pages supports automated operations, keyboard input, event operations, etc.
 - **🖋️ Flexible writing style** - The same crawling API can be adapted to multiple configurations, and each configuration method is very unique.
 - **⏱️ Interval Crawling** - No interval, fixed interval and random interval to generate or avoid high concurrent crawling.
 - **🔄 Failed Retry** - Avoid crawling failure due to short-term problems, and customize the number of retries.
 - **➡️ Proxy Rotation** - Auto-rotate proxies with failure retry, custom error times and HTTP status codes.
 - **👀 Device Fingerprinting** - Zero configuration or custom configuration, avoid fingerprinting to identify and track us from different locations.
 - **🚀 Priority Queue** - According to the priority of a single crawling target, it can be crawled ahead of other targets.
-- **🧾 Capture Record** - Capture and record crawling, and use colored strings to remind in the terminal.
+- **🧾 crawl log** - Logs the crawl and uses colored string reminders at the terminal.
 - **🦾 TypeScript** - Own types, implement complete types through generics.
 
 ## Sponsor
@@ -41,12 +40,15 @@ x-crawl is an open source project under the MIT license, completely free to use.
     - [life Cycle](#life-cycle)
       - [onCrawlItemComplete](#oncrawlitemcomplete)
     - [Open Browser](#open-browser)
-  - [Crawl Interface](#crawl-interface)
+  - [Crawl HTML](#crawl-html)
     - [life Cycle](#life-cycle-1)
       - [onCrawlItemComplete](#oncrawlitemcomplete-1)
-  - [Crawl Files](#crawl-files)
-    - [life Cycle](#life-cycle)
+  - [Crawl Interface](#crawl-interface)
+    - [life Cycle](#life-cycle-2)
       - [onCrawlItemComplete](#oncrawlitemcomplete-2)
+  - [Crawl Files](#crawl-files)
+    - [life Cycle](#life-cycle-3)
+      - [onCrawlItemComplete](#oncrawlitemcomplete-3)
       - [onBeforeSaveItemFile](#onbeforesaveitemfile)
   - [Start Polling](#start-polling)
   - [Config Priority](#config-priority)
@@ -69,33 +71,43 @@ x-crawl is an open source project under the MIT license, completely free to use.
       - [Detailed target config - CrawlPageDetailTargetConfig](#detailed-target-config---crawlpagedetailtargetconfig)
       - [Mixed target array config - (string | CrawlPageDetailTargetConfig)[]](#mixed-target-array-config---string--crawlpagedetailtargetconfig)
       - [Advanced config - CrawlPageAdvancedConfig](#advanced-config---crawlpageadvancedconfig)
-  - [crawlData](#crawldata)
+  - [crawlHTML](#crawlhtml)
     - [Type](#type-2)
     - [Example](#example-3)
     - [Config](#config-1)
       - [Simple target config - string](#simple-target-config---string-1)
+      - [Detailed target config - CrawlHTMLDetailTargetConfig](#detailed-target-config---crawlhtmldetailtargetconfig)
+      - [Mixed target array config - (string | CrawlHTMLDetailTargetConfig)[]](#mixed-target-array-config---string--crawlhtmldetailtargetconfig)
+      - [Advanced config - CrawlHTMLAdvancedConfig](#advanced-config---crawlhtmladvancedconfig)
+  - [crawlData](#crawldata)
+    - [Type](#type-3)
+    - [Example](#example-4)
+    - [Config](#config-2)
+      - [Simple target config - string](#simple-target-config---string-2)
       - [Detailed target config - CrawlDataDetailTargetConfig](#detailed-target-config---crawldatadetailtargetconfig)
       - [Mixed target array config - (string | CrawlDataDetailTargetConfig)[]](#mixed-target-array-config---string--crawldatadetailtargetconfig)
       - [Advanced config - CrawlDataAdvancedConfig](#advanced-config---crawldataadvancedconfig)
   - [crawlFile](#crawlfile)
-    - [Type](#type-3)
-    - [Example](#example-4)
-    - [Config](#config-2)
+    - [Type](#type-4)
+    - [Example](#example-5)
+    - [Config](#config-3)
       - [Detailed target config - CrawlFileDetailTargetConfig](#detailed-target-config---crawlFiledetailtargetconfig)
       - [Detailed target array config - CrawlFileDetailTargetConfig[]](#detailed-target-array-config---crawlfiledetailtargetconfig)
       - [Advanced config - CrawlFileAdvancedConfig](#advanced-config-crawlfileadvancedconfig)
   - [crawlPolling](#crawlpolling)
-    - [Type](#type-4)
-    - [Example](#example-5)
+    - [Type](#type-5)
+    - [Example](#example-6)
 - [Types](#types)
   - [API Config](#api-config)
     - [XCrawlConfig](#xcrawlconfig)
     - [Detail Target Config](#detail-target-config)
       - [CrawlPageDetailTargetConfig](#crawlpagedetailtargetconfig)
+      - [CrawlHTMLDetailTargetConfig](#crawlhtmldetailtargetconfig)
       - [CrawlDataDetailTargetConfig](#crawldatadetailtargetconfig)
       - [CrawlFileDetailTargetConfig](#crawlfiledetailtargetconfig)
     - [Advanced Config](#advanced-config)
       - [CrawlPageAdvancedConfig](#crawlpageadvancedconfig)
+      - [CrawlHTMLAdvancedConfig](#crawlhtmladvancedconfig)
       - [CrawlDataAdvancedConfig](#crawldataadvancedconfig)
       - [CrawlFileAdvancedConfig](#crawlfileadvancedconfig)
     - [StartPollingConfig](#startpollingconfig)
@@ -111,6 +123,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
     - [XCrawlInstance](#xcrawlinstance)
     - [CrawlCommonResult](#crawlcommonResult)
     - [CrawlPageSingleResult](#crawlpagesingleresult)
+    - [CrawlHTMLSingleResult](#crawlhtmlsingleresult)
     - [CrawlDataSingleResult](#crawldatasingleresult)
     - [CrawlFileSingleResult](#crawlfilesingleresult)
   - [API Other](#api-other)
@@ -336,6 +349,35 @@ const myXCrawl = xCrawl({
 
 myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 ```
+
+### Crawl HTML
+
+Crawl interface data through [crawlHTML()](#crawlHTML) .
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
+
+myXCrawl
+  .crawlHTML([
+    'https://www.example.com/html-1',
+    'https://www.example.com/html-2'
+  ])
+  .then((res) => {
+    // deal with
+  })
+```
+
+#### life Cycle
+
+Life cycle functions owned by crawlHTML API:
+
+- onCrawlItemComplete: Call back when each crawl is complete
+
+##### onCrawlItemComplete
+
+In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
 
 ### Crawl Interface
 
@@ -759,7 +801,7 @@ Each crawl target will generate a detail object, which will contain the followin
 
 If it is a specific configuration, it will automatically determine whether the details object is stored in an array according to the configuration method you choose, and return the array, otherwise return the details object. Already fits types perfectly in TypeScript.
 
-Details about configuration methods and results are as follows: [crawlPage config](#config), [crawlData config](#config-1), [crawlFile config](#config-2).
+Details about configuration methods and results are as follows: [crawlPage config](#config), [crawlHTML config](#config-1), [crawlData config](#config-2), [crawlFile config](#config-3).
 
 ### TypeScript
 
@@ -771,7 +813,7 @@ x-crawl itself is written in TypeScript and supports TypeScript. Comes with a ty
 
 ### xCrawl
 
-Create a crawler instance via call xCrawl. The crawl target queue is maintained by the instance method itself, not by the instance itself.
+Create a crawler instance by calling xCrawl. The crawl target is maintained internally by the instance method, not by the instance.
 
 #### Type
 
@@ -806,7 +848,7 @@ const myXCrawl = xCrawl({
 
 ### crawlPage
 
-crawlPage is the method of the crawler instance, usually used to crawl page.
+crawlPage is the method of a crawler instance, usually used to crawl a dynamic page.
 
 #### Type
 
@@ -952,6 +994,157 @@ myXCrawl
 The res you get will be an array of objects.
 
 More configuration options can view [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig).
+
+More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
+
+### crawlHTML
+
+crawlHTML is a method for crawling instances, usually used to crawl static HTML pages.
+
+#### Type
+
+The crawlHTML API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) which can be called (in terms of type) with different configuration parameters.
+
+```ts
+type crawlHTML = {
+  (
+    config: string,
+    callback?: (res: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  (
+    config: CrawlHTMLDetailTargetConfig,
+    callback?: (res: CrawlHTMLSingleResult) => void
+  ): Promise<CrawlHTMLSingleResult>
+
+  (
+    config: (string | CrawlHTMLDetailTargetConfig)[],
+    callback?: (res: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+
+  (
+    config: CrawlHTMLAdvancedConfig,
+    callback?: (res: CrawlHTMLSingleResult[]) => void
+  ): Promise<CrawlHTMLSingleResult[]>
+}
+```
+
+**Parameter Type:**
+
+- Look at the [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) type
+- Look at the [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig) type
+
+**Return value type:**
+
+- Look at the [CrawlHTMLSingleResult](#CrawlHTMLSingleResult) type
+
+#### Example
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+// crawlHTML API
+myXCrawl.crawlHTML('https://www.example.com').then((res) => {
+  const { browser, page } = res.data
+
+  // Close the browser
+  browser.close()
+})
+```
+
+#### Config
+
+There are 4 types:
+
+- Simple target config - string
+- Detailed target config - CrawlHTMLDetailTargetConfig
+- Mixed target array config - (string | CrawlHTMLDetailTargetConfig)[]
+- Advanced config - CrawlHTMLAdvancedConfig
+
+##### Simple target config - string
+
+This is a simple target configuration. if you just want to simply crawl this static HTML page, you can try this way of writing:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
+```
+
+The res you get will be an object.
+
+##### Detailed target config - CrawlHTMLDetailTargetConfig
+
+This is the detailed target configuration. if you want to crawl this static HTML page and need to retry on failure, you can try this way of writing:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML({
+    url: 'https://www.example.com',
+    proxy: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
+```
+
+The res you get will be an object.
+
+More configuration options can view [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig).
+
+##### Mixed target array config - (string | CrawlHTMLDetailTargetConfig)[]
+
+This is a mixed target array configuration. if you want to crawl multiple static HTML pages, and some pages need to fail and retry, you can try this way of writing:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML([
+    'https://www.example.com/page-1',
+    { url: 'https://www.example.com/page-2', maxRetry: 2 }
+  ])
+  .then((res) => {})
+```
+
+The res you get will be an array of objects.
+
+More configuration options can view [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig).
+
+##### Advanced config - CrawlHTMLAdvancedConfig
+
+This is an advanced configuration, targets is a mixed target array configuration. if you want to crawl multiple static HTML pages and crawl target configurations (proxy, cookies, retries, etc.) that you don't want to write repeatedly, but also need interval time, device fingerprint, lifecycle, etc., try this:
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+myXCrawl
+  .crawlHTML({
+    targets: [
+      'https://www.example.com/page-1',
+      { url: 'https://www.example.com/page-2', maxRetry: 6 }
+    ],
+    intervalTime: { max: 3000, min: 1000 },
+    cookies: 'xxx',
+    maxRetry: 1
+  })
+  .then((res) => {})
+```
+
+The res you get will be an array of objects.
+
+More configuration options can view [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig).
 
 More information about the results can be found at [About results](#About-results) , which can be selected according to the actual situation.
 
@@ -1342,6 +1535,24 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 - viewport: undefined
 - fingerprint: undefined
 
+##### CrawlHTMLDetailTargetConfig
+
+```ts
+export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
+  url: string
+  headers?: AnyObject | null
+  priority?: number
+  fingerprint?: DetailTargetFingerprintCommon | null
+}
+```
+
+**Default Value**
+
+- url: undefined
+- headers: undefined
+- priority: undefined
+- fingerprint: undefined
+
 ##### CrawlDataDetailTargetConfig
 
 ```ts
@@ -1421,6 +1632,28 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 - headers: undefined
 - cookies: undefined
 - viewport: undefined
+- onCrawlItemComplete: undefined
+
+##### CrawlHTMLAdvancedConfig
+
+```ts
+export interface CrawlHTMLAdvancedConfig extends CrawlCommonConfig {
+  targets: (string | CrawlHTMLDetailTargetConfig)[]
+  intervalTime?: IntervalTime
+  fingerprints?: DetailTargetFingerprintCommon[]
+
+  headers?: AnyObject
+
+  onCrawlItemComplete?: (crawlDataSingleResult: CrawlHTMLSingleResult) => void
+}
+```
+
+**Default Value**
+
+- targets: undefined
+- intervalTime: undefined
+- fingerprints: undefined
+- headers: undefined
 - onCrawlItemComplete: undefined
 
 ##### CrawlDataAdvancedConfig
@@ -1642,6 +1875,28 @@ export interface XCrawlInstance {
     ): Promise<CrawlPageSingleResult[]>
   }
 
+  crawlHTML: {
+    (
+      config: string,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: CrawlHTMLDetailTargetConfig,
+      callback?: (result: CrawlHTMLSingleResult) => void
+    ): Promise<CrawlHTMLSingleResult>
+
+    (
+      config: (string | CrawlHTMLDetailTargetConfig)[],
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
+
+    (
+      config: CrawlHTMLAdvancedConfig,
+      callback?: (result: CrawlHTMLSingleResult[]) => void
+    ): Promise<CrawlHTMLSingleResult[]>
+  }
+
   crawlData: {
     <T = any>(
       config: CrawlDataDetailTargetConfig,
@@ -1717,6 +1972,18 @@ export interface CrawlPageSingleResult extends CrawlCommonResult {
     response: HTTPResponse | null // puppeteer
     page: Page // puppeteer
   }
+}
+```
+
+#### CrawlHTMLSingleResult
+
+```ts
+export interface CrawlHTMLSingleResult extends CrawlCommonResult {
+  data: {
+    statusCode: number | undefined
+    headers: IncomingHttpHeaders
+    html: string
+  } | null
 }
 ```
 
