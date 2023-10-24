@@ -46,7 +46,7 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-run": "^3.0.1",
     "@rollup/plugin-terser": "^0.4.0",
-    "@types/node": "^18.11.18",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.32.0",
