@@ -134,6 +134,7 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
   - [社区](#社区)
   - [Issues](#Issues)
   - [赞助](#赞助-1)
+  - [特殊说明](#特殊说明)
 
 ## 安装
 
@@ -930,7 +931,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlPage({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1076,7 +1077,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlHTML({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1234,7 +1235,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlData({
     url: 'https://www.example.com/api',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1373,7 +1374,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlFile({
     url: 'https://www.example.com/file',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1,
     storeDir: './upload',
     fileName: 'xxx'
@@ -2027,8 +2028,9 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
 ### 社区
 
 - **Discord 聊天:** 通过 [Discord](https://discord.gg/SF7aaebg4E) 与其他 x-crawl 用户实时提问和讨论。
-
 - **GitHub 讨论:** 使用 [GitHub 讨论](https://github.com/coder-hxl/x-crawl/discussions) 来进行留言板式的问题和讨论。
+
+不得提交与非法活动相关的问题和讨论。x-crawl 仅供合法用途。禁止使用该工具进行任何违法活动，包括但不限于未经授权的数据采集、网络攻击、隐私侵犯等。
 
 ### Issues
 
@@ -2037,3 +2039,7 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
 ### 赞助
 
 x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在工作中受益于我开发维护的项目，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。
+
+### 特殊说明
+
+x-crawl 仅供合法用途。禁止使用该工具进行任何违法活动，包括但不限于未经授权的数据采集、网络攻击、隐私侵犯等。

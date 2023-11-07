@@ -134,6 +134,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
   - [Community](#community)
   - [Issues](#issues)
   - [Sponsor](#sponsor-1)
+  - [Special Instructions](#special-instructions)
 
 ## Install
 
@@ -938,7 +939,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlPage({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1089,7 +1090,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlHTML({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1246,7 +1247,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlData({
     url: 'https://www.example.com/api',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1385,7 +1386,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlFile({
     url: 'https://www.example.com/file',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1,
     storeDir: './upload',
     fileName: 'xxx'
@@ -2042,6 +2043,8 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
 
 - **GitHub Discussions:** Use [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) for message board-style questions and discussions.
 
+Questions and discussions related to illegal activities may not be submitted. x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
+
 ### Issues
 
 If you have questions, needs, or good suggestions, you can raise them at [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues).
@@ -2049,3 +2052,7 @@ If you have questions, needs, or good suggestions, you can raise them at [GitHub
 ### Sponsor
 
 x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
+
+### Special Instructions
+
+x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
