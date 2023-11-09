@@ -1,4 +1,4 @@
-export interface AnyObject extends Object {
+export interface AnyObject {
   [key: string | number | symbol]: any
 }
 

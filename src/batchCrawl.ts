@@ -1,39 +1,58 @@
-import { isNumber, isUndefined, log, logNumber, random, sleep } from './utils'
+import {
+  isNumber,
+  isUndefined,
+  log,
+  logNumber,
+  random,
+  sleep,
+  whiteBold
+} from './utils'
 
-import type { ExtraCommonConfig } from './api'
+import type { InfoCommonConfig } from './api'
 import { CrawlDetail, Device } from './controller'
 
-async function useSleepByBatch(
+async function useSleepByBatch<T extends InfoCommonConfig>(
   isHaventervalTime: boolean,
   isNumberIntervalTime: boolean,
   intervalTime: any,
-  id: number
+  id: number,
+  infoConfig: T
 ) {
+  const { serialNumber, logConfig } = infoConfig
+
   if (isHaventervalTime && id > 1) {
     const timeout: number = isNumberIntervalTime
       ? intervalTime
       : random(intervalTime.max, intervalTime.min)
 
-    log(
-      `Target id: ${logNumber(id)} - Sleep time: ${logNumber(timeout + 'ms')}`
-    )
+    if (logConfig.process) {
+      log(
+        `${whiteBold(serialNumber)} | Target id: ${logNumber(
+          id
+        )} - Sleep time: ${logNumber(timeout + 'ms')}`
+      )
+    }
 
     await sleep(timeout)
-  } else {
-    log(`Target id: ${logNumber(id)} - Sleep time: ${logNumber('0ms')}`)
+  } else if (logConfig.process) {
+    log(
+      `${whiteBold(serialNumber)} | Target id: ${logNumber(
+        id
+      )} - Sleep time: ${logNumber('0ms')}`
+    )
   }
 }
 
 export async function asyncBatchCrawl<
   T extends CrawlDetail,
-  E extends ExtraCommonConfig,
+  I extends InfoCommonConfig,
   R
 >(
   devices: Device<T, R>[],
-  extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
+  infoConfig: I,
+  singleCrawlHandle: (device: Device<T, R>, infoConfig: I) => Promise<void>
 ) {
-  const { intervalTime } = extraConfig
+  const { intervalTime } = infoConfig
 
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
@@ -46,10 +65,11 @@ export async function asyncBatchCrawl<
       isHaventervalTime,
       isNumberIntervalTime,
       intervalTime,
-      id
+      id,
+      infoConfig
     )
 
-    crawlPendingQueue.push(singleCrawlHandle(device, extraConfig))
+    crawlPendingQueue.push(singleCrawlHandle(device, infoConfig))
   }
 
   // 等待所有爬取结束
@@ -58,14 +78,14 @@ export async function asyncBatchCrawl<
 
 export async function syncBatchCrawl<
   T extends CrawlDetail,
-  E extends ExtraCommonConfig,
+  I extends InfoCommonConfig,
   R
 >(
   devices: Device<T, R>[],
-  extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
+  infoConfig: I,
+  singleCrawlHandle: (device: Device<T, R>, infoConfig: I) => Promise<void>
 ) {
-  const { intervalTime } = extraConfig
+  const { intervalTime } = infoConfig
 
   const isHaventervalTime = !isUndefined(intervalTime)
   const isNumberIntervalTime = isNumber(intervalTime)
@@ -77,9 +97,10 @@ export async function syncBatchCrawl<
       isHaventervalTime,
       isNumberIntervalTime,
       intervalTime,
-      id
+      id,
+      infoConfig
     )
 
-    await singleCrawlHandle(device, extraConfig)
+    await singleCrawlHandle(device, infoConfig)
   }
 }

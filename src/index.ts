@@ -3,50 +3,81 @@ import {
   createCrawlFile,
   createCrawlHTML,
   createCrawlPage,
-  startPolling
+  createStartPolling
 } from './api'
 
-import { LoaderXCrawlConfig, XCrawlConfig, XCrawlInstance } from './types'
-import { isUndefined } from './utils'
+import { XCrawlConfig, XCrawlInstance, XCrawlInstanceConfig } from './types'
+import { isBoolean, isObject } from './utils'
 
-const loaderBaseConfigDefault: LoaderXCrawlConfig = {
-  mode: 'async',
-  enableRandomFingerprint: true,
-  timeout: 10000,
-  maxRetry: 0
-}
+let id = 0
 
-function loaderBaseConfig(
-  baseConfig: XCrawlConfig | undefined
-): LoaderXCrawlConfig {
-  const loaderBaseConfig: any = baseConfig ? baseConfig : {}
+function createInstanceConfig(
+  config: XCrawlConfig | undefined
+): XCrawlInstanceConfig {
+  const {
+    mode,
+    enableRandomFingerprint,
+    baseUrl,
+    intervalTime,
+    log,
+    crawlPage,
+    timeout,
+    proxy,
+    maxRetry
+  } = config ?? {}
 
-  Object.keys(loaderBaseConfigDefault).forEach((key) => {
-    if (isUndefined(loaderBaseConfig[key])) {
-      loaderBaseConfig[key] =
-        loaderBaseConfigDefault[key as keyof LoaderXCrawlConfig]
+  const xCrawlInstanceConfig: XCrawlInstanceConfig = {
+    id: ++id,
+
+    mode: mode ?? 'async',
+    enableRandomFingerprint: enableRandomFingerprint ?? true,
+    timeout: timeout ?? 10000,
+    maxRetry: maxRetry ?? 0,
+    logConfig: { start: true, process: true, result: true },
+
+    baseUrl,
+    intervalTime,
+    proxy,
+    crawlPage
+  }
+
+  // logConfig
+  if (isObject(log)) {
+    xCrawlInstanceConfig.logConfig = {
+      ...xCrawlInstanceConfig.logConfig,
+      ...log
     }
-  })
+  } else if (isBoolean(log) && !log) {
+    const keys = Object.keys(xCrawlInstanceConfig.logConfig) as [
+      'start',
+      'process',
+      'result'
+    ]
 
-  return loaderBaseConfig as LoaderXCrawlConfig
+    keys.forEach((key) => (xCrawlInstanceConfig.logConfig[key] = false))
+  }
+
+  return xCrawlInstanceConfig
 }
 
-function createnInstance(baseConfig: LoaderXCrawlConfig): XCrawlInstance {
+function createnInstance(
+  xCrawlInstanceConfig: XCrawlInstanceConfig
+): XCrawlInstance {
   const instance: XCrawlInstance = {
-    crawlPage: createCrawlPage(baseConfig),
-    crawlHTML: createCrawlHTML(baseConfig),
-    crawlData: createCrawlData(baseConfig),
-    crawlFile: createCrawlFile(baseConfig),
-    startPolling
+    crawlPage: createCrawlPage(xCrawlInstanceConfig),
+    crawlHTML: createCrawlHTML(xCrawlInstanceConfig),
+    crawlData: createCrawlData(xCrawlInstanceConfig),
+    crawlFile: createCrawlFile(xCrawlInstanceConfig),
+    startPolling: createStartPolling(xCrawlInstanceConfig)
   }
 
   return instance
 }
 
-export default function xCrawl(baseConfig?: XCrawlConfig): XCrawlInstance {
-  const newBaseConfig = loaderBaseConfig(baseConfig)
+export default function xCrawl(config?: XCrawlConfig): XCrawlInstance {
+  const xCrawlInstanceConfig = createInstanceConfig(config)
 
-  const instance = createnInstance(newBaseConfig)
+  const instance = createnInstance(xCrawlInstanceConfig)
 
   return instance
 }

@@ -2,7 +2,7 @@ import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawl'
 import { priorityQueueMergeSort } from './sort'
 
 import {
-  ExtraCommonConfig,
+  InfoCommonConfig,
   LoaderCrawlDataDetail,
   LoaderCrawlFileDetail,
   LoaderCrawlHTMLDetail,
@@ -18,7 +18,8 @@ import {
   logStart,
   logStatistics,
   logSuccess,
-  logWarn
+  logWarn,
+  whiteBold
 } from './utils'
 import { HTTPResponse } from 'puppeteer'
 import { Request } from './request'
@@ -81,15 +82,14 @@ export function isCrawlStatusInHttpStatus(device: Device<CrawlDetail, any>) {
 
 export async function controller<
   T extends CrawlDetail,
-  E extends ExtraCommonConfig,
+  I extends InfoCommonConfig,
   R
 >(
-  mode: 'async' | 'sync',
   detailTargets: T[],
-  extraConfig: E,
-  singleCrawlHandle: (device: Device<T, R>, extraConfig: E) => Promise<void>
+  infoConfig: I,
+  singleCrawlHandle: (device: Device<T, R>, infoConfig: I) => Promise<void>
 ) {
-  const { type } = extraConfig
+  const { serialNumber, mode, logConfig } = infoConfig
 
   // 是否使用优先爬取
   const isPriorityCrawl = !detailTargets.every(
@@ -136,11 +136,13 @@ export async function controller<
     }
   )
 
-  log(
-    logStart(
-      `Start crawling - type: ${type}, mode: ${mode}, total: ${devices.length}`
+  if (logConfig.start) {
+    log(
+      `${whiteBold(serialNumber)} | ${logStart(
+        `Start crawling - mode: ${mode}, total: ${devices.length}`
+      )}`
     )
-  )
+  }
 
   // 选择爬取模式
   const batchCrawl = mode === 'async' ? asyncBatchCrawl : syncBatchCrawl
@@ -148,7 +150,7 @@ export async function controller<
   let i = 0
   let crawlQueue: Device<T, R>[] = devices
   while (crawlQueue.length) {
-    await batchCrawl(crawlQueue, extraConfig, singleCrawlHandle)
+    await batchCrawl(crawlQueue, infoConfig, singleCrawlHandle)
 
     crawlQueue = crawlQueue.filter((device) => {
       const {
@@ -204,42 +206,42 @@ export async function controller<
         return item.id
       })
 
-      log(
-        logWarn(
-          `Start retrying - count: ${++i}, targets id: [ ${retriedIds.join(
-            ', '
-          )} ]`
+      if (logConfig.process) {
+        log(
+          `${whiteBold(serialNumber)} | ${logWarn(
+            `Start retrying - count: ${++i}, targets id: [ ${retriedIds.join(
+              ', '
+            )} ]`
+          )}`
         )
-      )
+      }
     }
   }
 
   // 统计结果
-  const succssIds: number[] = []
-  const errorIds: number[] = []
-  devices.forEach((device) => {
-    if (device.isSuccess) {
-      succssIds.push(device.id)
-    } else {
-      errorIds.push(device.id)
-    }
-  })
+  if (logConfig.result) {
+    const succssIds: number[] = []
+    const errorIds: number[] = []
+    devices.forEach((device) => {
+      if (device.isSuccess) {
+        succssIds.push(device.id)
+      } else {
+        errorIds.push(device.id)
+      }
+    })
 
-  log(logStatistics(`Crawl ${type}s finish:`))
-  log(
-    logSuccess(
-      `  Success - total: ${succssIds.length}, targets id: [ ${succssIds.join(
-        ', '
-      )} ]`
-    )
-  )
-  log(
-    logError(
-      `    Error - total: ${errorIds.length}, targets id: [ ${errorIds.join(
-        ', '
-      )} ]`
-    )
-  )
+    log(`${whiteBold(serialNumber)} | ${logStatistics(`Crawl finish:`)}
+             ${logSuccess(
+               `Success - total: ${
+                 succssIds.length
+               }, targets id: [ ${succssIds.join(', ')} ]`
+             )}
+               ${logError(
+                 `Error - total: ${
+                   errorIds.length
+                 }, targets id: [ ${errorIds.join(', ')} ]`
+               )}`)
+  }
 
   return devices.map((device) => device.result)
 }

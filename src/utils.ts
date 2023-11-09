@@ -21,6 +21,7 @@ export const logSuccess = chalk.green
 export const logError = chalk.red
 export const logWarn = chalk.yellow
 export const logNumber = chalk.hex('#a57fff')
+export const whiteBold = chalk.white.bold
 
 export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined'
@@ -32,6 +33,10 @@ export function isNumber(value: any): value is number {
 
 export function isString(value: any): value is string {
   return typeof value === 'string'
+}
+
+export function isBoolean(value: any): value is string {
+  return typeof value === 'boolean'
 }
 
 export function isObject(value: any): value is object {

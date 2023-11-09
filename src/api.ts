@@ -17,7 +17,8 @@ import {
   logStatistics,
   logSuccess,
   logWarn,
-  random
+  random,
+  whiteBold
 } from './utils'
 
 import {
@@ -38,38 +39,49 @@ import {
   CrawlHTMLDetailTargetConfig,
   CrawlHTMLAdvancedConfig
 } from './types/api'
-import { LoaderXCrawlConfig } from './types'
+import { LogConfig, XCrawlInstanceConfig } from './types'
 import { fingerprints } from './default'
 
 /* Types */
 
-// Extra config
-export interface ExtraCommonConfig {
-  type: 'page' | 'html' | 'data' | 'file'
+// Group API config
 
+export interface InfoCommonConfig {
+  serialNumber: string
+  mode: 'async' | 'sync'
+  type: 'page' | 'html' | 'data' | 'file'
+  logConfig: LogConfig
   intervalTime: IntervalTime | undefined
 }
 
-interface ExtraPageConfig extends ExtraCommonConfig {
+interface InfoPageConfig extends InfoCommonConfig {
+  type: 'page'
+
   browser: Browser
   onCrawlItemComplete:
     | ((crawlPageSingleResult: CrawlPageSingleResult) => void)
     | undefined
 }
 
-interface ExtraHTMLConfig extends ExtraCommonConfig {
+interface InfoHTMLConfig extends InfoCommonConfig {
+  type: 'html'
+
   onCrawlItemComplete:
     | ((crawlHTMLSingleResult: CrawlHTMLSingleResult) => void)
     | undefined
 }
 
-interface ExtraDataConfig<T> extends ExtraCommonConfig {
+interface InfoDataConfig<T> extends InfoCommonConfig {
+  type: 'data'
+
   onCrawlItemComplete:
     | ((crawlDataSingleResult: CrawlDataSingleResult<T>) => void)
     | undefined
 }
 
-interface ExtraFileConfig extends ExtraCommonConfig {
+interface InfoFileConfig extends InfoCommonConfig {
+  type: 'file'
+
   saveFileErrorArr: { message: string; valueOf: () => number }[]
   saveFilePendingQueue: Promise<any>[]
   onCrawlItemComplete:
@@ -392,7 +404,7 @@ function loaderPageFingerprintToDetailTarget(
 }
 
 function loaderCommonConfigToCrawlConfig(
-  xCrawlConfig: LoaderXCrawlConfig,
+  xCrawlInstanceConfig: XCrawlInstanceConfig,
   advancedDetailTargetsConfig:
     | CrawlPageAdvancedDetailTargetsConfig
     | CrawlHTMLAdvancedDetailTargetsConfig
@@ -418,8 +430,8 @@ function loaderCommonConfigToCrawlConfig(
         detail
 
       // 1.1.baseUrl
-      if (xCrawlConfig.baseUrl) {
-        detail.url = xCrawlConfig.baseUrl + url
+      if (xCrawlInstanceConfig.baseUrl) {
+        detail.url = xCrawlInstanceConfig.baseUrl + url
       }
 
       // 1.2.timeout
@@ -427,7 +439,7 @@ function loaderCommonConfigToCrawlConfig(
         if (!isUndefined(advancedDetailTargetsConfig.timeout)) {
           detail.timeout = advancedDetailTargetsConfig.timeout ?? undefined
         } else {
-          detail.timeout = xCrawlConfig.timeout
+          detail.timeout = xCrawlInstanceConfig.timeout
         }
       }
 
@@ -436,7 +448,7 @@ function loaderCommonConfigToCrawlConfig(
         if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
           detail.maxRetry = advancedDetailTargetsConfig.maxRetry ?? 0
         } else {
-          detail.maxRetry = xCrawlConfig.maxRetry
+          detail.maxRetry = xCrawlInstanceConfig.maxRetry
         }
       }
 
@@ -444,8 +456,8 @@ function loaderCommonConfigToCrawlConfig(
       if (isUndefined(proxy)) {
         if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
           detail.proxy = advancedDetailTargetsConfig.proxy
-        } else if (!isUndefined(xCrawlConfig.proxy)) {
-          detail.proxy = xCrawlConfig.proxy
+        } else if (!isUndefined(xCrawlInstanceConfig.proxy)) {
+          detail.proxy = xCrawlInstanceConfig.proxy
         }
       }
 
@@ -492,9 +504,9 @@ function loaderCommonConfigToCrawlConfig(
       } else if (
         isUndefined(fingerprint) &&
         !isArray(advancedDetailTargetsConfig.fingerprints) &&
-        xCrawlConfig.enableRandomFingerprint
+        xCrawlInstanceConfig.enableRandomFingerprint
       ) {
-        // xCrawlConfig
+        // xCrawlInstanceConfig
         const fingerprint = fingerprints[random(fingerprints.length)]
 
         loaderCommonFingerprintToDetailTarget(detail, fingerprint)
@@ -508,9 +520,9 @@ function loaderCommonConfigToCrawlConfig(
   crawlConfig.intervalTime = advancedDetailTargetsConfig.intervalTime
   if (
     isUndefined(advancedDetailTargetsConfig.intervalTime) &&
-    !isUndefined(xCrawlConfig.intervalTime)
+    !isUndefined(xCrawlInstanceConfig.intervalTime)
   ) {
-    crawlConfig.intervalTime = xCrawlConfig.intervalTime
+    crawlConfig.intervalTime = xCrawlInstanceConfig.intervalTime
   }
 
   // 3.onCrawlItemComplete
@@ -529,7 +541,7 @@ function loaderCommonConfigToCrawlConfig(
 */
 
 function createCrawlPageConfig(
-  xCrawlConfig: LoaderXCrawlConfig,
+  xCrawlInstanceConfig: XCrawlInstanceConfig,
   originalConfig: UniteCrawlPageConfig
 ): CrawlPageConfig {
   const crawlPageConfig: CrawlPageConfig = {
@@ -566,7 +578,7 @@ function createCrawlPageConfig(
 
   // 装载公共配置
   loaderCommonConfigToCrawlConfig(
-    xCrawlConfig,
+    xCrawlInstanceConfig,
     advancedDetailTargetsConfig,
     crawlPageConfig
   )
@@ -607,7 +619,7 @@ function createCrawlPageConfig(
 }
 
 function createCrawlHTMLConfig(
-  xCrawlConfig: LoaderXCrawlConfig,
+  xCrawlInstanceConfig: XCrawlInstanceConfig,
   originalConfig: UniteCrawlHTMLConfig
 ): CrawlHTMLConfig {
   const crawlHTMLConfig: CrawlHTMLConfig = {
@@ -647,7 +659,7 @@ function createCrawlHTMLConfig(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlConfig,
+    xCrawlInstanceConfig,
     advancedDetailTargetsConfig,
     crawlHTMLConfig
   )
@@ -656,7 +668,7 @@ function createCrawlHTMLConfig(
 }
 
 function createCrawlDataConfig<T>(
-  xCrawlConfig: LoaderXCrawlConfig,
+  xCrawlInstanceConfig: XCrawlInstanceConfig,
   originalConfig: UniteCrawlDataConfig<T>
 ): CrawlDataConfig {
   const crawlDataConfig: CrawlDataConfig = {
@@ -693,7 +705,7 @@ function createCrawlDataConfig<T>(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlConfig,
+    xCrawlInstanceConfig,
     advancedDetailTargetsConfig,
     crawlDataConfig
   )
@@ -702,7 +714,7 @@ function createCrawlDataConfig<T>(
 }
 
 function createCrawlFileConfig(
-  xCrawlConfig: LoaderXCrawlConfig,
+  xCrawlInstanceConfig: XCrawlInstanceConfig,
   originalConfig: UniteCrawlFileConfig
 ): CrawlFileConfig {
   const crawlFileConfig: CrawlFileConfig = {
@@ -737,7 +749,7 @@ function createCrawlFileConfig(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlConfig,
+    xCrawlInstanceConfig,
     advancedDetailTargetsConfig,
     crawlFileConfig
   )
@@ -789,7 +801,7 @@ function createCrawlFileConfig(
 
 async function pageSingleCrawlHandle(
   device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
-  extraConfig: ExtraPageConfig
+  apiConfig: InfoPageConfig
 ) {
   const {
     detailTargetConfig,
@@ -798,7 +810,7 @@ async function pageSingleCrawlHandle(
     maxRetry,
     crawlErrorQueue
   } = device
-  const { browser } = extraConfig
+  const { browser } = apiConfig
   const notAllowRetry = retryCount === maxRetry
 
   // 是否创建过 Page
@@ -856,7 +868,7 @@ async function pageSingleCrawlHandle(
   if (isSuccess || notAllowRetry) {
     device.isHandle = true
 
-    pageSingleResultHandle(device, extraConfig)
+    pageSingleResultHandle(device, apiConfig)
   }
 }
 
@@ -865,7 +877,7 @@ async function useRequestFnSingleCrawlHandle(
     LoaderCrawlHTMLDetail | LoaderCrawlDataDetail | LoaderCrawlFileDetail,
     Request
   >,
-  extraConfig: ExtraHTMLConfig | ExtraDataConfig<any> | ExtraFileConfig
+  apiConfig: InfoHTMLConfig | InfoDataConfig<any> | InfoFileConfig
 ) {
   const { detailTargetConfig, crawlErrorQueue, maxRetry, retryCount } = device
   const notAllowRetry = maxRetry === retryCount
@@ -891,12 +903,12 @@ async function useRequestFnSingleCrawlHandle(
   if (isSuccess || notAllowRetry) {
     device.isHandle = true
 
-    if (extraConfig.type === 'html') {
-      HTMLSingleResultHandle(device, extraConfig as ExtraHTMLConfig)
-    } else if (extraConfig.type === 'data') {
-      dataSingleResultHandle(device, extraConfig as ExtraDataConfig<any>)
-    } else if (extraConfig.type === 'file') {
-      fileSingleResultHandle(device, extraConfig as ExtraFileConfig)
+    if (apiConfig.type === 'html') {
+      HTMLSingleResultHandle(device, apiConfig as InfoHTMLConfig)
+    } else if (apiConfig.type === 'data') {
+      dataSingleResultHandle(device, apiConfig as InfoDataConfig<any>)
+    } else if (apiConfig.type === 'file') {
+      fileSingleResultHandle(device, apiConfig as InfoFileConfig)
     }
   }
 }
@@ -914,10 +926,10 @@ function handleResultEssentialOtherValue(device: any) {
 
 function pageSingleResultHandle(
   device: Device<LoaderCrawlPageDetail, PageSingleCrawlResult>,
-  extraConfig: ExtraPageConfig
+  infoConfig: InfoPageConfig
 ) {
   const { detailTargetResult, result } = device
-  const { browser, onCrawlItemComplete } = extraConfig
+  const { browser, onCrawlItemComplete } = infoConfig
 
   handleResultEssentialOtherValue(device)
 
@@ -930,10 +942,10 @@ function pageSingleResultHandle(
 
 function HTMLSingleResultHandle(
   device: Device<LoaderCrawlHTMLDetail, Request>,
-  extraConfig: ExtraHTMLConfig
+  infoConfig: InfoHTMLConfig
 ) {
   const { isSuccess, detailTargetResult, result } = device
-  const { onCrawlItemComplete } = extraConfig
+  const { onCrawlItemComplete } = infoConfig
 
   handleResultEssentialOtherValue(device)
 
@@ -951,10 +963,10 @@ function HTMLSingleResultHandle(
 
 function dataSingleResultHandle(
   device: Device<LoaderCrawlDataDetail, Request>,
-  extraConfig: ExtraDataConfig<any>
+  infoConfig: InfoDataConfig<any>
 ) {
   const { isSuccess, detailTargetResult, result } = device
-  const { onCrawlItemComplete } = extraConfig
+  const { onCrawlItemComplete } = infoConfig
 
   handleResultEssentialOtherValue(device)
 
@@ -977,7 +989,7 @@ function dataSingleResultHandle(
 
 function fileSingleResultHandle(
   device: Device<LoaderCrawlFileDetail, Request>,
-  extraConfig: ExtraFileConfig
+  infoConfig: InfoFileConfig
 ) {
   const { id, isSuccess, detailTargetConfig, detailTargetResult, result } =
     device
@@ -987,7 +999,7 @@ function fileSingleResultHandle(
 
     onCrawlItemComplete,
     onBeforeSaveItemFile
-  } = extraConfig
+  } = infoConfig
 
   handleResultEssentialOtherValue(device)
 
@@ -1063,10 +1075,19 @@ function fileSingleResultHandle(
 
 /* Create crawl API */
 
-export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
+export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+  const {
+    id: xId,
+    mode,
+    logConfig,
+    crawlPage: crawlPageConfig
+  } = xCrawlInstanceConfig
+
+  let id = 0
   let browser: Browser | null = null
   let createBrowserPending: Promise<void> | null = null
   let haveCreateBrowser = false
+  const type = 'page'
 
   function crawlPage(
     config: string,
@@ -1096,7 +1117,7 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
       createBrowserPending = puppeteer
-        .launch(xCrawlConfig.crawlPage?.puppeteerLaunch)
+        .launch(crawlPageConfig?.puppeteerLaunch)
         .then((result) => {
           browser = result
         })
@@ -1111,20 +1132,22 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
 
     // 创建新配置
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlPageConfig(xCrawlConfig, config)
+      createCrawlPageConfig(xCrawlInstanceConfig, config)
 
-    const extraConfig: ExtraPageConfig = {
-      type: 'page',
+    const infoConfig: InfoPageConfig = {
+      serialNumber: `${xId}-${type}-${++id}`,
+      mode,
+      type,
+      logConfig,
+      intervalTime,
 
       browser: browser!,
-      intervalTime,
       onCrawlItemComplete
     }
 
     const crawlResultArr = (await controller(
-      xCrawlConfig.mode,
       detailTargets,
-      extraConfig,
+      infoConfig,
       pageSingleCrawlHandle
     )) as CrawlPageSingleResult[]
 
@@ -1143,7 +1166,11 @@ export function createCrawlPage(xCrawlConfig: LoaderXCrawlConfig) {
   return crawlPage
 }
 
-export function createCrawlHTML(xCrawlConfig: LoaderXCrawlConfig) {
+export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+  let id = 0
+  const type = 'html'
+
   function crawlHTML(
     config: string,
     callback?: (result: CrawlHTMLSingleResult) => void
@@ -1169,18 +1196,21 @@ export function createCrawlHTML(xCrawlConfig: LoaderXCrawlConfig) {
     callback?: (result: any) => void
   ): Promise<CrawlHTMLSingleResult | CrawlHTMLSingleResult[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlHTMLConfig(xCrawlConfig, config)
+      createCrawlHTMLConfig(xCrawlInstanceConfig, config)
 
-    const extraConfig: ExtraHTMLConfig = {
-      type: 'html',
+    const infoConfig: InfoHTMLConfig = {
+      serialNumber: `${xId}-${type}-${++id}`,
+      mode,
+      type,
+      logConfig,
       intervalTime,
+
       onCrawlItemComplete
     }
 
     const crawlResultArr = (await controller(
-      xCrawlConfig.mode,
       detailTargets,
-      extraConfig,
+      infoConfig,
       useRequestFnSingleCrawlHandle
     )) as CrawlHTMLSingleResult[]
 
@@ -1199,7 +1229,11 @@ export function createCrawlHTML(xCrawlConfig: LoaderXCrawlConfig) {
   return crawlHTML
 }
 
-export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
+export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+  let id = 0
+  const type = 'data'
+
   function crawlData<T = any>(
     config: string,
     callback?: (result: CrawlDataSingleResult<T>) => void
@@ -1225,18 +1259,21 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
     callback?: (result: any) => void
   ): Promise<CrawlDataSingleResult<T> | CrawlDataSingleResult<T>[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlDataConfig(xCrawlConfig, config)
+      createCrawlDataConfig(xCrawlInstanceConfig, config)
 
-    const extraConfig: ExtraDataConfig<T> = {
-      type: 'data',
+    const infoConfig: InfoDataConfig<T> = {
+      serialNumber: `${xId}-${type}-${++id}`,
+      mode,
+      type,
+      logConfig,
       intervalTime,
+
       onCrawlItemComplete
     }
 
     const crawlResultArr = (await controller(
-      xCrawlConfig.mode,
       detailTargets,
-      extraConfig,
+      infoConfig,
       useRequestFnSingleCrawlHandle
     )) as CrawlDataSingleResult<T>[]
 
@@ -1255,7 +1292,11 @@ export function createCrawlData(xCrawlConfig: LoaderXCrawlConfig) {
   return crawlData
 }
 
-export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
+export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+  let id = 0
+  const type = 'file'
+
   function crawlFile(
     config: CrawlFileDetailTargetConfig,
     callback?: (result: CrawlFileSingleResult) => void
@@ -1280,59 +1321,65 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
       intervalTime,
       onBeforeSaveItemFile,
       onCrawlItemComplete
-    } = createCrawlFileConfig(xCrawlConfig, config)
+    } = createCrawlFileConfig(xCrawlInstanceConfig, config)
 
-    const extraConfig: ExtraFileConfig = {
-      type: 'file',
+    const infoConfig: InfoFileConfig = {
+      serialNumber: `${xId}-${type}-${++id}`,
+      mode,
+      type,
+      logConfig,
+      intervalTime,
 
       saveFileErrorArr: [],
       saveFilePendingQueue: [],
 
-      intervalTime,
       onCrawlItemComplete,
       onBeforeSaveItemFile
     }
 
     const crawlResultArr = (await controller(
-      xCrawlConfig.mode,
       detailTargets,
-      extraConfig,
+      infoConfig,
       useRequestFnSingleCrawlHandle
     )) as CrawlFileSingleResult[]
 
-    const { saveFilePendingQueue, saveFileErrorArr } = extraConfig
+    const { saveFilePendingQueue, saveFileErrorArr } = infoConfig
 
     // 等待保存文件完成
     await Promise.all(saveFilePendingQueue)
 
-    // 打印保存错误
-    quickSort(saveFileErrorArr).forEach((item) => log(logError(item.message)))
+    if (logConfig.result) {
+      // 打印保存错误
+      quickSort(saveFileErrorArr).forEach((item) =>
+        log(`${infoConfig.serialNumber} | ${logError(item.message)}`)
+      )
 
-    // 统计保存
-    const succssIds: number[] = []
-    const errorIds: number[] = []
-    crawlResultArr.forEach((item) => {
-      if (item.data?.data.isSuccess) {
-        succssIds.push(item.id)
-      } else {
-        errorIds.push(item.id)
-      }
-    })
-    log(logStatistics('Save files finish:'))
-    log(
-      logSuccess(
-        `  Success - total: ${succssIds.length}, targets id: [ ${succssIds.join(
-          ', '
-        )} ]`
-      )
-    )
-    log(
-      logError(
-        `    Error - total: ${errorIds.length}, targets id: [ ${errorIds.join(
-          ', '
-        )} ]`
-      )
-    )
+      // 统计保存
+      const succssIds: number[] = []
+      const errorIds: number[] = []
+      crawlResultArr.forEach((item) => {
+        if (item.data?.data.isSuccess) {
+          succssIds.push(item.id)
+        } else {
+          errorIds.push(item.id)
+        }
+      })
+
+      log(`${whiteBold(infoConfig.serialNumber)} | ${logStatistics(
+        'Save finish:'
+      )}
+             ${logSuccess(
+               `Success - total: ${
+                 succssIds.length
+               }, targets id: [ ${succssIds.join(', ')} ]`
+             )}
+               ${logError(
+                 `Error - total: ${
+                   errorIds.length
+                 }, targets id: [ ${errorIds.join(', ')} ]`
+               )}
+        `)
+    }
 
     const crawlResult =
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
@@ -1349,30 +1396,46 @@ export function createCrawlFile(xCrawlConfig: LoaderXCrawlConfig) {
   return crawlFile
 }
 
-export function startPolling(
-  config: StartPollingConfig,
-  callback: (count: number, stopPolling: () => void) => void
-) {
-  const { d, h, m } = config
+export function createStartPolling(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+  const { id: xId, logConfig } = xCrawlInstanceConfig
+  let id = 0
+  const type = 'polling'
 
-  const day = !isUndefined(d) ? d * 1000 * 60 * 60 * 24 : 0
-  const hour = !isUndefined(h) ? h * 1000 * 60 * 60 : 0
-  const minute = !isUndefined(m) ? m * 1000 * 60 : 0
-  const total = day + hour + minute
+  return (
+    config: StartPollingConfig,
+    callback: (count: number, stopPolling: () => void) => void
+  ) => {
+    const serialNumber = `${xId}-${type}-${++id}`
+    const { d, h, m } = config
 
-  let count = 0
+    const day = !isUndefined(d) ? d * 1000 * 60 * 60 * 24 : 0
+    const hour = !isUndefined(h) ? h * 1000 * 60 * 60 : 0
+    const minute = !isUndefined(m) ? m * 1000 * 60 : 0
+    const total = day + hour + minute
 
-  startCallback()
-  const intervalId = setInterval(startCallback, total)
+    let count = 0
 
-  function startCallback() {
-    console.log(logStart(`Start polling - count: ${++count}`))
+    startCallback()
+    const intervalId = setInterval(startCallback, total)
 
-    callback(count, stopPolling)
-  }
+    function startCallback() {
+      if (logConfig.start) {
+        log(
+          `${whiteBold(serialNumber)} | ${logStart(
+            `Start polling - count: ${++count}`
+          )}`
+        )
+      }
 
-  function stopPolling() {
-    clearInterval(intervalId)
-    console.log(logWarn(`Stop the polling`))
+      callback(count, stopPolling)
+    }
+
+    function stopPolling() {
+      clearInterval(intervalId)
+
+      if (logConfig.result) {
+        log(`${whiteBold(serialNumber)} | ${logWarn('Stop the polling')}`)
+      }
+    }
   }
 }
