@@ -57,6 +57,7 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果你在�
   - [轮换代理](#轮换代理)
   - [自定义设备指纹](#自定义设备指纹)
   - [优先队列](#优先队列)
+  - [打印信息](#打印信息)
   - [关于结果](#关于结果)
   - [TypeScript](#TypeScript)
 - [API](#API)
@@ -195,9 +196,8 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 运行效果:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example-gif.gif" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
-
 **注意:** 请勿随意爬取，爬取前可查看 **robots.txt** 协议。网站的类名可能会有变更，这里只是为了演示如何使用 x-crawl 。
 
 ## 核心概念
@@ -781,6 +781,34 @@ myXCrawl
 ```
 
 priority 属性的值越大就在当前爬取队列中越优先。
+
+### 打印信息
+
+爬取的打印信息由开始（显示模式和总数）、过程（显示数量和等待多久）、结果（显示成功和失败信息）组成。每段信息前面都会有如 **1-page-2** ，前面的 1 代表第 1 个爬虫实例，中间的 page 代表 API 类型，后面的 2 代表第 1 个爬虫实例的第 2 个 page ，这样做的目的是为了更好区分信息来自哪个 API 。
+
+当您不希望在终端显示爬取信息时，可以通过选项自己控制显示或隐藏。
+
+```js
+import xCrawl from 'x-crawl'
+
+// 只隐藏过程，开始和结果显示
+const myXCrawl = xCrawl({ log: { process: false } })
+
+// 隐藏全部信息
+const myXCrawl = xCrawl({ log: false })
+```
+
+log 选项接收对象或布尔类型：
+
+- 布尔
+
+  - true: 全部显示
+  - false：全部隐藏
+
+- 对象
+  - start：对开始信息控制
+  - process：对过程信息控制
+  - result：对结果信息控制
 
 ### 关于结果
 
@@ -1479,6 +1507,13 @@ export interface XCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
+  log?:
+    | {
+        start?: boolean
+        process?: boolean
+        result?: boolean
+      }
+    | boolean
   crawlPage?: {
     puppeteerLaunch?: PuppeteerLaunchOptions // puppeteer
   }
@@ -1491,6 +1526,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - enableRandomFingerprint: true
 - baseUrl: undefined
 - intervalTime: undefined
+- log: { start: true, process: true, result: true }
 - crawlPage: undefined
 
 #### Detail Target Config

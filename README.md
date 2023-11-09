@@ -57,6 +57,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
   - [Rotate Proxy](#rotate-proxy)
   - [Custom Device Fingerprint](#custom-device-fingerprint)
   - [Priority Queue](#priority-queue)
+  - [Print information](#print-information)
   - [About Results](#about-results)
   - [TypeScript](#typescript)
 - [API](#api)
@@ -198,7 +199,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 running result:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example-gif.gif" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
 
 **Note:** Please do not crawl randomly, you can check the **robots.txt** protocol before crawling. The class name of the website may change, this is just to demonstrate how to use x-crawl.
@@ -787,6 +788,34 @@ myXCrawl
 ```
 
 The larger the value of the priority attribute, the higher the priority in the current crawling queue.
+
+### Print information
+
+The crawled print information consists of start (displaying mode and total number), process (displaying number and how long to wait), and result (displaying success and failure information). There will be something like **1-page-2** in front of each piece of information. The first 1 represents the first crawler instance, the middle page represents the API type, and the following 2 represents the second page of the first crawler instance. Do this The purpose is to better distinguish which API the information comes from.
+
+When you do not want to display the crawled information in the terminal, you can control the display or hiding through the options.
+
+```js
+import xCrawl from 'x-crawl'
+
+// Only hide the process, start and result display
+const myXCrawl = xCrawl({ log: { process: false } })
+
+// Hide all information
+const myXCrawl = xCrawl({ log: false })
+```
+
+The log option accepts an object or boolean type:
+
+- Boolean
+
+  - true: show all
+  - false: hide all
+
+- object
+  - start: control the start information
+  - process: control of process information
+  - result: control of result information
 
 ### About Results
 
@@ -1491,6 +1520,13 @@ export interface XCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
+  log?:
+    | {
+        start?: boolean
+        process?: boolean
+        result?: boolean
+      }
+    | boolean
   crawlPage?: {
     puppeteerLaunch?: PuppeteerLaunchOptions // puppeteer
   }
@@ -1503,6 +1539,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - enableRandomFingerprint: true
 - baseUrl: undefined
 - intervalTime: undefined
+- log: { start: true, process: true, result: true }
 - crawlPage: undefined
 
 #### Detail target config
