@@ -1,3 +1,17 @@
+# [v8.3.0](https://github.com/coder-hxl/x-crawl/compare/v8.2.0..v8.3.0) (2023-11-09)
+
+### 🚀 Features
+
+- Added log option to control printing information in the terminal.
+- The terminal printing information has been upgraded to make it easier to distinguish the source of the information.
+
+---
+
+### 🚀 特征
+
+- 新增 log 选项，用于控制在终端的打印信息。
+- 终端打印信息升级，更容易区分信息来源。
+
 # [v8.2.0](https://github.com/coder-hxl/x-crawl/compare/v8.1.1...v8.2.0) (2023-09-07)
 
 ### 🚀 Features
