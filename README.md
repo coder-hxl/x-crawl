@@ -185,7 +185,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
     const urls = await page.$$eval(`${elSelector} picture img`, (imgEls) =>
       imgEls.map((item) => item.src)
     )
-    imgUrls.push(...urls.slice(0, 8))
+    imgUrls.push(...urls.slice(0, 6))
 
     // close the page
     page.close()
