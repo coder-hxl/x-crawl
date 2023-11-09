@@ -57,6 +57,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
   - [Rotate Proxy](#rotate-proxy)
   - [Custom Device Fingerprint](#custom-device-fingerprint)
   - [Priority Queue](#priority-queue)
+  - [Print information](#print-information)
   - [About Results](#about-results)
   - [TypeScript](#typescript)
 - [API](#api)
@@ -134,6 +135,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
   - [Community](#community)
   - [Issues](#issues)
   - [Sponsor](#sponsor-1)
+  - [Special Instructions](#special-instructions)
 
 ## Install
 
@@ -197,7 +199,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 running result:
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example-gif.gif" />
+  <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
 
 **Note:** Please do not crawl randomly, you can check the **robots.txt** protocol before crawling. The class name of the website may change, this is just to demonstrate how to use x-crawl.
@@ -787,6 +789,34 @@ myXCrawl
 
 The larger the value of the priority attribute, the higher the priority in the current crawling queue.
 
+### Print information
+
+The crawled print information consists of start (displaying mode and total number), process (displaying number and how long to wait), and result (displaying success and failure information). There will be something like **1-page-2** in front of each piece of information. The first 1 represents the first crawler instance, the middle page represents the API type, and the following 2 represents the second page of the first crawler instance. Do this The purpose is to better distinguish which API the information comes from.
+
+When you do not want to display the crawled information in the terminal, you can control the display or hiding through the options.
+
+```js
+import xCrawl from 'x-crawl'
+
+// Only hide the process, start and result display
+const myXCrawl = xCrawl({ log: { process: false } })
+
+// Hide all information
+const myXCrawl = xCrawl({ log: false })
+```
+
+The log option accepts an object or boolean type:
+
+- Boolean
+
+  - true: show all
+  - false: hide all
+
+- object
+  - start: control the start information
+  - process: control of process information
+  - result: control of result information
+
 ### About Results
 
 Each crawl target will generate a detail object, which will contain the following properties:
@@ -938,7 +968,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlPage({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1089,7 +1119,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlHTML({
     url: 'https://www.example.com',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1246,7 +1276,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlData({
     url: 'https://www.example.com/api',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1
   })
   .then((res) => {})
@@ -1385,7 +1415,7 @@ const myXCrawl = xCrawl()
 myXCrawl
   .crawlFile({
     url: 'https://www.example.com/file',
-    proxy: 'xxx',
+    proxy: { urls: ['xxx'] },
     maxRetry: 1,
     storeDir: './upload',
     fileName: 'xxx'
@@ -1490,6 +1520,13 @@ export interface XCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
+  log?:
+    | {
+        start?: boolean
+        process?: boolean
+        result?: boolean
+      }
+    | boolean
   crawlPage?: {
     puppeteerLaunch?: PuppeteerLaunchOptions // puppeteer
   }
@@ -1502,6 +1539,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - enableRandomFingerprint: true
 - baseUrl: undefined
 - intervalTime: undefined
+- log: { start: true, process: true, result: true }
 - crawlPage: undefined
 
 #### Detail target config
@@ -2042,6 +2080,8 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
 
 - **GitHub Discussions:** Use [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) for message board-style questions and discussions.
 
+Questions and discussions related to illegal activities may not be submitted. x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
+
 ### Issues
 
 If you have questions, needs, or good suggestions, you can raise them at [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues).
@@ -2049,3 +2089,7 @@ If you have questions, needs, or good suggestions, you can raise them at [GitHub
 ### Sponsor
 
 x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
+
+### Special Instructions
+
+x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
