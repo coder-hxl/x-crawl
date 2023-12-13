@@ -36,7 +36,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "https-proxy-agent": "^7.0.1",
-    "puppeteer": "21.1.0",
+    "puppeteer": "21.6.1",
     "x-crawl": "link:"
   },
   "devDependencies": {
