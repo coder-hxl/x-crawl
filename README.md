@@ -2073,7 +2073,7 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
 
 ### Using crawlPage API causes the program to crash
 
-If you need to crawl many pages in one crawlPage, it is recommended that after crawling each page, use [onCrawlItemComplete life cycle function] (#onCrawlItemComplete) to process the results of each target and close the page instance. If no shutdown operation is performed, then The program may crash due to too many pages being opened (related to the performance of the device itself).
+If you need to crawl many pages in one crawlPage, it is recommended that after crawling each page, use [onCrawlItemComplete life cycle function](#onCrawlItemComplete) to process the results of each target and close the page instance. If no shutdown operation is performed, then The program may crash due to too many pages being opened (related to the performance of the device itself).
 
 ```js
 import xCrawl from 'x-crawl'
