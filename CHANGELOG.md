@@ -1,3 +1,17 @@
+# [v8.3.1](https://github.com/coder-hxl/x-crawl/compare/v8.3.0..v8.3.1) (2023-12-26)
+
+### 🚀 Features
+
+- The document adds a solution to the problem of program crash caused by using crawlPage API.
+- puppeteer upgraded from 21.1.0 to 21.6.1.
+
+---
+
+### 🚀 特征
+
+- 文档新增 使用 crawlPage API 造成程序崩溃 的解决方案。
+- puppeteer 从 21.1.0 升至 21.6.1 。
+
 # [v8.3.0](https://github.com/coder-hxl/x-crawl/compare/v8.2.0..v8.3.0) (2023-11-09)
 
 ### 🚀 Features
