@@ -131,6 +131,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
     - [AnyObject](#anyobject)
 - [FAQ](#faq)
   - [The relationship between crawlPage API and puppeteer](#the-relationship-between-crawlpage-api-and-puppeteer)
+  - [Using crawlPage API causes the program to crash](#using-crawlpage-api-causes-the-program-to-crash)
 - [More](#more)
   - [Community](#community)
   - [Issues](#issues)
@@ -333,8 +334,6 @@ Lifecycle functions owned by the crawlPage API:
 ##### onCrawlItemComplete
 
 In the onCrawlItemComplete function, you can get the results of each crawled goal in advance.
-
-**Note:** If you need to crawl many pages at one time, you need to use this life cycle function to process the results of each target and close the page instance after each page is crawled down. If you do not close the page instance, then The program will crash due to too many opened pages.
 
 #### Open Browser
 
@@ -2071,6 +2070,33 @@ export interface AnyObject extends Object {
 ### The relationship between crawlPage API and puppeteer
 
 The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppeteer), you only need to pass in some configuration options to let x-crawl help you simplify the operation and get the intact Brower instance and Page instance , x-crawl does not override it.
+
+### Using crawlPage API causes the program to crash
+
+If you need to crawl many pages in one crawlPage, it is recommended that after crawling each page, use [onCrawlItemComplete life cycle function] (#onCrawlItemComplete) to process the results of each target and close the page instance. If no shutdown operation is performed, then The program may crash due to too many pages being opened (related to the performance of the device itself).
+
+```js
+import xCrawl from 'x-crawl'
+
+const myXCrawl = xCrawl()
+
+// Use the advanced configuration mode
+myXCrawl.crawlPage({
+  targets: [
+    'https://www.example.com/page-1',
+    'https://www.example.com/page-2',
+    'https://www.example.com/page-3',
+    'https://www.example.com/page-4',
+    'https://www.example.com/page-5',
+    'https://www.example.com/page-6'
+  ],
+  onCrawlItemComplete(crawlPageSingleResult) {
+    const { page } = crawlPageSingleResult.data
+
+    page.close()
+  }
+})
+```
 
 ## More
 
