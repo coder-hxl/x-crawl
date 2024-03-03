@@ -35,26 +35,26 @@
   },
   "dependencies": {
     "chalk": "4.1.2",
-    "https-proxy-agent": "^7.0.1",
+    "https-proxy-agent": "^7.0.4",
     "puppeteer": "21.6.1",
     "x-crawl": "link:"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/preset-env": "^7.20.2",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
     "@jest/globals": "^29.3.1",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-run": "^3.0.2",
     "@rollup/plugin-terser": "^0.4.4",
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
-    "eslint": "^8.32.0",
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
     "jest": "^29.3.1",
-    "prettier": "^3.0.0",
-    "rollup": "^4.0.0",
+    "prettier": "^3.2.5",
+    "rollup": "^4.12.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.1.2",
     "typescript": "5.3.3"
   }
 }
