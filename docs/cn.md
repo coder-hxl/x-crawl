@@ -255,7 +255,7 @@ const myXCrawl = xCrawl({
 })
 ```
 
-enableRandomFingerprint 选项默认为 true。
+enableRandomFingerprint 选项默认为 false 。
 
 - true: 启动随机设备指纹。可通过进阶配置或详细目标配置指定目标的指纹配置。
 - false: 关闭随机设备指纹，不影响进阶配置或详细目标配置为目标指定的指纹配置。
@@ -1523,7 +1523,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 **默认值**
 
 - mode: 'async'
-- enableRandomFingerprint: true
+- enableRandomFingerprint: false
 - baseUrl: undefined
 - intervalTime: undefined
 - log: { start: true, process: true, result: true }

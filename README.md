@@ -258,7 +258,7 @@ const myXCrawl = xCrawl({
 })
 ```
 
-The enableRandomFingerprint option defaults to true.
+The enableRandomFingerprint option defaults to false.
 
 - true: Enable random device fingerprinting. The fingerprint configuration of the target can be specified through advanced configuration or detailed target configuration.
 - false: Turns off random device fingerprinting, does not affect the fingerprint configuration specified for the target by advanced configuration or detailed target configuration.
@@ -1535,7 +1535,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 **Default Value**
 
 - mode: 'async'
-- enableRandomFingerprint: true
+- enableRandomFingerprint: false
 - baseUrl: undefined
 - intervalTime: undefined
 - log: { start: true, process: true, result: true }
