@@ -1,3 +1,27 @@
+# [v9.0.0](https://github.com/coder-hxl/x-crawl/compare/v8.3.1..v9.0.0) (2024-03-16)
+
+### 🚨 Breaking Changes
+
+- The enableRandomFingerprint attribute of XCrawlConfig configuration is changed to false by default
+- Drop support for Node16
+
+### ⛓️ Dependencies
+
+- puppeteer upgraded from 21.6.1 to 22.5.0
+- https-proxy-agent upgraded from 7.0.1 to 7.0.4
+
+---
+
+### 🚨 重大改变
+
+- XCrawlConfig 配置的 enableRandomFingerprint 属性默认改为 false
+- 放弃对 Node16 的支持
+
+### ⛓️ 依赖关系
+
+- puppeteer 从 21.6.1 升至 22.5.0
+- https-proxy-agent 从 7.0.1 升至 7.0.4
+
 # [v8.3.1](https://github.com/coder-hxl/x-crawl/compare/v8.3.0..v8.3.1) (2023-12-26)
 
 ### 🚀 Features

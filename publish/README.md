@@ -258,7 +258,7 @@ const myXCrawl = xCrawl({
 })
 ```
 
-The enableRandomFingerprint option defaults to true.
+The enableRandomFingerprint option defaults to false.
 
 - true: Enable random device fingerprinting. The fingerprint configuration of the target can be specified through advanced configuration or detailed target configuration.
 - false: Turns off random device fingerprinting, does not affect the fingerprint configuration specified for the target by advanced configuration or detailed target configuration.
@@ -1535,7 +1535,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 **Default Value**
 
 - mode: 'async'
-- enableRandomFingerprint: true
+- enableRandomFingerprint: false
 - baseUrl: undefined
 - intervalTime: undefined
 - log: { start: true, process: true, result: true }
@@ -2073,7 +2073,7 @@ The crawlPage API has built-in [puppeteer](https://github.com/puppeteer/puppetee
 
 ### Using crawlPage API causes the program to crash
 
-If you need to crawl many pages in one crawlPage, it is recommended that after crawling each page, use [onCrawlItemComplete life cycle function] (#onCrawlItemComplete) to process the results of each target and close the page instance. If no shutdown operation is performed, then The program may crash due to too many pages being opened (related to the performance of the device itself).
+If you need to crawl many pages in one crawlPage, it is recommended that after crawling each page, use [onCrawlItemComplete life cycle function](#onCrawlItemComplete) to process the results of each target and close the page instance. If no shutdown operation is performed, then The program may crash due to too many pages being opened (related to the performance of the device itself).
 
 ```js
 import xCrawl from 'x-crawl'

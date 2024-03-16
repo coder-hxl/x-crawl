@@ -1,6 +1,6 @@
 {
   "name": "x-crawl",
-  "version": "8.3.1",
+  "version": "9.0.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible Node.js multifunctional crawler library.",
   "license": "MIT",
@@ -35,11 +35,11 @@
     }
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "chalk": "4.1.2",
-    "https-proxy-agent": "^7.0.1",
+    "https-proxy-agent": "^7.0.4",
     "puppeteer": "22.5.0"
   }
 }
