@@ -30,7 +30,7 @@ function createInstanceConfig(
     id: ++id,
 
     mode: mode ?? 'async',
-    enableRandomFingerprint: enableRandomFingerprint ?? true,
+    enableRandomFingerprint: enableRandomFingerprint ?? false,
     timeout: timeout ?? 10000,
     maxRetry: maxRetry ?? 0,
     logConfig: { start: true, process: true, result: true },
