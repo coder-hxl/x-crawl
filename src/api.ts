@@ -824,11 +824,11 @@ async function pageSingleCrawlHandle(
   let notError = true
   try {
     if (detailTargetConfig.proxyUrl) {
-      await browser.createIncognitoBrowserContext({
+      await browser.createBrowserContext({
         proxyServer: detailTargetConfig.proxyUrl
       })
     } else {
-      await browser.createIncognitoBrowserContext({
+      await browser.createBrowserContext({
         proxyServer: undefined
       })
     }
@@ -976,8 +976,8 @@ function dataSingleResultHandle(
     const data = contentType.includes('application/json')
       ? JSON.parse(detailTargetResult.data.toString())
       : contentType.includes('text')
-      ? detailTargetResult.data.toString()
-      : detailTargetResult.data
+        ? detailTargetResult.data.toString()
+        : detailTargetResult.data
 
     result.data = { ...detailTargetResult, data }
   }
