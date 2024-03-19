@@ -5,3 +5,6 @@ dist
 coverage
 
 upload
+
+test/start/index.js
+test/server/index.js
