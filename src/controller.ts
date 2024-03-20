@@ -1,5 +1,4 @@
 import { asyncBatchCrawl, syncBatchCrawl } from './batchCrawl'
-import { priorityQueueMergeSort } from './sort'
 
 import {
   InfoCommonConfig,
@@ -11,6 +10,7 @@ import {
 } from './api'
 
 import {
+  mergeSort,
   isObject,
   isUndefined,
   log,
@@ -96,9 +96,9 @@ export async function controller<
     (item) => item.priority === detailTargets[0].priority
   )
   const detailTargetConfigs = isPriorityCrawl
-    ? priorityQueueMergeSort(
+    ? mergeSort(
         detailTargets.map((item) => ({ ...item, valueOf: () => item.priority }))
-      )
+      ).reverse()
     : detailTargets
 
   // 生成装置
@@ -185,8 +185,9 @@ export async function controller<
             )!.state = false
 
             // 寻找新代理 URL
-            const newProxyUrl = proxyDetails.find((detaile) => detaile.state)
-              ?.url
+            const newProxyUrl = proxyDetails.find(
+              (detaile) => detaile.state
+            )?.url
 
             // 使用新代理 URL
             if (!isUndefined(newProxyUrl)) {

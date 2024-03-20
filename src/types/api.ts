@@ -115,6 +115,7 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   url: string
   headers?: AnyObject | null
+  priority?: number
   storeDir?: string | null
   fileName?: string | null
   extension?: string | null

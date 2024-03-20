@@ -1,19 +1,6 @@
 import chalk from 'chalk'
 
-export function sleep(timeout: number) {
-  return new Promise((resolve) => setTimeout(resolve, timeout))
-}
-
-export function random(max: number, min = 0) {
-  let result = Math.floor(Math.random() * max)
-
-  while (result < min) {
-    result = Math.floor(Math.random() * max)
-  }
-
-  return result
-}
-
+// Log
 export const log = console.log
 export const logStart = chalk.blueBright
 export const logStatistics = chalk.whiteBright
@@ -40,9 +27,52 @@ export function isBoolean(value: any): value is string {
 }
 
 export function isObject(value: any): value is object {
-  return typeof value === 'object' && value && !Array.isArray(value)
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 export function isArray(value: any): value is any[] {
   return Array.isArray(value)
+}
+
+export function sleep(timeout: number) {
+  return new Promise((resolve) => setTimeout(resolve, timeout))
+}
+
+export function random(max: number, min = 0) {
+  let result = Math.floor(Math.random() * max)
+
+  while (result < min) {
+    result = Math.floor(Math.random() * max)
+  }
+
+  return result
+}
+
+export function mergeSort<T extends any[]>(arr: T): T {
+  if (arr.length <= 1) return arr
+
+  const mid = Math.floor(arr.length / 2)
+  const newLeftArr = mergeSort(arr.slice(0, mid))
+  const newRightArr = mergeSort(arr.slice(mid))
+
+  const newArr = [] as any as T
+  let i = 0
+  let j = 0
+  while (i < newLeftArr.length && j < newRightArr.length) {
+    if (newLeftArr[i] <= newRightArr[j]) {
+      newArr.push(newLeftArr[i++])
+    } else {
+      newArr.push(newRightArr[j++])
+    }
+  }
+
+  if (i < newLeftArr.length) {
+    newArr.push(...newLeftArr.slice(i))
+  }
+
+  if (j < newRightArr.length) {
+    newArr.push(...newRightArr.splice(j))
+  }
+
+  return newArr
 }

@@ -5,8 +5,8 @@ import puppeteer, { Browser, HTTPResponse, Page, Protocol } from 'puppeteer'
 
 import { Device, controller, isCrawlStatusInHttpStatus } from './controller'
 import { Request, request } from './request'
-import { quickSort } from './sort'
 import {
+  mergeSort,
   isArray,
   isObject,
   isString,
@@ -1350,7 +1350,7 @@ export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
 
     if (logConfig.result) {
       // 打印保存错误
-      quickSort(saveFileErrorArr).forEach((item) =>
+      mergeSort(saveFileErrorArr).forEach((item) =>
         log(`${infoConfig.serialNumber} | ${logError(item.message)}`)
       )
 
