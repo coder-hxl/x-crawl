@@ -22,7 +22,7 @@ x-crawl is a flexible Node.js multifunctional crawler library. Flexible usage an
 
 ## Sponsor
 
-x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
+x-crawl is an open source project licensed by MIT and is completely free to use. If you benefit from the projects I develop and maintain at work, so that I can continue to devote energy to the maintenance and update of the project and improve the user experience and functions, please consider using [Afdian](https://afdian.net/a/coderhxl) platform to support my work. Your support is the driving force for our continuous improvement! thank you for your support!
 
 # Table of Contents
 
@@ -136,7 +136,7 @@ x-crawl is an open source project under the MIT license, completely free to use.
   - [Community](#community)
   - [Issues](#issues)
   - [Sponsor](#sponsor-1)
-  - [Special Instructions](#special-instructions)
+  - [Precautions](#Precautions)
 
 ## Install
 
@@ -203,7 +203,7 @@ running result:
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
 
-**Note:** Please do not crawl randomly, you can check the **robots.txt** protocol before crawling. The class name of the website may change, this is just to demonstrate how to use x-crawl.
+**Note:** x-crawl is for legal purposes only. It is prohibited to use this tool for any illegal activities. Please be sure to comply with the robots.txt file regulations of the target website. The class name of the website may change at any time. This example is only used to demonstrate the use of x-crawl and is not specific to a specific website.
 
 ## Core Concepts
 
@@ -2106,7 +2106,7 @@ myXCrawl.crawlPage({
 
 - **GitHub Discussions:** Use [GitHub Discussions](https://github.com/coder-hxl/x-crawl/discussions) for message board-style questions and discussions.
 
-Questions and discussions related to illegal activities may not be submitted. x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
+Questions and discussions related to any illegal activity may not be submitted. x-crawl is for legal purposes only, and it is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, network attacks, privacy violations, etc. Please ensure that your usage behavior always complies with laws, regulations and ethical standards, and jointly maintain a safe and legal network environment.
 
 ### Issues
 
@@ -2114,8 +2114,12 @@ If you have questions, needs, or good suggestions, you can raise them at [GitHub
 
 ### Sponsor
 
-x-crawl is an open source project under the MIT license, completely free to use. If you benefit from the projects I develop and maintain at work, please consider supporting my work through the [Afdian](https://afdian.net/a/coderhxl) platform.
+x-crawl is an open source project licensed by MIT and is completely free to use. If you benefit from the projects I develop and maintain at work, so that I can continue to devote energy to the maintenance and update of the project and improve the user experience and functions, please consider using [Afdian](https://afdian.net/a/coderhxl) platform to support my work. Your support is the driving force for our continuous improvement! thank you for your support!
 
-### Special Instructions
+### Precautions
 
-x-crawl is for legal use only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, cyber attacks, privacy invasion, etc.
+- x-crawl is for legal purposes only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, network attacks, privacy violations, etc.
+- Before collecting data, make sure you have explicit authorization from the target website and comply with its robots.txt file and terms of use.
+- Avoid placing excessive access pressure on the target website to avoid triggering its anti-crawling strategy or causing server downtime.
+
+**x-crawl is for legal purposes only, x-crawl does not bear any responsibility for any legal liability arising from the use of x-crawl**
