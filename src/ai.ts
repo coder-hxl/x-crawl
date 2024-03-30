@@ -2,7 +2,8 @@ import OpenAI, { ClientOptions } from 'openai'
 
 import {
   PARSE_ELEMENTS_CONTEXT,
-  GET_ELEMENT_SELECTORS_CONTEXT
+  GET_ELEMENT_SELECTORS_CONTEXT,
+  HELP_CONTEXT
 } from './default'
 
 type Model =
@@ -38,6 +39,7 @@ interface RunOption {
   context: string
   HTMLContent: string
   userContent: string
+  responseFormatType: 'text' | 'json_object'
 }
 
 interface ParseElementsContentOption {
@@ -71,7 +73,13 @@ class AIAssistant {
   }
 
   private async run<T>(option: RunOption): Promise<T> {
-    const { model = this.model, context, HTMLContent, userContent } = option
+    const {
+      model = this.model,
+      context,
+      HTMLContent,
+      userContent,
+      responseFormatType
+    } = option
 
     const completion = await this.openai.chat.completions.create({
       model,
@@ -80,12 +88,14 @@ class AIAssistant {
         { role: 'user', name: 'x-crawl', content: HTMLContent },
         { role: 'user', name: 'coder', content: userContent }
       ],
-      response_format: { type: 'json_object' }
+      response_format: { type: responseFormatType }
     })
 
-    const result = JSON.parse(
-      completion.choices[0].message.content ?? '{}'
-    ) as any
+    const content = completion.choices[0].message.content
+    const result =
+      responseFormatType === 'json_object'
+        ? (JSON.parse(content ?? '{}') as any)
+        : content
 
     console.log(result)
 
@@ -113,7 +123,8 @@ class AIAssistant {
       model,
       context: PARSE_ELEMENTS_CONTEXT,
       HTMLContent: HTML,
-      userContent: coderContent
+      userContent: coderContent,
+      responseFormatType: 'json_object'
     })
 
     return result
@@ -141,7 +152,22 @@ class AIAssistant {
       model,
       context: GET_ELEMENT_SELECTORS_CONTEXT,
       HTMLContent: HTML,
-      userContent: coderContent
+      userContent: coderContent,
+      responseFormatType: 'json_object'
+    })
+
+    return result
+  }
+
+  async help(content: string, option: GetCommonOtherOption = {}) {
+    const { model } = option
+
+    const result = await this.run<GetElementSelectorsResult>({
+      model,
+      context: HELP_CONTEXT,
+      HTMLContent: '',
+      userContent: content,
+      responseFormatType: 'text'
     })
 
     return result
