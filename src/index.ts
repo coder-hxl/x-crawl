@@ -81,3 +81,7 @@ export default function xCrawl(config?: XCrawlConfig): XCrawlInstance {
 
   return instance
 }
+
+// 导出所有 AI
+// createXCrawlOpenAI
+export * from './ai'
