@@ -47,85 +47,50 @@ export interface XCrawlInstanceConfig
 
 export interface XCrawlInstance {
   crawlPage: {
-    (
-      config: string,
-      callback?: (result: CrawlPageSingleResult) => void
-    ): Promise<CrawlPageSingleResult>
+    (config: string): Promise<CrawlPageSingleResult>
+
+    (config: CrawlPageDetailTargetConfig): Promise<CrawlPageSingleResult>
 
     (
-      config: CrawlPageDetailTargetConfig,
-      callback?: (result: CrawlPageSingleResult) => void
-    ): Promise<CrawlPageSingleResult>
-
-    (
-      config: (string | CrawlPageDetailTargetConfig)[],
-      callback?: (result: CrawlPageSingleResult[]) => void
+      config: (string | CrawlPageDetailTargetConfig)[]
     ): Promise<CrawlPageSingleResult[]>
 
-    (
-      config: CrawlPageAdvancedConfig,
-      callback?: (result: CrawlPageSingleResult[]) => void
-    ): Promise<CrawlPageSingleResult[]>
+    (config: CrawlPageAdvancedConfig): Promise<CrawlPageSingleResult[]>
   }
 
   crawlHTML: {
-    (
-      config: string,
-      callback?: (result: CrawlHTMLSingleResult) => void
-    ): Promise<CrawlHTMLSingleResult>
+    (config: string): Promise<CrawlHTMLSingleResult>
+
+    (config: CrawlHTMLDetailTargetConfig): Promise<CrawlHTMLSingleResult>
 
     (
-      config: CrawlHTMLDetailTargetConfig,
-      callback?: (result: CrawlHTMLSingleResult) => void
-    ): Promise<CrawlHTMLSingleResult>
-
-    (
-      config: (string | CrawlHTMLDetailTargetConfig)[],
-      callback?: (result: CrawlHTMLSingleResult[]) => void
+      config: (string | CrawlHTMLDetailTargetConfig)[]
     ): Promise<CrawlHTMLSingleResult[]>
 
-    (
-      config: CrawlHTMLAdvancedConfig,
-      callback?: (result: CrawlHTMLSingleResult[]) => void
-    ): Promise<CrawlHTMLSingleResult[]>
+    (config: CrawlHTMLAdvancedConfig): Promise<CrawlHTMLSingleResult[]>
   }
 
   crawlData: {
+    <T = any>(config: string): Promise<CrawlDataSingleResult<T>>
+
     <T = any>(
-      config: CrawlDataDetailTargetConfig,
-      callback?: (result: CrawlDataSingleResult<T>) => void
+      config: CrawlDataDetailTargetConfig
     ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
-      config: string,
-      callback?: (result: CrawlDataSingleResult<T>) => void
-    ): Promise<CrawlDataSingleResult<T>>
-
-    <T = any>(
-      config: (string | CrawlDataDetailTargetConfig)[],
-      callback?: (result: CrawlDataSingleResult<T>[]) => void
+      config: (string | CrawlDataDetailTargetConfig)[]
     ): Promise<CrawlDataSingleResult<T>[]>
 
     <T = any>(
-      config: CrawlDataAdvancedConfig<T>,
-      callback?: (result: CrawlDataSingleResult<T>[]) => void
+      config: CrawlDataAdvancedConfig<T>
     ): Promise<CrawlDataSingleResult<T>[]>
   }
 
   crawlFile: {
-    (
-      config: CrawlFileDetailTargetConfig,
-      callback?: (result: CrawlFileSingleResult) => void
-    ): Promise<CrawlFileSingleResult>
+    (config: CrawlFileDetailTargetConfig): Promise<CrawlFileSingleResult>
 
-    (
-      config: CrawlFileDetailTargetConfig[],
-      callback?: (result: CrawlFileSingleResult[]) => void
-    ): Promise<CrawlFileSingleResult[]>
+    (config: CrawlFileDetailTargetConfig[]): Promise<CrawlFileSingleResult[]>
 
-    (
-      config: CrawlFileAdvancedConfig,
-      callback?: (result: CrawlFileSingleResult[]) => void
-    ): Promise<CrawlFileSingleResult[]>
+    (config: CrawlFileAdvancedConfig): Promise<CrawlFileSingleResult[]>
   }
 }

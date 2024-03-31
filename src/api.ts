@@ -1088,29 +1088,22 @@ export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   let haveCreateBrowser = false
   const type = 'page'
 
+  function crawlPage(config: string): Promise<CrawlPageSingleResult>
+
   function crawlPage(
-    config: string,
-    callback?: (result: CrawlPageSingleResult) => void
+    config: CrawlPageDetailTargetConfig
   ): Promise<CrawlPageSingleResult>
 
   function crawlPage(
-    config: CrawlPageDetailTargetConfig,
-    callback?: (result: CrawlPageSingleResult) => void
-  ): Promise<CrawlPageSingleResult>
-
-  function crawlPage(
-    config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (result: CrawlPageSingleResult[]) => void
+    config: (string | CrawlPageDetailTargetConfig)[]
   ): Promise<CrawlPageSingleResult[]>
 
   function crawlPage(
-    config: CrawlPageAdvancedConfig,
-    callback?: (result: CrawlPageSingleResult[]) => void
+    config: CrawlPageAdvancedConfig
   ): Promise<CrawlPageSingleResult[]>
 
   async function crawlPage(
-    config: UniteCrawlPageConfig,
-    callback?: (result: any) => void
+    config: UniteCrawlPageConfig
   ): Promise<CrawlPageSingleResult | CrawlPageSingleResult[]> {
     //  创建浏览器
     if (!haveCreateBrowser) {
@@ -1155,10 +1148,6 @@ export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
         ? crawlResultArr
         : crawlResultArr[0]
 
-    if (callback) {
-      callback(crawlResult)
-    }
-
     return crawlResult
   }
 
@@ -1170,29 +1159,22 @@ export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   let id = 0
   const type = 'html'
 
+  function crawlHTML(config: string): Promise<CrawlHTMLSingleResult>
+
   function crawlHTML(
-    config: string,
-    callback?: (result: CrawlHTMLSingleResult) => void
+    config: CrawlHTMLDetailTargetConfig
   ): Promise<CrawlHTMLSingleResult>
 
   function crawlHTML(
-    config: CrawlHTMLDetailTargetConfig,
-    callback?: (result: CrawlHTMLSingleResult) => void
-  ): Promise<CrawlHTMLSingleResult>
-
-  function crawlHTML(
-    config: (string | CrawlHTMLDetailTargetConfig)[],
-    callback?: (result: CrawlHTMLSingleResult[]) => void
+    config: (string | CrawlHTMLDetailTargetConfig)[]
   ): Promise<CrawlHTMLSingleResult[]>
 
   function crawlHTML(
-    config: CrawlHTMLAdvancedConfig,
-    callback?: (result: CrawlHTMLSingleResult[]) => void
+    config: CrawlHTMLAdvancedConfig
   ): Promise<CrawlHTMLSingleResult[]>
 
   async function crawlHTML(
-    config: UniteCrawlHTMLConfig,
-    callback?: (result: any) => void
+    config: UniteCrawlHTMLConfig
   ): Promise<CrawlHTMLSingleResult | CrawlHTMLSingleResult[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlHTMLConfig(xCrawlInstanceConfig, config)
@@ -1218,10 +1200,6 @@ export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
         ? crawlResultArr
         : crawlResultArr[0]
 
-    if (callback) {
-      callback(crawlResult)
-    }
-
     return crawlResult
   }
 
@@ -1233,29 +1211,22 @@ export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   let id = 0
   const type = 'data'
 
+  function crawlData<T = any>(config: string): Promise<CrawlDataSingleResult<T>>
+
   function crawlData<T = any>(
-    config: string,
-    callback?: (result: CrawlDataSingleResult<T>) => void
+    config: CrawlDataDetailTargetConfig
   ): Promise<CrawlDataSingleResult<T>>
 
   function crawlData<T = any>(
-    config: CrawlDataDetailTargetConfig,
-    callback?: (result: CrawlDataSingleResult<T>) => void
-  ): Promise<CrawlDataSingleResult<T>>
-
-  function crawlData<T = any>(
-    config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (result: CrawlDataSingleResult<T>[]) => void
+    config: (string | CrawlDataDetailTargetConfig)[]
   ): Promise<CrawlDataSingleResult<T>[]>
 
   function crawlData<T = any>(
-    config: CrawlDataAdvancedConfig<T>,
-    callback?: (result: CrawlDataSingleResult<T>[]) => void
+    config: CrawlDataAdvancedConfig<T>
   ): Promise<CrawlDataSingleResult<T>[]>
 
   async function crawlData<T = any>(
-    config: UniteCrawlDataConfig<T>,
-    callback?: (result: any) => void
+    config: UniteCrawlDataConfig<T>
   ): Promise<CrawlDataSingleResult<T> | CrawlDataSingleResult<T>[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
       createCrawlDataConfig(xCrawlInstanceConfig, config)
@@ -1281,10 +1252,6 @@ export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
         ? crawlResultArr
         : crawlResultArr[0]
 
-    if (callback) {
-      callback(crawlResult)
-    }
-
     return crawlResult
   }
 
@@ -1297,23 +1264,19 @@ export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   const type = 'file'
 
   function crawlFile(
-    config: CrawlFileDetailTargetConfig,
-    callback?: (result: CrawlFileSingleResult) => void
+    config: CrawlFileDetailTargetConfig
   ): Promise<CrawlFileSingleResult>
 
   function crawlFile(
-    config: CrawlFileDetailTargetConfig[],
-    callback?: (result: CrawlFileSingleResult[]) => void
+    config: CrawlFileDetailTargetConfig[]
   ): Promise<CrawlFileSingleResult[]>
 
   function crawlFile(
-    config: CrawlFileAdvancedConfig,
-    callback?: (result: CrawlFileSingleResult[]) => void
+    config: CrawlFileAdvancedConfig
   ): Promise<CrawlFileSingleResult[]>
 
   async function crawlFile(
-    config: UniteCrawlFileConfig,
-    callback?: (result: any) => void
+    config: UniteCrawlFileConfig
   ): Promise<CrawlFileSingleResult | CrawlFileSingleResult[]> {
     const {
       detailTargets,
@@ -1384,10 +1347,6 @@ export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
       isArray(config) || (isObject(config) && Object.hasOwn(config, 'targets'))
         ? crawlResultArr
         : crawlResultArr[0]
-
-    if (callback) {
-      callback(crawlResult)
-    }
 
     return crawlResult
   }
