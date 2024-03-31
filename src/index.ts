@@ -2,8 +2,7 @@ import {
   createCrawlData,
   createCrawlFile,
   createCrawlHTML,
-  createCrawlPage,
-  createStartPolling
+  createCrawlPage
 } from './api'
 
 import { XCrawlConfig, XCrawlInstance, XCrawlInstanceConfig } from './types'
@@ -67,8 +66,7 @@ function createnInstance(
     crawlPage: createCrawlPage(xCrawlInstanceConfig),
     crawlHTML: createCrawlHTML(xCrawlInstanceConfig),
     crawlData: createCrawlData(xCrawlInstanceConfig),
-    crawlFile: createCrawlFile(xCrawlInstanceConfig),
-    startPolling: createStartPolling(xCrawlInstanceConfig)
+    crawlFile: createCrawlFile(xCrawlInstanceConfig)
   }
 
   return instance

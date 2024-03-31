@@ -27,7 +27,6 @@ import {
   CrawlPageDetailTargetConfig,
   PageCookies,
   CrawlPageSingleResult,
-  StartPollingConfig,
   CrawlPageAdvancedConfig,
   CrawlDataSingleResult,
   CrawlFileSingleResult,
@@ -1394,48 +1393,4 @@ export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   }
 
   return crawlFile
-}
-
-export function createStartPolling(xCrawlInstanceConfig: XCrawlInstanceConfig) {
-  const { id: xId, logConfig } = xCrawlInstanceConfig
-  let id = 0
-  const type = 'polling'
-
-  return (
-    config: StartPollingConfig,
-    callback: (count: number, stopPolling: () => void) => void
-  ) => {
-    const serialNumber = `${xId}-${type}-${++id}`
-    const { d, h, m } = config
-
-    const day = !isUndefined(d) ? d * 1000 * 60 * 60 * 24 : 0
-    const hour = !isUndefined(h) ? h * 1000 * 60 * 60 : 0
-    const minute = !isUndefined(m) ? m * 1000 * 60 : 0
-    const total = day + hour + minute
-
-    let count = 0
-
-    startCallback()
-    const intervalId = setInterval(startCallback, total)
-
-    function startCallback() {
-      if (logConfig.start) {
-        log(
-          `${whiteBold(serialNumber)} | ${logStart(
-            `Start polling - count: ${++count}`
-          )}`
-        )
-      }
-
-      callback(count, stopPolling)
-    }
-
-    function stopPolling() {
-      clearInterval(intervalId)
-
-      if (logConfig.result) {
-        log(`${whiteBold(serialNumber)} | ${logWarn('Stop the polling')}`)
-      }
-    }
-  }
 }

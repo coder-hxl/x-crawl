@@ -1,6 +1,5 @@
 import { PuppeteerLaunchOptions } from 'puppeteer'
 import {
-  StartPollingConfig,
   IntervalTime,
   CrawlPageSingleResult,
   CrawlDataSingleResult,
@@ -129,9 +128,4 @@ export interface XCrawlInstance {
       callback?: (result: CrawlFileSingleResult[]) => void
     ): Promise<CrawlFileSingleResult[]>
   }
-
-  startPolling: (
-    config: StartPollingConfig,
-    callback: (count: number, stopPolling: () => void) => void
-  ) => void
 }

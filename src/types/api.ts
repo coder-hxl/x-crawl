@@ -181,12 +181,6 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   }) => Promise<Buffer>
 }
 
-export interface StartPollingConfig {
-  d?: number
-  h?: number
-  m?: number
-}
-
 /* API Result */
 export interface CrawlCommonResult {
   id: number
