@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "sharp": "^0.32.0"
+    "dotenv": "^16.4.5"
   }
 }

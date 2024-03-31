@@ -1,34 +1,33 @@
 import path from 'node:path'
-import xCrawl from 'x-crawl'
+import xCrawl, { createXCrawlOpenAI } from 'x-crawl'
+
+import { BASE_URL, API_KEY } from './envConfig'
 
 const pathResolve = (dirPath: string) => path.resolve(__dirname, dirPath)
 
-const testXCrawl = xCrawl()
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { baseURL: BASE_URL, apiKey: API_KEY }
+})
 
-testXCrawl
-  .crawlFile({
-    targets: [
-      {
-        url: 'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4408.jpg',
-        fileName: '4408',
-        priority: 1
-      },
-      {
-        url: 'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
-        fileName: '4401',
-        priority: 3
-      },
-      {
-        url: 'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4406.jpg',
-        fileName: '4406',
-        priority: 2
-      }
-    ],
-    proxy: { urls: ['http://localhost:14892'] },
-    storeDirs: pathResolve('./upload')
-  })
-  .then((res) => {
-    res.forEach((item) => {
-      console.log(item.id, item.data?.data.fileName)
-    })
-  })
+const HTMLContent = `
+<div class="box">
+  <div class="list-item">男装大衣</div>
+  <div class="list-item">女装大衣</div>
+  <div class="scroll-list">
+    <div class="list-item">男装卫衣</div>
+    <div class="list-item">女装卫衣</div>
+    <div class="list-item">男装带帽卫衣</div>
+  </div>
+  <div class="scroll-list" id="short">
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">男装冰丝短袖</div>
+    <div class="list-item">男装圆领短袖</div>
+  </div>
+  <div class="list-item">男装裤子</div>
+</div>
+`
+
+xCrawlOpenAIApp.parseElements(HTMLContent, `获取男装, 并去重`).then((res) => {
+  console.log(res)
+})

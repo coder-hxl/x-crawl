@@ -115,8 +115,6 @@ function createXCrawlOpenAI(
         ? (JSON.parse(content ?? '{}') as any)
         : content
 
-    console.log(result)
-
     return result
   }
 
