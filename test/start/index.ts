@@ -1,5 +1,5 @@
 import path from 'node:path'
-import xCrawl, { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawl, createXCrawlOpenAI } from 'x-crawl'
 
 import { BASE_URL, API_KEY } from './envConfig'
 

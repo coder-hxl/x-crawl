@@ -2,26 +2,22 @@ import process from 'node:process'
 import { expect, test, jest } from '@jest/globals'
 import chalk from 'chalk'
 
-import IXCrawl from 'src/'
+import type * as XCrawl from 'x-crawl'
 
 const args = process.argv.slice(3)
 const environment = args[0]
 
-let xCrawl: typeof IXCrawl
-if (environment === 'dev') {
-  xCrawl = require('src/').default
-} else if (environment === 'pro') {
-  xCrawl = require('publish/')
-}
+const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
+const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
 
 jest.setTimeout(60000)
 
 /* 1.Written */
 // 1.1.written string
 async function writtenString() {
-  const testXCrawl = xCrawl()
+  const testCrawlApp = createCrawl()
 
-  const res = await testXCrawl.crawlPage('http://localhost:8888/html')
+  const res = await testCrawlApp.crawlPage('http://localhost:8888/html')
 
   await res.data.browser.close()
 
@@ -30,9 +26,11 @@ async function writtenString() {
 
 // 1.2.written CrawlPageDetailConfig
 async function writtenCrawlPageDetailConfig() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlPage({
+  const res = await testCrawlApp.crawlPage({
     url: 'http://localhost:8888/html'
   })
 
@@ -43,9 +41,11 @@ async function writtenCrawlPageDetailConfig() {
 
 // 1.3.written (string | CrawlPageDetailConfig)[]
 async function writtenStringAndCrawlPageDetailConfigArr() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlPage([
+  const res = await testCrawlApp.crawlPage([
     'http://localhost:8888/html',
     { url: 'http://localhost:8888/html' }
   ])
@@ -57,9 +57,11 @@ async function writtenStringAndCrawlPageDetailConfigArr() {
 
 // 1.4.written CrawlPageAdvancedConfig
 async function writtenCrawlPageAdvancedConfig() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlPage({
+  const res = await testCrawlApp.crawlPage({
     targets: [
       'http://localhost:8888/html',
       { url: 'http://localhost:8888/html' }
@@ -74,7 +76,7 @@ async function writtenCrawlPageAdvancedConfig() {
 /* 2.Loader Config */
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
-  const testXCrawl = xCrawl({
+  const testCrawlApp = createCrawl({
     baseUrl: 'http://localhost:8888',
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
@@ -82,7 +84,7 @@ async function loaderBaseConfig() {
     maxRetry: 0
   })
 
-  const res = await testXCrawl.crawlPage(['/html', '/html'])
+  const res = await testCrawlApp.crawlPage(['/html', '/html'])
 
   await res[0].data.browser.close()
 
@@ -91,9 +93,9 @@ async function loaderBaseConfig() {
 
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
-  const testXCrawl = xCrawl({ baseUrl: 'http://localhost:8888' })
+  const testCrawlApp = createCrawl({ baseUrl: 'http://localhost:8888' })
 
-  const res = await testXCrawl.crawlPage({
+  const res = await testCrawlApp.crawlPage({
     targets: ['/html', '/html'],
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,

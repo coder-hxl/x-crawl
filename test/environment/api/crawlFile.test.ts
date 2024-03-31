@@ -3,17 +3,13 @@ import path from 'node:path'
 import { expect, test, jest } from '@jest/globals'
 import chalk from 'chalk'
 
-import IXCrawl from 'src/'
+import type * as XCrawl from 'x-crawl'
 
 const args = process.argv.slice(3)
 const environment = args[0]
 
-let xCrawl: typeof IXCrawl
-if (environment === 'dev') {
-  xCrawl = require('src/').default
-} else if (environment === 'pro') {
-  xCrawl = require('publish/')
-}
+const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
+const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
 
 jest.setTimeout(60000)
 
@@ -25,9 +21,11 @@ const urls: string[] = [
 const storeDirs = path.resolve(__dirname, './upload')
 
 async function testCrawlFile() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlFile({
+  const res = await testCrawlApp.crawlFile({
     targets: urls,
     storeDirs
   })

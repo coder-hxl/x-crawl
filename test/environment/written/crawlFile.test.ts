@@ -3,17 +3,13 @@ import path from 'node:path'
 import { expect, test, jest } from '@jest/globals'
 import chalk from 'chalk'
 
-import IXCrawl from 'src/'
+import type * as XCrawl from 'x-crawl'
 
 const args = process.argv.slice(3)
 const environment = args[0]
 
-let xCrawl: typeof IXCrawl
-if (environment === 'dev') {
-  xCrawl = require('src/').default
-} else if (environment === 'pro') {
-  xCrawl = require('publish/')
-}
+const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
+const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
 
 jest.setTimeout(60000)
 
@@ -27,18 +23,25 @@ const storeDirs = path.resolve(__dirname, './upload')
 /* 1.Written */
 // 1.1.written CrawlFileDetailConfig
 async function writtenCrawlFileDetailConfig() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlFile({ url: urls[0], storeDir: storeDirs })
+  const res = await testCrawlApp.crawlFile({
+    url: urls[0],
+    storeDir: storeDirs
+  })
 
   return res.isSuccess && res.data?.data.isSuccess
 }
 
 // 1.2.written CrawlFileDetailConfig[]
 async function writtenCrawlFileDetailConfigArr() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlFile(
+  const res = await testCrawlApp.crawlFile(
     urls.map((url) => ({ url, storeDir: storeDirs }))
   )
 
@@ -50,9 +53,11 @@ async function writtenCrawlFileDetailConfigArr() {
 
 // 1.3.written CrawlFileAdvancedConfig
 async function writtenCrawlFileAdvancedConfig() {
-  const testXCrawl = xCrawl({ proxy: { urls: ['http://localhost:14892'] } })
+  const testCrawlApp = createCrawl({
+    proxy: { urls: ['http://localhost:14892'] }
+  })
 
-  const res = await testXCrawl.crawlFile({
+  const res = await testCrawlApp.crawlFile({
     targets: urls,
     storeDirs
   })
@@ -66,7 +71,7 @@ async function writtenCrawlFileAdvancedConfig() {
 /* 2.Loader Config */
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
-  const testXCrawl = xCrawl({
+  const testCrawlApp = createCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
     proxy: { urls: ['http://localhost:14892'] },
@@ -75,7 +80,7 @@ async function loaderBaseConfig() {
     maxRetry: 0
   })
 
-  const res = await testXCrawl.crawlFile({
+  const res = await testCrawlApp.crawlFile({
     targets: ['/4401.jpg', '/4403.jpg'],
     storeDirs
   })
@@ -85,12 +90,12 @@ async function loaderBaseConfig() {
 
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
-  const testXCrawl = xCrawl({
+  const testCrawlApp = createCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area'
   })
 
-  const res = await testXCrawl.crawlFile({
+  const res = await testCrawlApp.crawlFile({
     targets: ['/4401.jpg', '/4403.jpg'],
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
@@ -104,14 +109,14 @@ async function loaderAdvancedConfig() {
 
 /* 3.Store Config */
 async function storeConfig() {
-  const testXCrawl = xCrawl({
+  const testCrawlApp = createCrawl({
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
     proxy: { urls: ['http://localhost:14892'] }
   })
 
   const record: string[] = []
-  const res = await testXCrawl.crawlFile({
+  const res = await testCrawlApp.crawlFile({
     targets: [
       { url: '/4401.jpg', fileName: '4401' },
       { url: '/4403.jpg', fileName: '4403' }
