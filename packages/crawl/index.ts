@@ -10,7 +10,7 @@ import { isBoolean, isObject } from './utils'
 
 let id = 0
 
-function createInstanceConfig(config: CreateCrawlConfig): CrawlBaseConfig {
+function createBaseConfig(config: CreateCrawlConfig): CrawlBaseConfig {
   const {
     mode,
     enableRandomFingerprint,
@@ -69,7 +69,7 @@ function createnApp(crawlBaseConfig: CrawlBaseConfig): CrawlApp {
 }
 
 export function createCrawl(config: CreateCrawlConfig = {}): CrawlApp {
-  const crawlBaseConfig = createInstanceConfig(config)
+  const crawlBaseConfig = createBaseConfig(config)
 
   const app = createnApp(crawlBaseConfig)
 

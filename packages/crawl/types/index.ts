@@ -87,9 +87,13 @@ export interface CrawlApp {
   }
 
   crawlFile: {
+    (config: string): Promise<CrawlFileSingleResult>
+
     (config: CrawlFileDetailTargetConfig): Promise<CrawlFileSingleResult>
 
-    (config: CrawlFileDetailTargetConfig[]): Promise<CrawlFileSingleResult[]>
+    (
+      config: (string | CrawlFileDetailTargetConfig)[]
+    ): Promise<CrawlFileSingleResult[]>
 
     (config: CrawlFileAdvancedConfig): Promise<CrawlFileSingleResult[]>
   }

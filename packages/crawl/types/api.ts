@@ -178,7 +178,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
     fileName: string
     filePath: string
     data: Buffer
-  }) => Promise<Buffer>
+  }) => Promise<Buffer> | Buffer | void
 }
 
 /* API Result */

@@ -52,7 +52,7 @@ coder 用户: { message: string, pathMode: string }
 发来了一个 JavaScript 对象转换为 JSON 字符串的值。
 - message:
   - 类型: string,
-  - 作用: 用户的需求求。
+  - 作用: 用户的需求。
 - pathMode:
   - 类型: string, default 或者 strict
   - 作用: default 则可以不从 HTML 片段的根部开始的 selectors , 为 strict 则说明必需从 HTML 片段的根部开始的 selectors 。

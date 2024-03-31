@@ -18,7 +18,9 @@ import {
   logSuccess,
   logWarn,
   random,
-  whiteBold
+  whiteBold,
+  isPromise,
+  isBuffer
 } from './utils'
 
 import {
@@ -92,7 +94,7 @@ interface InfoFileConfig extends InfoCommonConfig {
         fileName: string
         filePath: string
         data: Buffer
-      }) => Promise<Buffer>)
+      }) => Promise<Buffer> | Buffer | void)
     | undefined
 }
 
@@ -197,7 +199,7 @@ interface CrawlFileConfig {
         fileName: string
         filePath: string
         data: Buffer
-      }) => Promise<Buffer>)
+      }) => Promise<Buffer> | Buffer | void)
     | undefined
   onCrawlItemComplete:
     | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
@@ -224,8 +226,9 @@ type UniteCrawlDataConfig<T> =
   | CrawlDataAdvancedConfig<T>
 
 type UniteCrawlFileConfig =
+  | string
   | CrawlFileDetailTargetConfig
-  | CrawlFileDetailTargetConfig[]
+  | (string | CrawlFileDetailTargetConfig)[]
   | CrawlFileAdvancedConfig
 
 /* Function */
@@ -273,7 +276,10 @@ function transformTargetToDetailTargets(
     | (string | CrawlDataDetailTargetConfig)[]
 ): CrawlDataDetailTargetConfig[]
 function transformTargetToDetailTargets(
-  config: (string | CrawlFileDetailTargetConfig)[]
+  config:
+    | string
+    | CrawlFileDetailTargetConfig
+    | (string | CrawlFileDetailTargetConfig)[]
 ): CrawlFileDetailTargetConfig[]
 function transformTargetToDetailTargets(config: any) {
   return isArray(config)
@@ -741,10 +747,13 @@ function createCrawlFileConfig(
     advancedDetailTargetsConfig.detailTargets =
       transformTargetToDetailTargets(targets)
   } else {
-    // CrawlFileDetailTargetConfig |  CrawlFileDetailTargetConfig[] 处理
-    advancedDetailTargetsConfig.detailTargets = isArray(originalConfig)
-      ? originalConfig
-      : [originalConfig as CrawlFileDetailTargetConfig]
+    // string | CrawlFileDetailTargetConfig | (string | CrawlFileDetailTargetConfig)[] 处理
+    advancedDetailTargetsConfig.detailTargets = transformTargetToDetailTargets(
+      originalConfig as
+        | string
+        | CrawlFileDetailTargetConfig
+        | (string | CrawlFileDetailTargetConfig)[]
+    )
   }
 
   loaderCommonConfigToCrawlConfig(
@@ -1022,9 +1031,9 @@ function fileSingleResultHandle(
 
     // 在保存前的回调
     const data = detailTargetResult.data
-    let dataPromise = Promise.resolve(data)
+    let onBeforeSaveItemFileResult
     if (onBeforeSaveItemFile) {
-      dataPromise = onBeforeSaveItemFile({
+      onBeforeSaveItemFileResult = onBeforeSaveItemFile({
         id,
         fileName,
         filePath,
@@ -1032,7 +1041,7 @@ function fileSingleResultHandle(
       })
     }
 
-    const saveFileItemPending = dataPromise.then(async (newData) => {
+    async function saveFile(newData: Buffer) {
       let isSuccess = true
       try {
         await writeFile(filePath, newData)
@@ -1061,7 +1070,16 @@ function fileSingleResultHandle(
       if (onCrawlItemComplete) {
         onCrawlItemComplete(device.result as CrawlFileSingleResult)
       }
-    })
+    }
+
+    let saveFileItemPending
+    if (isPromise(onBeforeSaveItemFileResult)) {
+      saveFileItemPending = onBeforeSaveItemFileResult!.then(saveFile)
+    } else if (isBuffer(onBeforeSaveItemFileResult)) {
+      saveFileItemPending = saveFile(onBeforeSaveItemFileResult)
+    } else {
+      saveFileItemPending = saveFile(data)
+    }
 
     // 存放保存文件 Promise , 后续等待即可回到 crawlFile 函数内部等待完成即可
     saveFilePendingQueue.push(saveFileItemPending)
@@ -1263,12 +1281,14 @@ export function createCrawlFile(crawlBaseConfig: CrawlBaseConfig) {
   let id = 0
   const type = 'file'
 
+  function crawlFile(config: string): Promise<CrawlFileSingleResult>
+
   function crawlFile(
     config: CrawlFileDetailTargetConfig
   ): Promise<CrawlFileSingleResult>
 
   function crawlFile(
-    config: CrawlFileDetailTargetConfig[]
+    config: (string | CrawlFileDetailTargetConfig)[]
   ): Promise<CrawlFileSingleResult[]>
 
   function crawlFile(

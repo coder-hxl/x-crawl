@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import chalk from 'chalk'
 
 // Log
@@ -32,6 +33,14 @@ export function isObject(value: any): value is object {
 
 export function isArray(value: any): value is any[] {
   return Array.isArray(value)
+}
+
+export function isPromise(value: any): value is Promise<any> {
+  return typeof value === 'function' && !isUndefined(value.then)
+}
+
+export function isBuffer(value: any): value is Buffer {
+  return Buffer.isBuffer(value)
 }
 
 export function sleep(timeout: number) {
