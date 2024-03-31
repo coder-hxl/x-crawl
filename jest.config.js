@@ -5,7 +5,7 @@ module.exports = {
   collectCoverage: true,
   detectOpenHandles: true,
   moduleNameMapper: {
-    '^src/(.*)$': '<rootDir>/src/$1',
+    '^packages/(.*)$': '<rootDir>/packages/$1',
     '^publish/(.*)$': '<rootDir>/publish/$1'
   }
 }

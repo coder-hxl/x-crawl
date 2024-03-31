@@ -81,7 +81,7 @@ interface XCrawlOpenAIApp {
   custom(): OpenAI
 }
 
-function createXCrawlOpenAI(
+export function createXCrawlOpenAI(
   config: CreateXCrawlOpenAIConfig = {}
 ): XCrawlOpenAIApp {
   const { defaultModel, clientOptions } = config
@@ -200,5 +200,3 @@ function createXCrawlOpenAI(
 
   return app
 }
-
-export { createXCrawlOpenAI }

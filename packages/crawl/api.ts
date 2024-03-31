@@ -38,7 +38,7 @@ import {
   CrawlHTMLDetailTargetConfig,
   CrawlHTMLAdvancedConfig
 } from './types/api'
-import { LogConfig, XCrawlInstanceConfig } from './types'
+import { LogOptions, CrawlBaseConfig } from './types'
 import { fingerprints } from './default'
 
 /* Types */
@@ -49,7 +49,7 @@ export interface InfoCommonConfig {
   serialNumber: string
   mode: 'async' | 'sync'
   type: 'page' | 'html' | 'data' | 'file'
-  logConfig: LogConfig
+  logConfig: LogOptions
   intervalTime: IntervalTime | undefined
 }
 
@@ -403,7 +403,7 @@ function loaderPageFingerprintToDetailTarget(
 }
 
 function loaderCommonConfigToCrawlConfig(
-  xCrawlInstanceConfig: XCrawlInstanceConfig,
+  crawlBaseConfig: CrawlBaseConfig,
   advancedDetailTargetsConfig:
     | CrawlPageAdvancedDetailTargetsConfig
     | CrawlHTMLAdvancedDetailTargetsConfig
@@ -429,8 +429,8 @@ function loaderCommonConfigToCrawlConfig(
         detail
 
       // 1.1.baseUrl
-      if (xCrawlInstanceConfig.baseUrl) {
-        detail.url = xCrawlInstanceConfig.baseUrl + url
+      if (crawlBaseConfig.baseUrl) {
+        detail.url = crawlBaseConfig.baseUrl + url
       }
 
       // 1.2.timeout
@@ -438,7 +438,7 @@ function loaderCommonConfigToCrawlConfig(
         if (!isUndefined(advancedDetailTargetsConfig.timeout)) {
           detail.timeout = advancedDetailTargetsConfig.timeout ?? undefined
         } else {
-          detail.timeout = xCrawlInstanceConfig.timeout
+          detail.timeout = crawlBaseConfig.timeout
         }
       }
 
@@ -447,7 +447,7 @@ function loaderCommonConfigToCrawlConfig(
         if (!isUndefined(advancedDetailTargetsConfig.maxRetry)) {
           detail.maxRetry = advancedDetailTargetsConfig.maxRetry ?? 0
         } else {
-          detail.maxRetry = xCrawlInstanceConfig.maxRetry
+          detail.maxRetry = crawlBaseConfig.maxRetry
         }
       }
 
@@ -455,8 +455,8 @@ function loaderCommonConfigToCrawlConfig(
       if (isUndefined(proxy)) {
         if (!isUndefined(advancedDetailTargetsConfig.proxy)) {
           detail.proxy = advancedDetailTargetsConfig.proxy
-        } else if (!isUndefined(xCrawlInstanceConfig.proxy)) {
-          detail.proxy = xCrawlInstanceConfig.proxy
+        } else if (!isUndefined(crawlBaseConfig.proxy)) {
+          detail.proxy = crawlBaseConfig.proxy
         }
       }
 
@@ -503,9 +503,9 @@ function loaderCommonConfigToCrawlConfig(
       } else if (
         isUndefined(fingerprint) &&
         !isArray(advancedDetailTargetsConfig.fingerprints) &&
-        xCrawlInstanceConfig.enableRandomFingerprint
+        crawlBaseConfig.enableRandomFingerprint
       ) {
-        // xCrawlInstanceConfig
+        // crawlBaseConfig
         const fingerprint = fingerprints[random(fingerprints.length)]
 
         loaderCommonFingerprintToDetailTarget(detail, fingerprint)
@@ -519,9 +519,9 @@ function loaderCommonConfigToCrawlConfig(
   crawlConfig.intervalTime = advancedDetailTargetsConfig.intervalTime
   if (
     isUndefined(advancedDetailTargetsConfig.intervalTime) &&
-    !isUndefined(xCrawlInstanceConfig.intervalTime)
+    !isUndefined(crawlBaseConfig.intervalTime)
   ) {
-    crawlConfig.intervalTime = xCrawlInstanceConfig.intervalTime
+    crawlConfig.intervalTime = crawlBaseConfig.intervalTime
   }
 
   // 3.onCrawlItemComplete
@@ -540,7 +540,7 @@ function loaderCommonConfigToCrawlConfig(
 */
 
 function createCrawlPageConfig(
-  xCrawlInstanceConfig: XCrawlInstanceConfig,
+  crawlBaseConfig: CrawlBaseConfig,
   originalConfig: UniteCrawlPageConfig
 ): CrawlPageConfig {
   const crawlPageConfig: CrawlPageConfig = {
@@ -577,7 +577,7 @@ function createCrawlPageConfig(
 
   // 装载公共配置
   loaderCommonConfigToCrawlConfig(
-    xCrawlInstanceConfig,
+    crawlBaseConfig,
     advancedDetailTargetsConfig,
     crawlPageConfig
   )
@@ -618,7 +618,7 @@ function createCrawlPageConfig(
 }
 
 function createCrawlHTMLConfig(
-  xCrawlInstanceConfig: XCrawlInstanceConfig,
+  crawlBaseConfig: CrawlBaseConfig,
   originalConfig: UniteCrawlHTMLConfig
 ): CrawlHTMLConfig {
   const crawlHTMLConfig: CrawlHTMLConfig = {
@@ -658,7 +658,7 @@ function createCrawlHTMLConfig(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlInstanceConfig,
+    crawlBaseConfig,
     advancedDetailTargetsConfig,
     crawlHTMLConfig
   )
@@ -667,7 +667,7 @@ function createCrawlHTMLConfig(
 }
 
 function createCrawlDataConfig<T>(
-  xCrawlInstanceConfig: XCrawlInstanceConfig,
+  crawlBaseConfig: CrawlBaseConfig,
   originalConfig: UniteCrawlDataConfig<T>
 ): CrawlDataConfig {
   const crawlDataConfig: CrawlDataConfig = {
@@ -704,7 +704,7 @@ function createCrawlDataConfig<T>(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlInstanceConfig,
+    crawlBaseConfig,
     advancedDetailTargetsConfig,
     crawlDataConfig
   )
@@ -713,7 +713,7 @@ function createCrawlDataConfig<T>(
 }
 
 function createCrawlFileConfig(
-  xCrawlInstanceConfig: XCrawlInstanceConfig,
+  crawlBaseConfig: CrawlBaseConfig,
   originalConfig: UniteCrawlFileConfig
 ): CrawlFileConfig {
   const crawlFileConfig: CrawlFileConfig = {
@@ -748,7 +748,7 @@ function createCrawlFileConfig(
   }
 
   loaderCommonConfigToCrawlConfig(
-    xCrawlInstanceConfig,
+    crawlBaseConfig,
     advancedDetailTargetsConfig,
     crawlFileConfig
   )
@@ -1074,13 +1074,13 @@ function fileSingleResultHandle(
 
 /* Create crawl API */
 
-export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
+export function createCrawlPage(crawlBaseConfig: CrawlBaseConfig) {
   const {
     id: xId,
     mode,
-    logConfig,
-    crawlPage: crawlPageConfig
-  } = xCrawlInstanceConfig
+    logOptions: logConfig,
+    crawlPage: crawlPageOptions
+  } = crawlBaseConfig
 
   let id = 0
   let browser: Browser | null = null
@@ -1109,7 +1109,7 @@ export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
     if (!haveCreateBrowser) {
       haveCreateBrowser = true
       createBrowserPending = puppeteer
-        .launch(crawlPageConfig?.puppeteerLaunch)
+        .launch(crawlPageOptions?.puppeteerLaunchOptions)
         .then((result) => {
           browser = result
         })
@@ -1124,7 +1124,7 @@ export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
 
     // 创建新配置
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlPageConfig(xCrawlInstanceConfig, config)
+      createCrawlPageConfig(crawlBaseConfig, config)
 
     const infoConfig: InfoPageConfig = {
       serialNumber: `${xId}-${type}-${++id}`,
@@ -1154,8 +1154,8 @@ export function createCrawlPage(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   return crawlPage
 }
 
-export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
-  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+export function createCrawlHTML(crawlBaseConfig: CrawlBaseConfig) {
+  const { id: xId, mode, logOptions: logConfig } = crawlBaseConfig
   let id = 0
   const type = 'html'
 
@@ -1177,7 +1177,7 @@ export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
     config: UniteCrawlHTMLConfig
   ): Promise<CrawlHTMLSingleResult | CrawlHTMLSingleResult[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlHTMLConfig(xCrawlInstanceConfig, config)
+      createCrawlHTMLConfig(crawlBaseConfig, config)
 
     const infoConfig: InfoHTMLConfig = {
       serialNumber: `${xId}-${type}-${++id}`,
@@ -1206,8 +1206,8 @@ export function createCrawlHTML(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   return crawlHTML
 }
 
-export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
-  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+export function createCrawlData(crawlBaseConfig: CrawlBaseConfig) {
+  const { id: xId, mode, logOptions: logConfig } = crawlBaseConfig
   let id = 0
   const type = 'data'
 
@@ -1229,7 +1229,7 @@ export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
     config: UniteCrawlDataConfig<T>
   ): Promise<CrawlDataSingleResult<T> | CrawlDataSingleResult<T>[]> {
     const { detailTargets, intervalTime, onCrawlItemComplete } =
-      createCrawlDataConfig(xCrawlInstanceConfig, config)
+      createCrawlDataConfig(crawlBaseConfig, config)
 
     const infoConfig: InfoDataConfig<T> = {
       serialNumber: `${xId}-${type}-${++id}`,
@@ -1258,8 +1258,8 @@ export function createCrawlData(xCrawlInstanceConfig: XCrawlInstanceConfig) {
   return crawlData
 }
 
-export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
-  const { id: xId, mode, logConfig } = xCrawlInstanceConfig
+export function createCrawlFile(crawlBaseConfig: CrawlBaseConfig) {
+  const { id: xId, mode, logOptions: logConfig } = crawlBaseConfig
   let id = 0
   const type = 'file'
 
@@ -1283,7 +1283,7 @@ export function createCrawlFile(xCrawlInstanceConfig: XCrawlInstanceConfig) {
       intervalTime,
       onBeforeSaveItemFile,
       onCrawlItemComplete
-    } = createCrawlFileConfig(xCrawlInstanceConfig, config)
+    } = createCrawlFileConfig(crawlBaseConfig, config)
 
     const infoConfig: InfoFileConfig = {
       serialNumber: `${xId}-${type}-${++id}`,

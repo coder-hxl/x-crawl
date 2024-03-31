@@ -17,35 +17,35 @@ import {
 } from './api'
 import { MapTypeEmptyObject } from './common'
 
-export interface LogConfig {
+export interface LogOptions {
   start: boolean
   process: boolean
   result: boolean
 }
 
-export interface XCrawlConfig extends CrawlCommonConfig {
+export interface CreateCrawlConfig extends CrawlCommonConfig {
   mode?: 'async' | 'sync'
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
-  log?: MapTypeEmptyObject<LogConfig> | boolean
+  log?: MapTypeEmptyObject<LogOptions> | boolean
   crawlPage?: {
-    puppeteerLaunch?: PuppeteerLaunchOptions
+    puppeteerLaunchOptions?: PuppeteerLaunchOptions
   }
 }
 
-export interface XCrawlInstanceConfig
-  extends MapTypeEmptyObject<XCrawlConfig, 'log'> {
+export interface CrawlBaseConfig
+  extends MapTypeEmptyObject<CreateCrawlConfig, 'log'> {
   id: number
 
   mode: 'async' | 'sync'
   enableRandomFingerprint: boolean
   timeout: number
   maxRetry: number
-  logConfig: LogConfig
+  logOptions: LogOptions
 }
 
-export interface XCrawlInstance {
+export interface CrawlApp {
   crawlPage: {
     (config: string): Promise<CrawlPageSingleResult>
 

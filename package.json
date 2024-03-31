@@ -16,7 +16,7 @@
     "flexible",
     "multifunction"
   ],
-  "main": "src/index.ts",
+  "main": "packages/index.ts",
   "scripts": {
     "build": "rollup --config rollup.config.mjs",
     "build-dts": "tsc && prettier --write ./publish/src",

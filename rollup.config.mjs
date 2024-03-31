@@ -17,7 +17,7 @@ import { getBabelOutputPlugin } from '@rollup/plugin-babel'
 // console.log(outputMap)
 
 export default {
-  input: 'src/index.ts',
+  input: 'packages/index.ts',
   output: {
     file: 'publish/dist/x-crawl.cjs.js',
     format: 'cjs',
