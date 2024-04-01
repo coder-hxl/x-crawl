@@ -10,7 +10,7 @@ import querystring from 'node:querystring'
 
 import { HttpsProxyAgent } from 'https-proxy-agent'
 
-import { isObject, isUndefined } from './utils'
+import { isObject, isUndefined } from '../shared'
 
 import { AnyObject } from './types/common'
 import { LoaderCrawlDataDetail, LoaderCrawlFileDetail } from './api'

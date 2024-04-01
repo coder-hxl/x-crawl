@@ -6,7 +6,7 @@ import {
   random,
   sleep,
   whiteBold
-} from './utils'
+} from '../shared'
 
 import type { InfoCommonConfig } from './api'
 import { CrawlDetail, Device } from './controller'

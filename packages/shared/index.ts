@@ -11,37 +11,30 @@ export const logWarn = chalk.yellow
 export const logNumber = chalk.hex('#a57fff')
 export const whiteBold = chalk.white.bold
 
-export function isUndefined(value: any): value is undefined {
-  return typeof value === 'undefined'
-}
+export const isUndefined = (value: unknown): value is undefined =>
+  typeof value === 'undefined'
 
-export function isNumber(value: any): value is number {
-  return typeof value === 'number'
-}
+export const isNumber = (value: unknown): value is number =>
+  typeof value === 'number'
 
-export function isString(value: any): value is string {
-  return typeof value === 'string'
-}
+export const isString = (value: unknown): value is string =>
+  typeof value === 'string'
 
-export function isBoolean(value: any): value is string {
-  return typeof value === 'boolean'
-}
+export const isBoolean = (value: unknown): value is string =>
+  typeof value === 'boolean'
 
-export function isObject(value: any): value is object {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+export const isObject = (value: unknown): value is Record<any, any> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
 
-export function isArray(value: any): value is any[] {
-  return Array.isArray(value)
-}
+export const isArray = Array.isArray
 
-export function isPromise(value: any): value is Promise<any> {
-  return typeof value === 'function' && !isUndefined(value.then)
-}
+export const isFunction = (value: unknown): value is Function =>
+  typeof value === 'function'
 
-export function isBuffer(value: any): value is Buffer {
-  return Buffer.isBuffer(value)
-}
+export const isPromise = (value: any): value is Promise<any> =>
+  isObject(value) && isFunction(value.then) && isFunction(value.catch)
+
+export const isBuffer = Buffer.isBuffer
 
 export function sleep(timeout: number) {
   return new Promise((resolve) => setTimeout(resolve, timeout))

@@ -5,6 +5,7 @@ import {
   GET_ELEMENT_SELECTORS_CONTEXT,
   HELP_CONTEXT
 } from './context'
+import { isObject } from '../shared'
 
 type OpenAIChatModel =
   | 'gpt-4-0125-preview'
@@ -127,7 +128,7 @@ export function createXCrawlOpenAI(
       const { model } = option
 
       let coderContent: string = ''
-      if (typeof content === 'object' && content !== null) {
+      if (isObject(content)) {
         coderContent = JSON.stringify(content)
       } else {
         const obj: XCrawlOpenAIParseElementsContentOptions = {
@@ -155,7 +156,7 @@ export function createXCrawlOpenAI(
       const { model } = option
 
       let coderContent: string = ''
-      if (typeof content === 'object' && content !== null) {
+      if (isObject(content)) {
         coderContent = JSON.stringify(content)
       } else {
         const obj: XCrawlOpenAIGetElementSelectorsContentOptions = {

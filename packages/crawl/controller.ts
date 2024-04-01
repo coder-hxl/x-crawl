@@ -20,7 +20,7 @@ import {
   logSuccess,
   logWarn,
   whiteBold
-} from './utils'
+} from '../shared'
 import { HTTPResponse } from 'puppeteer'
 import { Request } from './request'
 import { CrawlCommonResult } from './types/api'

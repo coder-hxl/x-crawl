@@ -6,7 +6,7 @@ import {
 } from './api'
 
 import { CreateCrawlConfig, CrawlApp, CrawlBaseConfig } from './types'
-import { isBoolean, isObject } from './utils'
+import { isBoolean, isObject } from '../shared'
 
 let id = 0
 

@@ -21,7 +21,7 @@ import {
   whiteBold,
   isPromise,
   isBuffer
-} from './utils'
+} from '../shared'
 
 import {
   CrawlDataDetailTargetConfig,
