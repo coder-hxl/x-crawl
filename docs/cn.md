@@ -2,37 +2,36 @@
 
 [English](https://github.com/coder-hxl/x-crawl#x-crawl) | 简体中文
 
-x-crawl 是一个灵活的 Node.js 多功能爬虫库。灵活的使用方式和众多的功能可以帮助您快速、安全、稳定地爬取页面、接口以及文件。
+x-crawl 是一个灵活的 Node.js AI 辅助爬虫库。强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
 
-> 如果您觉得 x-crawl 对您有所帮助，或者您喜欢 x-crawl ，可以在 GitHub 上给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 以示支持。您的支持是我们持续改进的动力！感谢您的支持！
+> 如果您觉得 x-crawl 对您有所帮助，或者您喜欢 x-crawl ，可以在 GitHub 上给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 。您的支持是我们持续改进的动力！感谢您的支持！
 
 ## 特征
 
-- **🔥 异步同步** - 只需更改一下 mode 属性即可切换异步或同步爬取模式。
-- **⚙️ 多种用途** - 支持爬动态页面、静态页面、接口数据、文件以及轮询操作。
+- **🤖 AI 辅助** - 强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
+- **🖋️ 写法灵活** - 单个爬取 API 都适配多种配置，每种配置方式都各有千秋。
+- **⚙️ 多种用途** - 支持爬动态页面、静态页面、接口数据以及文件数据。
 - **⚒️ 控制页面** - 爬取动态页面支持自动化操作、键盘输入、事件操作等。
-- **🖋️ 写法灵活** - 同种爬取 API 适配多种配置，每种配置方式都非常独特。
-- **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，产生或避免高并发爬取。
-- **🔄 失败重试** - 避免因短暂的问题而造成爬取失败，自定义重试次数。
-- **➡️ 轮换代理** - 配合失败重试，自定义错误次数以及 HTTP 状态码自动轮换代理。
 - **👀 设备指纹** - 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
+- **🔥 异步同步** - 无需切换爬取 API 即可进行异步或同步的爬取模式。
+- **⏱️ 间隔爬取** - 无间隔、固定间隔以及随机间隔，决定是否高并发爬取。
+- **🔄 失败重试** - 自定义重试次数，避免因短暂的问题而造成爬取失败。
+- **➡️ 轮换代理** - 搭配失败重试，自定义错误次数以及 HTTP 状态码自动轮换代理。
 - **🚀 优先队列** - 根据单个爬取目标的优先级可以优先于其他目标提前爬取。
-- **🧾 爬取记录** - 对爬取进行记录，并在终端使用彩色字符串提醒。
+- **🧾 爬取信息** - 可控的爬取信息，会在终端输出彩色字符串信息。
 - **🦾 TypeScript** - 拥有类型，通过泛型实现完整的类型。
 
 ## 赞助
 
-x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在工作中受益于我开发维护的项目，为了让我能够持续投入精力进行项目的维护与更新，提升用户体验和功能，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。您的支持是我们持续改进的动力！感谢您的支持！
+x-crawl 是采用 MIT 许可的开源项目。如果您在工作中受益于我开发维护的项目，为了让我能够持续投入精力进行项目的维护与更新，提升用户体验和功能，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。您的支持是我们持续改进的动力！感谢您的支持！
 
 # 目录
 
 - [安装](#安装)
 - [示例](#示例)
-- [核心概念](#核心概念)
+- [基础](#基础)
   - [创建应用](#创建应用)
     - [一个爬虫应用实例](#一个爬虫应用实例)
-    - [爬取模式](#爬取模式)
-    - [默认设备指纹](#默认设备指纹)
     - [多个爬虫应用实例](#多个爬虫应用实例)
   - [爬取页面](#爬取页面)
     - [browser 实例](#browser-实例)
@@ -50,18 +49,29 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在�
     - [生命周期](#生命周期-3)
       - [onCrawlItemComplete](#onCrawlItemComplete-3)
       - [onBeforeSaveItemFile](#onBeforeSaveItemFile)
-  - [启动轮询](#启动轮询)
-  - [配置优先级](#配置优先级)
   - [间隔时间](#间隔时间)
   - [失败重试](#失败重试)
   - [轮换代理](#轮换代理)
-  - [自定义设备指纹](#自定义设备指纹)
   - [优先队列](#优先队列)
-  - [打印信息](#打印信息)
+  - [终端信息](#终端信息)
   - [关于结果](#关于结果)
   - [TypeScript](#TypeScript)
+- [AI 辅助](#AI-辅助)
+  - [创建 AI 应用](#创建-AI-应用)
+  - [智能按需分析元素](#智能按需分析元素)
+  - [智能生成元素选择器](#智能生成元素选择器)
+  - [智能回复爬虫问题](#智能回复爬虫问题)
+  - [用户自定义 AI 功能](#用户自定义-AI-功能)
+- [进阶](#进阶)
+  - [爬取模式](#爬取模式)
+  - [设备指纹](#设备指纹)
+    - [默认设备指纹](#默认设备指纹)
+    - [自定义设备指纹](#自定义设备指纹)
+  - [配置](#配置)
+    - [优先级](#优先级)
+    - [取消复用配置选项](#取消复用配置选项)
 - [API](#API)
-  - [xCrawl](#xCrawl)
+  - [createCrawl](#createCrawl)
     - [类型](#类型)
     - [示例](#示例-1)
   - [crawlPage](#crawlPage)
@@ -92,15 +102,28 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在�
     - [类型](#类型-4)
     - [示例](#示例-5)
     - [配置](#配置-3)
-      - [详细目标配置 - CrawlFileDetailTargetConfig](#详细目标配置---CrawlFileDetailTargetConfig)
-      - [详细目标数组配置 - CrawlFileDetailTargetConfig[]](#详细目标数组配置---CrawlFileDetailTargetConfig)
+      - [简单目标配置 - string](#简单目标配置---string-3)
+      - [详细目标配置 - (string | CrawlFileDetailTargetConfig)](#详细目标配置---CrawlFileDetailTargetConfig)
+      - [详细目标数组配置 - CrawlFileDetailTargetConfig[]](#混合目标数组配置---string--CrawlFileDetailTargetConfig)
       - [进阶配置 - CrawlFileAdvancedConfig](#进阶配置---CrawlFileAdvancedConfig)
-  - [startPolling](#startPolling)
+  - [createXCrawlOpenAI](#createXCrawlOpenAI)
     - [类型](#类型-5)
     - [示例](#示例-6)
-- [类型](#类型-6)
+  - [parseElements](#parseElements)
+    - [类型](#类型-6)
+    - [示例](#示例-7)
+  - [getElementSelectors](#getElementSelectors)
+    - [类型](#类型-7)
+    - [示例](#示例-8)
+  - [help](#help)
+    - [类型](#类型-8)
+    - [示例](#示例-9)
+  - [custom](#custom)
+    - [类型](#类型-9)
+    - [示例](#示例-10)
+- [类型](#类型-10)
   - [API Config](#API-config)
-    - [XCrawlConfig](#XCrawlConfig)
+    - [CreateCrawlConfig](#CreateCrawlConfig)
     - [Detail Target Config](#Detail-Target-Config)
       - [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig)
       - [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig)
@@ -111,7 +134,6 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在�
       - [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig)
       - [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig)
       - [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig)
-    - [StartPollingConfig](#StartPollingConfig)
     - [Crawl Other Config](#Crawl-Other-Config)
       - [CrawlCommonConfig](#CrawlCommonConfig)
       - [DetailTargetFingerprintCommon](#DetailTargetFingerprintCommon)
@@ -120,19 +142,26 @@ x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在�
       - [PageCookies](#PageCookies)
       - [Method](#Method)
       - [IntervalTime](#IntervalTime)
+    - [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig)
+    - [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions)
+    - [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions)
+    - [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption)
   - [API Result](#API-Result)
-    - [XCrawlInstance](#XCrawlInstance)
+    - [CrawlApp](#CrawlApp)
     - [CrawlCommonResult](#CrawlCommonResult)
     - [CrawlPageSingleResult](#CrawlPageSingleResult)
     - [CrawlHTMLSingleResult](#CrawlHTMLSingleResult)
     - [CrawlDataSingleResult](#CrawlDataSingleResult)
     - [CrawlFileSingleResult](#CrawlFileSingleResult)
-  - [API Other](#API-Other)
-    - [AnyObject](#AnyObject)
+    - [XCrawlOpenAIApp](#XCrawlOpenAIApp)
+    - [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult)
+    - [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult)
 - [常见问题](#常见问题)
   - [crawlPage API 跟 puppeteer 的关系](#crawlPage-API-跟-puppeteer-的关系)
   - [使用 crawlPage API 造成程序崩溃](#使用-crawlPage-API-造成程序崩溃)
 - [更多](#更多)
+  - [版本发布](#版本发布)
+  - [旧版本文档](#旧版本文档)
   - [社区](#社区)
   - [Issues](#Issues)
   - [赞助](#赞助-1)
@@ -152,16 +181,19 @@ npm install x-crawl
 
 ```js
 // 1.导入模块 ES/CJS
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
 // 2.创建一个爬虫实例
-const myXCrawl = xCrawl({ maxRetry: 3, intervalTime: { max: 2000, min: 1000 } })
+const crawlApp = createCrawl({
+  maxRetry: 3,
+  intervalTime: { max: 2000, min: 1000 }
+})
 
 // 3.设置爬取任务
 // 调用 startPolling API 开始轮询功能，每隔一天会调用回调函数
-myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
+crawlApp.startPolling({ d: 1 }, async (count, stopPolling) => {
   // 调用 crawlPage API 来爬取页面
-  const pageResults = await myXCrawl.crawlPage({
+  const pageResults = await crawlApp.crawlPage({
     targets: [
       'https://www.airbnb.cn/s/*/experiences',
       'https://www.airbnb.cn/s/plus_homes'
@@ -190,7 +222,7 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
   }
 
   // 调用 crawlFile API 爬取图片
-  await myXCrawl.crawlFile({ targets: imgUrls, storeDirs: './upload' })
+  await crawlApp.crawlFile({ targets: imgUrls, storeDirs: './upload' })
 })
 ```
 
@@ -199,76 +231,37 @@ myXCrawl.startPolling({ d: 1 }, async (count, stopPolling) => {
 <div align="center">
   <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/run-example.gif" />
 </div>
+
 **注意:** x-crawl 仅供合法用途，禁止使用该工具进行任何违法活动，请务必遵守目标网站的 robots.txt 文件规定。网站的类名可能随时发生变更，本例仅用于演示 x-crawl 的使用方法，并非针对特定网站。
 
-## 核心概念
+## 基础
 
-### 创建应用
+### 创建爬虫应用
 
 #### 一个爬虫应用实例
 
-通过 [xCrawl()](#xCrawl) 创建一个新的 **应用实例:**
+通过 [createCrawl()](#createCrawl) 创建一个新的 **应用实例**：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({
+const crawlApp = createCrawl({
   // 选项
 })
 ```
 
-相关的 **选项** 可参考 [XCrawlBaseConfig](#XCrawlBaseConfig) 。
-
-#### 爬取模式
-
-一个爬虫应用实例有两种爬取模式: 异步/同步，每个爬虫实例只能选择其中一种。
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({
-  mode: 'async'
-})
-```
-
-mode 选项默认为 async 。
-
-- async: 异步爬取目标，无需等当前爬取目标完成，就进行下次爬取目标
-- sync: 同步爬取目标，需要等这次爬取目标完成，才会进行下次爬取目标
-
-若有设置间隔时间，则都需要等间隔时间结束才会爬取下次目标。
-
-**注意:** 爬取 API 的爬取过程都是单独进行的，该模式对批量爬取目标才有效。
-
-#### 默认设备指纹
-
-可以通过一个属性控制是否使用默认的随机指纹，您也可以通过后续的爬取配置自定义指纹。
-
-设置设备指纹是为了避免通过指纹识别从不同位置识别并跟踪我们。
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({
-  enableRandomFingerprint: true
-})
-```
-
-enableRandomFingerprint 选项默认为 false 。
-
-- true: 启动随机设备指纹。可通过进阶配置或详细目标配置指定目标的指纹配置。
-- false: 关闭随机设备指纹，不影响进阶配置或详细目标配置为目标指定的指纹配置。
+相关的 **选项** 可参考 [CreateCrawlConfig](#CreateCrawlConfig) 。
 
 #### 多个爬虫应用实例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl1 = xCrawl({
+const crawlApp1 = createCrawl({
   // 选项
 })
 
-const myXCrawl2 = xCrawl({
+const crawlApp2 = createCrawl({
   // 选项
 })
 ```
@@ -278,11 +271,11 @@ const myXCrawl2 = xCrawl({
 通过 [crawlPage()](#crawlPage) 爬取一个页面。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl.crawlPage('https://www.example.com').then((res) => {
+crawlApp.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // 关闭浏览器
@@ -300,16 +293,16 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 
 当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
 
-browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
+一个 browser 实例可能有多个 page 实例，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
 
 **获取屏幕截图**
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl.crawlPage('https://www.example.com').then(async (res) => {
+crawlApp.crawlPage('https://www.example.com').then(async (res) => {
   const { browser, page } = res.data
 
   // 获取页面渲染后的截图
@@ -336,15 +329,15 @@ crawlPage API 拥有的声明周期函数:
 取消以无头模式运行浏览器。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({
+const crawlApp = createCrawl({
   maxRetry: 3,
   // 取消以无头模式运行浏览器
-  crawlPage: { puppeteerLaunch: { headless: false } }
+  crawlPage: { puppeteerLaunchOptions: { headless: false } }
 })
 
-myXCrawl.crawlPage('https://www.example.com').then((res) => {})
+crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
 ### 爬取 HTML
@@ -352,11 +345,11 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 通过 [crawlHTML()](#crawlData) 爬取静态 HTML。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
+const crawlApp = createCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
-myXCrawl
+crawlApp
   .crawlHTML([
     'https://www.example.com/html-1',
     'https://www.example.com/html-2'
@@ -381,9 +374,9 @@ crawlHTML API 拥有的声明周期函数:
 通过 [crawlData()](#crawlData) 爬取接口数据。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
+const crawlApp = createCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
 const targets = [
   'https://www.example.com/api-1',
@@ -395,7 +388,7 @@ const targets = [
   }
 ]
 
-myXCrawl.crawlData({ targets }).then((res) => {
+crawlApp.crawlData({ targets }).then((res) => {
   // 处理
 })
 ```
@@ -415,11 +408,11 @@ crawlData API 拥有的声明周期函数:
 通过 [crawlFile()](#crawlFile) 爬取文件数据。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({ intervalTime: { max: 3000, min: 1000 } })
+const crawlApp = createCrawl({ intervalTime: { max: 3000, min: 1000 } })
 
-myXCrawl
+crawlApp
   .crawlFile({
     targets: [
       'https://www.example.com/file-1',
@@ -444,19 +437,19 @@ crawlFile API 拥有的声明周期函数:
 
 ##### onBeforeSaveItemFile
 
-在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后需要返回一个 Promise ，并且 resolve 是 Buffer ，该 Buffer 会替换掉拿到的 Buffer 存储到文件中。
+在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后返回一个 Buffer 或者一个返回值是 Buffer 的 Promise ，x-crawl 会将返回的 Buffer 替换掉拿到的 Buffer 存储到文件中。
 
 **调整图片大小**
 
 使用 sharp 库对需要爬取的图片进行调整大小操作:
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 import sharp from 'sharp'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlFile({
     targets: [
       'https://www.example.com/file-1.jpg',
@@ -473,87 +466,6 @@ myXCrawl
   })
 ```
 
-### 启动轮询
-
-通过 [startPolling()](#startPolling) 启动一个轮询爬取。
-
-```js
-import xCrawl from 'x-crawl'
-
-const myXCrawl = xCrawl({
-  timeout: 10000
-})
-
-myXCrawl.startPolling({ h: 2, m: 30 }, async (count, stopPolling) => {
-  // 每隔两个半小时会执行一次
-  // crawlPage/crawlData/crawlFile
-  const res = await myXCrawl.crawlPage('https://www.example.com')
-  res.data.page.close()
-})
-```
-
-**在轮询中使用 crawlPage 注意：** browser 实例内部会保留着对 page 实例的引用，如果后续不再使用需要自行关闭 page 实例，否则会造成内存泄露。
-
-回调函数参数：
-
-- count 属性记录当前是第几次轮询操作。
-- stopPolling 是一个回调函数，调用其可以终止后面的轮询操作。
-
-### 配置优先级
-
-一些通用的配置可以通过在这三个地方设置：
-
-- 应用实例配置（全局）
-- 进阶配置（局部）
-- 详细目标配置（单独）
-
-优先级为：详细目标配置 > 进阶配置 > 应用实例配置
-
-以 crawlPage 爬取两个页面为例：
-
-```js
-import xCrawl from 'x-crawl'
-
-// 应用实例配置
-const testXCrawl = xCrawl({
-  proxy: {
-    urls: [
-      'https://www.example.com/proxy-1',
-      'https://www.example.com/proxy-2',
-      'https://www.example.com/proxy-3'
-    ],
-    switchByErrorCount: 3,
-    switchByHttpStatus: [401, 403]
-  }
-})
-
-// 进阶配置
-testXCrawl
-  .crawlPage({
-    targets: [
-      'https://www.example.com/page-1',
-      'https://www.example.com/page-2',
-      // 详细目标配置
-      {
-        url: 'https://www.example.com/page-3',
-        proxy: { urls: ['https://www.example.com/proxy-5'] }
-      }
-    ],
-    maxRetry: 10,
-    proxy: {
-      urls: [
-        'https://www.example.com/proxy-3',
-        'https://www.example.com/proxy-4'
-      ],
-      switchByErrorCount: 3,
-      switchByHttpStatus: [401, 403]
-    }
-  })
-  .then((res) => {})
-```
-
-在上面的实例中，**应用实例配置**、**进阶配置**以及**详细目标配置**中都设置了**代理**，page3 将会采用自己的代理配置，page1 和 page2 将采用进阶配置的代理配置。
-
 ### 间隔时间
 
 间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
@@ -561,11 +473,11 @@ testXCrawl
 爬取间隔时间是由爬取 API 内部自己控制的，并非由爬虫实例控制爬取 API 的间隔时间。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlData({
     targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 2000, min: 1000 }
@@ -587,11 +499,11 @@ intervalTime 选项默认为 undefined 。若有设置值，则会在爬取目�
 可以在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlData({ url: 'https://www.example.com/api', maxRetry: 9 })
   .then((res) => {})
 ```
@@ -607,11 +519,11 @@ maxRetry 属性决定要重试几次。
 以 crawlPage 为例：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const testXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-testXCrawl
+crawlApp
   .crawlPage({
     targets: [
       'https://www.example.com/page-1',
@@ -649,7 +561,298 @@ testXCrawl
 
 **注意:** 该功能需要配合失败重试才能正常使用。
 
-### 自定义设备指纹
+### 优先队列
+
+优先队列可以让某个爬取目标优先发送。
+
+```js
+import { createCrawl } from 'x-crawl'
+
+const crawlApp = createCrawl()
+
+crawlApp
+  .crawlData([
+    { url: 'https://www.example.com/api-1', priority: 1 },
+    { url: 'https://www.example.com/api-2', priority: 10 },
+    { url: 'https://www.example.com/api-3', priority: 8 }
+  ])
+  .then((res) => {})
+```
+
+priority 属性的值越大就在当前爬取队列中越优先。
+
+### 终端信息
+
+爬取信息由开始（显示模式和总数）、过程（显示数量和等待多久）、结果（显示成功和失败信息）组成。每段信息前面都会有如 **1-page-2** ，前面的 1 代表第 1 个爬虫实例，中间的 page 代表 API 类型，后面的 2 代表第 1 个爬虫实例的第 2 个 page ，这样做的目的是为了更好区分信息来自哪个 API 。
+
+当您不希望在终端显示爬取信息时，可以通过选项自己控制显示或隐藏。
+
+```js
+import { createCrawl } from 'x-crawl'
+
+// 只隐藏过程，开始和结果显示
+const crawlApp = createCrawl({ log: { process: false } })
+
+// 隐藏全部信息
+const crawlApp = createCrawl({ log: false })
+```
+
+log 选项接收对象或布尔类型：
+
+- 布尔
+
+  - true: 全部显示
+  - false：全部隐藏
+
+- 对象
+  - start：对开始信息控制
+  - process：对过程信息控制
+  - result：对结果信息控制
+
+### 关于结果
+
+每个爬取目标都会产生一个详情对象，该详情对象会包含以下属性：
+
+- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
+- isSuccess：是否成功爬取
+- maxRetry：该次爬取目标的最大重试次数
+- retryCount：该次爬取目标已经重试的次数
+- proxyDetails：记录代理情况
+- crawlErrorQueue：该次爬取目标的报错收集
+- data：该次爬取目标的爬取数据
+
+如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
+
+相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlHTML 配置](#配置-1)、[crawlData 配置](#配置-2)、[crawlFile 配置](#配置-3) 。
+
+### TypeScript
+
+像 TypeScript 这样的类型系统可以在编译时通过静态分析检测出很多常见错误。这减少了运行时错误，也让我们在重构大型项目的时候更有信心。通过 IDE 中基于类型的自动补全，TypeScript 还改善了开发体验和效率。
+
+x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持。自带类型声明文件，开箱即用。
+
+## AI 辅助
+
+强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
+
+### 创建 AI 应用
+
+目前 x-crawl 的 AI 辅助功能是依靠 OpenAI ，需要用到 OpenAI 的 API Key 。后续还可能加入其他 AI 的。
+
+通过 [createXCrawlOpenAI()](#createXCrawlOpenAI) 创建一个新的 **应用实例**:
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' }
+})
+```
+
+**领取 API Key**
+
+- **[OpenAI 官方的 API Key](https://platform.openai.com/api-keys)**
+- **[免费的 API Key](https://github.com/chatanywhere/GPT_API_free)**
+
+### 智能按需分析元素
+
+无需手动分析 HTML 页面结构再提取所需的元素属性或值。现在只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的信息，AI便会自动分析页面结构，提取出相应的元素属性或值。
+
+使用 AI 应用实例的 parseElements 方法。
+
+示例：
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' }
+})
+
+const HTMLContent = `
+  <div class="scroll-list">
+    <div class="list-item">女装带帽卫衣</div>
+    <div class="list-item">男装卫衣</div>
+    <div class="list-item">女装卫衣</div>
+    <div class="list-item">男装带帽卫衣</div>
+  </div>
+  <div class="scroll-list">
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">女装纯棉短袖</div>
+    <div class="list-item">男装冰丝短袖</div>
+    <div class="list-item">男装圆领短袖</div>
+  </div>
+`
+
+xCrawlOpenAIApp.parseElements(HTMLContent, '获取男装, 并去重').then((res) => {
+  console.log(res)
+  /*
+    res:
+    {
+      elements: [
+        { class: 'list-item', text: '男装卫衣' },
+        { class: 'list-item', text: '男装带帽卫衣' },
+        { class: 'list-item', text: '男装纯棉短袖' },
+        { class: 'list-item', text: '男装冰丝短袖' },
+        { class: 'list-item', text: '男装圆领短袖' }
+      ],
+      type: 'multiple'
+    }
+  */
+})
+```
+
+也可以将整个 HTML 传给 AI 帮我们操作，但是会消耗更多 Tokens ，OpenAI 是根据 Tokens 进行收费的。
+
+### 智能生成元素选择器
+
+能够帮助我们快速定位到页面中的特定元素。只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的选择器，AI 便会根据页面结构自动为您生成合适的选择器，大大简化了确定选择器的繁琐过程。
+
+使用 AI 应用实例的 getElementSelectors 方法。
+
+示例：
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' }
+})
+
+const HTMLContent = `
+  <div class="scroll-list">
+    <div class="list-item">女装带帽卫衣</div>
+    <div class="list-item">男装卫衣</div>
+    <div class="list-item">女装卫衣</div>
+    <div class="list-item">男装带帽卫衣</div>
+  </div>
+  <div class="scroll-list">
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">男装纯棉短袖</div>
+    <div class="list-item">女装纯棉短袖</div>
+    <div class="list-item">男装冰丝短袖</div>
+    <div class="list-item">男装圆领短袖</div>
+  </div>
+`
+
+xCrawlOpenAIApp.getElementSelectors(HTMLContent, '获取所有女装').then((res) => {
+  console.log(res)
+  /*
+    res:
+    {
+      selectors: '.scroll-list:nth-child(1) .list-item:nth-of-type(1), .scroll-list:nth-child(1) .list-item:nth-of-type(3), .scroll-list:nth-child(2) .list-item:nth-of-type(3)',
+      type: 'multiple'
+    }
+  */
+})
+```
+
+也可以将整个 HTML 传给 AI 帮我们操作，但是会消耗更多 Tokens ，OpenAI 是根据 Tokens 进行收费的。
+
+### 智能回复爬虫问题
+
+可以为您提供智能的解答和建议。无论是关于爬虫策略、反爬虫技巧还是数据处理等方面的问题，您都可以向AI提问，AI会根据其强大的学习和推理能力，为您提供专业的解答和建议，帮助您更好地完成爬虫任务。
+
+使用 AI 应用实例的 help 方法。
+
+示例：
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' }
+})
+
+xCrawlOpenAIApp.help('x-crawl 是什么').then((res) => {
+  console.log(res)
+  /*
+    res:
+    x-crawl 是一个灵活的 Node.js AI 辅助爬虫库，它提供了强大的人工智能辅助功能，可以帮助开发者更高效、智能和便捷地进行网络爬虫工作。您可以在 GitHub 上找到更多关于 x-crawl 的详细信息和使用方式：https://github.com/coder-hxl/x-crawl。
+  */
+})
+
+xCrawlOpenAIApp.help('爬虫的三大注意事项').then((res) => {
+  console.log(res)
+  /*
+    res:
+    在进行爬虫工作时，有三个重要的注意事项需要特别注意：
+
+    1. **遵守网站规则和法律法规**：在进行数据爬取时，一定要遵守网站的robots.txt文件中的规则，并且不要违反任何相关的法律法规。尊重网站所有者的意愿和数据的所有权是非常重要的。
+
+    2. **避免对网站造成过大负担**：爬虫在爬取数据时会占用网站的带宽和资源，过度频繁的访问会给网站带来压力甚至是瘫痪。因此，需要合理设置爬虫的访问频率，并且避免对网站造成过大的访问负担。
+
+    3. **数据处理和存储的合法性和隐私保护**：爬取到的数据可能涉及用户的隐私信息，因此在收集、存储和使用这些数据时，要符合相关的隐私保护法律法规，并且不要滥用这些数据。另外，在处理数据时也要保证数据的准确性和可靠性，避免因不当的数据处理而产生误解或造成不良影响。
+  */
+})
+```
+
+### 用户自定义 AI 功能
+
+为了满足不同用户的个性化需求，x-crawl 还提供了用户自定义 AI 的功能。将 openai 实例提供出来，这意味着您可以根据自己的需求，对 AI 进行定制和优化，使其更好地适应您的爬虫工作。
+
+使用 AI 应用实例的 custom 方法。
+
+示例：
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' }
+})
+
+const openai = xCrawlOpenAIApp.custom()
+```
+
+调用 custom 拿到的 openai 可参考：https://platform.openai.com/docs/api-reference/chat/create?lang=node.js ，调用 custom 拿到的 openai 与网站示例 new OpenAI() 拿到的实例差不多，不同的是 x-crawl 会将创建 AI 应用实例时传入的 clientOptions 传给 new OpenAI ，拿到的是完好无损 OpenAI 实例，x-crawl 并不会对其重写。
+
+## 进阶
+
+### 爬取模式
+
+一个爬虫应用实例有两种爬取模式: 异步/同步，每个爬虫实例只能选择其中一种。
+
+```js
+import { createCrawl } from 'x-crawl'
+
+const crawlApp = createCrawl({
+  mode: 'async'
+})
+```
+
+mode 选项默认为 async 。
+
+- async: 异步爬取目标，无需等当前爬取目标完成，就进行下次爬取目标
+- sync: 同步爬取目标，需要等这次爬取目标完成，才会进行下次爬取目标
+
+若有设置间隔时间，则都需要等间隔时间结束才会爬取下次目标。
+
+**注意:** 爬取 API 的爬取过程都是单独进行的，该模式对批量爬取目标才有效。
+
+### 设备指纹
+
+#### 默认设备指纹
+
+可以通过一个属性控制是否使用默认的随机指纹，您也可以通过后续的爬取配置自定义指纹。
+
+设置设备指纹是为了避免通过指纹识别从不同位置识别并跟踪我们。
+
+```js
+import { createCrawl } from 'x-crawl'
+
+const crawlApp = createCrawl({
+  enableRandomFingerprint: true
+})
+```
+
+enableRandomFingerprint 选项默认为 false 。
+
+- true: 启动随机设备指纹。可通过进阶配置或详细目标配置指定目标的指纹配置。
+- false: 关闭随机设备指纹，不影响进阶配置或详细目标配置为目标指定的指纹配置。
+
+#### 自定义设备指纹
 
 自定义配置设备指纹，可避免通过指纹识别从不同位置识别并跟踪我们。
 
@@ -658,11 +861,11 @@ testXCrawl
 以 crawlPage 为例：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({ intervalTime: { max: 5000, min: 3000 } })
+const crawlApp = createCrawl({ intervalTime: { max: 5000, min: 3000 } })
 
-myXCrawl.crawlPage({
+crawlApp.crawlPage({
   targets: [
     'https://www.example.com/page-1',
     'https://www.example.com/page-2',
@@ -761,105 +964,107 @@ myXCrawl.crawlPage({
 
 更多指纹选项可以前往对应的配置查看。
 
-### 优先队列
+### 配置
 
-优先队列可以让某个爬取目标优先发送。
+一些通用的配置可以通过在这三个地方设置：
+
+- 应用实例配置（全局）
+- 进阶配置（局部）
+- 详细目标配置（单独）
+
+#### 优先级
+
+优先级为：详细目标配置 > 进阶配置 > 应用实例配置
+
+以 maxRetry 重试次数为例：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+// 应用实例配置
+const crawlApp = createCrawl({ maxRetry: 3 })
 
-myXCrawl
-  .crawlData([
-    { url: 'https://www.example.com/api-1', priority: 1 },
-    { url: 'https://www.example.com/api-2', priority: 10 },
-    { url: 'https://www.example.com/api-3', priority: 8 }
-  ])
+// 进阶配置
+crawlApp
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-1',
+      'https://www.example.com/page-2',
+      // 详细目标配置
+      { url: 'https://www.example.com/page-3', maxRetry: 8 },
+      'https://www.example.com/page-4'
+    ],
+    maxRetry: 6
+  })
+  .then((res) => {})
+
+crawlApp.crawlPage('https://www.example.com/page-5').then((res) => {})
+```
+
+在上面的示例中，**应用实例配置**、**进阶配置**以及**详细目标配置**中都设置了**重试次数**，page3 将会采用自己的重试次数（8次），page1、 page2 以及 page4 将采用进阶配置的重试次数（6次），page5 会使用应用实例配置的重试次数（3次）。
+
+#### 取消复用配置选项
+
+可在使用 null 取消上层配置。
+
+以 maxRetry 重试次数为例：
+
+```js
+import { createCrawl } from 'x-crawl'
+
+const crawlApp = createCrawl({ maxRetry: 3 })
+
+crawlApp
+  .crawlPage({
+    url: 'https://www.example.com/page-1',
+    maxRetry: null
+  })
+  .then((res) => {})
+
+crawlApp.crawlPage('https://www.example.com/page-2').then((res) => {})
+
+crawlApp
+  .crawlPage({
+    targets: [
+      'https://www.example.com/page-3',
+      'https://www.example.com/page-4'
+    ],
+    maxRetry: null
+  })
   .then((res) => {})
 ```
 
-priority 属性的值越大就在当前爬取队列中越优先。
-
-### 打印信息
-
-爬取的打印信息由开始（显示模式和总数）、过程（显示数量和等待多久）、结果（显示成功和失败信息）组成。每段信息前面都会有如 **1-page-2** ，前面的 1 代表第 1 个爬虫实例，中间的 page 代表 API 类型，后面的 2 代表第 1 个爬虫实例的第 2 个 page ，这样做的目的是为了更好区分信息来自哪个 API 。
-
-当您不希望在终端显示爬取信息时，可以通过选项自己控制显示或隐藏。
-
-```js
-import xCrawl from 'x-crawl'
-
-// 只隐藏过程，开始和结果显示
-const myXCrawl = xCrawl({ log: { process: false } })
-
-// 隐藏全部信息
-const myXCrawl = xCrawl({ log: false })
-```
-
-log 选项接收对象或布尔类型：
-
-- 布尔
-
-  - true: 全部显示
-  - false：全部隐藏
-
-- 对象
-  - start：对开始信息控制
-  - process：对过程信息控制
-  - result：对结果信息控制
-
-### 关于结果
-
-每个爬取目标都会产生一个详情对象，该详情对象会包含以下属性：
-
-- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
-- isSuccess：是否成功爬取
-- maxRetry：该次爬取目标的最大重试次数
-- retryCount：该次爬取目标已经重试的次数
-- proxyDetails：记录代理情况
-- crawlErrorQueue：该次爬取目标的报错收集
-- data：该次爬取目标的爬取数据
-
-如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
-
-相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlHTML 配置](#配置-1)、[crawlData 配置](#配置-2)、[crawlFile 配置](#配置-3) 。
-
-### TypeScript
-
-像 TypeScript 这样的类型系统可以在编译时通过静态分析检测出很多常见错误。这减少了运行时错误，也让我们在重构大型项目的时候更有信心。通过 IDE 中基于类型的自动补全，TypeScript 还改善了开发体验和效率。
-
-x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持。自带类型声明文件，开箱即用。
+在上面的示例中，page-1、page3、page4 都取消了重试次数，page2 有 3 次重试次数。
 
 ## API
 
-### xCrawl
+### createCrawl
 
-通过调用 xCrawl 创建一个爬虫实例。爬取目标是由实例方法内部维护，并非由实例维护。
+通过调用 createCrawl 创建一个爬虫应用实例。爬取目标是由实例方法内部维护，并非由实例维护。
 
 #### 类型
 
-xCrawl API 是一个函数。
+createCrawl API 是一个函数。
 
 ```ts
-function xCrawl(baseConfig?: XCrawlBaseConfig): XCrawlInstance
+function createCrawl(config?: CreateCrawlConfig): CrawlApp
 ```
 
 **参数类型：**
 
-- 查看 [XCrawlBaseConfig](#XCrawlBaseConfig) 类型
+- 查看 [CreateCrawlConfig](#CreateCrawlConfig) 类型
 
 **返回值类型：**
 
-- 查看 [XCrawlInstance](#XCrawlInstance)类型
+- 查看 [CrawlApp](#CrawlApp) 类型
 
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-// xCrawl API
-const myXCrawl = xCrawl({
+// createCrawl API
+const crawlApp = createCrawl({
   baseUrl: 'https://www.example.com',
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
@@ -876,25 +1081,15 @@ crawlPage API 是一个函数。类型是 [重载函数](https://www.typescriptl
 
 ```ts
 type crawlPage = {
-  (
-    config: string,
-    callback?: (res: CrawlPageSingleResult) => void
-  ): Promise<CrawlPageSingleResult>
+  (config: string): Promise<CrawlPageSingleResult>
+
+  (config: CrawlPageDetailTargetConfig): Promise<CrawlPageSingleResult>
 
   (
-    config: CrawlPageDetailTargetConfig,
-    callback?: (res: CrawlPageSingleResult) => void
-  ): Promise<CrawlPageSingleResult>
-
-  (
-    config: (string | CrawlPageDetailTargetConfig)[],
-    callback?: (res: CrawlPageSingleResult[]) => void
+    config: (string | CrawlPageDetailTargetConfig)[]
   ): Promise<CrawlPageSingleResult[]>
 
-  (
-    config: CrawlPageAdvancedConfig,
-    callback?: (res: CrawlPageSingleResult[]) => void
-  ): Promise<CrawlPageSingleResult[]>
+  (config: CrawlPageAdvancedConfig): Promise<CrawlPageSingleResult[]>
 }
 ```
 
@@ -910,12 +1105,12 @@ type crawlPage = {
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
 // crawlPage API
-myXCrawl.crawlPage('https://www.example.com').then((res) => {
+crawlApp.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
   // 关闭浏览器
@@ -937,11 +1132,11 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {
 这是简单目标配置。如果你只想单纯爬一下这个页面，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl.crawlPage('https://www.example.com').then((res) => {})
+crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
 拿到的 res 将是一个对象。
@@ -951,11 +1146,11 @@ myXCrawl.crawlPage('https://www.example.com').then((res) => {})
 这是详细目标配置。如果你想爬一下这个页面，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlPage({
     url: 'https://www.example.com',
     proxy: { urls: ['xxx'] },
@@ -973,11 +1168,11 @@ myXCrawl
 这是混合目标数组配置。如果你想爬取多个页面，并且有些页面需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlPage([
     'https://www.example.com/page-1',
     { url: 'https://www.example.com/page-2', maxRetry: 2 }
@@ -994,11 +1189,11 @@ myXCrawl
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlPage({
     targets: [
       'https://www.example.com/page-1',
@@ -1027,25 +1222,15 @@ crawlHTML API 是一个函数。类型是 [重载函数](https://www.typescriptl
 
 ```ts
 type crawlHTML = {
-  (
-    config: string,
-    callback?: (res: CrawlHTMLSingleResult) => void
-  ): Promise<CrawlHTMLSingleResult>
+  (config: string): Promise<CrawlHTMLSingleResult>
+
+  (config: CrawlHTMLDetailTargetConfig): Promise<CrawlHTMLSingleResult>
 
   (
-    config: CrawlHTMLDetailTargetConfig,
-    callback?: (res: CrawlHTMLSingleResult) => void
-  ): Promise<CrawlHTMLSingleResult>
-
-  (
-    config: (string | CrawlHTMLDetailTargetConfig)[],
-    callback?: (res: CrawlHTMLSingleResult[]) => void
+    config: (string | CrawlHTMLDetailTargetConfig)[]
   ): Promise<CrawlHTMLSingleResult[]>
 
-  (
-    config: CrawlHTMLAdvancedConfig,
-    callback?: (res: CrawlHTMLSingleResult[]) => void
-  ): Promise<CrawlHTMLSingleResult[]>
+  (config: CrawlHTMLAdvancedConfig): Promise<CrawlHTMLSingleResult[]>
 }
 ```
 
@@ -1061,12 +1246,12 @@ type crawlHTML = {
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
 // crawlHTML API
-myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
+crawlApp.crawlHTML('https://www.example.com').then((res) => {})
 ```
 
 #### 配置
@@ -1083,11 +1268,11 @@ myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
 这是简单目标配置。如果你只想单纯爬一下这个静态 HTML 页面，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
+crawlApp.crawlHTML('https://www.example.com').then((res) => {})
 ```
 
 拿到的 res 将是一个对象。
@@ -1097,11 +1282,11 @@ myXCrawl.crawlHTML('https://www.example.com').then((res) => {})
 这是详细目标配置。如果你想爬一下这个静态 HTML 页面，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlHTML({
     url: 'https://www.example.com',
     proxy: { urls: ['xxx'] },
@@ -1119,11 +1304,11 @@ myXCrawl
 这是混合目标数组配置。如果你想爬取多个静态 HTML 页面，并且有些静态 HTML 页面需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlHTML([
     'https://www.example.com/page-1',
     { url: 'https://www.example.com/page-2', maxRetry: 2 }
@@ -1140,11 +1325,11 @@ myXCrawl
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个静态 HTML 页面，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlHTML({
     targets: [
       'https://www.example.com/page-1',
@@ -1173,24 +1358,18 @@ crawlData API 是一个函数。类型是 [重载函数](https://www.typescriptl
 
 ```ts
 type crawlData = {
+  <T = any>(config: string): Promise<CrawlDataSingleResult<T>>
+
   <T = any>(
-    config: CrawlDataDetailTargetConfig,
-    callback?: (res: CrawlDataSingleResult<T>) => void
+    config: CrawlDataDetailTargetConfig
   ): Promise<CrawlDataSingleResult<T>>
 
   <T = any>(
-    config: string,
-    callback?: (res: CrawlDataSingleResult<T>) => void
-  ): Promise<CrawlDataSingleResult<T>>
-
-  <T = any>(
-    config: (string | CrawlDataDetailTargetConfig)[],
-    callback?: (res: CrawlDataSingleResult<T>[]) => void
+    config: (string | CrawlDataDetailTargetConfig)[]
   ): Promise<CrawlDataSingleResult<T>[]>
 
   <T = any>(
-    config: CrawlDataAdvancedConfig<T>,
-    callback?: (res: CrawlDataSingleResult<T>[]) => void
+    config: CrawlDataAdvancedConfig<T>
   ): Promise<CrawlDataSingleResult<T>[]>
 }
 ```
@@ -1207,15 +1386,15 @@ type crawlData = {
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({
+const crawlApp = createCrawl({
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
 })
 
 // crawlData API
-myXCrawl
+crawlApp
   .crawlData({
     targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
     intervalTime: { max: 3000, min: 1000 },
@@ -1241,11 +1420,11 @@ myXCrawl
 这是简单目标配置。如果你只想单纯爬一下这个数据，并且该接口是 GET 方式的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
+crawlApp.crawlData('https://www.example.com/api').then((res) => {})
 ```
 
 拿到的 res 将是一个对象。
@@ -1255,11 +1434,11 @@ myXCrawl.crawlData('https://www.example.com/api').then((res) => {})
 这是详细目标配置。如果你想爬一下这个数据，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlData({
     url: 'https://www.example.com/api',
     proxy: { urls: ['xxx'] },
@@ -1277,11 +1456,11 @@ myXCrawl
 这是混合目标数组配置。如果你想爬取多个数据，并且有些数据需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlData([
     'https://www.example.com/api-1',
     { url: 'https://www.example.com/api-2', maxRetry: 2 }
@@ -1298,11 +1477,11 @@ myXCrawl
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlData({
     targets: [
       'https://www.example.com/api-1',
@@ -1331,20 +1510,15 @@ crawlFile API 是一个函数。类型是 [重载函数](https://www.typescriptl
 
 ```ts
 type crawlFile = {
-  (
-    config: CrawlFileDetailTargetConfig,
-    callback?: (res: CrawlFileSingleResult) => void
-  ): Promise<CrawlFileSingleResult>
+  (config: string): Promise<CrawlFileSingleResult>
+
+  (config: CrawlFileDetailTargetConfig): Promise<CrawlFileSingleResult>
 
   (
-    config: CrawlFileDetailTargetConfig[],
-    callback?: (res: CrawlFileSingleResult[]) => void
+    config: (string | CrawlFileDetailTargetConfig)[]
   ): Promise<CrawlFileSingleResult[]>
 
-  (
-    config: CrawlFileAdvancedConfig,
-    callback?: (res: CrawlFileSingleResult[]) => void
-  ): Promise<CrawlFileSingleResult[]>
+  (config: CrawlFileAdvancedConfig): Promise<CrawlFileSingleResult[]>
 }
 ```
 
@@ -1360,15 +1534,15 @@ type crawlFile = {
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl({
+const crawlApp = createCrawl({
   timeout: 10000,
   intervalTime: { max: 2000, min: 1000 }
 })
 
 // crawlFile API
-myXCrawl
+crawlApp
   .crawlFile({
     targets: [
       'https://www.example.com/file-1',
@@ -1383,22 +1557,37 @@ myXCrawl
 
 #### 配置
 
-一共有 3 种:
+一共有 4 种:
 
+- 简单目标配置 - string
 - 详细目标配置 - CrawlFileDetailTargetConfig
-- 详细目标数组配置 - CrawlFileDetailTargetConfig[]
+- 详细目标数组配置 - (string | CrawlFileDetailTargetConfig)[]
 - 进阶配置 - CrawlFileAdvancedConfig
+
+##### 简单目标配置 - string
+
+这是简单目标配置。如果你只想单纯爬一下这个文件，可以试试这种写法：
+
+```js
+import { createCrawl } from 'x-crawl'
+
+const crawlApp = createCrawl()
+
+crawlApp.crawlFile('https://www.example.com/file').then((res) => {})
+```
+
+拿到的 res 将是一个对象。
 
 ##### 详细目标配置 - CrawlFileDetailTargetConfig
 
 这是详细目标配置。如果你想爬一下这个文件，并且需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlFile({
     url: 'https://www.example.com/file',
     proxy: { urls: ['xxx'] },
@@ -1413,19 +1602,20 @@ myXCrawl
 
 更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
 
-##### 详细目标数组配置 - CrawlFileDetailTargetConfig[]
+##### 混合目标数组配置 - (string | CrawlFileDetailTargetConfig)[]
 
-这是详细目标数组配置。如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
+这是混合目标数组配置。如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlFile([
-    { url: 'https://www.example.com/file-1', storeDir: './upload' },
-    { url: 'https://www.example.com/file-2', storeDir: './upload', maxRetry: 2 }
+    'https://www.example.com/file-1',
+    { url: 'https://www.example.com/file-2', storeDir: './upload' },
+    { url: 'https://www.example.com/file-3', storeDir: './upload', maxRetry: 2 }
   ])
   .then((res) => {})
 ```
@@ -1439,11 +1629,11 @@ myXCrawl
 这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、storeDir、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-myXCrawl
+crawlApp
   .crawlFile({
     targets: [
       'https://www.example.com/file-1',
@@ -1462,46 +1652,173 @@ myXCrawl
 
 关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
 
-### startPolling
+### createXCrawlOpenAI
 
-crawlPolling 是爬虫实例的方法，通常用于进行轮询操作，比如每隔一段时间获取新闻之类的。
+通过调用 createXCrawlOpenAI 创建一个 AI 应用实例。
 
 #### 类型
 
-- 查看 [StartPollingConfig](#StartPollingConfig) 类型
+createXCrawlOpenAI API 是一个函数。
 
 ```ts
-function startPolling: (
-  config: StartPollingConfig,
-  callback: (count: number, stopPolling: () => void) => void
-) => void
+function createXCrawlOpenAI(config?: CreateXCrawlOpenAIConfig): XCrawlOpenAIApp
 ```
+
+**参数类型：**
+
+- 查看 [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig) 类型
+
+**返回值类型：**
+
+- 查看 [XCrawlOpenAIApp](#XCrawlOpenAIApp) 类型
 
 #### 示例
 
 ```js
-import xCrawl from 'x-crawl'
+import { createXCrawlOpenAI } from 'x-crawl'
 
-const myXCrawl = xCrawl({
-  timeout: 10000,
-  intervalTime: { max: 2000, min: 1000 }
+// xCrawlOpenAIApp API
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: '你的 API Key' },
+  defaultModel: { chatModel: 'gpt-4-turbo-preview' }
 })
+```
 
-// startPolling API
-myXCrawl.startPolling({ h: 2, m: 30 }, (count, stopPolling) => {
-  // 每隔两个半小时会执行一次
-  // crawlPage/crawlData/crawlFile
-})
+### parseElements
+
+parseElements 是 AI 应用实例的方法，通常用于智能按需分析元素。
+
+#### 类型
+
+parseElements API 是一个函数。
+
+```ts
+function parseElements(
+  HTML: string,
+  content: string | XCrawlOpenAIParseElementsContentOptions,
+  option?: XCrawlOpenAICommonAPIOtherOption
+): Promise<XCrawlOpenAIParseElementsResult>
+```
+
+**参数类型：**
+
+- 查看 [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions) 类型
+- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+
+**返回值类型：**
+
+- 查看 [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult) 类型
+
+#### 示例
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI()
+
+xCrawlOpenAIApp.parseElements('HTML', '告诉 AI 你想要的').then((res) => {})
+```
+
+### getElementSelectors
+
+getElementSelectors 是 AI 应用实例的方法，通常用于智能生成元素选择器。
+
+#### 类型
+
+parseElements API 是一个函数。
+
+```ts
+function getElementSelectors(
+  HTML: string,
+  content: string | XCrawlOpenAIGetElementSelectorsContentOptions,
+  option?: XCrawlOpenAICommonAPIOtherOption
+): Promise<XCrawlOpenAIGetElementSelectorsResult>
+```
+
+**参数类型：**
+
+- 查看 [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions) 类型
+- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+
+**返回值类型：**
+
+- 查看 [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult) 类型
+
+#### 示例
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI()
+
+xCrawlOpenAIApp
+  .getElementSelectors('HTML', '告诉 AI 你想要的')
+  .then((res) => {})
+```
+
+### help
+
+help 是 AI 应用实例的方法，通常用于智能回复爬虫问题。
+
+#### 类型
+
+help API 是一个函数。
+
+```ts
+function help(
+  content: string,
+  option?: XCrawlOpenAICommonAPIOtherOption
+): Promise<string>
+```
+
+**参数类型：**
+
+- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+
+#### 示例
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI()
+
+xCrawlOpenAIApp.help('告诉 AI 你的问题').then((res) => {})
+```
+
+### custom
+
+custom 是 AI 应用实例的方法，通常用于用户自定义AI功能。
+
+#### 类型
+
+customAPI 是一个函数。
+
+```ts
+function custom(): OpenAI
+```
+
+**返回值类型：**
+
+可参考：https://platform.openai.com/docs/api-reference/chat/create?lang=node.js ，调用 custom 拿到的 openai 与网站示例 new OpenAI() 拿到的实例差不多，不同的是 x-crawl 会将创建 AI 应用实例时传入的 clientOptions 传给 new OpenAI ，拿到的是完好无损 OpenAI 实例，x-crawl 并不会对其重写。
+
+#### 示例
+
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
+
+const xCrawlOpenAIApp = createXCrawlOpenAI()
+
+const openai = xCrawlOpenAIApp.custom()
 ```
 
 ## 类型
 
 ### API Config
 
-#### XCrawlConfig
+#### CreateCrawlConfig
 
 ```ts
-export interface XCrawlConfig extends CrawlCommonConfig {
+export interface CreateCrawlConfig extends CrawlCommonConfig {
   mode?: 'async' | 'sync'
   enableRandomFingerprint?: boolean
   baseUrl?: string
@@ -1514,7 +1831,7 @@ export interface XCrawlConfig extends CrawlCommonConfig {
       }
     | boolean
   crawlPage?: {
-    puppeteerLaunch?: PuppeteerLaunchOptions // puppeteer
+    puppeteerLaunchOptions?: PuppeteerLaunchOptions // PuppeteerLaunchOptions 来自于 puppeteer
   }
 }
 ```
@@ -1528,6 +1845,10 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 - log: { start: true, process: true, result: true }
 - crawlPage: undefined
 
+**外部类型**
+
+- PuppeteerLaunchOptions：来自于 puppeteer ，crawlPage.puppeteerLaunchOptions 会直接传给 puppeteer.launch 用于创建浏览器实例
+
 #### Detail Target Config
 
 ##### CrawlPageDetailTargetConfig
@@ -1535,10 +1856,10 @@ export interface XCrawlConfig extends CrawlCommonConfig {
 ```ts
 export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject | null
+  headers?: Object | null
   cookies?: PageCookies | null
   priority?: number
-  viewport?: Viewport | null // puppeteer
+  viewport?: Viewport | null // Viewport 来自于 puppeteer
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
         maxWidth?: number
@@ -1559,12 +1880,16 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 - viewport: undefined
 - fingerprint: undefined
 
+**外部类型**
+
+- Viewport：来自于 puppeteer ，viewport 会直接传给 page.setViewport 用于设置页面大小
+
 ##### CrawlHTMLDetailTargetConfig
 
 ```ts
 export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject | null
+  headers?: Object | null
   priority?: number
   fingerprint?: DetailTargetFingerprintCommon | null
 }
@@ -1583,8 +1908,8 @@ export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
 export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
   url: string
   method?: Method
-  headers?: AnyObject | null
-  params?: AnyObject
+  headers?: Object | null
+  params?: Object
   data?: any
   priority?: number
   fingerprint?: DetailTargetFingerprintCommon | null
@@ -1606,7 +1931,7 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 ```ts
 export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
   url: string
-  headers?: AnyObject | null
+  headers?: Object | null
   priority?: number
   storeDir?: string | null
   fileName?: string | null
@@ -1640,9 +1965,9 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
     minHidth?: number
   })[]
 
-  headers?: AnyObject
+  headers?: Object
   cookies?: PageCookies
-  viewport?: Viewport
+  viewport?: Viewport // Viewport：来自于 puppeteer
 
   onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
@@ -1658,6 +1983,10 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 - viewport: undefined
 - onCrawlItemComplete: undefined
 
+**外部类型**
+
+- Viewport：来自于 puppeteer ，viewport 会直接传给 page.setViewport 用于设置页面大小
+
 ##### CrawlHTMLAdvancedConfig
 
 ```ts
@@ -1666,7 +1995,7 @@ export interface CrawlHTMLAdvancedConfig extends CrawlCommonConfig {
   intervalTime?: IntervalTime
   fingerprints?: DetailTargetFingerprintCommon[]
 
-  headers?: AnyObject
+  headers?: Object
 
   onCrawlItemComplete?: (crawlDataSingleResult: CrawlHTMLSingleResult) => void
 }
@@ -1688,7 +2017,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
   intervalTime?: IntervalTime
   fingerprints?: DetailTargetFingerprintCommon[]
 
-  headers?: AnyObject
+  headers?: Object
 
   onCrawlItemComplete?: (
     crawlDataSingleResult: CrawlDataSingleResult<T>
@@ -1715,7 +2044,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
   extensions?: string | (string | null)[]
   fileNames?: (string | null)[]
 
-  headers?: AnyObject
+  headers?: Object
 
   onCrawlItemComplete?: (crawlFileSingleResult: CrawlFileSingleResult) => void
   onBeforeSaveItemFile?: (info: {
@@ -1723,7 +2052,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
     fileName: string
     filePath: string
     data: Buffer
-  }) => Promise<Buffer>
+  }) => Promise<Buffer | void> | Buffer | void
 }
 ```
 
@@ -1738,22 +2067,6 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 - headers: undefined
 - onCrawlItemComplete: undefined
 - onBeforeSaveItemFile: undefined
-
-#### StartPollingConfig
-
-```ts
-export interface StartPollingConfig {
-  d?: number
-  h?: number
-  m?: number
-}
-```
-
-**默认值**
-
-- d: undefined
-- h: undefined
-- m: undefined
 
 #### Crawl Other Config
 
@@ -1835,9 +2148,13 @@ export type Platform =
 ```ts
 export type PageCookies =
   | string
-  | Protocol.Network.CookieParam // puppeteer
-  | Protocol.Network.CookieParam[] // puppeteer
+  | Protocol.Network.CookieParam // Protocol 来自于 puppeteer
+  | Protocol.Network.CookieParam[] // Protocol 来自于 puppeteer
 ```
+
+**外部类型**
+
+- Protocol：来自于 puppeteer
 
 ##### Method
 
@@ -1871,99 +2188,148 @@ export type Method =
 export type IntervalTime = number | { max: number; min?: number }
 ```
 
-### API Result
-
-#### XCrawlInstance
+#### CreateXCrawlOpenAIConfig
 
 ```ts
-export interface XCrawlInstance {
+export interface CreateXCrawlOpenAIConfig {
+  defaultModel?: {
+    chatModel: OpenAIChatModel
+  }
+  clientOptions?: ClientOptions // ClientOptions 来自于 openai
+}
+```
+
+**默认值**
+
+- defaultModel: { chatModel: 'gpt-3.5-turbo' }
+- clientOptions: undefined
+
+**外部类型**
+
+- ClientOptions：来自于 openai，clientOptions 会直接传给 new OpenAI 用于创建 AI 实例
+
+#### XCrawlOpenAIParseElementsContentOptions
+
+```ts
+export interface XCrawlOpenAIParseElementsContentOptions {
+  message: string
+}
+```
+
+**默认值**
+
+- message: undefined
+
+**外部类型**
+
+- ClientOptions：来自于 openai，clientOptions 会直接传给 new OpenAI 用于创建 AI 实例
+
+#### XCrawlOpenAIGetElementSelectorsContentOptions
+
+```ts
+export interface XCrawlOpenAIGetElementSelectorsContentOptions {
+  message: string
+  pathMode: 'default' | 'strict'
+}
+```
+
+- pathMode：
+  - strict：选择器的路径从根部元素开始, 并精确指向目标元素。
+  - default：可以从任何级别的元素开始的选择器。
+
+**默认值**
+
+- message: undefined
+- pathMode: 'default'
+
+#### XCrawlOpenAICommonAPIOtherOption
+
+```ts
+export interface XCrawlOpenAICommonAPIOtherOption {
+  model?:
+    | 'gpt-4-0125-preview'
+    | 'gpt-4-turbo-preview'
+    | 'gpt-4-1106-preview'
+    | 'gpt-4-vision-preview'
+    | 'gpt-4'
+    | 'gpt-4-0314'
+    | 'gpt-4-0613'
+    | 'gpt-4-32k'
+    | 'gpt-4-32k-0314'
+    | 'gpt-4-32k-0613'
+    | 'gpt-3.5-turbo'
+    | 'gpt-3.5-turbo-16k'
+    | 'gpt-3.5-turbo-0301'
+    | 'gpt-3.5-turbo-0613'
+    | 'gpt-3.5-turbo-1106'
+    | 'gpt-3.5-turbo-0125'
+    | 'gpt-3.5-turbo-16k-0613'
+}
+```
+
+- model：要选择的 AI 模型。
+
+**默认值**
+
+- model: undefined
+
+### API Result
+
+#### CrawlApp
+
+```ts
+export interface CrawlApp {
   crawlPage: {
-    (
-      config: string,
-      callback?: (res: CrawlPageSingleResult) => void
-    ): Promise<CrawlPageSingleResult>
+    (config: string): Promise<CrawlPageSingleResult>
+
+    (config: CrawlPageDetailTargetConfig): Promise<CrawlPageSingleResult>
 
     (
-      config: CrawlPageDetailTargetConfig,
-      callback?: (res: CrawlPageSingleResult) => void
-    ): Promise<CrawlPageSingleResult>
-
-    (
-      config: (string | CrawlPageDetailTargetConfig)[],
-      callback?: (res: CrawlPageSingleResult[]) => void
+      config: (string | CrawlPageDetailTargetConfig)[]
     ): Promise<CrawlPageSingleResult[]>
 
-    (
-      config: CrawlPageAdvancedConfig,
-      callback?: (res: CrawlPageSingleResult[]) => void
-    ): Promise<CrawlPageSingleResult[]>
+    (config: CrawlPageAdvancedConfig): Promise<CrawlPageSingleResult[]>
   }
 
   crawlHTML: {
-    (
-      config: string,
-      callback?: (result: CrawlHTMLSingleResult) => void
-    ): Promise<CrawlHTMLSingleResult>
+    (config: string): Promise<CrawlHTMLSingleResult>
+
+    (config: CrawlHTMLDetailTargetConfig): Promise<CrawlHTMLSingleResult>
 
     (
-      config: CrawlHTMLDetailTargetConfig,
-      callback?: (result: CrawlHTMLSingleResult) => void
-    ): Promise<CrawlHTMLSingleResult>
-
-    (
-      config: (string | CrawlHTMLDetailTargetConfig)[],
-      callback?: (result: CrawlHTMLSingleResult[]) => void
+      config: (string | CrawlHTMLDetailTargetConfig)[]
     ): Promise<CrawlHTMLSingleResult[]>
 
-    (
-      config: CrawlHTMLAdvancedConfig,
-      callback?: (result: CrawlHTMLSingleResult[]) => void
-    ): Promise<CrawlHTMLSingleResult[]>
+    (config: CrawlHTMLAdvancedConfig): Promise<CrawlHTMLSingleResult[]>
   }
 
   crawlData: {
+    <T = any>(config: string): Promise<CrawlDataSingleResult<T>>
+
     <T = any>(
-      config: CrawlDataDetailTargetConfig,
-      callback?: (res: CrawlDataSingleResult<T>) => void
+      config: CrawlDataDetailTargetConfig
     ): Promise<CrawlDataSingleResult<T>>
 
     <T = any>(
-      config: string,
-      callback?: (res: CrawlDataSingleResult<T>) => void
-    ): Promise<CrawlDataSingleResult<T>>
-
-    <T = any>(
-      config: (string | CrawlDataDetailTargetConfig)[],
-      callback?: (res: CrawlDataSingleResult<T>[]) => void
+      config: (string | CrawlDataDetailTargetConfig)[]
     ): Promise<CrawlDataSingleResult<T>[]>
 
     <T = any>(
-      config: CrawlDataAdvancedConfig<T>,
-      callback?: (res: CrawlDataSingleResult<T>[]) => void
+      config: CrawlDataAdvancedConfig<T>
     ): Promise<CrawlDataSingleResult<T>[]>
   }
 
   crawlFile: {
-    (
-      config: CrawlFileDetailTargetConfig,
-      callback?: (res: CrawlFileSingleResult) => void
-    ): Promise<CrawlFileSingleResult>
+    (config: string): Promise<CrawlFileSingleResult>
+
+    (config: CrawlFileDetailTargetConfig): Promise<CrawlFileSingleResult>
 
     (
-      config: CrawlFileDetailTargetConfig[],
-      callback?: (res: CrawlFileSingleResult[]) => void
+      config: (string | CrawlFileDetailTargetConfig)[]
     ): Promise<CrawlFileSingleResult[]>
 
-    (
-      config: CrawlFileAdvancedConfig,
-      callback?: (res: CrawlFileSingleResult[]) => void
-    ): Promise<CrawlFileSingleResult[]>
+    (config: CrawlFileAdvancedConfig): Promise<CrawlFileSingleResult[]>
   }
-
-  startPolling: (
-    config: StartPollingConfig,
-    callback: (count: number, stopPolling: () => void) => void
-  ) => void
 }
 ```
 
@@ -1992,12 +2358,18 @@ export interface CrawlCommonResult {
 ```ts
 export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
-    browser: Browser // puppeteer
-    response: HTTPResponse | null // puppeteer
-    page: Page // puppeteer
+    browser: Browser // Browser 来自于 puppeteer
+    response: HTTPResponse | null // HTTPResponse 来自于 puppeteer
+    page: Page // Page 自来于 puppeteer
   }
 }
 ```
+
+**外部类型**
+
+- Browser：来自于 puppeteer ，https://pptr.dev/api/puppeteer.browser
+- HTTPResponse：来自于 puppeteer ，https://pptr.dev/api/puppeteer.httpresponse
+- Page：来自于 puppeteer ，https://pptr.dev/api/puppeteer.page
 
 #### CrawlHTMLSingleResult
 
@@ -2005,11 +2377,15 @@ export interface CrawlPageSingleResult extends CrawlCommonResult {
 export interface CrawlHTMLSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders
+    headers: IncomingHttpHeaders // IncomingHttpHeaders 来自于 node:http
     html: string
   } | null
 }
 ```
+
+**外部类型**
+
+- IncomingHttpHeaders：来自于 nodejs 的 http
 
 #### CrawlDataSingleResult
 
@@ -2017,11 +2393,15 @@ export interface CrawlHTMLSingleResult extends CrawlCommonResult {
 export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // nodejs http
+    headers: IncomingHttpHeaders // IncomingHttpHeaders 来自于 node:http
     data: D
   } | null
 }
 ```
+
+**外部类型**
+
+- IncomingHttpHeaders：来自于 nodejs 的 http
 
 #### CrawlFileSingleResult
 
@@ -2029,7 +2409,7 @@ export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
 export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // nodejs http
+    headers: IncomingHttpHeaders // IncomingHttpHeaders 来自于 node:http
     data: {
       isSuccess: boolean
       fileName: string
@@ -2042,50 +2422,126 @@ export interface CrawlFileSingleResult extends CrawlCommonResult {
 }
 ```
 
-### API Other
+**外部类型**
 
-#### AnyObject
+- IncomingHttpHeaders：来自于 nodejs 的 http
+
+#### XCrawlOpenAIApp
 
 ```ts
-export interface AnyObject extends Object {
-  [key: string | number | symbol]: any
+export interface XCrawlOpenAIApp {
+  parseElements(
+    HTML: string,
+    content: string | XCrawlOpenAIParseElementsContentOptions,
+    option?: XCrawlOpenAICommonAPIOtherOption
+  ): Promise<XCrawlOpenAIParseElementsResult>
+
+  getElementSelectors(
+    HTML: string,
+    content: string | XCrawlOpenAIGetElementSelectorsContentOptions,
+    option?: XCrawlOpenAICommonAPIOtherOption
+  ): Promise<XCrawlOpenAIGetElementSelectorsResult>
+
+  help(
+    content: string,
+    option?: XCrawlOpenAICommonAPIOtherOption
+  ): Promise<string>
+  custom(): OpenAI
 }
 ```
+
+#### XCrawlOpenAIParseElementsResult
+
+```ts
+export interface XCrawlOpenAIParseElementsResult {
+  selectors: string
+  type: 'single' | 'multiple' | 'none'
+}
+```
+
+- type
+  - single：说明当前 HTML 片段只找到一个目标。
+  - multiple： 说明当前 HTML 片段找到多个目标。
+  - none： 没有在当前 HTML 片段找到。
+
+#### XCrawlOpenAIGetElementSelectorsResult
+
+```ts
+export interface XCrawlOpenAIGetElementSelectorsResult {
+  elements: string[]
+  type: 'single' | 'multiple' | 'none'
+}
+```
+
+- type
+
+  - single：说明当前 HTML 片段只找到一个目标。
+  - multiple： 说明当前 HTML 片段找到多个目标。
+  - none： 没有在当前 HTML 片段找到。
 
 ## 常见问题
 
 ### crawlPage API 跟 puppeteer 的关系
 
-crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可让 x-crawl 帮助您简化操作，并拿到完好的 Brower 实例和 Page 实例，x-crawl 并不会对其重写。
+crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，您只需要传入一些配置选项即可让 x-crawl 帮助您简化操作，并拿到完好无损的 Brower 实例和 Page 实例，x-crawl 并不会对其重写。
 
 ### 使用 crawlPage API 造成程序崩溃
 
 如果你需要在一个 crawlPage 爬取很多页面，建议在每个页面爬下来后，用 [onCrawlItemComplete 生命周期函数](#onCrawlItemComplete) 来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则可能因开启的 page 过多而造成程序崩溃（跟自身设备性能有关）。
 
 ```js
-import xCrawl from 'x-crawl'
+import { createCrawl } from 'x-crawl'
 
-const myXCrawl = xCrawl()
+const crawlApp = createCrawl()
 
-// 使用进阶配置方式
-myXCrawl.crawlPage({
+// 爬取目标少的推荐
+crawlApp
+  .crawlPage([
+    'https://www.example.com/page-1',
+    'https://www.example.com/page-2'
+  ])
+  .then((results) => {
+    for (const itemResult of results) {
+      const { page } = itemResult.data
+
+      // 后续不再使用就关闭
+      page.close()
+    }
+  })
+
+// 爬取目标多的推荐
+// 通过进阶配置的 onCrawlItemComplete
+crawlApp.crawlPage({
   targets: [
     'https://www.example.com/page-1',
     'https://www.example.com/page-2',
     'https://www.example.com/page-3',
     'https://www.example.com/page-4',
     'https://www.example.com/page-5',
-    'https://www.example.com/page-6'
+    'https://www.example.com/page-6',
+    'https://www.example.com/page-7',
+    'https://www.example.com/page-8',
+    'https://www.example.com/page-9',
+    'https://www.example.com/page-10'
   ],
   onCrawlItemComplete(crawlPageSingleResult) {
     const { page } = crawlPageSingleResult.data
 
+    // 后续不再使用就关闭
     page.close()
   }
 })
 ```
 
 ## 更多
+
+### 版本发布
+
+完整的过往发布记录可以在 [GitHub](https://github.com/coder-hxl/x-crawl/blob/main/CHANGELOG.md) 查阅。
+
+### 旧版本文档
+
+v9.0.0 版本：https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md
 
 ### 社区
 
@@ -2100,7 +2556,7 @@ myXCrawl.crawlPage({
 
 ### 赞助
 
-x-crawl 是采用 MIT 许可的开源项目，使用完全免费。如果您在工作中受益于我开发维护的项目，为了让我能够持续投入精力进行项目的维护与更新，提升用户体验和功能，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。您的支持是我们持续改进的动力！感谢您的支持！
+x-crawl 是采用 MIT 许可的开源项目。如果您在工作中受益于我开发维护的项目，为了让我能够持续投入精力进行项目的维护与更新，提升用户体验和功能，请考虑通过 [爱发电](https://afdian.net/a/coderhxl) 平台来支持一下我的工作。您的支持是我们持续改进的动力！感谢您的支持！
 
 ### 注意事项
 
