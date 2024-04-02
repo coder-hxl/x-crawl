@@ -94,7 +94,7 @@ interface InfoFileConfig extends InfoCommonConfig {
         fileName: string
         filePath: string
         data: Buffer
-      }) => Promise<Buffer> | Buffer | void)
+      }) => Promise<Buffer | void> | Buffer | void)
     | undefined
 }
 
@@ -199,7 +199,7 @@ interface CrawlFileConfig {
         fileName: string
         filePath: string
         data: Buffer
-      }) => Promise<Buffer> | Buffer | void)
+      }) => Promise<Buffer | void> | Buffer | void)
     | undefined
   onCrawlItemComplete:
     | ((crawlDataSingleResult: CrawlDataSingleResult<any>) => void)
@@ -1074,7 +1074,9 @@ function fileSingleResultHandle(
 
     let saveFileItemPending
     if (isPromise(onBeforeSaveItemFileResult)) {
-      saveFileItemPending = onBeforeSaveItemFileResult!.then(saveFile)
+      saveFileItemPending = onBeforeSaveItemFileResult!
+        .then((res) => (isBuffer(res) ? res : data))
+        .then(saveFile)
     } else if (isBuffer(onBeforeSaveItemFileResult)) {
       saveFileItemPending = saveFile(onBeforeSaveItemFileResult)
     } else {
