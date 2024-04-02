@@ -115,4 +115,7 @@ coder 用户:{ "message": "获取 TYPE-C 充电线。", "isFullPath": false }
 分析: 这里没有 TYPE-C 类型的充电线, 只能将 isExist 设为 false , selectors 设为 ""。
 `
 export const HELP_CONTEXT = `我现在有一个爬虫相关的问题需要请教你。作为爬虫专家和前端专家，需要能帮我解答一下, 只需回答 coder 用户的问题。
+
+x-crawl 是一个灵活的 Node.js AI 辅助爬虫库。强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
+x-crawl GitHub: https://github.com/coder-hxl/x-craw
 `
