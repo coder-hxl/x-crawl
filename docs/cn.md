@@ -742,7 +742,7 @@ xCrawlOpenAIApp.getElementSelectors(HTMLContent, '获取所有女装').then((res
     res:
     {
       selectors: '.scroll-list:nth-child(1) .list-item:nth-of-type(1), .scroll-list:nth-child(1) .list-item:nth-of-type(3), .scroll-list:nth-child(2) .list-item:nth-of-type(3)',
-      type: 'multiple'
+      type: 'single'
     }
   */
 })
@@ -1693,11 +1693,11 @@ parseElements 是 AI 应用实例的方法，通常用于智能按需分析元�
 parseElements API 是一个函数。
 
 ```ts
-function parseElements(
+function parseElements<T extends Record<string, string>>(
   HTML: string,
   content: string | XCrawlOpenAIParseElementsContentOptions,
   option?: XCrawlOpenAICommonAPIOtherOption
-): Promise<XCrawlOpenAIParseElementsResult>
+): Promise<XCrawlOpenAIParseElementsResult<T>>
 ```
 
 **参数类型：**
@@ -2430,11 +2430,11 @@ export interface CrawlFileSingleResult extends CrawlCommonResult {
 
 ```ts
 export interface XCrawlOpenAIApp {
-  parseElements(
+  parseElements<T extends Record<string, string>>(
     HTML: string,
     content: string | XCrawlOpenAIParseElementsContentOptions,
     option?: XCrawlOpenAICommonAPIOtherOption
-  ): Promise<XCrawlOpenAIParseElementsResult>
+  ): Promise<XCrawlOpenAIParseElementsResult<T>>
 
   getElementSelectors(
     HTML: string,
@@ -2446,6 +2446,7 @@ export interface XCrawlOpenAIApp {
     content: string,
     option?: XCrawlOpenAICommonAPIOtherOption
   ): Promise<string>
+
   custom(): OpenAI
 }
 ```
@@ -2453,8 +2454,10 @@ export interface XCrawlOpenAIApp {
 #### XCrawlOpenAIParseElementsResult
 
 ```ts
-export interface XCrawlOpenAIParseElementsResult {
-  selectors: string
+export interface XCrawlOpenAIParseElementsResult<
+  T extends Record<string, string>
+> {
+  elements: T[]
   type: 'single' | 'multiple' | 'none'
 }
 ```
@@ -2468,7 +2471,7 @@ export interface XCrawlOpenAIParseElementsResult {
 
 ```ts
 export interface XCrawlOpenAIGetElementSelectorsResult {
-  elements: string[]
+  selectors: string
   type: 'single' | 'multiple' | 'none'
 }
 ```

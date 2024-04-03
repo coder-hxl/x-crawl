@@ -5,7 +5,7 @@ import {
   GET_ELEMENT_SELECTORS_CONTEXT,
   HELP_CONTEXT
 } from './context'
-import { isObject } from '../shared'
+import { isObject, log, logStart, logSuccess } from '../shared'
 
 type OpenAIChatModel =
   | 'gpt-4-0125-preview'
@@ -54,31 +54,34 @@ interface XCrawlOpenAIGetElementSelectorsContentOptions {
   pathMode: 'default' | 'strict'
 }
 
-interface XCrawlOpenAIParseElementsResult {
+interface XCrawlOpenAIGetElementSelectorsResult {
   selectors: string
   type: 'single' | 'multiple' | 'none'
 }
 
-interface XCrawlOpenAIGetElementSelectorsResult {
-  elements: string[]
+interface XCrawlOpenAIParseElementsResult<T extends Record<string, string>> {
+  elements: T[]
   type: 'single' | 'multiple' | 'none'
 }
 
 interface XCrawlOpenAIApp {
-  parseElements(
+  parseElements<T extends Record<string, string>>(
     HTML: string,
     content: string | XCrawlOpenAIParseElementsContentOptions,
     option?: XCrawlOpenAICommonAPIOtherOption
-  ): Promise<XCrawlOpenAIParseElementsResult>
+  ): Promise<XCrawlOpenAIParseElementsResult<T>>
+
   getElementSelectors(
     HTML: string,
     content: string | XCrawlOpenAIGetElementSelectorsContentOptions,
     option?: XCrawlOpenAICommonAPIOtherOption
   ): Promise<XCrawlOpenAIGetElementSelectorsResult>
+
   help(
     content: string,
     option?: XCrawlOpenAICommonAPIOtherOption
   ): Promise<string>
+
   custom(): OpenAI
 }
 
@@ -100,6 +103,7 @@ export function createXCrawlOpenAI(
       responseFormatType
     } = option
 
+    log(logStart(`AI is answering your question, please wait a moment`))
     const completion = await openai.chat.completions.create({
       model,
       messages: [
@@ -107,24 +111,24 @@ export function createXCrawlOpenAI(
         { role: 'user', name: 'x-crawl', content: HTMLContent },
         { role: 'user', name: 'coder', content: userContent }
       ],
-      response_format: { type: responseFormatType }
+      response_format: { type: responseFormatType },
+      temperature: 0.1
     })
+    log(logSuccess(`AI has completed your question`))
 
     const content = completion.choices[0].message.content
     const result =
-      responseFormatType === 'json_object'
-        ? (JSON.parse(content ?? '{}') as any)
-        : content
+      responseFormatType === 'json_object' ? JSON.parse(content!) : content
 
     return result
   }
 
   const app: XCrawlOpenAIApp = {
-    async parseElements(
+    async parseElements<T extends Record<string, string>>(
       HTML: string,
       content: string | XCrawlOpenAIParseElementsContentOptions,
       option: XCrawlOpenAICommonAPIOtherOption = {}
-    ): Promise<XCrawlOpenAIParseElementsResult> {
+    ): Promise<XCrawlOpenAIParseElementsResult<T>> {
       const { model } = option
 
       let coderContent: string = ''
@@ -137,7 +141,7 @@ export function createXCrawlOpenAI(
         coderContent = JSON.stringify(obj)
       }
 
-      const result = await runChat<XCrawlOpenAIParseElementsResult>({
+      const result = await runChat<XCrawlOpenAIParseElementsResult<T>>({
         model,
         context: PARSE_ELEMENTS_CONTEXT,
         HTMLContent: HTML,
@@ -194,7 +198,7 @@ export function createXCrawlOpenAI(
       return result
     },
 
-    custom(): OpenAI {
+    custom() {
       return openai
     }
   }

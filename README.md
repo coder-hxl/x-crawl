@@ -752,7 +752,7 @@ xCrawlOpenAIApp
     /*
       res:
       {
-        selectors: '.scroll-list:nth-child(1) .list-item:nth-of-type(1), .scroll-list:nth-child(1) .list-item:nth-of-type(3), .scroll-list:nth-child(2) .list-item:nth-of-type(3)',
+        selectors: '.scroll-list:nth-child(2) .list-item:nth-child(3)',
         type: 'multiple'
       }
     */
@@ -1713,11 +1713,11 @@ parseElements is a method of AI application instances, typically used for intell
 parseElements API is a function.
 
 ```ts
-function parseElements(
+function parseElements<T extends Record<string, string>>(
   HTML: string,
   content: string | XCrawlOpenAIParseElementsContentOptions,
   option?: XCrawlOpenAICommonAPIOtherOption
-): Promise<XCrawlOpenAIParseElementsResult>
+): Promise<XCrawlOpenAIParseElementsResult<T>>
 ```
 
 **Parameter Type:**
@@ -2475,8 +2475,10 @@ export interface XCrawlOpenAIApp {
 #### XCrawlOpenAIParseElementsResult
 
 ```ts
-export interface XCrawlOpenAIParseElementsResult {
-  selectors: string
+export interface XCrawlOpenAIParseElementsResult<
+  T extends Record<string, string>
+> {
+  elements: T[]
   type: 'single' | 'multiple' | 'none'
 }
 ```
@@ -2490,7 +2492,7 @@ export interface XCrawlOpenAIParseElementsResult {
 
 ```ts
 export interface XCrawlOpenAIGetElementSelectorsResult {
-  elements: string[]
+  selectors: string
   type: 'single' | 'multiple' | 'none'
 }
 ```
