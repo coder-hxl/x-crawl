@@ -17,6 +17,7 @@
     "multifunction"
   ],
   "main": "packages/index.ts",
+  "type": "module",
   "scripts": {
     "build": "rollup --config rollup.config.mjs",
     "build-dts": "tsc && prettier --write ./publish/src",

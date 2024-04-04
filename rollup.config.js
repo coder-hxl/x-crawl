@@ -1,26 +1,11 @@
 import tsPlugin from 'rollup-plugin-typescript2'
 import { getBabelOutputPlugin } from '@rollup/plugin-babel'
 
-// const outputMap = [
-//   {
-//     file: 'publish/dist/index.mjs',
-//     format: 'es'
-//   },
-//   {
-//     file: 'publish/dist/index.js',
-//     format: 'cjs'
-//   }
-// ].map((item) => {
-//   return { ...item, compact: true }
-// })
-
-// console.log(outputMap)
-
 export default {
   input: 'packages/index.ts',
   output: {
-    file: 'publish/dist/x-crawl.cjs.js',
-    format: 'cjs',
+    file: 'publish/dist/x-crawl.js',
+    format: 'es',
     compact: true
   },
   treeshake: {

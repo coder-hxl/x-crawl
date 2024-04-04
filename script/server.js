@@ -6,7 +6,7 @@ export default {
   input: 'test/server/index.ts',
   output: {
     file: 'test/server/index.js',
-    format: 'cjs'
+    format: 'es'
   },
   plugins: [tsPlugin(), terserPlugin(), runPlugin({ stdin: { clear: true } })]
 }
