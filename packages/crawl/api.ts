@@ -20,7 +20,8 @@ import {
   random,
   whiteBold,
   isPromise,
-  isBuffer
+  isBuffer,
+  dirname
 } from '../shared'
 
 import {
@@ -1026,7 +1027,7 @@ function fileSingleResultHandle(
       fs.mkdirSync(detailTargetConfig.storeDir, { recursive: true })
     }
 
-    const storePath = detailTargetConfig.storeDir ?? __dirname
+    const storePath = detailTargetConfig.storeDir ?? dirname()
     const filePath = path.resolve(storePath, fileName + fileExtension)
 
     // 在保存前的回调
