@@ -1,7 +1,6 @@
 import process from 'node:process'
 import path from 'node:path'
-import { expect, test, jest } from '@jest/globals'
-import chalk from 'chalk'
+import { expect, test } from 'vitest'
 
 import type * as XCrawl from 'x-crawl'
 
@@ -9,9 +8,7 @@ const args = process.argv.slice(3)
 const environment = args[0]
 
 const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
-const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
-
-jest.setTimeout(60000)
+const createCrawl = ((await import(targetPath)) as typeof XCrawl).createCrawl
 
 const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
@@ -24,6 +21,7 @@ const storeDirs = path.resolve(__dirname, './upload')
 // 1.1.written CrawlFileDetailConfig
 async function writtenCrawlFileDetailConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     proxy: { urls: ['http://localhost:14892'] }
   })
 
@@ -38,6 +36,7 @@ async function writtenCrawlFileDetailConfig() {
 // 1.2.written CrawlFileDetailConfig[]
 async function writtenCrawlFileDetailConfigArr() {
   const testCrawlApp = createCrawl({
+    log: false,
     proxy: { urls: ['http://localhost:14892'] }
   })
 
@@ -54,6 +53,7 @@ async function writtenCrawlFileDetailConfigArr() {
 // 1.3.written CrawlFileAdvancedConfig
 async function writtenCrawlFileAdvancedConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     proxy: { urls: ['http://localhost:14892'] }
   })
 
@@ -72,6 +72,7 @@ async function writtenCrawlFileAdvancedConfig() {
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
     proxy: { urls: ['http://localhost:14892'] },
@@ -91,6 +92,7 @@ async function loaderBaseConfig() {
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area'
   })
@@ -110,6 +112,7 @@ async function loaderAdvancedConfig() {
 /* 3.Store Config */
 async function storeConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
     proxy: { urls: ['http://localhost:14892'] }
@@ -142,55 +145,27 @@ async function storeConfig() {
 
 /* 1.Written */
 test('crawlFile - writtenCrawlFileDetailConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlFile - writtenCrawlFileDetailConfig ================'
-    )
-  )
   await expect(writtenCrawlFileDetailConfig()).resolves.toBe(true)
 })
 
 test('crawlFile - writtenCrawlFileDetailConfigArr', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlFile - writtenCrawlFileDetailConfigArr ================'
-    )
-  )
   await expect(writtenCrawlFileDetailConfigArr()).resolves.toBe(true)
 })
 
 test('crawlFile - writtenCrawlFileAdvancedConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlFile - writtenCrawlFileAdvancedConfig ================'
-    )
-  )
   await expect(writtenCrawlFileAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Loader Config */
 test('crawlFile - loaderBaseConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlFile - loaderBaseConfig ================'
-    )
-  )
   await expect(loaderBaseConfig()).resolves.toBe(true)
 })
 
 test('crawlFile - loaderAdvancedConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlFile - loaderAdvancedConfig ================'
-    )
-  )
   await expect(loaderAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Store Config */
 test('crawlFile - loaderAdvancedConfig', async () => {
-  console.log(
-    chalk.bgGreen('================ crawlFile - storeConfig ================')
-  )
   await expect(storeConfig()).resolves.toBe(true)
 })

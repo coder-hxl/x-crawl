@@ -1,6 +1,5 @@
 import process from 'node:process'
-import { expect, test, jest } from '@jest/globals'
-import chalk from 'chalk'
+import { expect, test } from 'vitest'
 
 import type * as XCrawl from 'x-crawl'
 
@@ -8,12 +7,10 @@ const args = process.argv.slice(3)
 const environment = args[0]
 
 const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
-const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
-
-jest.setTimeout(60000)
+const createCrawl = ((await import(targetPath)) as typeof XCrawl).createCrawl
 
 async function testCrawlData() {
-  const testCrawlApp = createCrawl()
+  const testCrawlApp = createCrawl({ log: false })
 
   const res = await testCrawlApp.crawlData({
     targets: [
@@ -26,6 +23,5 @@ async function testCrawlData() {
 }
 
 test('crawlData', async () => {
-  console.log(chalk.bgGreen('================ crawlData ================'))
   await expect(testCrawlData()).resolves.toBe(true)
 })

@@ -1,6 +1,5 @@
 import process from 'node:process'
-import { expect, test, jest } from '@jest/globals'
-import chalk from 'chalk'
+import { expect, test } from 'vitest'
 
 import type * as XCrawl from 'x-crawl'
 
@@ -8,14 +7,12 @@ const args = process.argv.slice(3)
 const environment = args[0]
 
 const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
-const createCrawl = (require(targetPath) as typeof XCrawl).createCrawl
-
-jest.setTimeout(60000)
+const createCrawl = ((await import(targetPath)) as typeof XCrawl).createCrawl
 
 /* 1.Written */
 // 1.1.written string
 async function writtenString() {
-  const testCrawlApp = createCrawl()
+  const testCrawlApp = createCrawl({ log: false })
 
   const res = await testCrawlApp.crawlData('http://localhost:8888/data')
 
@@ -24,7 +21,7 @@ async function writtenString() {
 
 // 1.2.written CrawlDataDetailConfig
 async function writtenCrawlDataDetailConfig() {
-  const testCrawlApp = createCrawl()
+  const testCrawlApp = createCrawl({ log: false })
 
   const res = await testCrawlApp.crawlData({
     url: 'http://localhost:8888/data'
@@ -35,7 +32,7 @@ async function writtenCrawlDataDetailConfig() {
 
 // 1.3.written (string | CrawlDataDetailConfig)[]
 async function writtenStringAndCrawlDataDetailConfigArr() {
-  const testCrawlApp = createCrawl()
+  const testCrawlApp = createCrawl({ log: false })
 
   const res = await testCrawlApp.crawlData([
     'http://localhost:8888/data',
@@ -47,7 +44,7 @@ async function writtenStringAndCrawlDataDetailConfigArr() {
 
 // 1.4.written CrawlDataAdvancedConfig
 async function writtenCrawlDataAdvancedConfig() {
-  const testCrawlApp = createCrawl()
+  const testCrawlApp = createCrawl({ log: false })
 
   const res = await testCrawlApp.crawlData({
     targets: [
@@ -63,6 +60,7 @@ async function writtenCrawlDataAdvancedConfig() {
 // 2.1.Loader Base Config
 async function loaderBaseConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     baseUrl: 'http://localhost:8888',
     proxy: { urls: ['http://localhost:14892'] },
     timeout: 10000,
@@ -78,6 +76,7 @@ async function loaderBaseConfig() {
 // 2.2.Loader Advanced Config
 async function loaderAdvancedConfig() {
   const testCrawlApp = createCrawl({
+    log: false,
     baseUrl: 'http://localhost:8888'
   })
 
@@ -93,54 +92,26 @@ async function loaderAdvancedConfig() {
 }
 
 test('crawlData - writtenString', async () => {
-  console.log(
-    chalk.bgGreen('================ crawlData - writtenString ================')
-  )
   await expect(writtenString()).resolves.toBe(true)
 })
 
 test('crawlData - writtenCrawlDataDetailConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlData - writtenCrawlDataDetailConfig ================'
-    )
-  )
   await expect(writtenCrawlDataDetailConfig()).resolves.toBe(true)
 })
 
 test('crawlData - writtenStringAndCrawlDataDetailConfigArr', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlData - writtenStringAndCrawlDataDetailConfigArr ================'
-    )
-  )
   await expect(writtenStringAndCrawlDataDetailConfigArr()).resolves.toBe(true)
 })
 
 test('crawlData - writtenCrawlDataAdvancedConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlData - writtenCrawlDataAdvancedConfig ================'
-    )
-  )
   await expect(writtenCrawlDataAdvancedConfig()).resolves.toBe(true)
 })
 
 /* 2.Loader Config */
 test('crawlData - loaderBaseConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlData - loaderBaseConfig ================'
-    )
-  )
   await expect(loaderBaseConfig()).resolves.toBe(true)
 })
 
 test('crawlData - loaderAdvancedConfig', async () => {
-  console.log(
-    chalk.bgGreen(
-      '================ crawlData - loaderAdvancedConfig ================'
-    )
-  )
   await expect(loaderAdvancedConfig()).resolves.toBe(true)
 })
