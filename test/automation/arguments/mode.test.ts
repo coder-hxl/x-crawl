@@ -1,13 +1,10 @@
-import process from 'node:process'
 import { expect, test } from 'vitest'
 
-import * as XCrawl from 'x-crawl'
+import type * as XCrawl from 'x-crawl'
 
-const args = process.argv.slice(3)
-const environment = args[0]
-
-const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
-const createCrawl = ((await import(targetPath)) as typeof XCrawl).createCrawl
+const createCrawl = (
+  (await import(__DEV__ ? 'packages/' : 'publish/')) as typeof XCrawl
+).createCrawl
 
 async function async() {
   const testCrawlApp = createCrawl({ log: false })

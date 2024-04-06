@@ -1,14 +1,11 @@
-import process from 'node:process'
 import path from 'node:path'
 import { expect, test } from 'vitest'
 
 import type * as XCrawl from 'x-crawl'
 
-const args = process.argv.slice(3)
-const environment = args[0]
-
-const targetPath = environment === 'pro' ? 'publish/' : 'packages/'
-const createCrawl = ((await import(targetPath)) as typeof XCrawl).createCrawl
+const createCrawl = (
+  (await import(__DEV__ ? 'packages/' : 'publish/')) as typeof XCrawl
+).createCrawl
 
 const urls: string[] = [
   'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',

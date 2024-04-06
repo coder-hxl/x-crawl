@@ -8,13 +8,11 @@
   "main": "packages/index.ts",
   "type": "module",
   "scripts": {
+    "dev": "rollup --config script/dev.js",
     "build": "rollup --config rollup.config.js",
-    "build-dts": "tsc && prettier --write ./publish/src",
-    "build-strict": "pnpm test-dev && pnpm build && pnpm test-pro",
-    "start": "rollup --config script/start.js",
-    "start-server": "rollup --watch --config script/server.js",
-    "test-dev": "vitest --ui",
-    "test-pro": "vitest --ui",
+    "build-dts": "tsc && prettier --write ./publish/dist",
+    "dev-server": "rollup --watch --config script/server.js",
+    "test": "vitest",
     "prettier": "prettier --write ."
   },
   "engines": {
