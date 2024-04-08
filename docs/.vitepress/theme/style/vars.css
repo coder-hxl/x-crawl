@@ -1,12 +1,27 @@
-:root {
-  --c-yellow: #feba07;
-  --c-red: #7c1823;
-}
+/**
+ * Colors
+ * -------------------------------------------------------------------------- */
 
 :root {
-  --vp-home-hero-image-background-image: linear-gradient(180deg, var(--c-yellow) 60%, var(--c-red) 30%);
+  --c-yellow-theme: #feba07;
+  --c-red-theme: #7c1823;
+}
+
+/**
+ * Component: Button
+ * -------------------------------------------------------------------------- */
+:root {
+  --vp-button-brand-bg: var(--c-yellow-theme);
+  --vp-button-brand-hover-bg:#e4a507;
+}
+
+/**
+ * Component: Home
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(290deg, var(--c-red-theme) 6%, var(--c-yellow-theme));
+  --vp-home-hero-image-background-image: linear-gradient(180deg, var(--c-yellow-theme) 60%, var(--c-red-theme) 30%);
   --vp-home-hero-image-filter: blur(40px);
-  --vp-c-brand-1: #c79925;
-  --vp-c-brand-2: #feba07;
 }
-

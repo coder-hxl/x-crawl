@@ -4,6 +4,11 @@
 
 x-crawl 是一个灵活的 Node.js AI 辅助爬虫库。灵活的使用方式和强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
 
+它由两部分组成：
+
+- 爬虫：由爬虫 API 以及各种功能组成，即使不依靠 AI 也能正常工作。
+- AI：目前基于 OpenAI 提供的 AI 大模型，让 AI 简化很多繁琐的操作。
+
 > 如果您觉得 x-crawl 对您有所帮助，或者您喜欢 x-crawl ，可以在 GitHub 上给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 。您的支持是我们持续改进的动力！感谢您的支持！
 
 ## 特征

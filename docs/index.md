@@ -18,40 +18,28 @@ hero:
       link: https://github.com/coder-hxl/x-crawl
 
 features:
-  - icon: 🤖
-    title: AI 辅助
+  - title: 🤖 AI 辅助
     details: 强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
-  - icon: 🖋️
-    title: 写法灵活
+  - title: 🖋️ 写法灵活
     details: 单个爬取 API 都适配多种配置，每种配置方式都各有千秋。
-  - icon: ⚙️
-    title: 功能丰富
+  - title: ⚙️ 功能丰富
     details: 支持爬动态页面、静态页面、接口数据以及文件数据。
-  - icon: ⚒️
-    title: 控制页面
+  - title: ⚒️ 控制页面
     details: 爬取动态页面支持自动化操作、键盘输入、事件操作等。
-  - icon: 👀
-    title: 设备指纹
+  - title: 👀 设备指纹
     details: 零配置或自定义配置，避免指纹识别从不同位置识别并跟踪我们。
-  - icon: 🔥
-    title: 异步同步
+  - title: 🔥 异步同步
     details: 无需切换爬取 API 即可进行异步或同步的爬取模式。
-  - icon: ⏱️
-    title: 间隔爬取
+  - title: ⏱️ 间隔爬取
     details: 无间隔、固定间隔以及随机间隔，决定是否高并发爬取。
-  - icon: 🔄
-    title: 失败重试
+  - title: 🔄 失败重试
     details: 自定义重试次数，避免因短暂的问题而造成爬取失败。
-  - icon: ➡️
-    title: 轮换代理
+  - title: ➡️ 轮换代理
     details: 搭配失败重试，自定义错误次数以及 HTTP 状态码自动轮换代理。
-  - icon: 🚀
-    title: 优先队列
+  - title: 🚀 优先队列
     details: 根据单个爬取目标的优先级可以优先于其他目标提前爬取。
-  - icon: 🧾
-    title: 记录爬取
+  - title: 🧾 记录爬取
     details: 可控的爬取信息，会在终端输出彩色字符串信息。
-  - icon: 🦾
-    title: TypeScrip
+  - title: 🦾 TypeScrip
     details: 拥有类型，通过泛型实现完整的类型。
 ---
