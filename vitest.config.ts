@@ -5,12 +5,10 @@ export default defineConfig({
   test: {
     include: ['test/automation/**/*.test.ts'],
     testTimeout: 10000,
-    watch: false,
     coverage: {
       enabled: true,
       provider: 'v8',
-      reporter: ['text', 'html'],
-      include: ['packages']
+      reporter: ['text', 'html']
     }
   }
 })

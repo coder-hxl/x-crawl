@@ -13,6 +13,7 @@
     "build-dts": "tsc && prettier --write ./publish/dist",
     "dev-server": "rollup --watch --config script/server.js",
     "test": "vitest",
+    "test-ui": "vitest --ui",
     "prettier": "prettier --write ."
   },
   "engines": {
