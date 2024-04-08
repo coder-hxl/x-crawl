@@ -20,7 +20,7 @@ export default defineConfig({
 
     editLink: {
       pattern: 'https://github.com/coder-hxl/x-crawl/edit/main/docs/:path',
-      text: '为此页提供修改建议'
+      text: 'Suggest changes to this page'
     },
 
     socialLinks: [
@@ -191,6 +191,170 @@ export default defineConfig({
       }
     },
 
-    en: { label: 'English', lang: 'en', link: '/en' }
+    en: {
+      label: 'English',
+      lang: 'en',
+      link: '/en/',
+
+      themeConfig: {
+        nav: [
+          { text: 'Guide', link: '/en/guide/index' },
+          { text: 'API', link: '/en/api/index' },
+          { text: 'Type', link: '/en/type/index' },
+          {
+            text: 'About',
+            items: [
+              { text: 'FAQ', link: '/en/about/faq' },
+              { text: 'Community', link: '/en/about/community' },
+              { text: 'Releases', link: '/en/about/releases' },
+              { text: 'Old documents', link: '/en/about/old-docs' },
+              { text: 'Issues', link: '/en/about/issues' },
+              { text: 'Announcements', link: '/en/about/announcements' }
+            ]
+          }
+        ],
+
+        search: {
+          provider: 'local'
+        },
+
+        sidebar: {
+          '/en/guide': [
+            {
+              text: 'Getting Started',
+              items: [
+                { text: 'Introduction', link: '/en/guide/index' },
+                { text: 'Quick Start', link: '/en/guide/quick-start' }
+              ]
+            },
+            {
+              text: 'Essentials',
+              items: [
+                {
+                  text: 'Create Application',
+                  link: '/en/guide/create-crawl-application'
+                },
+                { text: 'Crawl Page', link: '/en/guide/crawl-page' },
+                { text: 'Crawl HTML', link: '/en/guide/crawl-html' },
+                { text: 'Crawl Data', link: '/en/guide/crawl-data' },
+                { text: 'Crawl File', link: '/en/guide/crawl-file' },
+                { text: 'Interval Time', link: '/en/guide/interval' },
+                { text: 'Retry', link: '/en/guide/retry' },
+                { text: 'Proxy', link: '/en/guide/proxy' },
+                { text: 'Priority Crawl', link: '/en/guide/priority' },
+                { text: 'Terminal Prompt', link: '/en/guide/reporters' },
+                { text: 'About the Results', link: '/en/guide/results' },
+                { text: 'TypeScript', link: '/en/guide/en/typescript' }
+              ]
+            },
+            {
+              text: 'AI Assisted',
+              items: [
+                {
+                  text: 'Creating AI applications',
+                  link: '/en/guide/create-ai-application'
+                },
+                {
+                  text: 'Intelligent on-demand analysis elements',
+                  link: '/en/guide/parse-elements'
+                },
+                {
+                  text: 'Smartly generated element selectors',
+                  link: '/en/guide/get-element-selectors'
+                },
+                {
+                  text: 'Intelligent reply to crawler questions',
+                  link: '/en/guide/crawl-openai-help'
+                },
+                {
+                  text: 'User-defined AI functions',
+                  link: '/en/guide/crawl-openai-custom'
+                }
+              ]
+            },
+            {
+              text: 'Advance',
+              items: [
+                { text: 'Crawl mode', link: '/en/guide/crawl-mode' },
+                {
+                  text: 'device fingerprinting',
+                  link: '/en/guide/fingerprint'
+                },
+                { text: 'configuration', link: '/en/guide/config' }
+              ]
+            }
+          ],
+
+          '/en/api': [
+            {
+              text: 'crawler',
+              items: [
+                { text: 'createCrawl', link: '/en/api/index' },
+                { text: 'crawlPage', link: '/en/api/crawl-page' },
+                { text: 'crawlHTML', link: '/en/api/crawl-html' },
+                { text: 'crawlData', link: '/en/api/crawl-data' },
+                { text: 'crawlFile', link: '/en/api/crawl-file' }
+              ]
+            },
+            {
+              text: 'AI',
+              items: [
+                {
+                  text: 'createCrawlOpenAI',
+                  link: '/en/api/create-crawl-openai'
+                },
+                { text: 'parseElements', link: '/en/api/parse-elements' },
+                {
+                  text: 'getElementSelectors',
+                  link: '/en/api/get-element-selectors'
+                },
+                { text: 'help', link: '/en/api/help' },
+                { text: 'custom', link: '/en/api/custom' }
+              ]
+            }
+          ],
+
+          '/en/type': [
+            {
+              text: 'crawler',
+              items: [
+                { text: 'createCrawl', link: '/en/type/index' },
+                { text: 'crawlPage', link: '/en/type/crawl-page' },
+                { text: 'crawlHTML', link: '/en/type/crawl-html' },
+                { text: 'crawlData', link: '/en/type/crawl-data' },
+                { text: 'crawlFile', link: '/en/type/crawl-file' },
+                {
+                  text: 'CrawlOtherConfig',
+                  link: '/en/type/crawl-other-config'
+                }
+              ]
+            },
+            {
+              text: 'AI',
+              items: [
+                {
+                  text: 'createCrawlOpenAI',
+                  link: '/en/type/create-crawl-openai'
+                },
+                { text: 'parseElements', link: '/en/type/parse-elements' },
+                {
+                  text: 'getElementSelectors',
+                  link: '/en/type/get-element-selectors'
+                },
+                {
+                  text: 'CrawlOpenaiOtherConfig',
+                  link: '/en/type/crawl-openai-other-config'
+                }
+              ]
+            }
+          ]
+        },
+
+        footer: {
+          message: 'Released under the MIT license',
+          copyright: 'Copyright © 2024-present CoderHXL. All rights reserved'
+        }
+      }
+    }
   }
 })
