@@ -3,9 +3,9 @@ import terserPlugin from '@rollup/plugin-terser'
 import runPlugin from '@rollup/plugin-run'
 
 export default {
-  input: 'test/start/index.ts',
+  input: `test/dev/index.ts`,
   output: {
-    file: 'test/start/index.js',
+    file: `test/dev/index.js`,
     format: 'es'
   },
   plugins: [tsPlugin(), terserPlugin(), runPlugin({ stdin: { clear: true } })]

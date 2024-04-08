@@ -1,5 +1,5 @@
 {
-  "name": "start",
+  "name": "dev",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,5 +12,10 @@
   "license": "ISC",
   "devDependencies": {
     "dotenv": "^16.4.5"
+  },
+  "dependencies": {
+    "dev": "link:",
+    "ora": "^8.0.1",
+    "signal-exit": "^4.1.0"
   }
 }
