@@ -1,10 +1,10 @@
 # help
 
-help 是 AI 应用实例的方法，通常用于智能回复爬虫问题。
+help is a method of AI application instance, usually used to intelligently reply to crawler questions.
 
-## 类型
+## type
 
-help API 是一个函数。
+help API is a function.
 
 ```ts
 function help(
@@ -13,16 +13,16 @@ function help(
 ): Promise<string>
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
 
-## 示例
+## Example
 
 ```js
 import { createXCrawlOpenAI } from 'x-crawl'
 
 const xCrawlOpenAIApp = createXCrawlOpenAI()
 
-xCrawlOpenAIApp.help('告诉 AI 你的问题').then((res) => {})
+xCrawlOpenAIApp.help('Tell the AI your problem').then((res) => {})
 ```

@@ -1,10 +1,10 @@
-# parseElements
+#parseElements
 
-parseElements 是 AI 应用实例的方法，通常用于智能按需分析元素。
+parseElements is a method of AI application instances, typically used for intelligent on-demand analysis of elements.
 
-## 类型
+## type
 
-parseElements API 是一个函数。
+parseElements API is a function.
 
 ```ts
 function parseElements<T extends Record<string, string>>(
@@ -14,21 +14,23 @@ function parseElements<T extends Record<string, string>>(
 ): Promise<XCrawlOpenAIParseElementsResult<T>>
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions) 类型
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- View the [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions) type
+- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult) 类型
+- View the [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult) type
 
-## 示例
+## Example
 
 ```js
 import { createXCrawlOpenAI } from 'x-crawl'
 
 const xCrawlOpenAIApp = createXCrawlOpenAI()
 
-xCrawlOpenAIApp.parseElements('HTML', '告诉 AI 你想要的').then((res) => {})
+xCrawlOpenAIApp
+  .parseElements('HTML', 'Tell the AI what you want')
+  .then((res) => {})
 ```

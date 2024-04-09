@@ -1,8 +1,8 @@
-# 间隔时间
+# Intervals
 
-间隔时间可以防止并发量太大，避免给服务器造成太大的压力。
+The interval can prevent the amount of concurrency from being too large and putting too much pressure on the server.
 
-爬取间隔时间是由爬取 API 内部自己控制的，并非由爬虫实例控制爬取 API 的间隔时间。
+The crawling interval is controlled internally by the crawling API itself, not by the crawler instance.
 
 ```js{8}
 import { createCrawl } from 'x-crawl'
@@ -10,18 +10,18 @@ import { createCrawl } from 'x-crawl'
 const crawlApp = createCrawl()
 
 crawlApp
-  .crawlData({
-    targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
-    intervalTime: { max: 2000, min: 1000 }
-  })
-  .then((res) => {})
+   .crawlData({
+     targets: ['https://www.example.com/api-1', 'https://www.example.com/api-2'],
+     intervalTime: { max: 2000, min: 1000 }
+   })
+   .then((res) => {})
 ```
 
-intervalTime 选项默认为 undefined 。若有设置值，则会在爬取目标前等待一段时间，可以防止并发量太大，避免给服务器造成太大的压力。
+The intervalTime option defaults to undefined . If there is a setting value, it will wait for a period of time before crawling the target, which can prevent the amount of concurrency from being too large and putting too much pressure on the server.
 
-- number: 固定每次爬取目标前必须等待的时间
-- IntervalTime: 在 max 和 min 中随机取一个值
+- number: Fixed the time that must be waited before each crawling target
+- IntervalTime: randomly pick a value between max and min
 
 ::: tip
-第一次爬取目标是不会触发间隔时间。
+The first time the target is crawled, the interval will not be triggered.
 :::

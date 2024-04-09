@@ -1,10 +1,10 @@
 # crawlPage
 
-crawlPage 是爬虫实例的方法，通常用于爬取动态页面。
+crawlPage is a method of crawler instance, usually used to crawl dynamic pages.
 
-## 类型
+## type
 
-crawlPage API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
+crawlPage API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) that can be called with different configuration parameters (in terms of type).
 
 ```ts
 type crawlPage = {
@@ -20,16 +20,16 @@ type crawlPage = {
 }
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 类型
-- 查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 类型
+- View the [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) type
+- View the [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [CrawlPageSingleResult](#CrawlPageSingleResult) 类型
+- View the [CrawlPageSingleResult](#CrawlPageSingleResult) type
 
-## 示例
+## Example
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -40,23 +40,23 @@ const crawlApp = createCrawl()
 crawlApp.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
-  // 关闭浏览器
+  //Close browser
   browser.close()
 })
 ```
 
-## 配置
+## Configuration
 
-一共有 4 种:
+There are 4 types in total:
 
-- 简单目标配置 - string
-- 详细目标配置 - CrawlPageDetailTargetConfig
-- 混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]
-- 进阶配置 - CrawlPageAdvancedConfig
+- Simple target configuration - string
+- Detailed target configuration - CrawlPageDetailTargetConfig
+- Mixed target array configuration - (string | CrawlPageDetailTargetConfig)[]
+- Advanced configuration - CrawlPageAdvancedConfig
 
-### 简单目标配置 - string
+### Simple target configuration - string
 
-这是简单目标配置。如果你只想单纯爬一下这个页面，可以试试这种写法：
+This is a simple target configuration. If you just want to simply crawl this page, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -66,11 +66,11 @@ const crawlApp = createCrawl()
 crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-### 详细目标配置 - CrawlPageDetailTargetConfig
+### Detailed target configuration - CrawlPageDetailTargetConfig
 
-这是详细目标配置。如果你想爬一下这个页面，并且需要失败重试之类的，可以试试这种写法：
+This is the detailed target configuration. If you want to crawl this page and need to retry after failure, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -86,13 +86,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
+For more configuration options, see [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-### 混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]
+### Mixed target array configuration - (string | CrawlPageDetailTargetConfig)[]
 
-这是混合目标数组配置。如果你想爬取多个页面，并且有些页面需要失败重试之类的，可以试试这种写法：
+This is a mixed target array configuration. If you want to crawl multiple pages, and some pages need to be failed and retried, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -107,13 +107,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
+For more configuration options, see [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
 
-### 进阶配置 - CrawlPageAdvancedConfig
+### Advanced configuration - CrawlPageAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个页面，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+This is an advanced configuration, targets is a mixed target array configuration. If you want to crawl multiple pages, and you don’t want to write the crawling target configuration (proxy, cookies, retry, etc.) repeatedly, and you also need interval, device fingerprint, life cycle, etc., you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -133,8 +133,8 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 。
+For more configuration options, see [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig).
 
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+For more information about the results, please view [About the results](#About the results). You can choose it according to the actual situation.

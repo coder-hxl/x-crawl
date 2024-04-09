@@ -1,44 +1,46 @@
-# 智能生成元素选择器
+# Intelligent generation of element selectors
 
-能够帮助我们快速定位到页面中的特定元素。只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的选择器，AI 便会根据页面结构自动为您生成合适的选择器，大大简化了确定选择器的繁琐过程。
+It can help us quickly locate specific elements on the page. Just enter the HTML code into AI and tell AI which elements you want to get selectors for, and AI will automatically generate appropriate selectors for you based on the page structure, greatly simplifying the tedious process of determining selectors.
 
-使用 AI 应用实例的 getElementSelectors 方法。
+Use the getElementSelectors method of the AI application instance.
 
-示例：
+Example:
 
-```js{23}
-import { createCrawlOpenAI } from 'x-crawl'
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
 
-const crawlOpenAIApp = createCrawlOpenAI({
-  clientOptions: { apiKey: '你的 API Key' }
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: 'Your API Key' }
 })
 
 const HTMLContent = `
-  <div class="scroll-list">
-    <div class="list-item">女装带帽卫衣</div>
-    <div class="list-item">男装卫衣</div>
-    <div class="list-item">女装卫衣</div>
-    <div class="list-item">男装带帽卫衣</div>
-  </div>
-  <div class="scroll-list">
-    <div class="list-item">男装纯棉短袖</div>
-    <div class="list-item">男装纯棉短袖</div>
-    <div class="list-item">女装纯棉短袖</div>
-    <div class="list-item">男装冰丝短袖</div>
-    <div class="list-item">男装圆领短袖</div>
-  </div>
+   <div class="scroll-list">
+     <div class="list-item">Women's hooded sweatshirt</div>
+     <div class="list-item">Men's sweatshirts</div>
+     <div class="list-item">Women's sweatshirt</div>
+     <div class="list-item">Men's hooded sweatshirt</div>
+   </div>
+   <div class="scroll-list">
+     <div class="list-item">Men's pure cotton short sleeves</div>
+     <div class="list-item">Men's pure cotton short sleeves</div>
+     <div class="list-item">Women's pure cotton short sleeves</div>
+     <div class="list-item">Men's ice silk short sleeves</div>
+     <div class="list-item">Men's round neck short sleeves</div>
+   </div>
 `
 
-crawlOpenAIApp.getElementSelectors(HTMLContent, '获取所有女装').then((res) => {
-  console.log(res)
-  /*
-    res:
-    {
-      selectors: '.scroll-list:nth-child(1) .list-item:nth-of-type(1), .scroll-list:nth-child(1) .list-item:nth-of-type(3), .scroll-list:nth-child(2) .list-item:nth-of-type(3)',
-      type: 'single'
-    }
-  */
-})
+xCrawlOpenAIApp
+  .getElementSelectors(HTMLContent, `all Women's wear`)
+  .then((res) => {
+    console.log(res)
+    /*
+      res:
+      {
+        selectors: '.scroll-list:nth-child(2) .list-item:nth-child(3)',
+        type: 'multiple'
+      }
+    */
+  })
 ```
 
-也可以将整个 HTML 传给 AI 帮我们操作，但是会消耗更多 Tokens ，OpenAI 是根据 Tokens 进行收费的。
+You can also pass the entire HTML to AI to help us operate, but it will consume more Tokens. OpenAI charges based on Tokens.

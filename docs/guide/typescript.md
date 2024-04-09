@@ -1,5 +1,5 @@
 # TypeScript
 
-像 TypeScript 这样的类型系统可以在编译时通过静态分析检测出很多常见错误。这减少了运行时错误，也让我们在重构大型项目的时候更有信心。通过 IDE 中基于类型的自动补全，TypeScript 还改善了开发体验和效率。
+Type systems like TypeScript can detect many common errors at compile time through static analysis. This reduces runtime errors and gives us more confidence when refactoring large projects. TypeScript also improves the development experience and efficiency through type-based auto-completion in the IDE.
 
-x-crawl 本身就是用 TypeScript 编写的，并对 TypeScript 提供了支持。自带类型声明文件，并且将对应版本 Puppeteer 和 OpenAI 的类型全部导出，意味着您可以直接从 x-crawl 导入 Puppeteer 和 OpenAI 的类型，无需额外下载对应版本的类型文件，开箱即用。
+x-crawl itself is written in TypeScript and provides support for TypeScript. It comes with type declaration files and exports all types of corresponding versions of Puppeteer and OpenAI, which means you can directly import Puppeteer and OpenAI types from x-crawl without downloading additional type files of corresponding versions. It can be used out of the box.

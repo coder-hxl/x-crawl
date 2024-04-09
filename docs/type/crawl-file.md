@@ -14,7 +14,7 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - url: undefined
 - headers: undefined
@@ -47,7 +47,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - targets: undefined
 - intervalTime: undefined
@@ -65,7 +65,7 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 export interface CrawlFileSingleResult extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // IncomingHttpHeaders 来自于 node:http
+    headers: IncomingHttpHeaders // IncomingHttpHeaders comes from node:http
     data: {
       isSuccess: boolean
       fileName: string
@@ -78,6 +78,6 @@ export interface CrawlFileSingleResult extends CrawlCommonResult {
 }
 ```
 
-**外部类型**
+**External type**
 
-- IncomingHttpHeaders：来自于 nodejs 的 http
+- IncomingHttpHeaders: http from nodejs

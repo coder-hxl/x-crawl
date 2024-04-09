@@ -1,10 +1,10 @@
-# 轮换代理
+# Rotate proxy
 
-配合失败重试，自定义错误次数以及 HTTP 状态码为爬取目标自动轮换代理。
+In conjunction with failed retries, customized error times and HTTP status codes automatically rotate agents for crawling targets.
 
-可以在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置。
+It can be set in three places: Create crawler application instance, advanced usage, and detailed goals.
 
-以 crawlPage 为例：
+Take crawlPage as an example:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -18,9 +18,9 @@ crawlApp
       'https://www.example.com/page-2',
       'https://www.example.com/page-3',
       'https://www.example.com/page-4',
-      // 为此目标取消代理
+      // Cancel the proxy for this target
       { url: 'https://www.example.com/page-6', proxy: null },
-      // 为此目标单独设置代理
+      // Set up a separate proxy for this target
       {
         url: 'https://www.example.com/page-6',
         proxy: {
@@ -33,7 +33,7 @@ crawlApp
       }
     ],
     maxRetry: 10,
-    // 为此次的目标统一设置代理
+    // Set the proxy uniformly for this target
     proxy: {
       urls: [
         'https://www.example.com/proxy-1',
@@ -48,5 +48,5 @@ crawlApp
 ```
 
 ::: tip
-该功能需要配合失败重试才能正常使用。
+This function needs to be retried upon failure to function properly.
 :::

@@ -1,50 +1,52 @@
-### 智能按需分析元素
+# Intelligent on-demand analysis elements
 
-无需手动分析 HTML 页面结构再提取所需的元素属性或值。现在只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的信息，AI便会自动分析页面结构，提取出相应的元素属性或值。
+No need to manually analyze the HTML page structure to extract the required element attributes or values. Now you just need to input the HTML code into AI and tell AI which elements you want to get information about, and AI will automatically analyze the page structure and extract the corresponding element attributes or values.
 
-使用 AI 应用实例的 parseElements 方法。
+Use the parseElements method of the AI application instance.
 
-示例：
+Example:
 
-```js{23}
-import { createCrawlOpenAI } from 'x-crawl'
+```js
+import { createXCrawlOpenAI } from 'x-crawl'
 
-const crawlOpenAIApp = createCrawlOpenAI({
-  clientOptions: { apiKey: '你的 API Key' }
+const xCrawlOpenAIApp = createXCrawlOpenAI({
+  clientOptions: { apiKey: 'Your API Key' }
 })
 
 const HTMLContent = `
-  <div class="scroll-list">
-    <div class="list-item">女装带帽卫衣</div>
-    <div class="list-item">男装卫衣</div>
-    <div class="list-item">女装卫衣</div>
-    <div class="list-item">男装带帽卫衣</div>
-  </div>
-  <div class="scroll-list">
-    <div class="list-item">男装纯棉短袖</div>
-    <div class="list-item">男装纯棉短袖</div>
-    <div class="list-item">女装纯棉短袖</div>
-    <div class="list-item">男装冰丝短袖</div>
-    <div class="list-item">男装圆领短袖</div>
-  </div>
+   <div class="scroll-list">
+     <div class="list-item">Women's hooded sweatshirt</div>
+     <div class="list-item">Men's sweatshirts</div>
+     <div class="list-item">Women's sweatshirt</div>
+     <div class="list-item">Men's hooded sweatshirt</div>
+   </div>
+   <div class="scroll-list">
+     <div class="list-item">Men's pure cotton short sleeves</div>
+     <div class="list-item">Men's pure cotton short sleeves</div>
+     <div class="list-item">Women's pure cotton short sleeves</div>
+     <div class="list-item">Men's ice silk short sleeves</div>
+     <div class="list-item">Men's round neck short sleeves</div>
+   </div>
 `
 
-crawlOpenAIApp.parseElements(HTMLContent, '获取男装, 并去重').then((res) => {
-  console.log(res)
-  /*
-    res:
-    {
-      elements: [
-        { class: 'list-item', text: '男装卫衣' },
-        { class: 'list-item', text: '男装带帽卫衣' },
-        { class: 'list-item', text: '男装纯棉短袖' },
-        { class: 'list-item', text: '男装冰丝短袖' },
-        { class: 'list-item', text: '男装圆领短袖' }
-      ],
-      type: 'multiple'
-    }
-  */
-})
+xCrawlOpenAIApp
+  .parseElements(HTMLContent, `Take all men's clothing and remove duplicates`)
+  .then((res) => {
+    console.log(res)
+    /*
+      res:
+      {
+        elements: [
+          { content: "Men's hooded sweatshirt" },
+          { content: "Men's sweatshirts" },
+          { content: "Men's pure cotton short sleeves" },
+          { content: "Men's ice silk short sleeves" },
+          { content: "Men's round neck short sleeves" }
+        ],
+        type: 'multiple'
+      }
+    */
+  })
 ```
 
-也可以将整个 HTML 传给 AI 帮我们操作，但是会消耗更多 Tokens ，OpenAI 是根据 Tokens 进行收费的。
+You can also pass the entire HTML to AI to help us operate, but it will consume more Tokens. OpenAI charges based on Tokens.

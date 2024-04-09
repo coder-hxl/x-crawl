@@ -1,5 +1,5 @@
-# 注意事项
+# Precautions
 
-- x-crawl 仅供合法用途，禁止使用该工具进行任何违法活动，包括但不限于未经授权的数据采集、网络攻击、隐私侵犯等行为。
-- 在进行数据采集之前，请确保您已经获得了目标网站的明确授权，并遵守其 robots.txt 文件规定以及使用条款。
-- 避免对目标网站造成过大的访问压力，以免触发其反爬策略或造成服务器宕机。
+- x-crawl is for legal purposes only. It is prohibited to use this tool to conduct any illegal activities, including but not limited to unauthorized data collection, network attacks, privacy violations, etc.
+- Before collecting data, make sure you have explicit authorization from the target website and comply with its robots.txt file and terms of use.
+- Avoid placing excessive access pressure on the target website to avoid triggering its anti-crawling strategy or causing server downtime.

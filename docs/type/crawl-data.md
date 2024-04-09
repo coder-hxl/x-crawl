@@ -14,7 +14,7 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - url: undefined
 - method: 'GET'
@@ -40,7 +40,7 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - targets: undefined
 - intervalTime: undefined
@@ -54,12 +54,12 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 export interface CrawlDataSingleResult<D> extends CrawlCommonResult {
   data: {
     statusCode: number | undefined
-    headers: IncomingHttpHeaders // IncomingHttpHeaders 来自于 node:http
+    headers: IncomingHttpHeaders // IncomingHttpHeaders comes from node:http
     data: D
   } | null
 }
 ```
 
-**外部类型**
+**External type**
 
-- IncomingHttpHeaders：来自于 nodejs 的 http
+- IncomingHttpHeaders: http from nodejs

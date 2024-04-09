@@ -1,4 +1,4 @@
-# createCrawl
+#createCrawl
 
 ## CreateCrawlConfig
 
@@ -8,20 +8,20 @@ export interface CreateCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
-  /*   log?:
-    | {
-        start?: boolean
-        process?: boolean
-        result?: boolean
-      }
-    | boolean */
+  /* log?:
+     | {
+         start?: boolean
+         process?: boolean
+         result?: boolean
+       }
+     | boolean */
   crawlPage?: {
-    puppeteerLaunchOptions?: PuppeteerLaunchOptions // PuppeteerLaunchOptions 来自于 puppeteer
+    puppeteerLaunchOptions?: PuppeteerLaunchOptions // PuppeteerLaunchOptions comes from puppeteer
   }
 }
 ```
 
-**默认值**
+**default value**
 
 - mode: 'async'
 - enableRandomFingerprint: false
@@ -30,9 +30,9 @@ export interface CreateCrawlConfig extends CrawlCommonConfig {
 <!-- - log: { start: true, process: true, result: true } -->
 - crawlPage: undefined
 
-**外部类型**
+**External type**
 
-- PuppeteerLaunchOptions：来自于 puppeteer ，crawlPage.puppeteerLaunchOptions 会直接传给 puppeteer.launch 用于创建浏览器实例
+- PuppeteerLaunchOptions: from puppeteer, crawlPage.puppeteerLaunchOptions will be passed directly to puppeteer.launch for creating browser instances
 
 ## CrawlApp
 

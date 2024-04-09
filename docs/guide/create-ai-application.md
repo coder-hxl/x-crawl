@@ -1,18 +1,18 @@
-# 创建 AI 应用
+# Create AI application
 
-目前 x-crawl 的 AI 辅助功能是依靠 OpenAI ，需要用到 OpenAI 的 API Key 。后续还可能加入其他 AI 的。
+Currently, x-crawl’s AI auxiliary function relies on OpenAI and requires the use of OpenAI’s API Key. Other AI may be added in the future.
 
-通过 [createCrawlOpenAI()](#createCrawlOpenAI) 创建一个新的 **应用实例**:
+Create a new **application instance** via [createCrawlOpenAI()](#createCrawlOpenAI):
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'
 
 const crawlOpenAIApp = createCrawlOpenAI({
-  clientOptions: { apiKey: '你的 API Key' }
+  clientOptions: { apiKey: 'Your API Key' }
 })
 ```
 
-**领取 API Key**
+**Get API Key**
 
-- **[OpenAI 官方的 API Key](https://platform.openai.com/api-keys)**
-- **[免费的 API Key](https://github.com/chatanywhere/GPT_API_free)**
+- **[OpenAI official API Key](https://platform.openai.com/api-keys)**
+- **[Free API Key](https://github.com/chatanywhere/GPT_API_free)**

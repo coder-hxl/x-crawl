@@ -1,4 +1,4 @@
-# parseElements
+#parseElements
 
 ## CrawlOpenAIParseElementsContentOptions
 
@@ -8,13 +8,13 @@ export interface CrawlOpenAIParseElementsContentOptions {
 }
 ```
 
-**默认值**
+**default value**
 
 - message: undefined
 
-**外部类型**
+**External type**
 
-- ClientOptions：来自于 openai，clientOptions 会直接传给 new OpenAI 用于创建 AI 实例
+- ClientOptions: from openai, clientOptions will be passed directly to new OpenAI for creating AI instances
 
 ## CrawlOpenAIParseElementsResult
 
@@ -28,6 +28,6 @@ export interface CrawlOpenAIParseElementsResult<
 ```
 
 - type
-  - single：说明当前 HTML 片段只找到一个目标。
-  - multiple： 说明当前 HTML 片段找到多个目标。
-  - none： 没有在当前 HTML 片段找到。
+  - single: indicates that the current HTML fragment only finds one target.
+  - multiple: Indicates that the current HTML fragment found multiple targets.
+  - none: Not found in the current HTML fragment.

@@ -1,4 +1,4 @@
-# CrawlOpenaiOtherConfig
+#CrawlOpenaiOtherConfig
 
 ## CrawlOpenAICommonAPIOtherOption
 
@@ -25,8 +25,8 @@ export interface CrawlOpenAICommonAPIOtherOption {
 }
 ```
 
-- model：要选择的 AI 模型。
+- model: the AI model to be selected.
 
-**默认值**
+**default value**
 
 - model: undefined

@@ -1,10 +1,10 @@
 # getElementSelectors
 
-getElementSelectors 是 AI 应用实例的方法，通常用于智能生成元素选择器。
+getElementSelectors is a method of AI application instance, usually used to intelligently generate element selectors.
 
-## 类型
+## type
 
-parseElements API 是一个函数。
+parseElements API is a function.
 
 ```ts
 function getElementSelectors(
@@ -14,16 +14,16 @@ function getElementSelectors(
 ): Promise<XCrawlOpenAIGetElementSelectorsResult>
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions) 类型
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- View the [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions) type
+- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult) 类型
+- View the [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult) type
 
-## 示例
+## Example
 
 ```js
 import { createXCrawlOpenAI } from 'x-crawl'
@@ -31,6 +31,6 @@ import { createXCrawlOpenAI } from 'x-crawl'
 const xCrawlOpenAIApp = createXCrawlOpenAI()
 
 xCrawlOpenAIApp
-  .getElementSelectors('HTML', '告诉 AI 你想要的')
+  .getElementSelectors('HTML', 'Tell the AI what you want')
   .then((res) => {})
 ```

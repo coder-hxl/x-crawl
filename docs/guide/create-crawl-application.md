@@ -1,13 +1,13 @@
-# 创建爬虫应用
+# Create crawler application
 
-通过 [createCrawl()](#createCrawl) 创建一个新的 **应用实例**：
+Create a new **application instance** via [createCrawl()](#createCrawl):
 
 ```js
 import { createCrawl } from 'x-crawl'
 
 const crawlApp = createCrawl({
-  // 选项
+  // options
 })
 ```
 
-相关的 **选项** 可参考 [CreateCrawlConfig](#CreateCrawlConfig) 。
+Related **options** can refer to [CreateCrawlConfig](#CreateCrawlConfig).

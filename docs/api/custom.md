@@ -1,20 +1,20 @@
-# custom
+#custom
 
-custom 是 AI 应用实例的方法，通常用于用户自定义AI功能。
+custom is a method of AI application instance, usually used for user-defined AI functions.
 
-## 类型
+## type
 
-customAPI 是一个函数。
+customAPI is a function.
 
 ```ts
 function custom(): OpenAI
 ```
 
-**返回值类型：**
+**Return value type:**
 
-可参考：https://platform.openai.com/docs/api-reference/chat/create?lang=node.js ，调用 custom 拿到的 openai 与网站示例 new OpenAI() 拿到的实例差不多，不同的是 x-crawl 会将创建 AI 应用实例时传入的 clientOptions 传给 new OpenAI ，拿到的是完好无损 OpenAI 实例，x-crawl 并不会对其重写。
+You can refer to: https://platform.openai.com/docs/api-reference/chat/create?lang=node.js. The openai obtained by calling custom is similar to the instance obtained by the website example new OpenAI(). The differences are x-crawl will pass the clientOptions passed in when creating the AI application instance to new OpenAI. What you will get is an intact OpenAI instance, and x-crawl will not rewrite it.
 
-## 示例
+## Example
 
 ```js
 import { createXCrawlOpenAI } from 'x-crawl'

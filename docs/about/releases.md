@@ -1,3 +1,3 @@
-# 版本发布
+# Version release
 
-完整的过往发布记录可以在 [GitHub](https://github.com/coder-hxl/x-crawl/blob/main/CHANGELOG.md) 查阅。
+The complete past release record can be viewed at [GitHub](https://github.com/coder-hxl/x-crawl/blob/main/CHANGELOG.md).

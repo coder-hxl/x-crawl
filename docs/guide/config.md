@@ -1,47 +1,47 @@
-# 配置
+# Configuration
 
-一些通用的配置可以通过在这三个地方设置：
+Some common configurations can be set in these three places:
 
-- 应用实例配置（全局）
-- 进阶配置（局部）
-- 详细目标配置（单独）
+- Application instance configuration (global)
+- Advanced configuration (partial)
+- Detailed target configuration (separate)
 
-## 优先级
+## priority
 
-优先级为：详细目标配置 > 进阶配置 > 应用实例配置
+The priority is: Detailed target configuration > Advanced configuration > Application instance configuration
 
-以 maxRetry 重试次数为例：
+Take maxRetry retry times as an example:
 
 ```js{4,13,16}
 import { createCrawl } from 'x-crawl'
 
-// 应用实例配置
+//Application instance configuration
 const crawlApp = createCrawl({ maxRetry: 3 })
 
-// 进阶配置
+//Advanced configuration
 crawlApp
-  .crawlPage({
-    targets: [
-      'https://www.example.com/page-1',
-      'https://www.example.com/page-2',
-      // 详细目标配置
-      { url: 'https://www.example.com/page-3', maxRetry: 8 },
-      'https://www.example.com/page-4'
-    ],
-    maxRetry: 6
-  })
-  .then((res) => {})
+   .crawlPage({
+     targets: [
+       'https://www.example.com/page-1',
+       'https://www.example.com/page-2',
+       // Detailed target configuration
+       { url: 'https://www.example.com/page-3', maxRetry: 8 },
+       'https://www.example.com/page-4'
+     ],
+     maxRetry: 6
+   })
+   .then((res) => {})
 
 crawlApp.crawlPage('https://www.example.com/page-5').then((res) => {})
 ```
 
-在上面的示例中，**应用实例配置**、**进阶配置**以及**详细目标配置**中都设置了**重试次数**，page3 将会采用自己的重试次数（8次），page1、 page2 以及 page4 将采用进阶配置的重试次数（6次），page5 会使用应用实例配置的重试次数（3次）。
+In the above example, **Number of retries** are set in **Application Instance Configuration**, **Advanced Configuration** and **Detailed Target Configuration**, and page3 will use its own number of retries. (8 times), page1, page2 and page4 will use the number of retries configured in the advanced configuration (6 times), and page5 will use the number of retries configured by the application instance (3 times).
 
-## 取消复用配置选项
+## Cancel reuse configuration options
 
-可在使用 null 取消上层配置。
+You can use null to cancel the upper-level configuration.
 
-以 maxRetry 重试次数为例：
+Take maxRetry retry times as an example:
 
 ```js{8,20}
 import { createCrawl } from 'x-crawl'
@@ -49,23 +49,23 @@ import { createCrawl } from 'x-crawl'
 const crawlApp = createCrawl({ maxRetry: 3 })
 
 crawlApp
-  .crawlPage({
-    url: 'https://www.example.com/page-1',
-    maxRetry: null
-  })
-  .then((res) => {})
+   .crawlPage({
+     url: 'https://www.example.com/page-1',
+     maxRetry: null
+   })
+   .then((res) => {})
 
 crawlApp.crawlPage('https://www.example.com/page-2').then((res) => {})
 
 crawlApp
-  .crawlPage({
-    targets: [
-      'https://www.example.com/page-3',
-      'https://www.example.com/page-4'
-    ],
-    maxRetry: null
-  })
-  .then((res) => {})
+   .crawlPage({
+     targets: [
+       'https://www.example.com/page-3',
+       'https://www.example.com/page-4'
+     ],
+     maxRetry: null
+   })
+   .then((res) => {})
 ```
 
-在上面的示例中，page-1、page3、page4 都取消了重试次数，page2 有 3 次重试次数。
+In the above example, page-1, page3, and page4 have all canceled retries, and page2 has 3 retries.

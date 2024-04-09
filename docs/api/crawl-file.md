@@ -1,10 +1,10 @@
 # crawlFile
 
-crawlFile 是爬虫实例的方法，通常用于爬取文件，可获取图片、pdf 文件等等。
+crawlFile is a method of a crawler instance, usually used to crawl files, such as images, pdf files, etc.
 
-## 类型
+## type
 
-crawlFile API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
+crawlFile API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) that can be called with different configuration parameters (in terms of type).
 
 ```ts
 type crawlFile = {
@@ -20,16 +20,16 @@ type crawlFile = {
 }
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 类型
-- 查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 类型
+- View the [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) type
+- View the [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [CrawlFileSingleResult](#CrawlFileSingleResult) 类型
+- View the [CrawlFileSingleResult](#CrawlFileSingleResult) type
 
-## 示例
+## Example
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -53,18 +53,18 @@ crawlApp
   .then((res) => {})
 ```
 
-## 配置
+## Configuration
 
-一共有 4 种:
+There are 4 types in total:
 
-- 简单目标配置 - string
-- 详细目标配置 - CrawlFileDetailTargetConfig
-- 详细目标数组配置 - (string | CrawlFileDetailTargetConfig)[]
-- 进阶配置 - CrawlFileAdvancedConfig
+- Simple target configuration - string
+- Detailed target configuration - CrawlFileDetailTargetConfig
+- Detailed target array configuration - (string | CrawlFileDetailTargetConfig)[]
+- Advanced configuration - CrawlFileAdvancedConfig
 
-### 简单目标配置 - string
+### Simple target configuration - string
 
-这是简单目标配置。如果你只想单纯爬一下这个文件，可以试试这种写法：
+This is a simple target configuration. If you just want to simply crawl this file, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -74,11 +74,11 @@ const crawlApp = createCrawl()
 crawlApp.crawlFile('https://www.example.com/file').then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-### 详细目标配置 - CrawlFileDetailTargetConfig
+### Detailed target configuration - CrawlFileDetailTargetConfig
 
-这是详细目标配置。如果你想爬一下这个文件，并且需要失败重试之类的，可以试试这种写法：
+This is the detailed target configuration. If you want to crawl this file and need to retry after failure, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -96,13 +96,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
+For more configuration options, see [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-### 混合目标数组配置 - (string | CrawlFileDetailTargetConfig)[]
+### Mixed target array configuration - (string | CrawlFileDetailTargetConfig)[]
 
-这是混合目标数组配置。如果你想爬取多个文件，并且有些数据需要失败重试之类的，可以试试这种写法：
+This is a mixed target array configuration. If you want to crawl multiple files and some data needs to be failed and retried, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -118,13 +118,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
+For more configuration options, see [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
 
-### 进阶配置 - CrawlFileAdvancedConfig
+### Advanced configuration - CrawlFileAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、storeDir、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+This is an advanced configuration, targets is a mixed target array configuration. If you want to crawl multiple data, and you don’t want to write the crawling target configuration (proxy, storeDir, retry, etc.) repeatedly, and you also need interval time, device fingerprint, life cycle, etc., you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -144,8 +144,8 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 。
+For more configuration options, see [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig).
 
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+For more information about the results, please view [About the results](#About the results). You can choose it according to the actual situation.

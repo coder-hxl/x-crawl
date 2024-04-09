@@ -1,6 +1,6 @@
-# 爬取接口
+# Crawling interface
 
-通过 [crawlData()](#crawlData) 爬取接口数据。
+Crawl interface data through [crawlData()](#crawlData).
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -18,16 +18,16 @@ const targets = [
 ]
 
 crawlApp.crawlData({ targets }).then((res) => {
-  // 处理
+  // deal with
 })
 ```
 
-## 生命周期
+## life cycle
 
-crawlData API 拥有的声明周期函数:
+Lifecycle functions owned by crawlData API:
 
-- onCrawlItemComplete: 当每个爬取目标完成后会回调
+- onCrawlItemComplete: will be called back when each crawling target is completed
 
 ### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
+In the onCrawlItemComplete function you can get the results of each crawled target in advance.

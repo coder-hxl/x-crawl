@@ -1,6 +1,6 @@
-# 爬取 HTML
+# Crawl HTML
 
-通过 [crawlHTML()](#crawlData) 爬取静态 HTML。
+Crawl static HTML via [crawlHTML()](#crawlData).
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -13,16 +13,16 @@ crawlApp
     'https://www.example.com/html-2'
   ])
   .then((res) => {
-    // 处理
+    // deal with
   })
 ```
 
-## 生命周期
+## life cycle
 
-crawlHTML API 拥有的声明周期函数:
+The lifecycle functions owned by crawlHTML API:
 
-- onCrawlItemComplete: 当每个爬取目标完成后会回调
+- onCrawlItemComplete: will be called back when each crawling target is completed
 
 ### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
+In the onCrawlItemComplete function you can get the results of each crawled target in advance.

@@ -1,8 +1,8 @@
-### 失败重试
+# Retry on failure
 
-可避免因一时问题而造成爬取失败，将会等待这一轮爬取目标结束后重新爬取目标。
+It can avoid crawling failure due to temporary problems, and it will wait for the end of this round of crawling the target and crawl the target again.
 
-可以在 创建爬虫应用实例、进阶用法、详细目标 这三个地方设置。
+It can be set in three places: Create crawler application instance, advanced usage, and detailed goals.
 
 ```js{6}
 import { createCrawl } from 'x-crawl'
@@ -10,8 +10,8 @@ import { createCrawl } from 'x-crawl'
 const crawlApp = createCrawl()
 
 crawlApp
-  .crawlData({ url: 'https://www.example.com/api', maxRetry: 9 })
-  .then((res) => {})
+   .crawlData({ url: 'https://www.example.com/api', maxRetry: 9 })
+   .then((res) => {})
 ```
 
-maxRetry 属性决定要重试几次。
+The maxRetry attribute determines how many times to retry.

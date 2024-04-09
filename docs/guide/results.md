@@ -1,15 +1,15 @@
-# 关于结果
+# About the results
 
-每个爬取目标都会产生一个详情对象，该详情对象会包含以下属性：
+Each crawl target will generate a details object, which will contain the following properties:
 
-- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
-- isSuccess：是否成功爬取
-- maxRetry：该次爬取目标的最大重试次数
-- retryCount：该次爬取目标已经重试的次数
-- proxyDetails：记录代理情况
-- crawlErrorQueue：该次爬取目标的报错收集
-- data：该次爬取目标的爬取数据
+- id: generated according to the order of crawling targets. If there is a priority, it will be generated according to the priority.
+- isSuccess: whether the crawling was successful
+- maxRetry: The maximum number of retries for this crawling target
+- retryCount: the number of times the crawling target has been retried
+- proxyDetails: record proxy status
+- crawlErrorQueue: Collection of error reports for the crawl target
+- data: the crawling data of the crawling target
 
-如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
+If it is a specific configuration, it will automatically determine whether the details object is stored in an array according to the configuration method you choose, and return the array, otherwise the details object will be returned. Already typed perfectly in TypeScript.
 
-相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlHTML 配置](#配置-1)、[crawlData 配置](#配置-2)、[crawlFile 配置](#配置-3) 。
+For details on the relevant configuration methods and results: [crawlPage Configuration](#Configuration), [crawlHTML Configuration](#Configuration-1), [crawlData Configuration](#Configuration-2), [crawlFile Configuration](#Configuration-3) .

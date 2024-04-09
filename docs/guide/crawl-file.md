@@ -1,6 +1,6 @@
-# 爬取文件
+# Crawl files
 
-通过 [crawlFile()](#crawlFile) 爬取文件数据。
+Crawl file data via [crawlFile()](#crawlFile).
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -13,32 +13,32 @@ crawlApp
       'https://www.example.com/file-1',
       'https://www.example.com/file-2'
     ],
-    storeDirs: './upload' // 存放文件夹
+    storeDirs: './upload' // Storage folder
   })
   .then((res) => {})
 ```
 
-## 生命周期
+## life cycle
 
-crawlFile API 拥有的声明周期函数:
+The lifecycle functions owned by crawlFile API:
 
-- onCrawlItemComplete: 当每个爬取目标完成后会回调
+- onCrawlItemComplete: will be called back when each crawling target is completed
 
-- onBeforeSaveItemFile: 会在保存文件前回调
+- onBeforeSaveItemFile: will be called back before saving the file
 
 ### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
+In the onCrawlItemComplete function you can get the results of each crawled target in advance.
 
 ### onBeforeSaveItemFile
 
-在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后返回一个 Buffer 或者一个返回值是 Buffer 的 Promise ，x-crawl 会将返回的 Buffer 替换掉拿到的 Buffer 存储到文件中。
+In the onBeforeSaveItemFile function, you can get a Buffer type file, you can process the Buffer, and then return a Buffer or a Promise whose return value is a Buffer. x-crawl will replace the returned Buffer with the obtained Buffer and store it in in the file.
 
-## 示例
+## Example
 
-**调整图片大小**
+**Resize image**
 
-使用 sharp 库对需要爬取的图片进行调整大小操作:
+Use the sharp library to resize the images that need to be crawled:
 
 ```js{12}
 import { createCrawl } from 'x-crawl'
@@ -47,16 +47,16 @@ import sharp from 'sharp'
 const crawlApp = createCrawl()
 
 crawlApp
-  .crawlFile({
-    targets: [
-      'https://www.example.com/file-1.jpg',
-      'https://www.example.com/file-2.jpg'
-    ],
-    onBeforeSaveItemFile: (info) => sharp(info.data).resize(200).toBuffer()
-  })
-  .then((res) => {
-    res.forEach((item) => {
-      console.log(item.data?.data.isSuccess)
-    })
-  })
+   .crawlFile({
+     targets: [
+       'https://www.example.com/file-1.jpg',
+       'https://www.example.com/file-2.jpg'
+     ],
+     onBeforeSaveItemFile: (info) => sharp(info.data).resize(200).toBuffer()
+   })
+   .then((res) => {
+     res.forEach((item) => {
+       console.log(item.data?.data.isSuccess)
+     })
+   })
 ```

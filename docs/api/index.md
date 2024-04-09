@@ -1,24 +1,24 @@
-# createCrawl
+#createCrawl
 
-通过调用 createCrawl 创建一个爬虫应用实例。爬取目标是由实例方法内部维护，并非由实例维护。
+Create a crawler application instance by calling createCrawl. The crawl target is maintained internally by the instance method, not by the instance.
 
-## 类型
+## type
 
-createCrawl API 是一个函数。
+createCrawl API is a function.
 
 ```ts
 function createCrawl(config?: CreateCrawlConfig): CrawlApp
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [CreateCrawlConfig](#CreateCrawlConfig) 类型
+- View the [CreateCrawlConfig](#CreateCrawlConfig) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [CrawlApp](#CrawlApp) 类型
+- View the [CrawlApp](#CrawlApp) type
 
-## 示例
+## Example
 
 ```js
 import { createCrawl } from 'x-crawl'

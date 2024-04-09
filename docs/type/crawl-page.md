@@ -8,7 +8,7 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
   headers?: Object | null
   cookies?: PageCookies | null
   priority?: number
-  viewport?: Viewport | null // Viewport 来自于 puppeteer
+  viewport?: Viewport | null // Viewport comes from puppeteer
   fingerprint?:
     | (DetailTargetFingerprintCommon & {
         maxWidth?: number
@@ -20,7 +20,7 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - url: undefined
 - headers: undefined
@@ -29,9 +29,9 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 - viewport: undefined
 - fingerprint: undefined
 
-**外部类型**
+**External type**
 
-- Viewport：来自于 puppeteer ，viewport 会直接传给 page.setViewport 用于设置页面大小
+- Viewport: from puppeteer, viewport will be passed directly to page.setViewport to set the page size
 
 ## CrawlPageAdvancedConfig
 
@@ -48,13 +48,13 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 
   headers?: Object
   cookies?: PageCookies
-  viewport?: Viewport // Viewport：来自于 puppeteer
+  viewport?: Viewport // Viewport: from puppeteer
 
   onCrawlItemComplete?: (crawlPageSingleResult: CrawlPageSingleResult) => void
 }
 ```
 
-**默认值**
+**default value**
 
 - targets: undefined
 - intervalTime: undefined
@@ -64,24 +64,24 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 - viewport: undefined
 - onCrawlItemComplete: undefined
 
-**外部类型**
+**External type**
 
-- Viewport：来自于 puppeteer ，viewport 会直接传给 page.setViewport 用于设置页面大小
+- Viewport: from puppeteer, viewport will be passed directly to page.setViewport to set the page size
 
 ## CrawlPageSingleResult
 
 ```ts
 export interface CrawlPageSingleResult extends CrawlCommonResult {
   data: {
-    browser: Browser // Browser 来自于 puppeteer
-    response: HTTPResponse | null // HTTPResponse 来自于 puppeteer
-    page: Page // Page 自来于 puppeteer
+    browser: Browser // Browser comes from puppeteer
+    response: HTTPResponse | null // HTTPResponse comes from puppeteer
+    page: Page // Page from puppeteer
   }
 }
 ```
 
-**外部类型**
+**External type**
 
-- Browser：来自于 puppeteer ，https://pptr.dev/api/puppeteer.browser
-- HTTPResponse：来自于 puppeteer ，https://pptr.dev/api/puppeteer.httpresponse
-- Page：来自于 puppeteer ，https://pptr.dev/api/puppeteer.page
+- Browser: from puppeteer, https://pptr.dev/api/puppeteer.browser
+- HTTPResponse: from puppeteer, https://pptr.dev/api/puppeteer.httpresponse
+- Page: from puppeteer, https://pptr.dev/api/puppeteer.page

@@ -1,4 +1,4 @@
-# CrawlOtherConfig
+#CrawlOtherConfig
 
 ## CrawlCommonConfig
 
@@ -14,7 +14,7 @@ export interface CrawlCommonConfig {
 }
 ```
 
-**默认值**
+**default value**
 
 - timeout: 10000
 - proxy: undefined
@@ -44,9 +44,10 @@ export interface DetailTargetFingerprintCommon {
 }
 ```
 
-**默认值**
+**default value**
 
-- ua: undefined
+-ua: undefined
+
 - mobile: undefined
 - platform: undefined
 - platformVersion: undefined
@@ -78,13 +79,13 @@ export type Platform =
 ```ts
 export type PageCookies =
   | string
-  | Protocol.Network.CookieParam // Protocol 来自于 puppeteer
-  | Protocol.Network.CookieParam[] // Protocol 来自于 puppeteer
+  | Protocol.Network.CookieParam // Protocol comes from puppeteer
+  | Protocol.Network.CookieParam[] // Protocol comes from puppeteer
 ```
 
-**外部类型**
+**External type**
 
-- Protocol：来自于 puppeteer
+- Protocol: from puppeteer
 
 ## Method
 
@@ -131,9 +132,9 @@ export interface CrawlCommonResult {
 }
 ```
 
-- id：根据爬取目标的顺序生成的，如果有优先级，则会根据优先级生成
-- isSuccess：是否成功爬取
-- maxRetry：该次爬取目标的最大重试次数
-- retryCount：该次爬取目标已经重试的次数
-- proxyDetails：记录代理情况
-- crawlErrorQueue：该次爬取目标的报错收集
+- id: generated according to the order of crawling targets. If there is a priority, it will be generated according to the priority.
+- isSuccess: whether the crawling was successful
+- maxRetry: The maximum number of retries for this crawling target
+- retryCount: the number of times the crawling target has been retried
+- proxyDetails: record proxy status
+- crawlErrorQueue: Collection of error reports for the crawl target

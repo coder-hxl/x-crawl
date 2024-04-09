@@ -1,6 +1,6 @@
-# 爬取页面
+# Crawl the page
 
-通过 [crawlPage()](#crawlPage) 爬取一个页面。
+Crawl a page via [crawlPage()](#crawlPage).
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -10,56 +10,56 @@ const crawlApp = createCrawl()
 crawlApp.crawlPage('https://www.example.com').then((res) => {
   const { browser, page } = res.data
 
-  // 关闭浏览器
+  //Close browser
   browser.close()
 })
 ```
 
-## browser 实例
+## browser example
 
-当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
-
-::: warning
-browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
-:::
-
-## page 实例
-
-当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
+When you call the crawlPage API on the same crawler instance to crawl the page, the browser instance used is the same, because the browser instance shares the crawlPage API in the same crawler instance. For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
 
 ::: warning
-如果后续不再使用 page 需要自行调用 page.close() 关闭 page 实例，否则会造成内存泄露。
+The browser will keep running, so the file will not be terminated. If you want to stop, you can execute browser.close() to close it. If you need to use [crawlPage](#crawlPage) or [page](#page) later, please do not call it. Because the browser instance shares the crawlPage API in the same crawler instance.
 :::
 
-## 生命周期
+## page example
 
-crawlPage API 拥有的声明周期函数:
+When you call the crawlPage API on the same crawler instance to crawl a page, a new page instance will be generated from the browser instance. For specific usage, please refer to [Page](https://pptr.dev/api/puppeteer.page).
 
-- onCrawlItemComplete: 当每个爬取目标完成后会回调
+::: warning
+If you no longer use the page, you need to call page.close() to close the page instance yourself, otherwise it will cause a memory leak.
+:::
+
+## life cycle
+
+The life cycle functions owned by crawlPage API:
+
+- onCrawlItemComplete: will be called back when each crawling target is completed
 
 ### onCrawlItemComplete
 
-在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
+In the onCrawlItemComplete function you can get the results of each crawled target in advance.
 
-## 示例
+## Example
 
-**打开浏览器**
+**Open browser**
 
-取消以无头模式运行浏览器。
+Cancel running the browser in headless mode.
 
 ```js{6}
 import { createCrawl } from 'x-crawl'
 
 const crawlApp = createCrawl({
-  maxRetry: 3,
-  // 取消以无头模式运行浏览器
-  crawlPage: { puppeteerLaunchOptions: { headless: false } }
+   maxRetry: 3,
+   //Cancel running the browser in headless mode
+   crawlPage: { puppeteerLaunchOptions: { headless: false } }
 })
 
 crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
-**获取屏幕截图**
+**Get Screenshot**
 
 ```js{9}
 import { createCrawl } from 'x-crawl'
@@ -67,13 +67,13 @@ import { createCrawl } from 'x-crawl'
 const crawlApp = createCrawl()
 
 crawlApp.crawlPage('https://www.example.com').then(async (res) => {
-  const { browser, page } = res.data
+   const { browser, page } = res.data
 
-  // 获取页面渲染后的截图
-  await page.screenshot({ path: './upload/page.png' })
+   // Get a screenshot of the page after rendering
+   await page.screenshot({ path: './upload/page.png' })
 
-  console.log('获取屏幕截图完毕')
+   console.log('Complete taking screenshot')
 
-  browser.close()
+   browser.close()
 })
 ```

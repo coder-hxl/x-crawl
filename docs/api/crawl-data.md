@@ -1,10 +1,10 @@
 # crawlData
 
-crawl 是爬虫实例的方法，通常用于爬取 API ，可获取 JSON 数据等等。
+crawl is a method of crawler instance, usually used to crawl API, obtain JSON data, etc.
 
-## 类型
+## type
 
-crawlData API 是一个函数。类型是 [重载函数](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) 可以通过不同的配置参数调用该函数（在类型方面）。
+crawlData API is a function. A type is an [overloaded function](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads) that can be called with different configuration parameters (in terms of type).
 
 ```ts
 type crawlData = {
@@ -24,16 +24,16 @@ type crawlData = {
 }
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 类型
-- 查看 [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) 类型
+- View the [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) type
+- View the [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [CrawlDataSingleResult](#CrawlDataSingleResult) 类型
+- View the [CrawlDataSingleResult](#CrawlDataSingleResult) type
 
-## 示例
+## Example
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -56,18 +56,18 @@ crawlApp
   })
 ```
 
-## 配置
+## Configuration
 
-一共有 4 种:
+There are 4 types in total:
 
-- 简单目标配置 - string
-- 详细目标配置 - CrawlDataDetailTargetConfig
-- 混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]
-- 进阶配置 - CrawlDataAdvancedConfig
+- Simple target configuration - string
+- Detailed target configuration - CrawlDataDetailTargetConfig
+- Mixed target array configuration - (string | CrawlDataDetailTargetConfig)[]
+- Advanced configuration - CrawlDataAdvancedConfig
 
-### 简单目标配置 - string
+### Simple target configuration - string
 
-这是简单目标配置。如果你只想单纯爬一下这个数据，并且该接口是 GET 方式的，可以试试这种写法：
+This is a simple target configuration. If you just want to simply crawl this data, and the interface is GET, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -77,11 +77,11 @@ const crawlApp = createCrawl()
 crawlApp.crawlData('https://www.example.com/api').then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-### 详细目标配置 - CrawlDataDetailTargetConfig
+### Detailed target configuration - CrawlDataDetailTargetConfig
 
-这是详细目标配置。如果你想爬一下这个数据，并且需要失败重试之类的，可以试试这种写法：
+This is the detailed target configuration. If you want to crawl this data and need to retry after failure, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -97,13 +97,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+The res obtained will be an object.
 
-更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
+For more configuration options, see [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-### 混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]
+### Mixed target array configuration - (string | CrawlDataDetailTargetConfig)[]
 
-这是混合目标数组配置。如果你想爬取多个数据，并且有些数据需要失败重试之类的，可以试试这种写法：
+This is a mixed target array configuration. If you want to crawl multiple data, and some data needs to be failed and retried, you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -118,13 +118,13 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
+For more configuration options, see [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig).
 
-### 进阶配置 - CrawlDataAdvancedConfig
+### Advanced configuration - CrawlDataAdvancedConfig
 
-这是进阶配置，targets 是混合目标数组配置。如果你想爬取多个数据，并且爬取目标配置（proxy、cookies、重试等等）不想重复写，还需要间隔时间、设备指纹以及生命周期等等，可以试试这种写法：
+This is an advanced configuration, targets is a mixed target array configuration. If you want to crawl multiple data, and you don’t want to write the crawling target configuration (proxy, cookies, retry, etc.) repeatedly, and you also need interval time, device fingerprint, life cycle, etc., you can try this way of writing:
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -144,8 +144,8 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+The res obtained will be an array containing objects.
 
-更多配置选项可以查看 [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) 。
+For more configuration options, see [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig).
 
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+For more information about the results, please view [About the results](#About the results). You can choose it according to the actual situation.

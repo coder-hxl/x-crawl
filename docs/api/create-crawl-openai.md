@@ -1,31 +1,31 @@
 # createXCrawlOpenAI
 
-通过调用 createXCrawlOpenAI 创建一个 AI 应用实例。
+Create an AI application instance by calling createXCrawlOpenAI.
 
-## 类型
+## type
 
-createXCrawlOpenAI API 是一个函数。
+createXCrawlOpenAI API is a function.
 
 ```ts
 function createXCrawlOpenAI(config?: CreateXCrawlOpenAIConfig): XCrawlOpenAIApp
 ```
 
-**参数类型：**
+**Parameter Type:**
 
-- 查看 [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig) 类型
+- View the [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig) type
 
-**返回值类型：**
+**Return value type:**
 
-- 查看 [XCrawlOpenAIApp](#XCrawlOpenAIApp) 类型
+- View the [XCrawlOpenAIApp](#XCrawlOpenAIApp) type
 
-## 示例
+## Example
 
 ```js
 import { createXCrawlOpenAI } from 'x-crawl'
 
 // xCrawlOpenAIApp API
 const xCrawlOpenAIApp = createXCrawlOpenAI({
-  clientOptions: { apiKey: '你的 API Key' },
+  clientOptions: { apiKey: 'Your API Key' },
   defaultModel: { chatModel: 'gpt-4-turbo-preview' }
 })
 ```

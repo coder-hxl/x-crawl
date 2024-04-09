@@ -7,18 +7,18 @@ export interface CreateCrawlOpenAIConfig {
   defaultModel?: {
     chatModel: OpenAIChatModel
   }
-  clientOptions?: ClientOptions // ClientOptions 来自于 openai
+  clientOptions?: ClientOptions // ClientOptions comes from openai
 }
 ```
 
-**默认值**
+**default value**
 
 - defaultModel: { chatModel: 'gpt-3.5-turbo' }
 - clientOptions: undefined
 
-**外部类型**
+**External type**
 
-- ClientOptions：来自于 openai，clientOptions 会直接传给 new OpenAI 用于创建 AI 实例
+- ClientOptions: from openai, clientOptions will be passed directly to new OpenAI for creating AI instances
 
 ## CrawlOpenAIApp
 
