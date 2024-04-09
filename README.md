@@ -77,6 +77,6 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 
 Pictures of highly rated vacation rentals climbed to:
 
-![](https://github.com/coder-hxl/x-crawl/assets/example.png)
+![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.png)
 
 **warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
