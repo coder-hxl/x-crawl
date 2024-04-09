@@ -150,7 +150,7 @@ crawlApp
   .then((res) => {})
 ```
 
-For more configuration options, see [CrawlFileAdvancedConfig](/type/crawl-file/cn/type/crawl-file#crawlfileadvancedconfig).
+For more configuration options, see [CrawlFileAdvancedConfig](/type/crawl-file#crawlfileadvancedconfig).
 
 ::: tip
 The res obtained will be an array containing objects.

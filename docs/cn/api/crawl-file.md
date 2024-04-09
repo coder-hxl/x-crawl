@@ -150,7 +150,7 @@ crawlApp
   .then((res) => {})
 ```
 
-更多配置选项可以查看 [CrawlFileAdvancedConfig](/cn/type/crawl-file/cn/type/crawl-file#crawlfileadvancedconfig) 。
+更多配置选项可以查看 [CrawlFileAdvancedConfig](/cn/type/crawl-file#crawlfileadvancedconfig) 。
 
 ::: tip
 拿到的 res 将是一个数组，里面是对象。

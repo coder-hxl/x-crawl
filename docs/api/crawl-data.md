@@ -99,7 +99,7 @@ crawlApp
   .then((res) => {})
 ```
 
-For more configuration options, see [CrawlDataDetailTargetConfig](type/crawl-data#crawldatadetailtargetconfig).
+For more configuration options, see [CrawlDataDetailTargetConfig](/type/crawl-data#crawldatadetailtargetconfig).
 
 ::: tip
 The res obtained will be an object.
@@ -122,7 +122,7 @@ crawlApp
   .then((res) => {})
 ```
 
-For more configuration options, see [CrawlDataDetailTargetConfig](type/crawl-data#crawldatadetailtargetconfig).
+For more configuration options, see [CrawlDataDetailTargetConfig](/type/crawl-data#crawldatadetailtargetconfig).
 
 ::: tip
 The res obtained will be an array containing objects.
@@ -150,7 +150,7 @@ crawlApp
   .then((res) => {})
 ```
 
-For more configuration options, see [CrawlDataAdvancedConfig](/cn/type/crawl-data#crawldataadvancedconfig).
+For more configuration options, see [CrawlDataAdvancedConfig](/type/crawl-data#crawldataadvancedconfig).
 
 ::: tip
 The res obtained will be an array containing objects.
