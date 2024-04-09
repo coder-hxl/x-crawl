@@ -31,8 +31,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
-      - uses: pnpm/action-setup@v3 
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v3
         with:
           version: 8
       - name: Setup Node
@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build with VitePress
-        run: pnpm build
+        run: pnpm docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
