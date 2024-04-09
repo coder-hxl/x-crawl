@@ -24,12 +24,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  defaults:
+    run:
+      shell: bash
+      working-directory: ./docs
   # 构建工作
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Select the docs directory
-        working-directory: ./docs
       - name: Checkout
         uses: actions/checkout@v4
         with:
