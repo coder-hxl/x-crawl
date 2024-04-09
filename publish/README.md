@@ -6,8 +6,8 @@ x-crawl is a flexible Node.js AI-assisted crawler library. Flexible usage and po
 
 It consists of two parts:
 
-Crawler: It consists of a crawler API and various functions that can work normally even without relying on AI.
-AI: Currently based on the large AI model provided by OpenAI, AI simplifies many tedious operations.
+- Crawler: It consists of a crawler API and various functions that can work normally even without relying on AI.
+- AI: Currently based on the large AI model provided by OpenAI, AI simplifies many tedious operations.
 
 > If you find x-crawl helpful, or you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a like on GitHub A star. Your support is the driving force for our continuous improvement! thank you for your support!
 
