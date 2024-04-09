@@ -30,3 +30,53 @@ V9:
 
 - English document: https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md
 - Chinese document: https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md
+
+## Example
+
+The combination of crawler and AI allows the crawler and AI to obtain pictures of high-rated vacation rentals according to our instructions:
+
+```js
+import { createCrawl, createCrawlOpenAI } from 'x-crawl'
+
+//Create a crawler application
+const crawlApp = createCrawl({
+  maxRetry: 3,
+  intervalTime: { max: 2000, min: 1000 }
+})
+
+//Create AI application
+const crawlOpenAIApp = createCrawlOpenAI({
+  clientOptions: { apiKey: process.env['OPENAI_API_KEY'] },
+  defaultModel: { chatModel: 'gpt-4-turbo-preview' }
+})
+
+// crawlPage is used to crawl pages
+crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
+  const { page, browser } = res.data
+
+  // Wait for the element to appear on the page and get the HTML
+  const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
+  await page.waitForSelector(targetSelector)
+  const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
+
+  // Let AI obtain the url of img and remove duplicates
+  const srcResult = await crawlOpenAIApp.parseElements(
+    highlyHTML,
+    'Get the url of img and remove duplicates'
+  )
+
+  browser.close()
+
+  // crawlFile is used to crawl file resources
+  crawlApp.crawlFile({
+    targets: srcResult.elements.map((item) => item.src),
+    storeDirs: './upload'
+  })
+})
+```
+
+Pictures of highly rated vacation rentals climbed to:
+
+![](https://github.com/coder-hxl/x-crawl/assets/example.png)
+
+**warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
