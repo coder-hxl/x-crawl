@@ -194,12 +194,6 @@ export default defineConfig({
         editLink: {
           pattern: 'https://github.com/coder-hxl/x-crawl/edit/main/docs/:path',
           text: 'Suggest changes to this page'
-        },
-
-        lastUpdated: {
-          formatOptions: {
-            dateStyle: 'full'
-          }
         }
       }
     },
@@ -385,12 +379,7 @@ export default defineConfig({
           text: '为此页提供修改建议'
         },
 
-        lastUpdated: {
-          text: '最后更新于',
-          formatOptions: {
-            dateStyle: 'full'
-          }
-        }
+        lastUpdated: { text: '最后更新于' }
       }
     }
   }
