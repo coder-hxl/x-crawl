@@ -1,5 +1,7 @@
 # x-crawl · [![npm](https://img.shields.io/npm/v/x-crawl.svg)](https://www.npmjs.com/package/x-crawl) [![NPM Downloads](https://img.shields.io/npm/dt/x-crawl)](https://www.npmjs.com/package/x-crawl) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/coder-hxl/x-crawl/blob/main/LICENSE)
 
+[English](https://coder-hxl.github.io/x-crawl) | [简体中文](https://coder-hxl.github.io/x-crawl/cn)
+
 x-crawl is a flexible Node.js AI-assisted crawler library. Flexible usage and powerful AI assistance functions make crawler work more efficient, intelligent and convenient.
 
 It consists of two parts:
@@ -23,13 +25,6 @@ AI: Currently based on the large AI model provided by OpenAI, AI simplifies many
 - **🚀 Priority Queue** - Based on the priority of a single crawl target, it can be crawled ahead of other targets.
 - **🧾 Crawl information** - Controllable crawl information, which will output colored string information in the terminal.
 - **🦾 TypeScript** - Own types and implement complete types through generics.
-
-## Document
-
-V9:
-
-- English document: https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md
-- Chinese document: https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md
 
 ## Example
 
@@ -79,4 +74,18 @@ Pictures of highly rated vacation rentals climbed to:
 
 ![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.png)
 
+**Want to know more?**
+
+https://coder-hxl.github.io/x-crawl/guide/#example
+
 **warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
+
+## Document
+
+x-crawl latest version documentation:
+
+[English](https://coder-hxl.github.io/x-crawl) | [简体中文](https://coder-hxl.github.io/x-crawl/cn)
+
+x-crawl v9 documentation:
+
+[English](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md) | [简体中文](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md)
