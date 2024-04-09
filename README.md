@@ -26,6 +26,16 @@ It consists of two parts:
 - **🧾 Crawl information** - Controllable crawl information, which will output colored string information in the terminal.
 - **🦾 TypeScript** - Own types and implement complete types through generics.
 
+## AI assisted crawler
+
+With the rapid development of network technology, website updates have become more frequent, and changes in class names or structures often bring considerable challenges to crawlers that rely on these elements. Against this background, crawlers combined with AI technology have become a powerful weapon to meet this challenge.
+
+First of all, changes in class names or structures after website updates may cause traditional crawler strategies to fail. This is because crawlers often rely on fixed class names or structures to locate and extract the required information. Once these elements change, the crawler may not be able to accurately find the required data, thus affecting the effectiveness and accuracy of data crawling.
+
+However, crawlers combined with AI technology are better able to cope with this change. AI can also understand and parse the semantic information of web pages through natural language processing and other technologies to more accurately extract the required data.
+
+To sum up, crawlers combined with AI technology can better cope with the problem of class name or structure changes after website updates.
+
 ## Example
 
 The combination of crawler and AI allows the crawler and AI to obtain pictures of high-rated vacation rentals according to our instructions:
@@ -69,6 +79,8 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   })
 })
 ```
+
+**You can even pass the entire HTML to AI to help us operate it. Since the website content is more complex, you also need to describe the location to be taken more accurately. The most important thing is that it will consume more Tokens.**
 
 Pictures of highly rated vacation rentals climbed to:
 
