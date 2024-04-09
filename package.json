@@ -45,7 +45,7 @@
     "prettier": "^3.2.5",
     "rollup": "^4.13.0",
     "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "5.4.3",
+    "typescript": "5.4.4",
     "vitest": "^1.4.0"
   },
   "keywords": [
