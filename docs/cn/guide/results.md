@@ -12,4 +12,9 @@
 
 如果是特定的配置，会自动根据你选用的配置方式决定详情对象是否存放在一个数组中，并把该数组返回，否则返回详情对象。已经在 TypeScript 中类型完美适配。
 
-相关的配置方式和结果详情查看：[crawlPage 配置](#配置)、[crawlHTML 配置](#配置-1)、[crawlData 配置](#配置-2)、[crawlFile 配置](#配置-3) 。
+相关的配置方式和结果详情查看：
+
+- [crawlPage 配置](/cn/api/crawl-page#配置)
+- [crawlHTML 配置](/cn/api/crawl-html#配置)
+- [crawlData 配置](/cn/api/crawl-data#配置)
+- [crawlFile 配置](/cn/api/crawl-file#配置)

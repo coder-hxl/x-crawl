@@ -22,12 +22,12 @@ type crawlFile = {
 
 **参数类型：**
 
-- 查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 类型
-- 查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 类型
+- 查看 [CrawlFileDetailTargetConfig](/cn/type/crawl-file#crawlfiledetailtargetconfig) 类型
+- 查看 [CrawlFileAdvancedConfig](/cn/type/crawl-file#crawlfileadvancedconfig) 类型
 
 **返回值类型：**
 
-- 查看 [CrawlFileSingleResult](#CrawlFileSingleResult) 类型
+- 查看 [CrawlFileSingleResult](/cn/type/crawl-file#crawlfilesingleresult) 类型
 
 ## 示例
 
@@ -74,7 +74,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlFile('https://www.example.com/file').then((res) => {})
 ```
 
+::: tip
 拿到的 res 将是一个对象。
+:::
 
 ### 详细目标配置 - CrawlFileDetailTargetConfig
 
@@ -96,9 +98,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+更多配置选项可以查看 [CrawlFileDetailTargetConfig](/cn/type/crawl-file#crawlfiledetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个对象。
+:::
 
 ### 混合目标数组配置 - (string | CrawlFileDetailTargetConfig)[]
 
@@ -118,9 +122,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+更多配置选项可以查看 [CrawlFileDetailTargetConfig](/cn/type/crawl-file#crawlfiledetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个数组，里面是对象。
+:::
 
 ### 进阶配置 - CrawlFileAdvancedConfig
 
@@ -144,8 +150,10 @@ crawlApp
   .then((res) => {})
 ```
 
+更多配置选项可以查看 [CrawlFileAdvancedConfig](/cn/type/crawl-file/cn/type/crawl-file#crawlfileadvancedconfig) 。
+
+::: tip
 拿到的 res 将是一个数组，里面是对象。
+:::
 
-更多配置选项可以查看 [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) 。
-
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+关于结果的更多信息可查看 [关于结果](/cn/guide/results#关于结果) ，可以根据实际情况选用即可。

@@ -16,12 +16,12 @@ function getElementSelectors(
 
 **Parameter Type:**
 
-- View the [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions) type
-- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
+- View the [XCrawlOpenAIGetElementSelectorsContentOptions](/type/get-element-selectors#crawlopenaigetelementselectorscontentoptions) type
+- View the [XCrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
 
 **Return value type:**
 
-- View the [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult) type
+- View the [XCrawlOpenAIGetElementSelectorsResult](/type/get-element-selectors#crawlopenaigetelementselectorsresult) type
 
 ## Example
 

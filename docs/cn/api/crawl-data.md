@@ -26,12 +26,12 @@ type crawlData = {
 
 **参数类型：**
 
-- 查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 类型
-- 查看 [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) 类型
+- 查看 [CrawlDataDetailTargetConfig](/cn/type/crawl-data#crawldatadetailtargetconfig) 类型
+- 查看 [CrawlDataAdvancedConfig](/cn/type/crawl-data#crawldataadvancedconfig) 类型
 
 **返回值类型：**
 
-- 查看 [CrawlDataSingleResult](#CrawlDataSingleResult) 类型
+- 查看 [CrawlDataSingleResult](/cn/type/crawl-data#crawldatasingleresult) 类型
 
 ## 示例
 
@@ -77,7 +77,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlData('https://www.example.com/api').then((res) => {})
 ```
 
+::: tip
 拿到的 res 将是一个对象。
+:::
 
 ### 详细目标配置 - CrawlDataDetailTargetConfig
 
@@ -97,9 +99,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+更多配置选项可以查看 [CrawlDataDetailTargetConfig](/cn/type/crawl-data#crawldatadetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个对象。
+:::
 
 ### 混合目标数组配置 - (string | CrawlDataDetailTargetConfig)[]
 
@@ -118,9 +122,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+更多配置选项可以查看 [CrawlDataDetailTargetConfig](/cn/type/crawl-data#crawldatadetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlDataDetailTargetConfig](#CrawlDataDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个数组，里面是对象。
+:::
 
 ### 进阶配置 - CrawlDataAdvancedConfig
 
@@ -144,8 +150,10 @@ crawlApp
   .then((res) => {})
 ```
 
+更多配置选项可以查看 [CrawlDataAdvancedConfig](/cn/type/crawl-data#crawldataadvancedconfig) 。
+
+::: tip
 拿到的 res 将是一个数组，里面是对象。
+:::
 
-更多配置选项可以查看 [CrawlDataAdvancedConfig](#CrawlDataAdvancedConfig) 。
-
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+关于结果的更多信息可查看 [关于结果](/cn/guide/results#关于结果) ，可以根据实际情况选用即可。

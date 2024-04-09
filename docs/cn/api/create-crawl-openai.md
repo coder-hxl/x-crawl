@@ -12,11 +12,11 @@ function createXCrawlOpenAI(config?: CreateXCrawlOpenAIConfig): XCrawlOpenAIApp
 
 **参数类型：**
 
-- 查看 [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig) 类型
+- 查看 [CreateXCrawlOpenAIConfig](/cn/type/create-crawl-openai#createcrawlopenaiconfig) 类型
 
 **返回值类型：**
 
-- 查看 [XCrawlOpenAIApp](#XCrawlOpenAIApp) 类型
+- 查看 [XCrawlOpenAIApp](/cn/type/create-crawl-openai#crawlopenaiapp) 类型
 
 ## 示例
 

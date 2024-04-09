@@ -15,7 +15,7 @@ function help(
 
 **Parameter Type:**
 
-- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
+- View the [XCrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
 
 ## Example
 

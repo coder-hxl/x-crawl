@@ -12,11 +12,11 @@ function createCrawl(config?: CreateCrawlConfig): CrawlApp
 
 **参数类型：**
 
-- 查看 [CreateCrawlConfig](#CreateCrawlConfig) 类型
+- 查看 [CreateCrawlConfig](/cn/type/index#createcrawlconfig) 类型
 
 **返回值类型：**
 
-- 查看 [CrawlApp](#CrawlApp) 类型
+- 查看 [CrawlApp](/cn/type/index#crawlapp) 类型
 
 ## 示例
 

@@ -15,7 +15,7 @@ function help(
 
 **参数类型：**
 
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- 查看 [XCrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
 ## 示例
 

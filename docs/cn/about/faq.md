@@ -6,7 +6,7 @@ crawlPage API 内置了 [puppeteer](https://github.com/puppeteer/puppeteer) ，�
 
 ## 使用 crawlPage API 造成程序崩溃
 
-如果你需要在一个 crawlPage 爬取很多页面，建议在每个页面爬下来后，用 [onCrawlItemComplete 生命周期函数](#onCrawlItemComplete) 来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则可能因开启的 page 过多而造成程序崩溃（跟自身设备性能有关）。
+如果你需要在一个 crawlPage 爬取很多页面，建议在每个页面爬下来后，用 [onCrawlItemComplete 生命周期函数](/cn/guide/crawl-page#生命周期) 来处理每个目标的结果并关闭 page 实例，如果不进行关闭操作，则可能因开启的 page 过多而造成程序崩溃（跟自身设备性能有关）。
 
 ```js{11,12,13,14,15,16,,17,,18,35,36,37,38,39,40}
 import { createCrawl } from 'x-crawl'

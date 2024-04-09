@@ -1,6 +1,6 @@
 # Crawl the page
 
-Crawl a page via [crawlPage()](#crawlPage).
+Crawl a page via [crawlPage()](/api/crawl-page#crawlpage).
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -20,7 +20,7 @@ crawlApp.crawlPage('https://www.example.com').then((res) => {
 When you call the crawlPage API on the same crawler instance to crawl the page, the browser instance used is the same, because the browser instance shares the crawlPage API in the same crawler instance. For specific usage, please refer to [Browser](https://pptr.dev/api/puppeteer.browser).
 
 ::: warning
-The browser will keep running, so the file will not be terminated. If you want to stop, you can execute browser.close() to close it. If you need to use [crawlPage](#crawlPage) or [page](#page) later, please do not call it. Because the browser instance shares the crawlPage API in the same crawler instance.
+The browser will keep running, so the file will not be terminated. If you want to stop, you can execute browser.close() to close it. If you need to use [crawlPage](#Crawl-the-page) or [page](#page-example) later, please do not call it. Because the browser instance shares the crawlPage API in the same crawler instance.
 :::
 
 ## page example

@@ -2,7 +2,7 @@
 
 无需手动分析 HTML 页面结构再提取所需的元素属性或值。现在只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的信息，AI便会自动分析页面结构，提取出相应的元素属性或值。
 
-使用 AI 应用实例的 parseElements 方法。
+使用 AI 应用实例的 [parseElements()](/cn/api/parse-elements#parseelements) 方法。
 
 示例：
 

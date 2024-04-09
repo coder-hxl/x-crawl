@@ -12,4 +12,9 @@ Each crawl target will generate a details object, which will contain the followi
 
 If it is a specific configuration, it will automatically determine whether the details object is stored in an array according to the configuration method you choose, and return the array, otherwise the details object will be returned. Already typed perfectly in TypeScript.
 
-For details on the relevant configuration methods and results: [crawlPage Configuration](#Configuration), [crawlHTML Configuration](#Configuration-1), [crawlData Configuration](#Configuration-2), [crawlFile Configuration](#Configuration-3) .
+For details on the relevant configuration methods and results:
+
+- [crawlPage Configuration](/api/crawl-page#Configuration)
+- [crawlHTML Configuration](/api/crawl-html#Configuration)
+- [crawlData Configuration](/api/crawl-data#Configuration)
+- [crawlFile Configuration](/api/crawl-file#Configuration)

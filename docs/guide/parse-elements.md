@@ -2,7 +2,7 @@
 
 No need to manually analyze the HTML page structure to extract the required element attributes or values. Now you just need to input the HTML code into AI and tell AI which elements you want to get information about, and AI will automatically analyze the page structure and extract the corresponding element attributes or values.
 
-Use the parseElements method of the AI application instance.
+Use the [parseElements()](/api/parse-elements#parseelements) method of the AI application instance.
 
 Example:
 

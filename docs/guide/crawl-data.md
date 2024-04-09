@@ -1,6 +1,6 @@
 # Crawling interface
 
-Crawl interface data through [crawlData()](#crawlData).
+Crawl interface data through [crawlData()](/api/crawl-data#crawldata).
 
 ```js
 import { createCrawl } from 'x-crawl'

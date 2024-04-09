@@ -2,7 +2,7 @@
 
 In order to meet the personalized needs of different users, x-crawl also provides user-customized AI functions. Providing openai instances means you can tailor and optimize the AI to your needs to better suit your crawling efforts.
 
-Use the custom method of the AI application instance.
+Use the [custom()](/api/custom#custom) method of the AI application instance.
 
 Example:
 

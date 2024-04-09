@@ -16,12 +16,12 @@ function parseElements<T extends Record<string, string>>(
 
 **Parameter Type:**
 
-- View the [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions) type
-- View the [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) type
+- View the [XCrawlOpenAIParseElementsContentOptions](/type/parse-elements#crawlopenaiparseelementscontentoptions) type
+- View the [XCrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
 
 **Return value type:**
 
-- View the [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult) type
+- View the [XCrawlOpenAIParseElementsResult](/type/parse-elements#crawlopenaiparseelementsresult) type
 
 ## Example
 

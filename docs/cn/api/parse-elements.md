@@ -16,12 +16,12 @@ function parseElements<T extends Record<string, string>>(
 
 **参数类型：**
 
-- 查看 [XCrawlOpenAIParseElementsContentOptions](#XCrawlOpenAIParseElementsContentOptions) 类型
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- 查看 [XCrawlOpenAIParseElementsContentOptions](/cn/type/parse-elements#crawlopenaiparseelementscontentoptions) 类型
+- 查看 [XCrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
 **返回值类型：**
 
-- 查看 [XCrawlOpenAIParseElementsResult](#XCrawlOpenAIParseElementsResult) 类型
+- 查看 [XCrawlOpenAIParseElementsResult](/cn/type/parse-elements#crawlopenaiparseelementsresult) 类型
 
 ## 示例
 

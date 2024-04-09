@@ -22,12 +22,12 @@ type crawlPage = {
 
 **参数类型：**
 
-- 查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 类型
-- 查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 类型
+- 查看 [CrawlPageDetailTargetConfig](/cn/type/crawl-page#crawlpagedetailtargetconfig) 类型
+- 查看 [CrawlPageAdvancedConfig](/cn/type/crawl-page#crawlpageadvancedconfig) 类型
 
 **返回值类型：**
 
-- 查看 [CrawlPageSingleResult](#CrawlPageSingleResult) 类型
+- 查看 [CrawlPageSingleResult](/cn/type/crawl-page#crawlpagesingleresult) 类型
 
 ## 示例
 
@@ -66,7 +66,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
+::: tip
 拿到的 res 将是一个对象。
+:::
 
 ### 详细目标配置 - CrawlPageDetailTargetConfig
 
@@ -86,9 +88,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+更多配置选项可以查看 [CrawlPageDetailTargetConfig](/cn/type/crawl-page#crawlpagedetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个对象。
+:::
 
 ### 混合目标数组配置 - (string | CrawlPageDetailTargetConfig)[]
 
@@ -107,9 +111,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+更多配置选项可以查看 [CrawlPageDetailTargetConfig](/cn/type/crawl-page#crawlpagedetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个数组，里面是对象。
+:::
 
 ### 进阶配置 - CrawlPageAdvancedConfig
 
@@ -133,8 +139,10 @@ crawlApp
   .then((res) => {})
 ```
 
+更多配置选项可以查看 [CrawlPageAdvancedConfig](/cn/type/crawl-page#crawlpageadvancedconfig) 。
+
+::: tip
 拿到的 res 将是一个数组，里面是对象。
+:::
 
-更多配置选项可以查看 [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) 。
-
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+关于结果的更多信息可查看 [关于结果](/cn/guide/results#关于结果) ，可以根据实际情况选用即可。

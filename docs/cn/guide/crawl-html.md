@@ -1,6 +1,6 @@
 # 爬取 HTML
 
-通过 [crawlHTML()](#crawlData) 爬取静态 HTML。
+通过 [crawlHTML()](/cn/api/crawl-html#crawlhtml) 爬取静态 HTML。
 
 ```js
 import { createCrawl } from 'x-crawl'

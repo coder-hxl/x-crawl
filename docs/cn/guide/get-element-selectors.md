@@ -2,7 +2,7 @@
 
 能够帮助我们快速定位到页面中的特定元素。只需将 HTML 代码输入到 AI 中，并告知 AI 您想获取哪些元素的选择器，AI 便会根据页面结构自动为您生成合适的选择器，大大简化了确定选择器的繁琐过程。
 
-使用 AI 应用实例的 getElementSelectors 方法。
+使用 AI 应用实例的 [getElementSelectors()](/cn/api/get-element-selectors#getelementselectors) 方法。
 
 示例：
 

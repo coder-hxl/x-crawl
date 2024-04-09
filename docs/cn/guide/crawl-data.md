@@ -1,6 +1,6 @@
 # 爬取接口
 
-通过 [crawlData()](#crawlData) 爬取接口数据。
+通过 [crawlData()](/cn/api/crawl-data#crawldata) 爬取接口数据。
 
 ```js
 import { createCrawl } from 'x-crawl'

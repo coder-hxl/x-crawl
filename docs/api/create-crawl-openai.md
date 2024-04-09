@@ -12,11 +12,11 @@ function createXCrawlOpenAI(config?: CreateXCrawlOpenAIConfig): XCrawlOpenAIApp
 
 **Parameter Type:**
 
-- View the [CreateXCrawlOpenAIConfig](#CreateXCrawlOpenAIConfig) type
+- View the [CreateXCrawlOpenAIConfig](/type/create-crawl-openai#createcrawlopenaiconfig) type
 
 **Return value type:**
 
-- View the [XCrawlOpenAIApp](#XCrawlOpenAIApp) type
+- View the [XCrawlOpenAIApp](/type/create-crawl-openai#crawlopenaiapp) type
 
 ## Example
 

@@ -2,7 +2,7 @@
 
 Currently, x-crawl’s AI auxiliary function relies on OpenAI and requires the use of OpenAI’s API Key. Other AI may be added in the future.
 
-Create a new **application instance** via [createCrawlOpenAI()](#createCrawlOpenAI):
+Create a new **application instance** via [createCrawlOpenAI()](/api/create-crawl-openai#createxcrawlopenai):
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'

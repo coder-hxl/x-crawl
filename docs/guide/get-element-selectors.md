@@ -2,7 +2,7 @@
 
 It can help us quickly locate specific elements on the page. Just enter the HTML code into AI and tell AI which elements you want to get selectors for, and AI will automatically generate appropriate selectors for you based on the page structure, greatly simplifying the tedious process of determining selectors.
 
-Use the getElementSelectors method of the AI application instance.
+Use the [getElementSelectors()](/api/get-element-selectors#getelementselectors) method of the AI application instance.
 
 Example:
 

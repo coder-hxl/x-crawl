@@ -22,12 +22,12 @@ type crawlPage = {
 
 **Parameter Type:**
 
-- View the [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig) type
-- View the [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig) type
+- View the [CrawlPageDetailTargetConfig](/type/crawl-page#crawlpagedetailtargetconfig) type
+- View the [CrawlPageAdvancedConfig](/type/crawl-page#crawlpageadvancedconfig) type
 
 **Return value type:**
 
-- View the [CrawlPageSingleResult](#CrawlPageSingleResult) type
+- View the [CrawlPageSingleResult](/type/crawl-page#crawlpagesingleresult) type
 
 ## Example
 
@@ -66,7 +66,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlPage('https://www.example.com').then((res) => {})
 ```
 
+::: tip
 The res obtained will be an object.
+:::
 
 ### Detailed target configuration - CrawlPageDetailTargetConfig
 
@@ -86,9 +88,11 @@ crawlApp
   .then((res) => {})
 ```
 
-The res obtained will be an object.
+For more configuration options, see [CrawlPageDetailTargetConfig](/type/crawl-page#crawlpagedetailtargetconfig).
 
-For more configuration options, see [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
+::: tip
+The res obtained will be an object.
+:::
 
 ### Mixed target array configuration - (string | CrawlPageDetailTargetConfig)[]
 
@@ -107,9 +111,11 @@ crawlApp
   .then((res) => {})
 ```
 
-The res obtained will be an array containing objects.
+For more configuration options, see [CrawlPageDetailTargetConfig](/type/crawl-page#crawlpagedetailtargetconfig).
 
-For more configuration options, see [CrawlPageDetailTargetConfig](#CrawlPageDetailTargetConfig).
+::: tip
+The res obtained will be an array containing objects.
+:::
 
 ### Advanced configuration - CrawlPageAdvancedConfig
 
@@ -133,8 +139,10 @@ crawlApp
   .then((res) => {})
 ```
 
+For more configuration options, see [CrawlPageAdvancedConfig](/type/crawl-page#crawlpageadvancedconfig).
+
+::: tip
 The res obtained will be an array containing objects.
+:::
 
-For more configuration options, see [CrawlPageAdvancedConfig](#CrawlPageAdvancedConfig).
-
-For more information about the results, please view [About the results](#About the results). You can choose it according to the actual situation.
+For more information about the results, please view [About the results](/guide/results#about-the-results). You can choose it according to the actual situation.

@@ -1,6 +1,6 @@
 # 爬取文件
 
-通过 [crawlFile()](#crawlFile) 爬取文件数据。
+通过 [crawlFile()](/cn/api/crawl-file#crawlfile) 爬取文件数据。
 
 ```js
 import { createCrawl } from 'x-crawl'

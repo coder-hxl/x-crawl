@@ -22,12 +22,12 @@ type crawlFile = {
 
 **Parameter Type:**
 
-- View the [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig) type
-- View the [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig) type
+- View the [CrawlFileDetailTargetConfig](/type/crawl-file#crawlfiledetailtargetconfig) type
+- View the [CrawlFileAdvancedConfig](/type/crawl-file#crawlfileadvancedconfig) type
 
 **Return value type:**
 
-- View the [CrawlFileSingleResult](#CrawlFileSingleResult) type
+- View the [CrawlFileSingleResult](/type/crawl-file#crawlfilesingleresult) type
 
 ## Example
 
@@ -74,7 +74,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlFile('https://www.example.com/file').then((res) => {})
 ```
 
+::: tip
 The res obtained will be an object.
+:::
 
 ### Detailed target configuration - CrawlFileDetailTargetConfig
 
@@ -96,9 +98,11 @@ crawlApp
   .then((res) => {})
 ```
 
-The res obtained will be an object.
+For more configuration options, see [CrawlFileDetailTargetConfig](/type/crawl-file#crawlfiledetailtargetconfig).
 
-For more configuration options, see [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
+::: tip
+The res obtained will be an object.
+:::
 
 ### Mixed target array configuration - (string | CrawlFileDetailTargetConfig)[]
 
@@ -118,9 +122,11 @@ crawlApp
   .then((res) => {})
 ```
 
-The res obtained will be an array containing objects.
+For more configuration options, see [CrawlFileDetailTargetConfig](/type/crawl-file#crawlfiledetailtargetconfig).
 
-For more configuration options, see [CrawlFileDetailTargetConfig](#CrawlFileDetailTargetConfig).
+::: tip
+The res obtained will be an array containing objects.
+:::
 
 ### Advanced configuration - CrawlFileAdvancedConfig
 
@@ -144,8 +150,10 @@ crawlApp
   .then((res) => {})
 ```
 
+For more configuration options, see [CrawlFileAdvancedConfig](/type/crawl-file/cn/type/crawl-file#crawlfileadvancedconfig).
+
+::: tip
 The res obtained will be an array containing objects.
+:::
 
-For more configuration options, see [CrawlFileAdvancedConfig](#CrawlFileAdvancedConfig).
-
-For more information about the results, please view [About the results](#About the results). You can choose it according to the actual situation.
+For more information about the results, please view [About the results](/guide/results#about-the-results). You can choose it according to the actual situation.

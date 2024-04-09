@@ -1,6 +1,6 @@
 # Create crawler application
 
-Create a new **application instance** via [createCrawl()](#createCrawl):
+Create a new **application instance** via [createCrawl()](/api/index#createcrawl):
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -10,4 +10,4 @@ const crawlApp = createCrawl({
 })
 ```
 
-Related **options** can refer to [CreateCrawlConfig](#CreateCrawlConfig).
+Related **options** can refer to [CreateCrawlConfig](/type/#createcrawlconfig).

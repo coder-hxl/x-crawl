@@ -22,12 +22,12 @@ type crawlHTML = {
 
 **参数类型：**
 
-- 查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 类型
-- 查看 [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig) 类型
+- 查看 [CrawlHTMLDetailTargetConfig](/cn/type/crawl-html#crawlhtmldetailtargetconfig) 类型
+- 查看 [CrawlHTMLAdvancedConfig](/cn/type/crawl-html#crawlhtmladvancedconfig) 类型
 
 **返回值类型：**
 
-- 查看 [CrawlHTMLSingleResult](#CrawlHTMLSingleResult) 类型
+- 查看 [CrawlHTMLSingleResult](/cn/type/crawl-html#crawlhtmlsingleresult) 类型
 
 ## 示例
 
@@ -61,7 +61,9 @@ const crawlApp = createCrawl()
 crawlApp.crawlHTML('https://www.example.com').then((res) => {})
 ```
 
+::: tip
 拿到的 res 将是一个对象。
+:::
 
 ### 详细目标配置 - CrawlHTMLDetailTargetConfig
 
@@ -81,9 +83,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个对象。
+更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](/cn/type/crawl-html#crawlhtmldetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个对象。
+:::
 
 ### 混合目标数组配置 - (string | CrawlHTMLDetailTargetConfig)[]
 
@@ -102,9 +106,11 @@ crawlApp
   .then((res) => {})
 ```
 
-拿到的 res 将是一个数组，里面是对象。
+更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](/cn/type/crawl-html#crawlhtmldetailtargetconfig) 。
 
-更多配置选项可以查看 [CrawlHTMLDetailTargetConfig](#CrawlHTMLDetailTargetConfig) 。
+::: tip
+拿到的 res 将是一个数组，里面是对象。
+:::
 
 ### 进阶配置 - CrawlHTMLAdvancedConfig
 
@@ -128,8 +134,10 @@ crawlApp
   .then((res) => {})
 ```
 
+更多配置选项可以查看 [CrawlHTMLAdvancedConfig](/cn/type/crawl-html#crawlhtmladvancedconfig) 。
+
+::: tip
 拿到的 res 将是一个数组，里面是对象。
+:::
 
-更多配置选项可以查看 [CrawlHTMLAdvancedConfig](#CrawlHTMLAdvancedConfig) 。
-
-关于结果的更多信息可查看 [关于结果](#关于结果) ，可以根据实际情况选用即可。
+关于结果的更多信息可查看 [关于结果](/cn/guide/results#关于结果) ，可以根据实际情况选用即可。

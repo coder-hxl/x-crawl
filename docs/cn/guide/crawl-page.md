@@ -1,6 +1,6 @@
 # 爬取页面
 
-通过 [crawlPage()](#crawlPage) 爬取一个页面。
+通过 [crawlPage()](/cn/api/crawl-page#crawlpage) 爬取一个页面。
 
 ```js
 import { createCrawl } from 'x-crawl'
@@ -20,7 +20,7 @@ crawlApp.crawlPage('https://www.example.com').then((res) => {
 当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
 
 ::: warning
-browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#crawlPage) 或者 [page](#page) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
+browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#爬取页面) 或者 [page](#page-实例) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
 :::
 
 ## page 实例

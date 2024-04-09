@@ -1,6 +1,6 @@
 # Crawl HTML
 
-Crawl static HTML via [crawlHTML()](#crawlData).
+Crawl static HTML via [crawlHTML()](/api/crawl-html#crawlhtml).
 
 ```js
 import { createCrawl } from 'x-crawl'

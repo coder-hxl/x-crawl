@@ -2,7 +2,7 @@
 
 Can provide you with intelligent answers and suggestions. Whether it is about crawling strategies, anti-crawling techniques or data processing, you can ask AI questions, and AI will provide you with professional answers and suggestions based on its powerful learning and reasoning capabilities to help you complete your tasks better. Reptile task.
 
-Use the help method of the AI application instance.
+Use the [help()](/api/help#help) method of the AI application instance.
 
 Example:
 

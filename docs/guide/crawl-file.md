@@ -1,6 +1,6 @@
 # Crawl files
 
-Crawl file data via [crawlFile()](#crawlFile).
+Crawl file data via [crawlFile()](/api/crawl-file#crawlfile).
 
 ```js
 import { createCrawl } from 'x-crawl'

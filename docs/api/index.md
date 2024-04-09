@@ -1,4 +1,4 @@
-#createCrawl
+# createCrawl
 
 Create a crawler application instance by calling createCrawl. The crawl target is maintained internally by the instance method, not by the instance.
 
@@ -12,11 +12,11 @@ function createCrawl(config?: CreateCrawlConfig): CrawlApp
 
 **Parameter Type:**
 
-- View the [CreateCrawlConfig](#CreateCrawlConfig) type
+- View the [CreateCrawlConfig](/type/index#createcrawlconfig) type
 
 **Return value type:**
 
-- View the [CrawlApp](#CrawlApp) type
+- View the [CrawlApp](/type/index#crawlapp) type
 
 ## Example
 

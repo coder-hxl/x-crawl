@@ -16,12 +16,12 @@ function getElementSelectors(
 
 **参数类型：**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsContentOptions](#XCrawlOpenAIGetElementSelectorsContentOptions) 类型
-- 查看 [XCrawlOpenAICommonAPIOtherOption](#XCrawlOpenAICommonAPIOtherOption) 类型
+- 查看 [XCrawlOpenAIGetElementSelectorsContentOptions](/cn/type/get-element-selectors#crawlopenaigetelementselectorscontentoptions) 类型
+- 查看 [XCrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
 **返回值类型：**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsResult](#XCrawlOpenAIGetElementSelectorsResult) 类型
+- 查看 [XCrawlOpenAIGetElementSelectorsResult](/cn/type/get-element-selectors#crawlopenaigetelementselectorsresult) 类型
 
 ## 示例
 
