@@ -14,6 +14,9 @@
     "dev-server": "rollup --watch --config script/server.js",
     "test": "vitest",
     "test-ui": "vitest --ui",
+    "docs:dev": "pnpm --filter=docs run dev",
+    "docs:build": "pnpm --filter=docs run docs:build",
+    "docs:preview": "pnpm --filter=docs run docs:preview",
     "prettier": "prettier --write ."
   },
   "engines": {
