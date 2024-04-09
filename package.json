@@ -41,7 +41,7 @@
     "@typescript-eslint/parser": "^7.2.0",
     "@vitest/coverage-v8": "^1.4.0",
     "@vitest/ui": "^1.4.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "prettier": "^3.2.5",
     "rollup": "^4.13.0",
     "rollup-plugin-typescript2": "^0.36.0",
