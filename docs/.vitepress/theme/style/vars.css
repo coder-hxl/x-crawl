@@ -1,0 +1,36 @@
+/**
+ * Colors
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --c-yellow-theme: #feba07;  /* yellow */
+  --c-golden-yellow-theme: #f26b1f;  /* golden yellow */
+}
+
+/*
+ * Colors: Function
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --vp-c-brand-1: var(--c-yellow-theme);
+  --vp-c-brand-2: var(--c-golden-yellow-theme);
+}
+
+/**
+ * Component: Button
+ * -------------------------------------------------------------------------- */
+:root {
+  --vp-button-brand-bg: var(--c-yellow-theme);
+  --vp-button-brand-hover-bg:var(--c-golden-yellow-theme);
+}
+
+/**
+ * Component: Home
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(108deg, var(--c-yellow-theme) 30%,  var(--c-golden-yellow-theme));
+  --vp-home-hero-image-background-image: linear-gradient(var(--c-yellow-theme), var(--c-golden-yellow-theme), var(--c-yellow-theme));
+  --vp-home-hero-image-filter: blur(68px);
+}

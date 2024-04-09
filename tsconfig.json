@@ -14,9 +14,9 @@
     "emitDeclarationOnly": false,
     "baseUrl": ".",
     "paths": {
-      "src/*": ["./src"],
+      "packages/*": ["./packages"],
       "publish/*": ["./publish"]
     }
   },
-  "include": ["src/**/*", "test/**/*", "publish/**/*"]
+  "include": ["packages/**/*", "test/**/*", "publish/**/*"]
 }
