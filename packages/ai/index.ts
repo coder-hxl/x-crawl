@@ -6,7 +6,7 @@ import {
   GET_ELEMENT_SELECTORS_CONTEXT,
   HELP_CONTEXT
 } from './context'
-import { isObject } from '../shared'
+import { isObject, logStart, logSuccess } from '../shared'
 
 type OpenAIChatModel =
   | 'gpt-4-0125-preview'
@@ -105,7 +105,7 @@ export function createCrawlOpenAI(
     } = option
 
     const spinner = ora(
-      `AI is answering your question, please wait a moment`
+      logStart(`AI is answering your question, please wait a moment`)
     ).start()
     const completion = await openai.chat.completions.create({
       model,
@@ -117,7 +117,7 @@ export function createCrawlOpenAI(
       response_format: { type: responseFormatType },
       temperature: 0.1
     })
-    spinner.succeed(`AI has completed your question`)
+    spinner.succeed(logSuccess(`AI has completed your question`))
 
     const content = completion.choices[0].message.content
     const result =
