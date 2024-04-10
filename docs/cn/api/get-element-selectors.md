@@ -9,19 +9,19 @@ parseElements API 是一个函数。
 ```ts
 function getElementSelectors(
   HTML: string,
-  content: string | XCrawlOpenAIGetElementSelectorsContentOptions,
-  option?: XCrawlOpenAICommonAPIOtherOption
-): Promise<XCrawlOpenAIGetElementSelectorsResult>
+  content: string | CrawlOpenAIGetElementSelectorsContentOptions,
+  option?: CrawlOpenAICommonAPIOtherOption
+): Promise<CrawlOpenAIGetElementSelectorsResult>
 ```
 
 **参数类型：**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsContentOptions](/cn/type/get-element-selectors#crawlopenaigetelementselectorscontentoptions) 类型
-- 查看 [XCrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
+- 查看 [CrawlOpenAIGetElementSelectorsContentOptions](/cn/type/get-element-selectors#crawlopenaigetelementselectorscontentoptions) 类型
+- 查看 [CrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
 **返回值类型：**
 
-- 查看 [XCrawlOpenAIGetElementSelectorsResult](/cn/type/get-element-selectors#crawlopenaigetelementselectorsresult) 类型
+- 查看 [CrawlOpenAIGetElementSelectorsResult](/cn/type/get-element-selectors#crawlopenaigetelementselectorsresult) 类型
 
 ## 示例
 

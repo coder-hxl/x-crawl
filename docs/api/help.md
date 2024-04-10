@@ -9,13 +9,13 @@ help API is a function.
 ```ts
 function help(
   content: string,
-  option?: XCrawlOpenAICommonAPIOtherOption
+  option?: CrawlOpenAICommonAPIOtherOption
 ): Promise<string>
 ```
 
 **Parameter Type:**
 
-- View the [XCrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
+- View the [CrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
 
 ## Example
 

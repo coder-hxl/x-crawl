@@ -9,19 +9,19 @@ parseElements API is a function.
 ```ts
 function parseElements<T extends Record<string, string>>(
   HTML: string,
-  content: string | XCrawlOpenAIParseElementsContentOptions,
-  option?: XCrawlOpenAICommonAPIOtherOption
-): Promise<XCrawlOpenAIParseElementsResult<T>>
+  content: string | CrawlOpenAIParseElementsContentOptions,
+  option?: CrawlOpenAICommonAPIOtherOption
+): Promise<CrawlOpenAIParseElementsResult<T>>
 ```
 
 **Parameter Type:**
 
-- View the [XCrawlOpenAIParseElementsContentOptions](/type/parse-elements#crawlopenaiparseelementscontentoptions) type
-- View the [XCrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
+- View the [CrawlOpenAIParseElementsContentOptions](/type/parse-elements#crawlopenaiparseelementscontentoptions) type
+- View the [CrawlOpenAICommonAPIOtherOption](/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) type
 
 **Return value type:**
 
-- View the [XCrawlOpenAIParseElementsResult](/type/parse-elements#crawlopenaiparseelementsresult) type
+- View the [CrawlOpenAIParseElementsResult](/type/parse-elements#crawlopenaiparseelementsresult) type
 
 ## Example
 

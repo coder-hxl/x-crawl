@@ -9,13 +9,13 @@ help API 是一个函数。
 ```ts
 function help(
   content: string,
-  option?: XCrawlOpenAICommonAPIOtherOption
+  option?: CrawlOpenAICommonAPIOtherOption
 ): Promise<string>
 ```
 
 **参数类型：**
 
-- 查看 [XCrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
+- 查看 [CrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
 ## 示例
 
