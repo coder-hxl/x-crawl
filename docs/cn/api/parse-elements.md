@@ -26,9 +26,9 @@ function parseElements<T extends Record<string, string>>(
 ## 示例
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-const xCrawlOpenAIApp = createXCrawlOpenAI()
+const crawlOpenAIApp = createCrawlOpenAI()
 
-xCrawlOpenAIApp.parseElements('HTML', '告诉 AI 你想要的').then((res) => {})
+crawlOpenAIApp.parseElements('HTML', '告诉 AI 你想要的').then((res) => {})
 ```

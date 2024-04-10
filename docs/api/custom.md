@@ -17,9 +17,9 @@ You can refer to: https://platform.openai.com/docs/api-reference/chat/create?lan
 ## Example
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-const xCrawlOpenAIApp = createXCrawlOpenAI()
+const crawlOpenAIApp = createCrawlOpenAI()
 
-const openai = xCrawlOpenAIApp.custom()
+const openai = crawlOpenAIApp.custom()
 ```

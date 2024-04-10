@@ -1,30 +1,30 @@
-# createXCrawlOpenAI
+# createCrawlOpenAI
 
-Create an AI application instance by calling createXCrawlOpenAI.
+Create an AI application instance by calling createCrawlOpenAI.
 
 ## type
 
-createXCrawlOpenAI API is a function.
+createCrawlOpenAI API is a function.
 
 ```ts
-function createXCrawlOpenAI(config?: CreateXCrawlOpenAIConfig): XCrawlOpenAIApp
+function createCrawlOpenAI(config?: createCrawlOpenAIConfig): crawlOpenAIApp
 ```
 
 **Parameter Type:**
 
-- View the [CreateXCrawlOpenAIConfig](/type/create-crawl-openai#createcrawlopenaiconfig) type
+- View the [createCrawlOpenAIConfig](/type/create-crawl-openai#createcrawlopenaiconfig) type
 
 **Return value type:**
 
-- View the [XCrawlOpenAIApp](/type/create-crawl-openai#crawlopenaiapp) type
+- View the [crawlOpenAIApp](/type/create-crawl-openai#crawlopenaiapp) type
 
 ## Example
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-// xCrawlOpenAIApp API
-const xCrawlOpenAIApp = createXCrawlOpenAI({
+// crawlOpenAIApp API
+const crawlOpenAIApp = createCrawlOpenAI({
   clientOptions: { apiKey: 'Your API Key' },
   defaultModel: { chatModel: 'gpt-4-turbo-preview' }
 })

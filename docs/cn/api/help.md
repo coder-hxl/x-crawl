@@ -20,9 +20,9 @@ function help(
 ## 示例
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-const xCrawlOpenAIApp = createXCrawlOpenAI()
+const crawlOpenAIApp = createCrawlOpenAI()
 
-xCrawlOpenAIApp.help('告诉 AI 你的问题').then((res) => {})
+crawlOpenAIApp.help('告诉 AI 你的问题').then((res) => {})
 ```

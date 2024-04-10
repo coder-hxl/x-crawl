@@ -26,11 +26,9 @@ function getElementSelectors(
 ## 示例
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-const xCrawlOpenAIApp = createXCrawlOpenAI()
+const crawlOpenAIApp = createCrawlOpenAI()
 
-xCrawlOpenAIApp
-  .getElementSelectors('HTML', '告诉 AI 你想要的')
-  .then((res) => {})
+crawlOpenAIApp.getElementSelectors('HTML', '告诉 AI 你想要的').then((res) => {})
 ```

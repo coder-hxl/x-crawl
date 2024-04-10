@@ -26,11 +26,11 @@ function getElementSelectors(
 ## Example
 
 ```js
-import { createXCrawlOpenAI } from 'x-crawl'
+import { createCrawlOpenAI } from 'x-crawl'
 
-const xCrawlOpenAIApp = createXCrawlOpenAI()
+const crawlOpenAIApp = createCrawlOpenAI()
 
-xCrawlOpenAIApp
+crawlOpenAIApp
   .getElementSelectors('HTML', 'Tell the AI what you want')
   .then((res) => {})
 ```
