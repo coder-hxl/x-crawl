@@ -1,1 +1,1 @@
-module.exports = require('./dist/x-crawl.cjs.js')
+export * from './dist/x-crawl'

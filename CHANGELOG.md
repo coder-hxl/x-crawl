@@ -1,3 +1,65 @@
+# [v10.0.0](https://github.com/coder-hxl/x-crawl/compare/v9.0.0..v10.0.0) (2024-04-10)
+
+### 🚀 Features
+
+- Introduction to the new AI-assisted features of x-crawl. In the latest version of x-crawl, we have introduced powerful AI-assisted features to make crawler work more efficient, intelligent and convenient. This innovative feature is mainly reflected in the following aspects:
+  **1. Intelligent on-demand analysis elements**
+  Traditional crawler work often requires manual analysis of the HTML page structure to extract the required element attributes or values. And now, with x-crawl’s AI assistance, you can easily implement intelligent on-demand analysis elements. Just tell AI which element information you want to obtain, and AI will automatically analyze the page structure and extract the corresponding element attributes or values.
+  **2. Intelligent generation of element selectors**
+  Selectors are an indispensable part of the crawler's work. They can help us quickly locate specific elements on the page. x-crawl's AI assistance can now intelligently generate element selectors for you. Just enter the HTML code into AI, and AI will automatically generate the appropriate selector for you based on the page structure, greatly simplifying the tedious process of determining the selector.
+  **3. Intelligent reply to crawler questions**
+  In crawler work, we will inevitably encounter various problems and challenges. And x-crawl’s AI assistance can provide you with intelligent answers and suggestions. Whether it is about crawling strategies, anti-crawling techniques or data processing, you can ask AI questions, and AI will provide you with professional answers and suggestions based on its powerful learning and reasoning capabilities to help you complete your tasks better. Reptile task.
+  **4. User-defined AI functions**
+  In order to meet the personalized needs of different users, x-crawl also provides user-customized AI functions. This means you can tailor and optimize the AI to your needs to better suit your crawling efforts. Whether you are adjusting the AI analysis strategy, optimizing the selector generation algorithm, or adding new functional modules, you can do it through simple operations to make AI more in line with your usage habits and workflow.
+- The crawlFile API parameters are newly added string and (string | CrawlFileDetailTargetConfig)[], which is equivalent to the same four writing methods as crawlPage crawlHTML crawlData. The onBeforeSaveItemFile callback function configured by CrawlFileAdvancedConfig is no longer forced to return a Promise whose result is a Buffer, and can be Promise<Buffer | void> | Buffer | void.
+- Refactor documents using VitePress, the new version of the document is at: https://coder-hxl.github.io/x-crawl .
+
+### 🚨 Major changes
+
+- CJS is no longer supported, only ESM is exported.
+- xCrawl was renamed to createCrawl , and its crawlPage.puppeteerLaunch options were renamed to puppeteerLaunchOptions .
+- The export method has been changed. The default export is no longer used, but the two functions createCrawl (original name xCrawl) and createCrawlOpenAI are directly exported.
+- Remove startPolling API
+- Cancel the second parameter (callback function) of these four APIs: crawlPage crawlHTML crawlData crawlFile
+- type:
+  - XCrawlConfig renamed to CreateCrawlConfig
+  - XCrawlInstance renamed to CrawlApp
+
+### ⛓️ Dependencies
+
+- chalk upgraded from 4.1.2 to 5.3.0
+
+---
+
+### 🚀 特征
+
+- x-crawl 全新 AI 辅助特性介绍，在 x-crawl 的最新版本中，我们引入了强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。这一创新特性主要体现在以下几个方面：
+  **1. 智能按需分析元素**
+  传统的爬虫工作往往需要手动分析 HTML 页面结构，提取所需的元素属性或值。而现在，借助 x-crawl 的 AI 辅助，您可以轻松实现智能按需分析元素。只需告诉AI您想获取哪些元素的信息，AI 便会自动分析页面结构，提取出相应的元素属性或值。
+  **2. 智能生成元素选择器**
+  选择器是爬虫工作中不可或缺的一部分，它能够帮助我们快速定位到页面中的特定元素。现在，x-crawl 的 AI 辅助可以为您智能生成元素选择器。只需将 HTML 代码输入到 AI 中，AI 便会根据页面结构自动为您生成合适的选择器，大大简化了确定选择器的繁琐过程。
+  **3. 智能回复爬虫问题**
+  在爬虫工作中，我们难免会遇到各种问题和挑战。而 x-crawl 的 AI 辅助可以为您提供智能的解答和建议。无论是关于爬虫策略、反爬虫技巧还是数据处理等方面的问题，您都可以向AI提问，AI会根据其强大的学习和推理能力，为您提供专业的解答和建议，帮助您更好地完成爬虫任务。
+  **4. 用户自定义AI功能**
+  为了满足不同用户的个性化需求，x-crawl 还提供了用户自定义 AI 的功能。这意味着您可以根据自己的需求，对 AI 进行定制和优化，使其更好地适应您的爬虫工作。无论是调整 AI 的分析策略、优化选择器的生成算法还是添加新的功能模块，您都可以通过简单的操作实现，让 AI 更加符合您的使用习惯和工作流程。
+- crawlFile API 参数新增 string 和 (string | CrawlFileDetailTargetConfig)[] , 相当于跟 crawlPage crawlHTML crawlData 一样拥有四种写法。 CrawlFileAdvancedConfig 配置的 onBeforeSaveItemFile 回调函数不再强制返回一个结果是 Buffer 的 Promise , 可以是 Promise<Buffer | void> | Buffer | void 。
+- 使用 VitePress 重构文档，新版文档在：https://coder-hxl.github.io/x-crawl/cn 。
+
+### 🚨 重大改变
+
+- 不再支持 CJS ，只导出 ESM 。
+- xCrawl 更名为 createCrawl , 并且其 crawlPage.puppeteerLaunch 选项更名为 puppeteerLaunchOptions 。
+- 导出方式改变, 不再使用默认导出, 而是改为直接导出 createCrawl(原名xCrawl) 和 createCrawlOpenAI 这两个函数。
+- 删除 startPolling API
+- 取消 crawlPage crawlHTML crawlData crawlFile 这四个 API 的第二参数 (回调函数)
+- 类型:
+  - XCrawlConfig 更名为 CreateCrawlConfig
+  - XCrawlInstance 更名为 CrawlApp
+
+### ⛓️ 依赖关系
+
+- chalk 从 4.1.2 升至 5.3.0
+
 # [v9.0.0](https://github.com/coder-hxl/x-crawl/compare/v8.3.1..v9.0.0) (2024-03-16)
 
 ### 🚨 Breaking Changes

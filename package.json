@@ -25,7 +25,7 @@
   "dependencies": {
     "chalk": "5.3.0",
     "https-proxy-agent": "^7.0.4",
-    "openai": "^4.31.0",
+    "openai": "^4.33.0",
     "ora": "^8.0.1",
     "puppeteer": "22.5.0",
     "x-crawl": "link:"

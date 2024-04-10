@@ -1,45 +1,50 @@
 {
   "name": "x-crawl",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "author": "coderHXL",
-  "description": "x-crawl is a flexible Node.js multifunctional crawler library.",
+  "description": "x-crawl is a flexible Node.js AI-assisted crawler library.",
   "license": "MIT",
-  "keywords": [
-    "nodejs",
-    "typescript",
-    "javascript",
-    "crawl",
-    "crawler",
-    "spider",
-    "fingerprint",
-    "flexible",
-    "multifunction"
-  ],
   "homepage": "https://github.com/coder-hxl/x-crawl/tree/main/publish",
   "repository": {
     "type": "git",
     "url": "https://github.com/coder-hxl/x-crawl"
   },
   "main": "index.js",
-  "types": "dist/x-crawl.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./index.js",
+      "require": "./index.cjs"
     }
   },
+  "keywords": [
+    "x-crawl",
+    "nodejs",
+    "typescript",
+    "ts",
+    "javascript",
+    "crawl",
+    "crawler",
+    "spider",
+    "ai",
+    "ai assisted",
+    "ai crawl",
+    "flexible",
+    "control page",
+    "rotate agents",
+    "fingerprint",
+    "multifunction"
+  ],
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "chalk": "4.1.2",
+    "chalk": "5.3.0",
     "https-proxy-agent": "^7.0.4",
+    "openai": "^4.33.0",
+    "ora": "^8.0.1",
     "puppeteer": "22.5.0"
   }
 }
