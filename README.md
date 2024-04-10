@@ -64,10 +64,10 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   await page.waitForSelector(targetSelector)
   const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // Let AI obtain the url of img and remove duplicates
+  // Let the AI get the image link and de-duplicate it (the more detailed the description, the better)
   const srcResult = await crawlOpenAIApp.parseElements(
     highlyHTML,
-    'Get the url of img and remove duplicates'
+    `Get the image link, don't source it inside, and de-duplicate it`
   )
 
   browser.close()
@@ -80,7 +80,11 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 })
 ```
 
-**You can even pass the entire HTML to AI to help us operate it. Since the website content is more complex, you also need to describe the location to be taken more accurately. The most important thing is that it will consume more Tokens.**
+**You can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.**
+
+Procedure:
+
+![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif)
 
 Pictures of highly rated vacation rentals climbed to:
 
@@ -88,7 +92,9 @@ Pictures of highly rated vacation rentals climbed to:
 
 **Want to know more?**
 
-https://coder-hxl.github.io/x-crawl/guide/#example
+For example: View the HTML that AI needs to process or view the srcResult (img url) returned by AI after parsing the HTML according to our instructions
+
+All at the bottom of this example: https://coder-hxl.github.io/x-crawl/guide/#example
 
 **warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
 
