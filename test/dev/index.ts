@@ -1,44 +1,41 @@
-import path from 'node:path'
 import { createCrawl, createCrawlOpenAI } from 'x-crawl'
-import { fileURLToPath } from 'node:url'
 
 import { BASE_URL, API_KEY } from './envConfig'
+import { fileURLToPath } from 'url'
 
-const pathResolve = (dirPath: string) =>
-  fileURLToPath(new URL(dirPath, import.meta.url))
-
-const crawlOpenAIApp = createCrawlOpenAI({
-  clientOptions: { baseURL: BASE_URL, apiKey: API_KEY }
-})
+const pathResolve = (dir: string) =>
+  fileURLToPath(new URL(dir, import.meta.url))
 
 const crawlApp = createCrawl({
-  crawlPage: { puppeteerLaunchOptions: { headless: true } }
+  maxRetry: 3,
+  intervalTime: { max: 2000, min: 1000 }
 })
 
+const crawlOpenAIApp = createCrawlOpenAI({
+  clientOptions: { baseURL: BASE_URL, apiKey: API_KEY },
+  defaultModel: { chatModel: 'gpt-4-turbo-preview' }
+})
+
+// crawlPage 用于爬取页面
 crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   const { page, browser } = res.data
 
-  // await page.waitForSelector('.g1nr81q6')
-  // const sectionHTML = await page.$eval('.g1nr81q6 ', (el) => el.innerHTML)
-  await page.waitForSelector(
-    '.g1nr81q6 > a:nth-child(1), .g1nr81q6 > a:nth-child(2)'
-  )
-  const sectionHTML = await page.$$eval(
-    '.g1nr81q6 > a:nth-child(1), .g1nr81q6 > a:nth-child(2) ',
-    (els) => els.reduce((p, v) => p + v.innerHTML, '')
-  )
+  // 等待元素出现在页面中, 并获取 HTML
+  const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
+  await page.waitForSelector(targetSelector)
+  const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  const srcResult = await crawlOpenAIApp.parseElements<{ src: string }>(
-    sectionHTML,
-    `获取 img 的 src`
+  // 让 AI 获取图片链接, 并去重
+  const srcResult = await crawlOpenAIApp.parseElements(
+    highlyHTML,
+    '获取图片链接, 不要source里面的, 并去重'
   )
-
-  console.log(srcResult)
-
-  crawlApp.crawlFile({
-    targets: srcResult.elements.map((item) => item.src),
-    storeDirs: pathResolve('upload')
-  })
 
   browser.close()
+
+  // crawlFile 用于爬取文件资源
+  crawlApp.crawlFile({
+    targets: srcResult.elements.map((item) => item.src),
+    storeDirs: pathResolve('./upload')
+  })
 })
