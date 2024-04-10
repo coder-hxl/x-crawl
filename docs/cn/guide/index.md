@@ -64,10 +64,10 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   await page.waitForSelector(targetSelector)
   const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // 让 AI 获取 img 的 url , 并去重
+  // 让 AI 获取图片链接, 并去重 (描述越详细越好)
   const srcResult = await crawlOpenAIApp.parseElements(
     highlyHTML,
-    '获取img的url, 并去重'
+    '获取图片链接, 不要source里面的, 并去重'
   )
 
   browser.close()
@@ -81,8 +81,12 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 ```
 
 ::: tip
-你甚至可以将整个 HTML 传给 AI 帮我们操作，由于网站内容更加复杂你还需要更准确描述要取的位置，最重要的是会消耗更多 Tokens 。
+你甚至可以将整个 HTML 传给 AI 帮我们操作，由于网站内容更加复杂你还需要更准确描述要取的位置，并且会消耗大量的 Tokens 。
 :::
+
+过程：
+
+![](/example.gif)
 
 爬到的高评分度假屋图片:
 
@@ -1319,13 +1323,13 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-45937791/original/c67d32ed-21eb-4066-8cef-650dcd45bada.jpeg?im_w=720"
     },
     {
+      "src": "https://z1.muscache.cn/im/pictures/df3493cf-39b2-46cc-9e85-7ef186980f25.jpg?im_w=720"
+    },
+    {
       "src": "https://z1.muscache.cn/im/pictures/52d375d3-5e54-444b-8186-15e61a592d9a.jpg?im_w=720"
     },
     {
       "src": "https://z1.muscache.cn/im/pictures/4ce87a7c-cbce-4e6e-97ea-38840518e1c4.jpg?im_w=720"
-    },
-    {
-      "src": "https://z1.muscache.cn/im/pictures/3f6b8ce1-df9b-4624-94e0-b63ec54b7fe4.jpg?im_w=720"
     },
     {
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-661881998531696630/original/c7f7769f-e56c-4d55-8e74-06fdaf3e048d.jpeg?im_w=720"
@@ -1349,7 +1353,7 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-792178978933830608/original/75a7613c-e435-45fb-9db4-e4163921254b.jpeg?im_w=720"
     },
     {
-      "src": "https://z1.muscache.cn/im/pictures/5e755fa0-74a5-400c-b33d-427e56f84330.jpg?im_w=720"
+      "src": "https://z1.muscache.cn/im/pictures/bafaacfa-1644-4a3b-9165-bcd831924cc6.jpg?im_w=720"
     }
   ],
   "type": "multiple"

@@ -64,10 +64,10 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   await page.waitForSelector(targetSelector)
   const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // Let AI obtain the url of img and remove duplicates
+  // Let the AI get the image link and de-duplicate it (the more detailed the description, the better)
   const srcResult = await crawlOpenAIApp.parseElements(
     highlyHTML,
-    'Get the url of img and remove duplicates'
+    `Get the image link, don't source it inside, and de-duplicate it`
   )
 
   browser.close()
@@ -81,8 +81,12 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 ```
 
 ::: tip
-You can even pass the entire HTML to AI to help us operate it. Since the website content is more complex, you also need to describe the location to be taken more accurately. The most important thing is that it will consume more Tokens.
+You can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.
 :::
+
+Procedure:
+
+![](/example.gif)
 
 Pictures of highly rated vacation rentals climbed to:
 
@@ -1319,13 +1323,13 @@ For ease of viewing, it is formatted here
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-45937791/original/c67d32ed-21eb-4066-8cef-650dcd45bada.jpeg?im_w=720"
     },
     {
+      "src": "https://z1.muscache.cn/im/pictures/df3493cf-39b2-46cc-9e85-7ef186980f25.jpg?im_w=720"
+    },
+    {
       "src": "https://z1.muscache.cn/im/pictures/52d375d3-5e54-444b-8186-15e61a592d9a.jpg?im_w=720"
     },
     {
       "src": "https://z1.muscache.cn/im/pictures/4ce87a7c-cbce-4e6e-97ea-38840518e1c4.jpg?im_w=720"
-    },
-    {
-      "src": "https://z1.muscache.cn/im/pictures/3f6b8ce1-df9b-4624-94e0-b63ec54b7fe4.jpg?im_w=720"
     },
     {
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-661881998531696630/original/c7f7769f-e56c-4d55-8e74-06fdaf3e048d.jpeg?im_w=720"
@@ -1349,7 +1353,7 @@ For ease of viewing, it is formatted here
       "src": "https://z1.muscache.cn/im/pictures/miso/Hosting-792178978933830608/original/75a7613c-e435-45fb-9db4-e4163921254b.jpeg?im_w=720"
     },
     {
-      "src": "https://z1.muscache.cn/im/pictures/5e755fa0-74a5-400c-b33d-427e56f84330.jpg?im_w=720"
+      "src": "https://z1.muscache.cn/im/pictures/bafaacfa-1644-4a3b-9165-bcd831924cc6.jpg?im_w=720"
     }
   ],
   "type": "multiple"
