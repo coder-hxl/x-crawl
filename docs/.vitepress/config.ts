@@ -6,7 +6,22 @@ export default defineConfig({
   base: '/x-crawl/',
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/x-crawl/logo.svg' }]
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/x-crawl/logo.svg' }],
+    [
+      'script',
+      {
+        async: '',
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-8Y4QZJH6CX'
+      }
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-8Y4QZJH6CX');`
+    ]
   ],
 
   cleanUrls: true,
