@@ -1,3 +1,15 @@
+# [v10.0.1](https://github.com/coder-hxl/x-crawl/compare/v10.0.0..v10.0.1) (2024-04-10)
+
+### 🐞 Bug fixes
+
+- Fix the wrong export
+
+---
+
+### 🐞 漏洞修复
+
+- 修复错误的导出
+
 # [v10.0.0](https://github.com/coder-hxl/x-crawl/compare/v9.0.0..v10.0.0) (2024-04-10)
 
 ### 🚀 Features

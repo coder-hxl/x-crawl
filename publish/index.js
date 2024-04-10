@@ -1,1 +1,1 @@
-export * from './dist/x-crawl'
+export * from './dist/x-crawl.js'

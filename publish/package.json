@@ -1,6 +1,6 @@
 {
   "name": "x-crawl",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "author": "coderHXL",
   "description": "x-crawl is a flexible Node.js AI-assisted crawler library.",
   "license": "MIT",
