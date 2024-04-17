@@ -81,6 +81,8 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 ```
 
 ::: tip
+Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.
+
 You can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.
 :::
 
@@ -92,9 +94,7 @@ Pictures of highly rated vacation rentals climbed to:
 
 ![](/example.png)
 
-<details>
-
-<summary>See the HTML that the AI needs to process</summary>
+::: details See the HTML that the AI needs to process
 
 For ease of viewing, it is formatted here
 
@@ -1310,11 +1310,9 @@ For ease of viewing, it is formatted here
 </div>
 ```
 
-</details>
+:::
 
-<details>
-
-<summary>View the srcResult (img url) returned by AI after parsing the HTML according to our instructions</summary>
+::: details View the srcResult (img url) returned by AI after parsing the HTML according to our instructions
 
 ```json
 {
@@ -1360,7 +1358,7 @@ For ease of viewing, it is formatted here
 }
 ```
 
-</details>
+:::
 
 ::: warning
 x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.

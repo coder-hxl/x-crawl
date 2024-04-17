@@ -80,7 +80,9 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 })
 ```
 
-::: tip
+::: tip 提示
+即使网站后续的更新导致类名或结构发生改变也能正常爬到数据，因为我们不再依赖于固定的类名或结构来定位并提取所需信息，而是让 AI 理解并解析网页的语义信息，从而更高效、智能和便捷提取所需数据。
+
 你甚至可以将整个 HTML 传给 AI 帮我们操作，由于网站内容更加复杂你还需要更准确描述要取的位置，并且会消耗大量的 Tokens 。
 :::
 
@@ -92,9 +94,7 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 
 ![](/example.png)
 
-<details>
-
-  <summary>查看 AI 需要处理的 HTML</summary>
+::: details 查看 AI 需要处理的 HTML
 
 为了方便观看，这里进行了格式化
 
@@ -1310,11 +1310,9 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 </div>
 ```
 
-</details>
+:::
 
-<details>
-
-  <summary>查看 AI 根据我们指令对 HTML 进行解析后返回的 srcResult (img url)</summary>
+::: details 查看 AI 根据我们指令对 HTML 进行解析后返回的 srcResult (img url)
 
 ```json
 {
@@ -1360,8 +1358,8 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 }
 ```
 
-</details>
+:::
 
-::: warning
+::: warning 警告
 x-crawl 仅供合法用途，禁止使用该工具进行任何违法活动，请务必遵守目标网站的 robots.txt 文件规定。本例仅用于演示 x-crawl 的使用方法，并非针对特定网站。
 :::
