@@ -2067,6 +2067,8 @@ crawlApp.crawlPage('https://movie.douban.com/chart').then(async (res) => {
   ],
   "type": "multiple"
 }
+```
+
 :::
 
 ---
@@ -2080,4 +2082,3 @@ crawlApp.crawlPage('https://movie.douban.com/chart').then(async (res) => {
 ::: warning 警告
 x-crawl 仅供合法用途，禁止使用该工具进行任何违法活动，请务必遵守目标网站的 robots.txt 文件规定。本例仅用于演示 x-crawl 的使用方法，并非针对特定网站，如有侵权请联系我删除。
 :::
-```
