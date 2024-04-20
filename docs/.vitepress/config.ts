@@ -268,7 +268,8 @@ export default defineConfig({
               text: '开始',
               items: [
                 { text: '简介', link: '/cn/guide/' },
-                { text: '快速上手', link: '/cn/guide/quick-start' }
+                { text: '快速上手', link: '/cn/guide/quick-start' },
+                { text: '爬虫风格', link: '/cn/guide/crawler-style' }
               ]
             },
             {
