@@ -1,4 +1,4 @@
-# 社区
+# 社区 {#community}
 
 - **Discord 聊天:** 通过 [Discord](https://discord.gg/SF7aaebg4E) 与其他 x-crawl 用户实时提问和讨论（提前了解关于 x-crawl 的动态）。
 - **GitHub 讨论:** 使用 [GitHub 讨论](https://github.com/coder-hxl/x-crawl/discussions) 来进行留言板式的问题和讨论。

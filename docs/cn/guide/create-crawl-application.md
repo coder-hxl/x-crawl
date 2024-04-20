@@ -1,4 +1,4 @@
-# 创建爬虫应用
+# 创建爬虫应用 {#create-crawler-application}
 
 通过 [createCrawl()](/cn/api/index#createcrawl) 创建一个新的 **应用实例**：
 

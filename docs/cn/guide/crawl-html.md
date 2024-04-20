@@ -1,4 +1,4 @@
-# 爬取 HTML
+# 爬取 HTML {#crawl-html}
 
 通过 [crawlHTML()](/cn/api/crawl-html#crawlhtml) 爬取静态 HTML。
 
@@ -17,7 +17,7 @@ crawlApp
   })
 ```
 
-## 生命周期
+## 生命周期 {#life-cycle}
 
 crawlHTML API 拥有的声明周期函数:
 

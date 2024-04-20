@@ -2,7 +2,7 @@
 
 help 是 AI 应用实例的方法，通常用于智能回复爬虫问题。
 
-## 类型
+## 类型 {#type}
 
 help API 是一个函数。
 
@@ -17,7 +17,7 @@ function help(
 
 - 查看 [CrawlOpenAICommonAPIOtherOption](/cn/type/crawl-openai-other-config#crawlopenaicommonapiotheroption) 类型
 
-## 示例
+## 示例 {#example}
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'

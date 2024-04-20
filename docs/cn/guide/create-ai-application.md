@@ -1,4 +1,4 @@
-# 创建 AI 应用
+# 创建 AI 应用 {#create-ai-application}
 
 目前 x-crawl 的 AI 辅助功能是依靠 OpenAI ，需要用到 OpenAI 的 API Key 。后续还可能加入其他 AI 的。
 

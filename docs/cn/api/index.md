@@ -2,7 +2,7 @@
 
 通过调用 createCrawl 创建一个爬虫应用实例。爬取目标是由实例方法内部维护，并非由实例维护。
 
-## 类型
+## 类型 {#type}
 
 createCrawl API 是一个函数。
 
@@ -18,7 +18,7 @@ function createCrawl(config?: CreateCrawlConfig): CrawlApp
 
 - 查看 [CrawlApp](/cn/type/index#crawlapp) 类型
 
-## 示例
+## 示例 {#example}
 
 ```js
 import { createCrawl } from 'x-crawl'

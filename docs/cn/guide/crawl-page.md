@@ -1,4 +1,4 @@
-# 爬取页面
+# 爬取页面 {#crawl-the-page}
 
 通过 [crawlPage()](/cn/api/crawl-page#crawlpage) 爬取一个页面。
 
@@ -15,7 +15,7 @@ crawlApp.crawlPage('https://www.example.com').then((res) => {
 })
 ```
 
-## browser 实例
+## browser 实例 {#browser-example}
 
 当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，所用的 browser 实例都是同一个，因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。具体使用可以参考 [Browser](https://pptr.dev/api/puppeteer.browser) 。
 
@@ -23,7 +23,7 @@ crawlApp.crawlPage('https://www.example.com').then((res) => {
 browser 会一直保持着运行，造成文件不会终止，如果想停止可以执行 browser.close() 关闭。如果后面还需要用到 [crawlPage](#爬取页面) 或者 [page](#page-实例) 请勿调用。因为 browser 实例在同个爬虫实例中的 crawlPage API 是共享的。
 :::
 
-## page 实例
+## page 实例 {#page-exmple}
 
 当你在同个爬虫实例调用 crawlPage API 进行爬取页面时，都会从 browser 实例中产生一个新的 page 实例。具体使用可以参考 [Page](https://pptr.dev/api/puppeteer.page) 。
 
@@ -31,7 +31,7 @@ browser 会一直保持着运行，造成文件不会终止，如果想停止可
 如果后续不再使用 page 需要自行调用 page.close() 关闭 page 实例，否则会造成内存泄露。
 :::
 
-## 生命周期
+## 生命周期 {#life-cycle}
 
 crawlPage API 拥有的声明周期函数:
 
@@ -41,7 +41,7 @@ crawlPage API 拥有的声明周期函数:
 
 在 onCrawlItemComplete 函数中你可以提前拿到每次爬取目标的结果。
 
-## 示例
+## 示例 {#example}
 
 **打开浏览器**
 

@@ -1,4 +1,4 @@
-# 爬取文件
+# 爬取文件 {#crawl-files}
 
 通过 [crawlFile()](/cn/api/crawl-file#crawlfile) 爬取文件数据。
 
@@ -18,7 +18,7 @@ crawlApp
   .then((res) => {})
 ```
 
-## 生命周期
+## 生命周期 {#life-cycle}
 
 crawlFile API 拥有的声明周期函数:
 
@@ -34,7 +34,7 @@ crawlFile API 拥有的声明周期函数:
 
 在 onBeforeSaveItemFile 函数中你可以拿到 Buffer 类型的文件，你可以对该 Buffer 进行处理，然后返回一个 Buffer 或者一个返回值是 Buffer 的 Promise ，x-crawl 会将返回的 Buffer 替换掉拿到的 Buffer 存储到文件中。
 
-## 示例
+## 示例 {#example}
 
 **调整图片大小**
 

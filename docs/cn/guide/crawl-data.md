@@ -1,4 +1,4 @@
-# 爬取接口
+# 爬取接口 {#crawling-interface}
 
 通过 [crawlData()](/cn/api/crawl-data#crawldata) 爬取接口数据。
 
@@ -22,7 +22,7 @@ crawlApp.crawlData({ targets }).then((res) => {
 })
 ```
 
-## 生命周期
+## 生命周期 {#life-cycle}
 
 crawlData API 拥有的声明周期函数:
 

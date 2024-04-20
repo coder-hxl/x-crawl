@@ -2,7 +2,7 @@
 
 通过调用 createCrawlOpenAI 创建一个 AI 应用实例。
 
-## 类型
+## 类型 {#type}
 
 createCrawlOpenAI API 是一个函数。
 
@@ -18,7 +18,7 @@ function createCrawlOpenAI(config?: createCrawlOpenAIConfig): crawlOpenAIApp
 
 - 查看 [crawlOpenAIApp](/cn/type/create-crawl-openai#crawlopenaiapp) 类型
 
-## 示例
+## 示例 {#example}
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'

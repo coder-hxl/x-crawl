@@ -1,4 +1,4 @@
-# User-defined AI functions
+# User defined AI functions
 
 In order to meet the personalized needs of different users, x-crawl also provides user-customized AI functions. Providing openai instances means you can tailor and optimize the AI to your needs to better suit your crawling efforts.
 

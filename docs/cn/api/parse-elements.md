@@ -2,7 +2,7 @@
 
 parseElements 是 AI 应用实例的方法，通常用于智能按需分析元素。
 
-## 类型
+## 类型 {#type}
 
 parseElements API 是一个函数。
 
@@ -23,7 +23,7 @@ function parseElements<T extends Record<string, string>>(
 
 - 查看 [CrawlOpenAIParseElementsResult](/cn/type/parse-elements#crawlopenaiparseelementsresult) 类型
 
-## 示例
+## 示例 {#example}
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'

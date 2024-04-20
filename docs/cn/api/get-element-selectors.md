@@ -2,7 +2,7 @@
 
 getElementSelectors 是 AI 应用实例的方法，通常用于智能生成元素选择器。
 
-## 类型
+## 类型 {#type}
 
 parseElements API 是一个函数。
 
@@ -23,7 +23,7 @@ function getElementSelectors(
 
 - 查看 [CrawlOpenAIGetElementSelectorsResult](/cn/type/get-element-selectors#crawlopenaigetelementselectorsresult) 类型
 
-## 示例
+## 示例 {#example}
 
 ```js
 import { createCrawlOpenAI } from 'x-crawl'
