@@ -89,6 +89,7 @@ export default defineConfig({
                 { text: 'Crawl HTML', link: '/guide/crawl-html' },
                 { text: 'Crawl Data', link: '/guide/crawl-data' },
                 { text: 'Crawl File', link: '/guide/crawl-file' },
+                { text: 'Crawl mode', link: '/guide/crawl-mode' },
                 { text: 'Interval Time', link: '/guide/interval' },
                 { text: 'Retry', link: '/guide/retry' },
                 { text: 'Proxy', link: '/guide/proxy' },
@@ -126,7 +127,6 @@ export default defineConfig({
             {
               text: 'Advance',
               items: [
-                { text: 'Crawl mode', link: '/guide/crawl-mode' },
                 {
                   text: 'device fingerprinting',
                   link: '/guide/fingerprint'
@@ -282,6 +282,7 @@ export default defineConfig({
                 { text: '爬取 HTML', link: '/cn/guide/crawl-html' },
                 { text: '爬取接口', link: '/cn/guide/crawl-data' },
                 { text: '爬取文件', link: '/cn/guide/crawl-file' },
+                { text: '爬取模式', link: '/cn/guide/crawl-mode' },
                 { text: '间隔时间', link: '/cn/guide/interval' },
                 { text: '失败重试', link: '/cn/guide/retry' },
                 { text: '轮换代理', link: '/cn/guide/proxy' },
@@ -316,7 +317,6 @@ export default defineConfig({
             {
               text: '进阶',
               items: [
-                { text: '爬取模式', link: '/cn/guide/crawl-mode' },
                 { text: '设备指纹', link: '/cn/guide/fingerprint' },
                 { text: '配置', link: '/cn/guide/config' }
               ]
