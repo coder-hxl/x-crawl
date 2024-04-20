@@ -49,9 +49,9 @@ export default defineConfig({
 
       themeConfig: {
         nav: [
-          { text: 'Guide', link: '/guide/index' },
-          { text: 'API', link: '/api/index' },
-          { text: 'Type', link: '/type/index' },
+          { text: 'Guide', link: '/guide/' },
+          { text: 'API', link: '/api/' },
+          { text: 'Type', link: '/type/' },
           {
             text: 'About',
             items: [
@@ -74,7 +74,7 @@ export default defineConfig({
             {
               text: 'Getting Started',
               items: [
-                { text: 'Introduction', link: '/guide/index' },
+                { text: 'Introduction', link: '/guide/' },
                 { text: 'Quick Start', link: '/guide/quick-start' }
               ]
             },
@@ -140,7 +140,7 @@ export default defineConfig({
             {
               text: 'crawler',
               items: [
-                { text: 'createCrawl', link: '/api/index' },
+                { text: 'createCrawl', link: '/api/' },
                 { text: 'crawlPage', link: '/api/crawl-page' },
                 { text: 'crawlHTML', link: '/api/crawl-html' },
                 { text: 'crawlData', link: '/api/crawl-data' },
@@ -169,7 +169,7 @@ export default defineConfig({
             {
               text: 'crawler',
               items: [
-                { text: 'createCrawl', link: '/type/index' },
+                { text: 'createCrawl', link: '/type/' },
                 { text: 'crawlPage', link: '/type/crawl-page' },
                 { text: 'crawlHTML', link: '/type/crawl-html' },
                 { text: 'crawlData', link: '/type/crawl-data' },
@@ -209,6 +209,10 @@ export default defineConfig({
         editLink: {
           pattern: 'https://github.com/coder-hxl/x-crawl/edit/main/docs/:path',
           text: 'Suggest changes to this page'
+        },
+
+        outline: {
+          level: [2, 3]
         }
       }
     },
@@ -222,9 +226,9 @@ export default defineConfig({
       themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
         nav: [
-          { text: '指南', link: '/cn/guide/index' },
-          { text: 'API', link: '/cn/api/index' },
-          { text: 'Type', link: '/cn/type/index' },
+          { text: '指南', link: '/cn/guide/' },
+          { text: 'API', link: '/cn/api/' },
+          { text: 'Type', link: '/cn/type/' },
           {
             text: '关于',
             items: [
@@ -263,7 +267,7 @@ export default defineConfig({
             {
               text: '开始',
               items: [
-                { text: '简介', link: '/cn/guide/index' },
+                { text: '简介', link: '/cn/guide/' },
                 { text: '快速上手', link: '/cn/guide/quick-start' }
               ]
             },
@@ -323,7 +327,7 @@ export default defineConfig({
             {
               text: '爬虫',
               items: [
-                { text: 'createCrawl', link: '/cn/api/index' },
+                { text: 'createCrawl', link: '/cn/api/' },
                 { text: 'crawlPage', link: '/cn/api/crawl-page' },
                 { text: 'crawlHTML', link: '/cn/api/crawl-html' },
                 { text: 'crawlData', link: '/cn/api/crawl-data' },
@@ -352,7 +356,7 @@ export default defineConfig({
             {
               text: '爬虫',
               items: [
-                { text: 'createCrawl', link: '/cn/type/index' },
+                { text: 'createCrawl', link: '/cn/type/' },
                 { text: 'crawlPage', link: '/cn/type/crawl-page' },
                 { text: 'crawlHTML', link: '/cn/type/crawl-html' },
                 { text: 'crawlData', link: '/cn/type/crawl-data' },
@@ -392,6 +396,11 @@ export default defineConfig({
         editLink: {
           pattern: 'https://github.com/coder-hxl/x-crawl/edit/main/docs/:path',
           text: '为此页提供修改建议'
+        },
+
+        outline: {
+          label: '本页目录',
+          level: [2, 3]
         },
 
         lastUpdated: { text: '最后更新于' }
