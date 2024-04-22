@@ -85,13 +85,9 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 })
 ```
 
-过程：
+运行：
 
 ![](/example.gif)
-
-搭配 AI 爬到的高评分度假屋图片:
-
-![](/example.png)
 
 ::: details 查看 AI 需要处理的 HTML
 

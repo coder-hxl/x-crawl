@@ -84,13 +84,9 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
 
 **Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.**
 
-Procedure:
+Run:
 
 ![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif)
-
-Pictures of highly rated vacation rentals climbed to:
-
-![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.png)
 
 <details>
 

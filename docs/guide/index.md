@@ -86,13 +86,9 @@ Can even send the whole HTML to the AI to help us operate, because the website c
 Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.
 :::
 
-Procedure:
+Run:
 
 ![](/example.gif)
-
-Pictures of highly rated vacation rentals climbed to:
-
-![](/example.png)
 
 ::: details See the HTML that the AI needs to process
 
