@@ -20,6 +20,16 @@ $ yarn add x-crawl
 $ pnpm add x-crawl
 ```
 
+## 扩展程序 {#extension-program}
+
+可以使用谷歌浏览器扩展程序来解答问题。
+
+- [Page AI - 通过 AI 解析页面内容，可以轻松获取答案，提升浏览效率的谷歌浏览器扩展程序](https://github.com/coder-hxl/page-ai)
+
+在 [间隔时间](/cn/guide/interval) 页面向 Page AI 提问问题。
+
+![](/public/page-ai.png)
+
 :::
 
 ## 下一步​ {#next-step}
