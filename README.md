@@ -79,11 +79,10 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   })
 })
 ```
-
-**Can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.**
-
-**Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.**
-
+> [!TIP]
+> Can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.
+> 
+> Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.
 Run:
 
 ![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif)
@@ -1360,12 +1359,10 @@ For ease of viewing, it is formatted here
 
 **warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
 
-## Document
-
-x-crawl latest version documentation:
+## Documentations
 
 [English](https://coder-hxl.github.io/x-crawl) | [简体中文](https://coder-hxl.github.io/x-crawl/cn)
 
-x-crawl v9 documentation:
+x-crawl v9 documentations:
 
 [English](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md) | [简体中文](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md)
