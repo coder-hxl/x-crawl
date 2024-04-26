@@ -79,11 +79,11 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   })
 })
 ```
+
 > [!TIP]
 > Can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.
-> 
+>
 > Even if the subsequent update of the website causes the class name or structure to change, it can climb to the data normally, because we no longer rely on the fixed class name or structure to locate and extract the required information, but let the AI understand and parse the semantic information of the web page, so as to extract the required data more efficiently, intelligently and conveniently.
-Run:
 
 ![](https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/example.gif)
 
@@ -1359,10 +1359,16 @@ For ease of viewing, it is formatted here
 
 **warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
 
-## Documentations
+## Getting Started
 
-[English](https://coder-hxl.github.io/x-crawl) | [简体中文](https://coder-hxl.github.io/x-crawl/cn)
+Documentations: [English](https://coder-hxl.github.io/x-crawl) | [简体中文](https://coder-hxl.github.io/x-crawl/cn) | [V9 English](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md) | [V9 简体中文](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md)
 
-x-crawl v9 documentations:
+Community: [Discord](https://discord.gg/SF7aaebg4E)
 
-[English](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/README.md) | [简体中文](https://github.com/coder-hxl/x-crawl/blob/v9.0.0/docs/cn.md)
+## Issues
+
+If you have **questions, requirements, and good suggestions**, you can raise **Issues** in [GitHub Issues](https://github.com/coder-hxl/x-crawl/issues).
+
+## License
+
+MIT License Copyright (c) 2023-present [CoderHXL](https://github.com/coder-hxl)
