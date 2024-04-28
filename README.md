@@ -43,13 +43,13 @@ The combination of crawler and AI allows the crawler and AI to obtain pictures o
 ```js
 import { createCrawl, createCrawlOpenAI } from 'x-crawl'
 
-//Create a crawler application
+// Create a crawler application
 const crawlApp = createCrawl({
   maxRetry: 3,
   intervalTime: { max: 2000, min: 1000 }
 })
 
-//Create AI application
+// Create AI application
 const crawlOpenAIApp = createCrawlOpenAI({
   clientOptions: { apiKey: process.env['OPENAI_API_KEY'] },
   defaultModel: { chatModel: 'gpt-4-turbo-preview' }
@@ -64,7 +64,7 @@ crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
   await page.waitForSelector(targetSelector)
   const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // Let the AI get the image link and de-duplicate it (the more detailed the description, the better)
+  // Let AI obtain image links and remove duplicates
   const srcResult = await crawlOpenAIApp.parseElements(
     highlyHTML,
     `Get the image link, don't source it inside, and de-duplicate it`
@@ -1357,7 +1357,8 @@ For ease of viewing, it is formatted here
 
 </details>
 
-**warning**: x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
+> [!WARNING]
+> x-crawl is for legal use only. Any illegal activity using this tool is prohibited. Please be sure to comply with the robots.txt file regulations of the target website. This example is only used to demonstrate the use of x-crawl and is not targeted at a specific website.
 
 ## Getting Started
 
