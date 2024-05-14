@@ -6,7 +6,7 @@ coverage
 
 upload
 
-test/dev/index.js
+test/dev/src/index.js
 test/server/index.js
 
 docs/.vitepress/cache

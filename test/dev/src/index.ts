@@ -1,10 +1,7 @@
 import { createCrawl, createCrawlOpenAI } from 'x-crawl'
 
 import { BASE_URL, API_KEY } from './envConfig'
-import { fileURLToPath } from 'url'
-
-const pathResolve = (dir: string) =>
-  fileURLToPath(new URL(dir, import.meta.url))
+import { pathResolve } from './utils'
 
 const crawlApp = createCrawl({
   maxRetry: 3,
