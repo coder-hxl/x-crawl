@@ -8,13 +8,13 @@ export interface CreateCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
-  /*   log?:
+  log?:
     | {
         start?: boolean
         process?: boolean
         result?: boolean
       }
-    | boolean */
+    | boolean
   crawlPage?: {
     puppeteerLaunchOptions?: PuppeteerLaunchOptions // PuppeteerLaunchOptions 来自于 puppeteer
   }
@@ -27,7 +27,7 @@ export interface CreateCrawlConfig extends CrawlCommonConfig {
 - enableRandomFingerprint: false
 - baseUrl: undefined
 - intervalTime: undefined
-<!-- - log: { start: true, process: true, result: true } -->
+- log: { start: true, process: true, result: true }
 - crawlPage: undefined
 
 **外部类型**
