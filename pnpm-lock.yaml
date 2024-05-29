@@ -42,7 +42,7 @@ devDependencies:
     version: 0.4.4(rollup@4.13.0)
   '@types/node':
     specifier: ^20.12.1
-    version: 20.12.1
+    version: 20.12.11
   '@typescript-eslint/eslint-plugin':
     specifier: ^7.9.0
     version: 7.9.0(@typescript-eslint/parser@7.9.0)(eslint@9.0.0)(typescript@5.4.4)
@@ -72,7 +72,7 @@ devDependencies:
     version: 5.4.4
   vitest:
     specifier: ^1.4.0
-    version: 1.4.0(@types/node@20.12.1)(@vitest/ui@1.4.0)
+    version: 1.4.0(@types/node@20.12.11)(@vitest/ui@1.4.0)
 
 packages:
 
@@ -1818,7 +1818,7 @@ packages:
   /@types/node-fetch@2.6.11:
     resolution: {integrity: sha512-24xFj9R5+rfQJLRyM56qh+wnVSYhyXC2tkoBndtY0U+vubqNsYXGjufB2nn8Q6gt0LrARwL6UBtMCSVCwl4B1g==}
     dependencies:
-      '@types/node': 20.12.1
+      '@types/node': 20.12.11
       form-data: 4.0.0
     dev: false
 
@@ -1826,14 +1826,14 @@ packages:
     resolution: {integrity: sha512-8OEyg4oc/CqN5+LbInKNLA8MfbGzbC+k8lVPePXazuwEVrVeQ9gwMDX00HJwWbC7syc1FWRU6Mow0Lm+mibHAQ==}
     dev: true
 
-  /@types/node@18.19.26:
-    resolution: {integrity: sha512-+wiMJsIwLOYCvUqSdKTrfkS8mpTp+MPINe6+Np4TAGFWWRWiBQ5kSq9nZGCSPkzx9mvT+uEukzpX4MOSCydcvw==}
+  /@types/node@18.19.33:
+    resolution: {integrity: sha512-NR9+KrpSajr2qBVp/Yt5TU/rp+b5Mayi3+OlMlcg2cVCfRmcG5PWZ7S4+MG9PZ5gWBoc9Pd0BKSRViuBCRPu0A==}
     dependencies:
       undici-types: 5.26.5
     dev: false
 
-  /@types/node@20.12.1:
-    resolution: {integrity: sha512-5lcxgB72hlSF7ZS9ZzX1RCLc9+BovxjL17T00xSmj3c0ygZFjPdNnN0RchfGpot/yniVMkWnyO6aR9Dr1q9qrg==}
+  /@types/node@20.12.11:
+    resolution: {integrity: sha512-vDg9PZ/zi+Nqp6boSOT7plNuthRugEKixDv5sFTIpkE89MmNtEArAShI4mxuX2+UrLEe9pxC1vm2cjm9YlWbJw==}
     dependencies:
       undici-types: 5.26.5
 
@@ -1841,7 +1841,7 @@ packages:
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
     requiresBuild: true
     dependencies:
-      '@types/node': 20.12.1
+      '@types/node': 20.12.11
     dev: false
     optional: true
 
@@ -1991,7 +1991,7 @@ packages:
       strip-literal: 2.1.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.4.0(@types/node@20.12.1)(@vitest/ui@1.4.0)
+      vitest: 1.4.0(@types/node@20.12.11)(@vitest/ui@1.4.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2038,7 +2038,7 @@ packages:
       pathe: 1.1.2
       picocolors: 1.0.0
       sirv: 2.0.4
-      vitest: 1.4.0(@types/node@20.12.1)(@vitest/ui@1.4.0)
+      vitest: 1.4.0(@types/node@20.12.11)(@vitest/ui@1.4.0)
     dev: true
 
   /@vitest/utils@1.4.0:
@@ -2200,14 +2200,19 @@ packages:
     dev: false
     optional: true
 
-  /bare-fs@2.2.2:
-    resolution: {integrity: sha512-X9IqgvyB0/VA5OZJyb5ZstoN62AzD7YxVGog13kkfYWYqJYcK0kcqLZ6TrmH5qr4/8//ejVcX4x/a0UvaogXmA==}
+  /bare-events@2.2.2:
+    resolution: {integrity: sha512-h7z00dWdG0PYOQEvChhOSWvOfkIKsdZGkWr083FgN/HyoQuebSew/cgirYqh9SCuy/hRvxc5Vy6Fw8xAmYHLkQ==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /bare-fs@2.3.0:
+    resolution: {integrity: sha512-TNFqa1B4N99pds2a5NYHR15o0ZpdNKbAeKTE/+G6ED/UeOavv8RY3dr/Fu99HW3zU3pXpo2kDNO8Sjsm2esfOw==}
     requiresBuild: true
     dependencies:
       bare-events: 2.2.1
-      bare-os: 2.2.1
-      bare-path: 2.1.0
-      streamx: 2.16.1
+      bare-path: 2.1.2
+      bare-stream: 1.0.0
     dev: false
     optional: true
 
@@ -2217,11 +2222,19 @@ packages:
     dev: false
     optional: true
 
-  /bare-path@2.1.0:
-    resolution: {integrity: sha512-DIIg7ts8bdRKwJRJrUMy/PICEaQZaPGZ26lsSx9MJSwIhSrcdHn7/C8W+XmnG/rKi6BaRcz+JO00CjZteybDtw==}
+  /bare-path@2.1.2:
+    resolution: {integrity: sha512-o7KSt4prEphWUHa3QUwCxUI00R86VdjiuxmJK0iNVDHYPGo+HsDaVCnqCmPbf/MiW1ok8F4p3m8RTHlWk8K2ig==}
     requiresBuild: true
     dependencies:
       bare-os: 2.2.1
+    dev: false
+    optional: true
+
+  /bare-stream@1.0.0:
+    resolution: {integrity: sha512-KhNUoDL40iP4gFaLSsoGE479t0jHijfYdIcxRn/XtezA2BaUD0NRf/JGRpsMq6dMNM+SrCrB0YSSo/5wBY4rOQ==}
+    requiresBuild: true
+    dependencies:
+      streamx: 2.16.1
     dev: false
     optional: true
 
@@ -3459,7 +3472,7 @@ packages:
     resolution: {integrity: sha512-Sh4KvplkvkAREuhb8yZpohqsOo08cBBu6LNWLD8YyMxe8yCxbE+ouJYUs1X2oDPrzQGANj0rFNQYiwW9gWLBOg==}
     hasBin: true
     dependencies:
-      '@types/node': 18.19.26
+      '@types/node': 18.19.33
       '@types/node-fetch': 2.6.11
       abort-controller: 3.0.0
       agentkeepalive: 4.5.0
@@ -4002,7 +4015,7 @@ packages:
       fast-fifo: 1.3.2
       queue-tick: 1.0.1
     optionalDependencies:
-      bare-events: 2.2.1
+      bare-events: 2.2.2
     dev: false
 
   /string-width@4.2.3:
@@ -4076,8 +4089,8 @@ packages:
       pump: 3.0.0
       tar-stream: 3.1.7
     optionalDependencies:
-      bare-fs: 2.2.2
-      bare-path: 2.1.0
+      bare-fs: 2.3.0
+      bare-path: 2.1.2
     dev: false
 
   /tar-stream@3.1.7:
@@ -4251,7 +4264,7 @@ packages:
       convert-source-map: 2.0.0
     dev: true
 
-  /vite-node@1.4.0(@types/node@20.12.1):
+  /vite-node@1.4.0(@types/node@20.12.11):
     resolution: {integrity: sha512-VZDAseqjrHgNd4Kh8icYHWzTKSCZMhia7GyHfhtzLW33fZlG9SwsB6CEhgyVOWkJfJ2pFLrp/Gj1FSfAiqH9Lw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -4260,7 +4273,7 @@ packages:
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.0
-      vite: 5.2.8(@types/node@20.12.1)
+      vite: 5.2.8(@types/node@20.12.11)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -4272,7 +4285,7 @@ packages:
       - terser
     dev: true
 
-  /vite@5.2.8(@types/node@20.12.1):
+  /vite@5.2.8(@types/node@20.12.11):
     resolution: {integrity: sha512-OyZR+c1CE8yeHw5V5t59aXsUPPVTHMDjEZz8MgguLL/Q7NblxhZUlTu9xSPqlsUO/y+X7dlU05jdhvyycD55DA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -4300,7 +4313,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.12.1
+      '@types/node': 20.12.11
       esbuild: 0.20.2
       postcss: 8.4.38
       rollup: 4.13.0
@@ -4308,7 +4321,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vitest@1.4.0(@types/node@20.12.1)(@vitest/ui@1.4.0):
+  /vitest@1.4.0(@types/node@20.12.11)(@vitest/ui@1.4.0):
     resolution: {integrity: sha512-gujzn0g7fmwf83/WzrDTnncZt2UiXP41mHuFYFrdwaLRVQ6JYQEiME2IfEjU3vcFL3VKa75XhI3lFgn+hfVsQw==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -4333,7 +4346,7 @@ packages:
       jsdom:
         optional: true
     dependencies:
-      '@types/node': 20.12.1
+      '@types/node': 20.12.11
       '@vitest/expect': 1.4.0
       '@vitest/runner': 1.4.0
       '@vitest/snapshot': 1.4.0
@@ -4352,8 +4365,8 @@ packages:
       strip-literal: 2.1.0
       tinybench: 2.6.0
       tinypool: 0.8.3
-      vite: 5.2.8(@types/node@20.12.1)
-      vite-node: 1.4.0(@types/node@20.12.1)
+      vite: 5.2.8(@types/node@20.12.11)
+      vite-node: 1.4.0(@types/node@20.12.11)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less
