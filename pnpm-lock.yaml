@@ -36,7 +36,7 @@ devDependencies:
     version: 6.0.4(@babel/core@7.24.0)(rollup@4.13.0)
   '@rollup/plugin-run':
     specifier: ^3.0.2
-    version: 3.0.2(rollup@4.13.0)
+    version: 3.1.0(rollup@4.13.0)
   '@rollup/plugin-terser':
     specifier: ^0.4.4
     version: 0.4.4(rollup@4.13.0)
@@ -1649,8 +1649,8 @@ packages:
       rollup: 4.13.0
     dev: true
 
-  /@rollup/plugin-run@3.0.2(rollup@4.13.0):
-    resolution: {integrity: sha512-pgQcDA34u6C+8Yr0FSd2T7iN2UTQe8zJ+1pbceNJ9MkvGrN0sz4D6Mzg3eYkGrbV4zC7H5QvwlzC1GqH4PrSrg==}
+  /@rollup/plugin-run@3.1.0(rollup@4.13.0):
+    resolution: {integrity: sha512-k2daijcVA8RAG1PXUFtIAOmb9ifiMv6Kth3Y9OhZ8/W+j8eTgZkVsOmBQD11HaeY1rYqRb0aLjX4e2V9bpS01Q==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.0.0||^3.0.0||^4.0.0
