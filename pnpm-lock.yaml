@@ -13,7 +13,7 @@ dependencies:
     version: 7.0.5
   openai:
     specifier: ^4.33.0
-    version: 4.52.3
+    version: 4.52.4
   ora:
     specifier: ^8.0.1
     version: 8.0.1
@@ -3561,8 +3561,8 @@ packages:
       mimic-fn: 4.0.0
     dev: true
 
-  /openai@4.52.3:
-    resolution: {integrity: sha512-IyQLYKGYoEEkUCEm2frPzwHDJ3Ym663KtivnY6pWCzuoi6/HgSIMMxpcuTRS81GH6tiULPYGmTxIvzXdmPIWOw==}
+  /openai@4.52.4:
+    resolution: {integrity: sha512-3CkV7e8epJBnTe5ptn4i3ivfm1d8cvkbvBOzhGmGYEarpDpcCgwOMV1aBPvZ/HoveUtREWUE9Fqcy7BcPNtMJg==}
     hasBin: true
     dependencies:
       '@types/node': 18.19.39
