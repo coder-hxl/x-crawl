@@ -9,6 +9,10 @@ import {
 import { isObject, logStart, logSuccess } from '../shared'
 
 type OpenAIChatModel =
+  | 'gpt-4o'
+  | 'gpt-4o-2024-05-13'
+  | 'gpt-4-turbo'
+  | 'gpt-4-turbo-2024-04-09'
   | 'gpt-4-0125-preview'
   | 'gpt-4-turbo-preview'
   | 'gpt-4-1106-preview'
@@ -29,17 +33,17 @@ type OpenAIChatModel =
 
 interface CreateCrawlOpenAIConfig {
   defaultModel?: {
-    chatModel: OpenAIChatModel
+    chatModel: (string & {}) | OpenAIChatModel
   }
   clientOptions?: ClientOptions
 }
 
 interface CrawlOpenAICommonAPIOtherOption {
-  model?: OpenAIChatModel
+  model?: (string & {}) | OpenAIChatModel
 }
 
 interface CrawlOpenAIRunChatOption {
-  model: OpenAIChatModel | undefined
+  model: (string & {}) | OpenAIChatModel | undefined
   context: string
   HTMLContent: string
   userContent: string
@@ -92,7 +96,7 @@ export function createCrawlOpenAI(
   const { defaultModel, clientOptions } = config
 
   const openai = new OpenAI(clientOptions)
-  const chatDefaultModel: OpenAIChatModel =
+  const chatDefaultModel: (string & {}) | OpenAIChatModel =
     defaultModel?.chatModel ?? 'gpt-3.5-turbo'
 
   async function runChat<T>(option: CrawlOpenAIRunChatOption): Promise<T> {

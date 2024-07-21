@@ -1,3 +1,27 @@
+# [v10.0.2](https://github.com/coder-hxl/x-crawl/compare/v10.0.1..v10.0.2) (2024-07-21)
+
+### 🚀 Features
+
+- Added 'gpt-4o' | 'gpt-4o-2024-05-13' | 'gpt-4-turbo' | 'gpt-4-turbo-2024-04-09' to OpenAIChatModel type to keep in sync with openai.
+
+### ⛓️ Dependencies
+
+- puppeteer from 22.5.0 to 22.13.1
+- openai from 4.33.0 to 4.52.7
+- https-proxy-agent from 7.0.4 to 7.0.5
+
+---
+
+### 🚀 特征
+
+- OpenAIChatModel 类型新增 'gpt-4o' | 'gpt-4o-2024-05-13'  | 'gpt-4-turbo'  | 'gpt-4-turbo-2024-04-09' ，与 openai 保持同步。
+
+### ⛓️ 依赖关系
+
+- puppeteer 从 22.5.0 升至 22.13.1
+- openai 从 4.33.0 升至 4.52.7
+- https-proxy-agent 从 7.0.4 升至 7.0.5
+
 # [v10.0.1](https://github.com/coder-hxl/x-crawl/compare/v10.0.0..v10.0.1) (2024-04-10)
 
 ### 🐞 Bug fixes
