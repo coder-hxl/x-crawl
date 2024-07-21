@@ -22,7 +22,7 @@ async function writtenString() {
 async function writtenCrawlPageDetailConfig() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlPage({
@@ -38,7 +38,7 @@ async function writtenCrawlPageDetailConfig() {
 async function writtenStringAndCrawlPageDetailConfigArr() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlPage([
@@ -55,7 +55,7 @@ async function writtenStringAndCrawlPageDetailConfigArr() {
 async function writtenCrawlPageAdvancedConfig() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlPage({
@@ -76,7 +76,7 @@ async function loaderBaseConfig() {
   const testCrawlApp = createCrawl({
     log: false,
     baseUrl: 'http://localhost:8888',
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
@@ -98,7 +98,7 @@ async function loaderAdvancedConfig() {
 
   const res = await testCrawlApp.crawlPage({
     targets: ['/html', '/html'],
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0

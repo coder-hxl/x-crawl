@@ -17,7 +17,7 @@ const storeDirs = path.resolve(__dirname, './upload')
 async function testCrawlFile() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlFile({

@@ -13,7 +13,7 @@ async function proxy() {
     targets: ['https://', 'http://localhost:8888/html'],
     maxRetry: 3,
     proxy: {
-      urls: ['http://localhost:129032', 'http://localhost:14892'],
+      urls: ['http://localhost:129032', 'http://localhost:7890'],
       switchByErrorCount: 2
     }
   })

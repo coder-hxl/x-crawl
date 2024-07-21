@@ -9,7 +9,7 @@ const createCrawl = (
 async function testCrawlHTML() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlHTML({

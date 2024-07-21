@@ -59,7 +59,7 @@ async function loaderBaseConfig() {
   const testCrawlApp = createCrawl({
     log: false,
     baseUrl: 'http://localhost:8888',
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
@@ -79,7 +79,7 @@ async function loaderAdvancedConfig() {
 
   const res = await testCrawlApp.crawlHTML({
     targets: ['/html', '/html'],
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0

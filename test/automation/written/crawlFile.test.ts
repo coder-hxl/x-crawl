@@ -19,7 +19,7 @@ const storeDirs = path.resolve(__dirname, './upload')
 async function writtenCrawlFileDetailConfig() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlFile({
@@ -34,7 +34,7 @@ async function writtenCrawlFileDetailConfig() {
 async function writtenCrawlFileDetailConfigArr() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlFile(
@@ -51,7 +51,7 @@ async function writtenCrawlFileDetailConfigArr() {
 async function writtenCrawlFileAdvancedConfig() {
   const testCrawlApp = createCrawl({
     log: false,
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const res = await testCrawlApp.crawlFile({
@@ -72,7 +72,7 @@ async function loaderBaseConfig() {
     log: false,
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
     maxRetry: 0
@@ -96,7 +96,7 @@ async function loaderAdvancedConfig() {
 
   const res = await testCrawlApp.crawlFile({
     targets: ['/4401.jpg', '/4403.jpg'],
-    proxy: { urls: ['http://localhost:14892'] },
+    proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     storeDirs,
     intervalTime: { max: 1000 },
@@ -112,7 +112,7 @@ async function storeConfig() {
     log: false,
     baseUrl:
       'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
-    proxy: { urls: ['http://localhost:14892'] }
+    proxy: { urls: ['http://localhost:7890'] }
   })
 
   const record: string[] = []
