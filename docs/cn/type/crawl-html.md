@@ -11,12 +11,12 @@ export interface CrawlHTMLDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- url: undefined
-- headers: undefined
-- priority: undefined
-- fingerprint: undefined
+| 参数        | 类型                          | 默认值 | 描述     |
+| ----------- | ----------------------------- | ------ | -------- | 
+| url         | string                        | -      | url      |
+| headers     | Object \\| null   | -        | 请求头 |
+| priority    | number                        | -      | 优先级   |
+| fingerprint | DetailTargetFingerprintCommon | -      | 设备指纹 |
 
 ## CrawlHTMLAdvancedConfig
 
@@ -32,13 +32,13 @@ export interface CrawlHTMLAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- targets: undefined
-- intervalTime: undefined
-- fingerprints: undefined
-- headers: undefined
-- onCrawlItemComplete: undefined
+| 参数                | 类型                                                     | 默认值                         | 描述     |
+| ------------------- | -------------------------------------------------------- | ------------------------------ | -------- |
+| targets             | (string \\| CrawlDataDetailTargetConfig)[] | -        | 目标 |
+| intervalTime        | IntervalTime                                             | -                              | 间隔时间 |
+| fingerprints        | DetailTargetFingerprintCommon[]                          | -                              | 设备指纹 |
+| headers             | Object                                                   | -                              | 请求头   |
+| onCrawlItemComplete | ( crawlDataSingleResult: CrawlDataSingleResult ) => void | -                              | 声明周期 |
 
 ## CrawlHTMLSingleResult
 

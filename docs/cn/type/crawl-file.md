@@ -14,15 +14,15 @@ export interface CrawlFileDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- url: undefined
-- headers: undefined
-- priority: undefined
-- storeDir: \_\_dirname
-- fileName: string
-- extension: string
-- fingerprint: undefined
+| 参数        | 类型                          | 默认值      | 描述     |
+| ----------- | ----------------------------- | ----------- | -------- | 
+| url         | string                        | -           | url      |
+| headers     | Object \\| null        | -        | 请求头 |
+| priority    | number                        | -           | 优先级   |
+| storeDir    | string                        | \_\_dirname | 存储位置 |
+| fileName    | string                        | -           | 文件名   |
+| extension   | string                        | -           | 扩展名   |
+| fingerprint | DetailTargetFingerprintCommon | -           | 设备指纹 |
 
 ## CrawlFileAdvancedConfig
 
@@ -47,17 +47,17 @@ export interface CrawlFileAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- targets: undefined
-- intervalTime: undefined
-- fingerprints: undefined
-- storeDirs: \_\_dirname
-- extensions: string
-- fileNames: undefined
-- headers: undefined
-- onCrawlItemComplete: undefined
-- onBeforeSaveItemFile: undefined
+| 参数            | 类型                         | 默认值          | 描述      |
+| -------------------- | ------------------ | ------------------- | --------- |
+| targets              | (string \\| CrawlDataDetailTargetConfig)[] | -         | 目标        |
+| intervalTime         | IntervalTime                                                                                  | -                              | 间隔时间  |
+| fingerprints         | DetailTargetFingerprintCommon[]                                                               | -                              | 设备指纹  |
+| storeDirs            | string \\| (string \\| null)[]   | \_\_dirname | 存储位置 |
+| extension            | string \\| (string \\| null)[]   | -           | 扩展名   |
+| fileName             | (string \\| null)[]                        | -         | 文件名      |
+| headers              | Object | -                              | 请求头    |
+| onCrawlItemComplete  | ( crawlDataSingleResult: CrawlDataSingleResult ) => void | - | 声明周期  |
+| onBeforeSaveItemFile | (info: { id: number; fileName: string; filePath: string; data: Buffer }) => Promise<Buffer \\| void> \\| Buffer \\| void | - | 声明周期 |
 
 ## CrawlFileSingleResult
 

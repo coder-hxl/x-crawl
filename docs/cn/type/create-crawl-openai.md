@@ -11,10 +11,10 @@ export interface CreateCrawlOpenAIConfig {
 }
 ```
 
-**默认值**
-
-- defaultModel: { chatModel: 'gpt-3.5-turbo' }
-- clientOptions: undefined
+| 参数          | 类型                           | 默认值 | 描述                          |
+| ------------- | ------------------------------ | ------ | ----------------------------- |
+| defaultModel  | { chatModel: OpenAIChatModel } | -      | AI 模型                       |
+| clientOptions | ClientOptions                  | -      | AI 其他配置, 用于创建 AI 实例 |
 
 **外部类型**
 

@@ -8,27 +8,21 @@ export interface CreateCrawlConfig extends CrawlCommonConfig {
   enableRandomFingerprint?: boolean
   baseUrl?: string
   intervalTime?: IntervalTime
-  log?:
-    | {
-        start?: boolean
-        process?: boolean
-        result?: boolean
-      }
-    | boolean
+  log?: LogOptions | boolean
   crawlPage?: {
-    puppeteerLaunchOptions?: PuppeteerLaunchOptions // PuppeteerLaunchOptions 来自于 puppeteer
+    puppeteerLaunchOptions?: PuppeteerLaunchOptions
   }
 }
 ```
 
-**默认值**
-
-- mode: 'async'
-- enableRandomFingerprint: false
-- baseUrl: undefined
-- intervalTime: undefined
-- log: { start: true, process: true, result: true }
-- crawlPage: undefined
+| 参数 | 类型 | 默认值  | 描述 |
+| -- | -- | -- | --  |
+| mode                    | `async` \\| `sync`  | `async`                                  | 设置爬取模式 |
+| enableRandomFingerprint | boolean                                         | false   | 是否启动随机设备指纹                     |
+| baseUrl                 | string                                          | -       | 基础地址                                 |
+| intervalTime            | IntervalTime                                    | -       | 间隔时间                                 |
+| log                     | { start: true; process: true; result: true } \\| boolean | true                                     | 打印日志     |
+| crawlPage               | PuppeteerLaunchOptions                          | -       | 传给 puppeteer.launch 用于创建浏览器实例 |
 
 **外部类型**
 

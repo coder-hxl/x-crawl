@@ -20,14 +20,14 @@ export interface CrawlPageDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- url: undefined
-- headers: undefined
-- cookies: undefined
-- priority: undefined
-- viewport: undefined
-- fingerprint: undefined
+| 参数        | 类型 | 默认值 | 描述         |
+| ----------- |  ---  | ------ | ------------ |
+| url         | string | -      | url          |
+| headers     | Object \\| null   | -            | 请求头  |
+| cookies     | PageCookies \\| null   | - | cookies |
+| priority    | number | -      | 优先级       | 
+| viewport    | Viewport | -      | 设置视口大小 |
+| fingerprint | DetailTargetFingerprintCommon & { maxWidth?: number; minWidth?: number; maxHeight?: number; minHidth?: number }) | - | 设备指纹     |
 
 **外部类型**
 
@@ -54,15 +54,15 @@ export interface CrawlPageAdvancedConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- targets: undefined
-- intervalTime: undefined
-- fingerprints: undefined
-- headers: undefined
-- cookies: undefined
-- viewport: undefined
-- onCrawlItemComplete: undefined
+| 参数                | 类型                                                     | 默认值                         | 描述         |
+| ------------------- | -------------------------------------------------------- | ------------------------------ | ------------ |
+| targets             | (string \\| CrawlDataDetailTargetConfig)[] | -            | 目标    |
+| intervalTime        | IntervalTime                                             | -                              | 间隔时间     |
+| fingerprints        | DetailTargetFingerprintCommon[]                          | -                              | 设备指纹     |
+| headers             | Object                                                   | -                              | 请求头       |
+| cookies             | PageCookies                                              | null                           | -            | cookies |
+| viewport            | Viewport                                                 | -                              | 设置视口大小 |
+| onCrawlItemComplete | ( crawlDataSingleResult: CrawlDataSingleResult ) => void | -                              | 声明周期     |
 
 **外部类型**
 

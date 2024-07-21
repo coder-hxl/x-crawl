@@ -8,9 +8,9 @@ export interface CrawlOpenAIParseElementsContentOptions {
 }
 ```
 
-**默认值**
-
-- message: undefined
+| 参数    | 类型   | 默认值 | 描述               |
+| ------- | ------ | ------ | ------------------ |
+| message | string | -      | 你需要 AI 做的操作 |
 
 **外部类型**
 
@@ -27,7 +27,10 @@ export interface CrawlOpenAIParseElementsResult<
 }
 ```
 
-- type
-  - single：说明当前 HTML 片段只找到一个目标。
-  - multiple： 说明当前 HTML 片段找到多个目标。
-  - none： 没有在当前 HTML 片段找到。
+| 参数     | 类型        | 默认值        | 描述                               |
+| -------- | ----------- | ------------- | ---------------------------------- |
+| elements | T[]         | -             | 拿到的元素                         |
+| type     | 'single' \\| 'multiple' \\| 'none'                             | -   | 类型 |
+|          | single      | -             | 说明当前 HTML 片段只找到一个目标。 |
+|          | multiple    | -             | 说明当前 HTML 片段找到多个目标。   |
+|          | none        | -             | 说明没有在当前 HTML 片段找到。     |

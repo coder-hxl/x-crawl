@@ -14,15 +14,15 @@ export interface CrawlDataDetailTargetConfig extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- url: undefined
-- method: 'GET'
-- headers: undefined
-- params: undefined
-- data: undefined
-- priority: undefined
-- fingerprint: undefined
+| 参数        | 类型                          | 默认值 | 描述       |
+| ----------- | ----------------------------- | ------ | ---------- |
+| url         | string                        | -      | url        |
+| method      | Method                        | `GET`  | 方法       |
+| headers     | Object \\| null               | -          | 请求头 |
+| params      | IntervalTime                  | -      | Query 参数 |
+| data        | any                           | -      | 请求体     |
+| priority    | number                        | -      | 优先级     |
+| fingerprint | DetailTargetFingerprintCommon | -      | 设备指纹   |
 
 ## CrawlDataAdvancedConfig
 
@@ -40,13 +40,13 @@ export interface CrawlDataAdvancedConfig<T> extends CrawlCommonConfig {
 }
 ```
 
-**默认值**
-
-- targets: undefined
-- intervalTime: undefined
-- fingerprints: undefined
-- headers: undefined
-- onCrawlItemComplete: undefined
+| 参数                | 类型                                                     | 默认值                         | 描述     |
+| ------------------- | -------------------------------------------------------- | ------------------------------ | -------- | 
+| targets             | (string \\| CrawlDataDetailTargetConfig)[] | -        | 目标 |
+| intervalTime        | IntervalTime                                             | -                              | 间隔时间 |
+| fingerprints        | DetailTargetFingerprintCommon[]                          | -                              | 设备指纹 |
+| headers             | Object                                                   | -                              | 请求头   |
+| onCrawlItemComplete | ( crawlDataSingleResult: CrawlDataSingleResult ) => void | -                              | 声明周期 |
 
 ## CrawlDataSingleResult
 
