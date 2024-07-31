@@ -18,5 +18,5 @@
       "publish/*": ["./publish"]
     }
   },
-  "include": ["packages/**/*", "test/**/*", "publish/**/*"]
+  "include": ["packages/**/*", "test/**/*", "publish/**/*", "docs/**/*"]
 }

@@ -10,3 +10,7 @@
 *::-webkit-scrollbar-track {
   border-radius: 10px;
 }
+
+.spacer {
+  flex-grow: 0 !important;
+}
