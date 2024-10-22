@@ -30,7 +30,7 @@ It consists of two parts:
 
 <div align="center">
    <a target="_blank" href="https://www.capsolver.com/">
-    <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/sponsors/capsolver.png" alt="capsolver" style="height:160px;" />
+    <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/sponsors/capsolver.png" alt="capsolver" style="height:220px;" />
     <p align="center">🎁Discover seamless automatic captcha solving with our AI-powered Auto Web Unblock technology!</p>
   </a>
   <a target="_blank" href="https://console.123proxy.cn/price-dynamic.html?plist=1&utm_source=xcrawl">

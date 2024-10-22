@@ -51,7 +51,7 @@ const { frontmatter } = useData()
 }
 
 .sponsor-item-img img {
-  max-height: 160px;
+  width: 399px;
 }
 
 .sponsor-item-description {
