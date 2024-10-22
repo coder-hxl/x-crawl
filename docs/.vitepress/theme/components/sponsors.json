@@ -1,5 +1,11 @@
 [
   {
+    "url": "https://www.capsolver.com/",
+    "img": "https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/sponsors/capsolver.png",
+    "name": "capsolver",
+    "description": "Discover seamless automatic captcha solving with our AI-powered Auto Web Unblock technology!"
+  },
+  {
     "url": "https://console.123proxy.cn/price-dynamic.html?plist=1&utm_source=xcrawl",
     "img": "/x-crawl/sponsors/123proxy.webp",
     "name": "123proxy",

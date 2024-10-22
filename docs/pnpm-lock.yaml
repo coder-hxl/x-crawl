@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      docs:
+        specifier: 'link:'
+        version: 'link:'
     devDependencies:
       vitepress:
         specifier: ^1.0.2
