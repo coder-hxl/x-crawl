@@ -29,7 +29,7 @@ It consists of two parts:
 ## Sponsors
 
 <div align="center">
-   <a target="_blank" href="https://www.capsolver.com/">
+   <a target="_blank" href="https://www.capsolver.com/?utm_source=github&utm_medium=repo&utm_campaign=scraping&utm_term=x-crawl">
     <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/sponsors/capsolver.png" alt="capsolver" style="height:220px;" />
     <p align="center">🎁Discover seamless automatic captcha solving with our AI-powered Auto Web Unblock technology!</p>
   </a>
