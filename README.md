@@ -26,19 +26,6 @@ It consists of two parts:
 - **🧾 Crawl information** - Controllable crawl information, which will output colored string information in the terminal.
 - **🦾 TypeScript** - Own types and implement complete types through generics.
 
-## Sponsors
-
-<div align="center">
-   <a target="_blank" href="https://www.capsolver.com/?utm_source=github&utm_medium=repo&utm_campaign=scraping&utm_term=x-crawl">
-    <img src="https://raw.githubusercontent.com/coder-hxl/x-crawl/main/assets/sponsors/capsolver.png" alt="capsolver" style="height:220px;" />
-    <p align="center">🎁Discover seamless automatic captcha solving with our AI-powered Auto Web Unblock technology!</p>
-  </a>
-  <a target="_blank" href="https://console.123proxy.cn/price-dynamic.html?plist=1&utm_source=xcrawl">
-    <img src="https://coder-hxl.github.io/x-crawl/sponsors/123proxy.webp" alt="123proxy" style="height:160px;" />
-    <p align="center">🎁企业级 HTTP 代理 IP ! 现免费测试 2-4 小时 + 15% 返现活动</p>
-  </a>
-</div>
-
 ## AI assisted crawler
 
 With the rapid development of network technology, website updates have become more frequent, and changes in class names or structures often bring considerable challenges to crawlers that rely on these elements. Against this background, crawlers combined with AI technology have become a powerful weapon to meet this challenge.
