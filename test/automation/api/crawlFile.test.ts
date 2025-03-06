@@ -8,8 +8,8 @@ const createCrawl = (
 ).createCrawl
 
 const urls: string[] = [
-  'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
-  'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
+  'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area/4401.jpg',
+  'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area/4403.jpg'
 ]
 
 const storeDirs = path.resolve(__dirname, './upload')

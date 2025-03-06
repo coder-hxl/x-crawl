@@ -37,7 +37,7 @@ const crawlOpenAIApp = createCrawlOpenAI({
 })
 
 // crawlPage 用于爬取页面
-crawlApp.crawlPage('https://movie.douban.com/chart').then(async (res) => {
+crawlApp.crawlPage('https://movie.example.com/chart').then(async (res) => {
   const { page, browser } = res.data
 
   // 等待元素出现在页面中, 并获取 HTML
@@ -67,7 +67,7 @@ import { createCrawl } from 'x-crawl'
 const crawlApp = createCrawl()
 
 // crawlPage 用于爬取页面
-crawlApp.crawlPage('https://movie.douban.com/chart').then(async (res) => {
+crawlApp.crawlPage('https://movie.example.com/chart').then(async (res) => {
   const { page, browser } = res.data
 
   // 等待元素出现在页面中
@@ -153,70 +153,70 @@ crawlApp.crawlPage('https://movie.douban.com/chart').then(async (res) => {
   "elements": [
     {
       "name": "老狐狸",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2900908599.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2900908599.webp",
       "info": "2023-10-27(东京国际电影节) / 2023-11-24(中国台湾) / 白润音 / 刘冠廷 / 陈慕义 / 刘奕儿 / 门胁麦 / 黄健玮 / 温升豪 / 班铁翔 / 杨丽音 / 傅孟柏 / 高英轩 / 庄益增 / 张再兴 / 许博维 / 管罄 / 钟瑶 / 游珈瑄 / 郑旸恩 / 戴雅芝 / 姜仁 / 萧鸿文...",
       "score": "8.1",
       "commentsNumber": "29211人评价"
     },
     {
       "name": "机器人之梦",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2899644068.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2899644068.webp",
       "info": "2023-05-20(戛纳电影节) / 2023-12-06(西班牙) / 2024(中国大陆) / 伊万·拉班达 / 阿尔伯特·特里佛·塞加拉 / 拉法·卡尔沃 / 何塞·加西亚·托斯 / 何塞·路易斯·梅地亚维拉 / 加西埃拉·莫利娜 / 埃斯特·索兰斯 / 西班牙 / 法国 / 巴勃罗·贝格尔...",
       "score": "9.1",
       "commentsNumber": "64650人评价"
     },
     {
       "name": "白日之下",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2904961420.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2904961420.webp",
       "info": "2023-06-11(上海国际电影节) / 2023-11-02(中国香港) / 2024-04-12(中国大陆) / 姜大卫 / 余香凝 / 林保怡 / 梁仲恒 / 陈湛文 / 周汉宁 / 梁雍婷 / 龚慈恩 / 宝珮如 / 朱柏谦 / 朱栢康 / 许月湘 / 胡枫 / 鲍起静 / 高翰文 / 彭杏英 / 罗浩铭 / 谭玉瑛...",
       "score": "8.0",
       "commentsNumber": "36540人评价"
     },
     {
       "name": "可怜的东西",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2897662939.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2897662939.webp",
       "info": "2023-09-01(威尼斯电影节) / 2023-12-08(美国) / 艾玛·斯通 / 马克·鲁弗洛 / 威廉·达福 / 拉米·尤素夫 / 克里斯托弗·阿波特 / 苏西·本巴 / 杰洛德·卡尔迈克 / 凯瑟琳·亨特 / 薇琪·佩珀代因 / 玛格丽特·库里 / 汉娜·许古拉 / 杰克·巴顿...",
       "score": "7.0",
       "commentsNumber": "130113人评价"
     },
     {
       "name": "完美的日子",
-      "picture": "https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2898894527.webp",
+      "picture": "https://img3.exampleio.com/view/photo/s_ratio_poster/public/p2898894527.webp",
       "info": "2023-05-25(戛纳电影节) / 2023-12-21(德国) / 2023-12-22(日本) / 役所广司 / 柄本时生 / 中野有纱 / 山田葵  / 麻生祐未 / 石川小百合 / 三浦友和 / 田中泯 / 大下浩人 / 犬山犬子 / 牧口元美 / 长井短 / 研直子 / 茂吕师冈 / 县森鱼 / 片桐入 / 芹泽兴人...",
       "score": "8.3",
       "commentsNumber": "33562人评价"
     },
     {
       "name": "新威龙杀阵",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2905374090.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2905374090.webp",
       "info": "2024-03-08(西南偏南电影节) / 2024-03-21(美国网络) / 杰克·吉伦哈尔 / 康纳·麦格雷戈 / 杰西卡·威廉姆斯 / 比利·马格努森 / 丹妮拉·曼希沃 / 吉米索拉·艾库美罗 / 卢卡斯·盖奇 / 特拉维斯·范·文克 / 达伦·巴内特 / 乔昆姆·德·阿尔梅达...",
       "score": "6.3",
       "commentsNumber": "9980人评价"
     },
     {
       "name": "首尔之春",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2905204009.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2905204009.webp",
       "info": "2023-11-22(韩国) / 黄政民 / 郑雨盛 / 李星民 / 朴解浚 / 金成畇 / 朴勋 / 安世镐 / 郑允荷 / 丁海寅 / 南允皓 / 全秀芝 / 韩国 / 金成洙 / 141分钟 / 首尔之春 / 剧情 / 金成洙 Sung-su Kim / 韩语",
       "score": "8.8",
       "commentsNumber": "171858人评价"
     },
     {
       "name": "金手指",
-      "picture": "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2901830629.webp",
+      "picture": "https://img1.exampleio.com/view/photo/s_ratio_poster/public/p2901830629.webp",
       "info": "2023-12-30(中国大陆) / 梁朝伟 / 刘德华 / 蔡卓妍 / 任达华 / 方中信 / 陈家乐 / 白只 / 姜皓文 / 太保 / 钱嘉乐 / 袁咏仪 / 周家怡 / 岑珈其 / 李靖筠 / 吴肇轩 / 柯炜林 / 冯泳贤 / 杜曜宇 / 李建城 / 古永锋 / 中国香港 / 中国大陆 / 庄文强...",
       "score": "6.1",
       "commentsNumber": "135956人评价"
     },
     {
       "name": "美国小说",
-      "picture": "https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2902166424.webp",
+      "picture": "https://img9.exampleio.com/view/photo/s_ratio_poster/public/p2902166424.webp",
       "info": "2023-09-08(多伦多国际电影节) / 2023-12-15(美国) / 杰弗里·怀特 / 翠西·艾利斯·罗斯 / 约翰·奥提兹 / 伊萨·雷 / 斯特林·K·布朗 / 埃里卡·亚历山大 / 莱斯利·格塞斯 / 亚当·布罗迪 / 凯斯·大卫 / 迈拉·卢克利希亚·泰勒 / 雷蒙德·安东尼·托马斯...",
       "score": "7.7",
       "commentsNumber": "26223人评价"
     },
     {
       "name": "利益区域",
-      "picture": "https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2899514583.webp",
+      "picture": "https://img3.exampleio.com/view/photo/s_ratio_poster/public/p2899514583.webp",
       "info": "2023-05-19(戛纳电影节) / 2023-12-15(美国) / 克里斯蒂安·富里道尔 / 桑德拉·惠勒 / 约翰·卡特豪斯 / 拉尔夫·赫尔福特 / 弗雷娅·克罗伊茨卡姆 / 马克斯·贝克 / 伊摩根·蔻格 / 斯蒂芬妮·佩特罗维茨 / 拉尔夫·齐尔曼 / 玛丽·罗莎·提特言...",
       "score": "7.4",
       "commentsNumber": "24875人评价"

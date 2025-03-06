@@ -8,8 +8,8 @@ const createCrawl = (
 ).createCrawl
 
 const urls: string[] = [
-  'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4401.jpg',
-  'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area/4403.jpg'
+  'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area/4401.jpg',
+  'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area/4403.jpg'
 ]
 
 const storeDirs = path.resolve(__dirname, './upload')
@@ -71,7 +71,7 @@ async function loaderBaseConfig() {
   const testCrawlApp = createCrawl({
     log: false,
     baseUrl:
-      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
+      'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area',
     proxy: { urls: ['http://localhost:7890'] },
     timeout: 10000,
     intervalTime: { max: 1000 },
@@ -91,7 +91,7 @@ async function loaderAdvancedConfig() {
   const testCrawlApp = createCrawl({
     log: false,
     baseUrl:
-      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area'
+      'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area'
   })
 
   const res = await testCrawlApp.crawlFile({
@@ -111,7 +111,7 @@ async function storeConfig() {
   const testCrawlApp = createCrawl({
     log: false,
     baseUrl:
-      'https://raw.githubusercontent.com/coder-hxl/airbnb-upload/master/area',
+      'https://raw.githubusercontent.com/coder-hxl/example-upload/master/area',
     proxy: { urls: ['http://localhost:7890'] }
   })
 

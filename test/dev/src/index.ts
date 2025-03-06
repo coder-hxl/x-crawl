@@ -14,7 +14,7 @@ const crawlOpenAIApp = createCrawlOpenAI({
 })
 
 // crawlPage 用于爬取页面
-crawlApp.crawlPage('https://www.airbnb.cn/s/select_homes').then(async (res) => {
+crawlApp.crawlPage('https://www.example.cn/s/select_homes').then(async (res) => {
   const { page, browser } = res.data
 
   // 等待元素出现在页面中, 并获取 HTML
