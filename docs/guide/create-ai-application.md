@@ -1,6 +1,21 @@
 # Create AI application
 
-Currently, x-crawl’s AI auxiliary function relies on OpenAI and requires the use of OpenAI’s API Key. Other AI may be added in the future.
+## Ollama
+
+create a new ** application instance ** with [createCrawlOllama()](/cn/api/create-crawl-ollama#createxcrawlollama) :
+
+```js
+import { createCrawlOllama } from 'x-crawl'
+
+const crawlOllamaApp = createCrawlOllama({
+  model: "Your model ",
+  clientOptions: { ... }
+})
+```
+
+## Openai
+
+You need to use the OpenAI API Key.
 
 Create a new **application instance** via [createCrawlOpenAI()](/api/create-crawl-openai#createxcrawlopenai):
 

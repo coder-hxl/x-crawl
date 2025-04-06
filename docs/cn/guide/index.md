@@ -7,13 +7,13 @@ x-crawl 是一个灵活的 Node.js AI 辅助爬虫库。灵活的使用方式和
 它由两部分组成：
 
 - 爬虫：由爬虫 API 以及各种功能组成，即使不依靠 AI 也能正常工作。
-- AI：目前基于 OpenAI 提供的 AI 大模型，让 AI 简化很多繁琐的操作。
+- AI：集成 ollama 和 openai ，让 AI 简化很多繁琐的操作。
 
 > 如果您觉得 x-crawl 对您有所帮助，或者您喜欢 x-crawl ，可以在 GitHub 上给 [x-crawl 存储库](https://github.com/coder-hxl/x-crawl) 点个 star 。您的支持是我们持续改进的动力！感谢您的支持！
 
 ## 特征 {#features}
 
-- **🤖 AI 辅助** - 强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
+- **🤖 AI 辅助** - 集成 ollama 和 openai ，强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
 - **🖋️ 写法灵活** - 单个爬取 API 都适配多种配置，每种配置方式都各有千秋。
 - **⚙️ 多种用途** - 支持爬动态页面、静态页面、接口数据以及文件数据。
 - **⚒️ 控制页面** - 爬取动态页面支持自动化操作、键盘输入、事件操作等。
@@ -61,28 +61,30 @@ const crawlOpenAIApp = createCrawlOpenAI({
 })
 
 // crawlPage 用于爬取页面
-crawlApp.crawlPage('https://www.example.cn/s/select_homes').then(async (res) => {
-  const { page, browser } = res.data
+crawlApp
+  .crawlPage('https://www.example.cn/s/select_homes')
+  .then(async (res) => {
+    const { page, browser } = res.data
 
-  // 等待元素出现在页面中, 并获取 HTML
-  const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
-  await page.waitForSelector(targetSelector)
-  const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
+    // 等待元素出现在页面中, 并获取 HTML
+    const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
+    await page.waitForSelector(targetSelector)
+    const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // 让 AI 获取图片链接, 并去重 (描述越详细越好)
-  const srcResult = await crawlOpenAIApp.parseElements(
-    highlyHTML,
-    '获取图片链接, 不要source里面的, 并去重'
-  )
+    // 让 AI 获取图片链接, 并去重 (描述越详细越好)
+    const srcResult = await crawlOpenAIApp.parseElements(
+      highlyHTML,
+      '获取图片链接, 不要source里面的, 并去重'
+    )
 
-  browser.close()
+    browser.close()
 
-  // crawlFile 用于爬取文件资源
-  crawlApp.crawlFile({
-    targets: srcResult.elements.map((item) => item.src),
-    storeDirs: './upload'
+    // crawlFile 用于爬取文件资源
+    crawlApp.crawlFile({
+      targets: srcResult.elements.map((item) => item.src),
+      storeDirs: './upload'
+    })
   })
-})
 ```
 
 运行：

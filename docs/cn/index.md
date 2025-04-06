@@ -19,7 +19,7 @@ hero:
 
 features:
   - title: 🤖 AI 辅助
-    details: 强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
+    details: 集成 ollama 和 openai ，强大的 AI 辅助功能，使爬虫工作变得更加高效、智能和便捷。
   - title: 🖋️ 写法灵活
     details: 单个爬取 API 都适配多种配置，每种配置方式都各有千秋。
   - title: ⚙️ 功能丰富

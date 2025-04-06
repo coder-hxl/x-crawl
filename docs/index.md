@@ -19,7 +19,7 @@ hero:
 
 features:
   - title: 🤖 AI Assistance
-    details: Powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
+    details: Integrate ollama and openai, Powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
   - title: 🖋️ Flexible writing style
     details: A single crawling API is suitable for multiple configurations, and each configuration method has its own advantages.
   - title: ⚙️ Feature-rich
