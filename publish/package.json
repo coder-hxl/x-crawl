@@ -36,7 +36,7 @@
     "multifunction"
   ],
   "engines": {
-    "node": ">=18.20.8"
+    "node": ">=22.14.0"
   },
   "dependencies": {
     "chalk": "5.4.1",
