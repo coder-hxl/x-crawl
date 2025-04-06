@@ -2,7 +2,7 @@
 
 ## Ollama
 
-create a new ** application instance ** with [createCrawlOllama()](/cn/api/create-crawl-ollama#createxcrawlollama) :
+create a new ** application instance ** with createCrawlOllama():
 
 ```js
 import { createCrawlOllama } from 'x-crawl'

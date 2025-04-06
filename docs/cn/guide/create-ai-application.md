@@ -2,7 +2,7 @@
 
 ## Ollama
 
-通过 [createCrawlOllama()](/cn/api/create-crawl-ollama#createxcrawlollama) 创建一个新的 **应用实例**:
+通过 createCrawlOllama() 创建一个新的 **应用实例**:
 
 ```js
 import { createCrawlOllama } from 'x-crawl'
