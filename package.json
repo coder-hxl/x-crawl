@@ -28,7 +28,7 @@
     "ollama": "^0.5.14",
     "openai": "^4.52.7",
     "ora": "^8.0.1",
-    "puppeteer": "22.13.1",
+    "puppeteer": "24.6.0",
     "vitepress": "v1.3.1",
     "x-crawl": "link:"
   },
