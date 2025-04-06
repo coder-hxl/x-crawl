@@ -1,6 +1,6 @@
 {
   "name": "x-crawl",
-  "version": "10.0.2",
+  "version": "10.1.0",
   "author": "coderHXL",
   "description": "x-crawl is a flexible Node.js AI-assisted crawler library.",
   "license": "MIT",
@@ -41,6 +41,7 @@
   "dependencies": {
     "chalk": "5.4.1",
     "https-proxy-agent": "^7.0.6",
+    "ollama": "^0.5.14",
     "openai": "^4.91.1",
     "ora": "^8.2.0",
     "puppeteer": "24.6.0"

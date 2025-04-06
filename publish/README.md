@@ -7,13 +7,13 @@ x-crawl is a flexible Node.js AI-assisted crawler library. Flexible usage and po
 It consists of two parts:
 
 - Crawler: It consists of a crawler API and various functions that can work normally even without relying on AI.
-- AI: Currently based on the large AI model provided by OpenAI, AI simplifies many tedious operations.
+- AI: Integrate ollama and openai, AI simplifies many tedious operations.
 
 > If you find x-crawl helpful, or you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a like on GitHub A star. Your support is the driving force for our continuous improvement! thank you for your support!
 
 ## Features
 
-- **🤖 AI Assistance** - Powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
+- **🤖 AI Assistance** - Integrate ollama and openai, powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
 - **🖋️ Flexible writing** - A single crawling API is suitable for multiple configurations, and each configuration method has its own advantages.
 - **⚙️Multiple uses** - Supports crawling dynamic pages, static pages, interface data and file data.
 - **⚒️ Control page** - Crawling dynamic pages supports automated operations, keyboard input, event operations, etc.
@@ -56,28 +56,30 @@ const crawlOpenAIApp = createCrawlOpenAI({
 })
 
 // crawlPage is used to crawl pages
-crawlApp.crawlPage('https://www.example.cn/s/select_homes').then(async (res) => {
-  const { page, browser } = res.data
+crawlApp
+  .crawlPage('https://www.example.cn/s/select_homes')
+  .then(async (res) => {
+    const { page, browser } = res.data
 
-  // Wait for the element to appear on the page and get the HTML
-  const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
-  await page.waitForSelector(targetSelector)
-  const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
+    // Wait for the element to appear on the page and get the HTML
+    const targetSelector = '[data-tracking-id="TOP_REVIEWED_LISTINGS"]'
+    await page.waitForSelector(targetSelector)
+    const highlyHTML = await page.$eval(targetSelector, (el) => el.innerHTML)
 
-  // Let the AI get the image link and de-duplicate it (the more detailed the description, the better)
-  const srcResult = await crawlOpenAIApp.parseElements(
-    highlyHTML,
-    `Get the image link, don't source it inside, and de-duplicate it`
-  )
+    // Let the AI get the image link and de-duplicate it (the more detailed the description, the better)
+    const srcResult = await crawlOpenAIApp.parseElements(
+      highlyHTML,
+      `Get the image link, don't source it inside, and de-duplicate it`
+    )
 
-  browser.close()
+    browser.close()
 
-  // crawlFile is used to crawl file resources
-  crawlApp.crawlFile({
-    targets: srcResult.elements.map((item) => item.src),
-    storeDirs: './upload'
+    // crawlFile is used to crawl file resources
+    crawlApp.crawlFile({
+      targets: srcResult.elements.map((item) => item.src),
+      storeDirs: './upload'
+    })
   })
-})
 ```
 
 **You can even send the whole HTML to the AI to help us operate, because the website content is more complex you also need to describe the location to get more accurately, and will consume a lot of Tokens.**

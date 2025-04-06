@@ -1,3 +1,29 @@
+# [v10.1.0](https://github.com/coder-hxl/x-crawl/compare/v10.0.2..v10.1.0) (2025-04-06)
+
+### 🚀 Features
+
+- Added ollama
+- Change the openai model type to string
+
+### ⛓️ Dependencies
+
+- puppeteer from 22.13.1 to 24.6.0
+- openai from 4.52.7 to 4.91.1
+- upgrade non-major dependencies to the latest version
+
+---
+
+### 🚀 特征
+
+- 新增 ollama
+- openai 模型类型改为 string
+
+### ⛓️ 依赖关系
+
+- puppeteer 从 22.13.1 升至 24.6.0
+- openai 从 4.52.7 升至 4.91.1
+- 非主要依赖项升级最新版本
+
 # [v10.0.2](https://github.com/coder-hxl/x-crawl/compare/v10.0.1..v10.0.2) (2024-07-21)
 
 ### 🚀 Features
@@ -14,7 +40,7 @@
 
 ### 🚀 特征
 
-- OpenAIChatModel 类型新增 'gpt-4o' | 'gpt-4o-2024-05-13'  | 'gpt-4-turbo'  | 'gpt-4-turbo-2024-04-09' ，与 openai 保持同步。
+- OpenAIChatModel 类型新增 'gpt-4o' | 'gpt-4o-2024-05-13' | 'gpt-4-turbo' | 'gpt-4-turbo-2024-04-09' ，与 openai 保持同步。
 
 ### ⛓️ 依赖关系
 
