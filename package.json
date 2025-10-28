@@ -20,7 +20,7 @@
     "prettier": "prettier --write ."
   },
   "engines": {
-    "node": ">=18.20.8"
+    "node": ">=22.21.0"
   },
   "dependencies": {
     "chalk": "5.4.1",
