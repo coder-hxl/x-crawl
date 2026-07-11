@@ -5,16 +5,16 @@ import sponsorData from './sponsors.json'
 <template>
   <div class="sponsor-container">
     <a
-      v-for="{ url, img, name, description } in sponsorData"
+      v-for="{ url, groupImg, name, description } in sponsorData"
       class="sponsor-item"
       :href="url"
       target="_blank"
       rel="sponsored noopener"
     >
       <div class="sponsor-item-img">
-        <img :src="img" :alt="name" />
+        <img :src="groupImg" :alt="name" />
       </div>
-      <div class="sponsor-item-description">🎁{{ description }}</div>
+      <div class="sponsor-item-description">{{ description }}</div>
     </a>
 
     <a href="/sponsor/" class="sponsor-item-action">成为赞助商</a>
@@ -50,6 +50,7 @@ import sponsorData from './sponsors.json'
 }
 .sponsor-item-description {
   text-align: center;
+  white-space: pre-line;
   font-size: 13px;
   color: rgb(74, 74, 74);
 }

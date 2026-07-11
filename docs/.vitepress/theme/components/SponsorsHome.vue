@@ -11,16 +11,16 @@ const { frontmatter } = useData()
     <div class="title">Sponsors</div>
 
     <a
-      v-for="{ url, img, name, description } in sponsorData"
+      v-for="{ url, homeImg, name, description } in sponsorData"
       class="sponsor-item"
       :href="url"
       target="_blank"
       rel="sponsored noopener"
     >
       <div class="sponsor-item-img">
-        <img :src="img" :alt="name" />
+        <img :src="homeImg" :alt="name" />
       </div>
-      <div class="sponsor-item-description">🎁{{ description }}</div>
+      <div class="sponsor-item-description">{{ description }}</div>
     </a>
   </div>
 </template>
@@ -56,6 +56,7 @@ const { frontmatter } = useData()
 
 .sponsor-item-description {
   text-align: center;
+  white-space: pre-line;
   font-size: 14px;
   color: rgb(74, 74, 74);
 }

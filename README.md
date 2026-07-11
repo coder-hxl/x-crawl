@@ -11,6 +11,19 @@ It consists of two parts:
 
 > If you find x-crawl helpful, or you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a like on GitHub A star. Your support is the driving force for our continuous improvement! thank you for your support!
 
+## Sponsors
+
+<div align="center">
+   <div>
+      <a target="_blank" href="https://www.ipwo.net/?ref=githubCoderHXL">
+      <img src="/assets/sponsors/ipwo.png" alt="123proxy" style="height:160px;" />
+      <p align="center">IPWO × x-crawl</p>
+    </a>
+    <p align="left">当项目需要采集数据时，稳定的网络环境是刚需。IPWO 提供全球住宅代理资源，帮助开发者提升数据采集的稳定性与灵活性。</p>
+    <p align="left">提供动态、静态双类型 IP，支持http/https/socks5多协议，<a href="https://www.ipwo.net/?ref=githubCoderHXL">免费测试入口</a>。折扣码“IPWO”。</p>
+   </div>
+</div>
+
 ## Features
 
 - **🤖 AI Assistance** - Integrate ollama and openai, powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
@@ -180,7 +193,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="农家乐 ｜ Mulvane"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=45937791&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=45937791&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -264,7 +277,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥1,170</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥1,170</span>
                 </div>
               </div></a
@@ -274,7 +287,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="Loft ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=29753115&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=29753115&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -358,7 +371,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥862</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥862</span>
                 </div>
               </div></a
@@ -368,7 +381,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=26764727&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=26764727&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -452,7 +465,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥709</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥709</span>
                 </div>
               </div></a
@@ -462,7 +475,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=545779178592886885&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=545779178592886885&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -546,7 +559,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥546</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥546</span>
                 </div>
               </div></a
@@ -556,7 +569,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=661881998531696630&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=661881998531696630&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -641,7 +654,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥743</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥743</span>
                 </div>
               </div></a
@@ -651,7 +664,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="乡村小屋 ｜ Clearwater"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=50620715&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=50620715&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -735,7 +748,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥535</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥535</span>
                 </div>
               </div></a
@@ -745,7 +758,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="联排别墅 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=40405228&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=40405228&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -829,7 +842,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥645</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥645</span>
                 </div>
               </div></a
@@ -839,7 +852,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=51309116&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=51309116&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -923,7 +936,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥1,068</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥1,068</span>
                 </div>
               </div></a
@@ -933,7 +946,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="客房 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=21364903&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=21364903&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -1016,7 +1029,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥683</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥683</span>
                 </div>
               </div></a
@@ -1026,7 +1039,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="袖珍小屋 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=24893823&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=24893823&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -1109,7 +1122,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥589</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥589</span>
                 </div>
               </div></a
@@ -1119,7 +1132,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=792178978933830608&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=792178978933830608&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -1202,7 +1215,7 @@ For ease of viewing, it is formatted here
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥1,094</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥1,094</span>
                 </div>
               </div></a
@@ -1212,7 +1225,7 @@ For ease of viewing, it is formatted here
             <a
               aria-label="民居 ｜ 威奇托（Wichita）"
               class="cbkobxh dir dir-ltr"
-              href="/s/homes?dynamic_product_ids%5B%5D=32114722&amp;omni_page_id=36021&amp;place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
+              href="/s/homes?dynamic_product_ids%5B%5D=32114722&omni_page_id=36021&place_id=ChIJLRh_0mrbuocRPj3TdL_VlpM"
               target="_blank"
               rel="noreferrer"
               data-nosnippet="true"
@@ -1287,14 +1300,14 @@ For ease of viewing, it is formatted here
                   This charming, newly remodeled two bedroom home is located on
                   the western edge of historic Delano Neighborhood. Its
                   proximity to the Downtown District, Century II Convention
-                  Center &amp; many wedding venues makes it the perfect place to
+                  Center & many wedding venues makes it the perfect place to
                   stay for business or pleasure!
                 </p>
                 <p class="n1nue62c f1m3zhlw dir dir-ltr">4月28日至5月5日</p>
                 <div class="cyjufhz p8bhhzl f1m3zhlw dir dir-ltr">
                   <span aria-hidden="true" class="piy2wzv dir dir-ltr"
                     >￥670</span
-                  ><span aria-hidden="true">&nbsp;\x3C!-- -->/晚</span
+                  ><span aria-hidden="true"> \x3C!-- -->/晚</span
                   ><span class="s14ffc1j dir dir-ltr">每晚 ￥670</span>
                 </div>
               </div></a

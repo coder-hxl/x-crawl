@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "url": "https://www.ipwo.net/?ref=githubCoderHXL",
+    "groupImg": "/x-crawl/public/sponsors/ipwo-group.png",
+    "homeImg": "/x-crawl/public/sponsors/ipwo-home-v2.png",
+    "name": "IPWO × x-crawl",
+    "description": "IPWO × x-crawl\n当项目需要采集数据时，稳定的网络环境是刚需。IPWO 提供全球住宅代理资源，帮助开发者提升数据采集的稳定性与灵活性。\n提供动态、静态双类型 IP，支持http/https/socks5多协议，免费测试入口。折扣码“IPWO”。"
+  }
+]
