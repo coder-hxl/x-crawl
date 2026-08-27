@@ -11,19 +11,6 @@ It consists of two parts:
 
 > If you find x-crawl helpful, or you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a like on GitHub A star. Your support is the driving force for our continuous improvement! thank you for your support!
 
-## Sponsors
-
-<div align="center">
-   <div>
-      <a target="_blank" href="https://www.ipwo.net/?ref=githubCoderHXL">
-      <img src="/assets/sponsors/ipwo.png" alt="123proxy" style="height:160px;" />
-      <p align="center">IPWO × x-crawl</p>
-    </a>
-    <p align="left">当项目需要采集数据时，稳定的网络环境是刚需。IPWO 提供全球住宅代理资源，帮助开发者提升数据采集的稳定性与灵活性。</p>
-    <p align="left">提供动态、静态双类型 IP，支持http/https/socks5多协议，<a href="https://www.ipwo.net/?ref=githubCoderHXL">免费测试入口</a>。折扣码“IPWO”。</p>
-   </div>
-</div>
-
 ## Features
 
 - **🤖 AI Assistance** - Integrate ollama and openai, powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
