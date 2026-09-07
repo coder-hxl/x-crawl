@@ -46,8 +46,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(rollup@4.61.1)
       '@rollup/plugin-terser':
-        specifier: ^0.4.4
-        version: 0.4.4(rollup@4.61.1)
+        specifier: ^1.0.0
+        version: 1.0.0(rollup@4.61.1)
       '@types/node':
         specifier: ^24.13.0
         version: 24.13.0
@@ -1013,9 +1013,9 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-terser@0.4.4':
-    resolution: {integrity: sha512-XHeJC5Bgvs8LfukDwWZp7yeqin6ns8RTl2B9avbejt6tZqsqvVoWI7ZTQrcNsfKEDWBTnTxM8nMDkO2IFFbd0A==}
-    engines: {node: '>=14.0.0'}
+  '@rollup/plugin-terser@1.0.0':
+    resolution: {integrity: sha512-FnCxhTBx6bMOYQrar6C8h3scPt8/JwIzw3+AJ2K++6guogH5fYaIFia+zZuhqv0eo1RN7W1Pz630SyvLbDjhtQ==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
       rollup: ^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
@@ -2657,9 +2657,6 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  randombytes@2.1.0:
-    resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
-
   regenerate-unicode-properties@10.2.0:
     resolution: {integrity: sha512-DqHn3DwbmmPVzeKj9woBadqmXxLvQoQIwu7nopMc72ztvxVmVk2SBhSnx67zuye5TP+lJsb/TBQsjLKhnDf3MA==}
     engines: {node: '>=4'}
@@ -2735,9 +2732,6 @@ packages:
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
-  safe-buffer@5.2.1:
-    resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
-
   search-insights@2.15.0:
     resolution: {integrity: sha512-ch2sPCUDD4sbPQdknVl9ALSi9H7VyoeVbsxznYz6QV55jJ8CI3EtwpO1i84keN4+hF5IeHWIeGvc08530JkVXQ==}
 
@@ -2755,8 +2749,9 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  serialize-javascript@6.0.2:
-    resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
+  serialize-javascript@7.1.1:
+    resolution: {integrity: sha512-k3CMsaIvvdSwm8oLB4MXSl0wH2/cwlH7xGcnRd2DaeRmBkbzYmyT8j0tsX60DwD1eRwHTpNpH8ljKu9oUT1MeQ==}
+    engines: {node: '>=20.0.0'}
 
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
@@ -4269,9 +4264,9 @@ snapshots:
     optionalDependencies:
       rollup: 4.61.1
 
-  '@rollup/plugin-terser@0.4.4(rollup@4.61.1)':
+  '@rollup/plugin-terser@1.0.0(rollup@4.61.1)':
     dependencies:
-      serialize-javascript: 6.0.2
+      serialize-javascript: 7.1.1
       smob: 1.5.0
       terser: 5.31.3
     optionalDependencies:
@@ -5888,10 +5883,6 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  randombytes@2.1.0:
-    dependencies:
-      safe-buffer: 5.2.1
-
   regenerate-unicode-properties@10.2.0:
     dependencies:
       regenerate: 1.4.2
@@ -6030,8 +6021,6 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.61.1
       fsevents: 2.3.3
 
-  safe-buffer@5.2.1: {}
-
   search-insights@2.15.0: {}
 
   semver@6.3.1: {}
@@ -6040,9 +6029,7 @@ snapshots:
 
   semver@7.8.1: {}
 
-  serialize-javascript@6.0.2:
-    dependencies:
-      randombytes: 2.1.0
+  serialize-javascript@7.1.1: {}
 
   shebang-command@2.0.0:
     dependencies:
