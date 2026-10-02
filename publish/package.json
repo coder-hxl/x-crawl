@@ -36,12 +36,12 @@
     "multifunction"
   ],
   "engines": {
-    "node": ">=24.16.0"
+    "node": ">=24.21.0"
   },
   "dependencies": {
     "chalk": "5.6.2",
     "https-proxy-agent": "^7.0.6",
-    "ollama": "^0.6.3",
+    "ollama": "^0.6.4",
     "openai": "^4.104.0",
     "ora": "^9.4.1",
     "puppeteer": "24.43.1"
