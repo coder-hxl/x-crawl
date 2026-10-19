@@ -11,6 +11,20 @@ It consists of two parts:
 
 > If you find x-crawl helpful, or you like x-crawl, you can give [x-crawl repository](https://github.com/coder-hxl/x-crawl) a like on GitHub A star. Your support is the driving force for our continuous improvement! thank you for your support!
 
+## Sponsors
+
+<div align="center">
+   <div>
+      <a target="_blank" href="https://www.rapidproxy.io/?ref=xcrawl">
+      <img src="/assets/sponsors/rapidproxy.png" alt="rapidproxy" style="height:160px;" />
+      <p align="center">Rapidproxy</p>
+    </a>
+    <p align="left">RapidProxy provides fast, reliable residential and ISP proxies for web scraping, automation, and large-scale data collection. With <b>90M+ residential IPs</b>, smart rotation, high concurrency, and non-expiring traffic, it helps developers collect data efficiently and reliably.</p>
+    <p align="center"><b>🌍 90M+ Residential IPs · Smart Rotation · Non-Expiring Traffic</b></p>
+    <p align="center"><b>💰 From $0.55/GB | 🎁 <a target="_blank" href="https://www.rapidproxy.io/?ref=xcrawl">Free Trial</a> | 10% OFF</b> with code RAPID10</p>
+   </div>
+</div>
+
 ## Features
 
 - **🤖 AI Assistance** - Integrate ollama and openai, powerful AI assistance function makes crawler work more efficient, intelligent and convenient.

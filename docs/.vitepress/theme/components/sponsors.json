@@ -1,5 +1,12 @@
 [
   {
+    "url": "https://www.rapidproxy.io/?ref=xcrawl",
+    "groupImg": "/x-crawl/sponsors/rapidproxy.png",
+    "homeImg": "/x-crawl/sponsors/rapidproxy.webp",
+    "name": "Rapidproxy",
+    "description": "RapidProxy provides fast, reliable residential and ISP proxies for web scraping, automation, and large-scale data collection. With 90M+ residential IPs, smart rotation, high concurrency, and non-expiring traffic, it helps developers collect data efficiently and reliably.\n🌍 90M+ Residential IPs · Smart Rotation · Non-Expiring Traffic\n💰 From $0.55/GB | 🎁 Free Trial | 10% OFF with code RAPID10"
+  },
+  {
     "url": "https://www.ipwo.net/?ref=githubCoderHXL",
     "groupImg": "/x-crawl/sponsors/ipwo-group.png",
     "homeImg": "/x-crawl/sponsors/ipwo-home-v2.webp",
