@@ -25,6 +25,16 @@ It consists of two parts:
    </div>
 </div>
 
+<div align="center">
+   <div>
+      <a target="_blank" href="https://proxy-seller.com/?partner=3I8XPXPUKEDRY9">
+      <img src="/assets/sponsors/proxy-seller.png" alt="proxy-seller" style="height:160px;" />
+      <p align="center">Proxy-Seller</p>
+    </a>
+    <p align="left">Proxy-Seller 为您的各类工作流程提供可靠的代理基础设施：私有住宅、移动（4G/5G/LTE）、ISP 以及数据中心 IPv4/IPv6 代理，全部支持 HTTP(S) 与 SOCKS5 协议。您可使用分布在 220+ 个地区的 4700 万+ 住宅 IP，精准定位所需的国家、城市或 ISP，并享有 99.7% 的可用性及 24/7 技术支持。<b>使用优惠码 XCRAWL 可享 15% 折扣。</b></p>
+   </div>
+</div>
+
 ## Features
 
 - **🤖 AI Assistance** - Integrate ollama and openai, powerful AI assistance function makes crawler work more efficient, intelligent and convenient.
