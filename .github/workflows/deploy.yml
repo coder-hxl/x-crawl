@@ -41,7 +41,7 @@ jobs:
           node-version: 24.16.0
           cache: pnpm
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Install dependencies
         working-directory: ./docs
         run: pnpm install
