@@ -17,7 +17,7 @@ import sponsorData from './sponsors.json'
       <div class="sponsor-item-description">{{ description }}</div>
     </a>
 
-    <a href="/sponsor/" class="sponsor-item-action">成为赞助商</a>
+    <a href="mailto:coderhxl@outlook.com?subject=x-crawl%20%E8%B5%9E%E5%8A%A9%E5%90%88%E4%BD%9C" class="sponsor-item-action">成为赞助商</a>
   </div>
 </template>
 
